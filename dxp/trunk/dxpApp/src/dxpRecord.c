@@ -71,10 +71,21 @@ static long get_control_double();
 
 /* This is the maximum value of HDWRVAR - need to get from XIA, keep updated */
 #define MAX_MODULE_TYPES 6
+
+/* This is the bit position in RUNTASKS for enable baseline cut */
+#define RUNTASKS_BLCUT 0x400
+
 typedef struct {
    unsigned short runtasks;
-   unsigned short decimation;
    unsigned short gaindac;
+   unsigned short blmin;
+   unsigned short blmax;
+   unsigned short blcut;
+   unsigned short blfilter;
+   unsigned short basethresh;
+   unsigned short basethreshadj;
+   unsigned short basebinning;
+   unsigned short slowlen;
 } PARAM_OFFSETS;
 
 typedef struct {
@@ -310,14 +321,49 @@ static long init_record(struct dxpRecord *pdxp, int pass)
         printf("dxpRecord:init_record cannot find RUNTASKS\n");
         goto bad;
     }
-    status = getParamOffset(minfo, "DECIMATION", &minfo->offsets.decimation); 
-    if (status != 0) {
-        printf("dxpRecord:init_record cannot find DECIMATION\n");
-        goto bad;
-    }
     status = getParamOffset(minfo, "GAINDAC", &minfo->offsets.gaindac); 
     if (status != 0) {
         printf("dxpRecord:init_record cannot find GAINDAC\n");
+        goto bad;
+    }
+    status = getParamOffset(minfo, "BLMIN", &minfo->offsets.blmin); 
+    if (status != 0) {
+        printf("dxpRecord:init_record cannot find BLMIN\n");
+        goto bad;
+    }
+    status = getParamOffset(minfo, "BLMAX", &minfo->offsets.blmax); 
+    if (status != 0) {
+        printf("dxpRecord:init_record cannot find BLMAX\n");
+        goto bad;
+    }
+    status = getParamOffset(minfo, "BLCUT", &minfo->offsets.blcut); 
+    if (status != 0) {
+        printf("dxpRecord:init_record cannot find BLCUT\n");
+        goto bad;
+    }
+    status = getParamOffset(minfo, "BLFILTER", &minfo->offsets.blfilter); 
+    if (status != 0) {
+        printf("dxpRecord:init_record cannot find BLFILTER\n");
+        goto bad;
+    }
+    status = getParamOffset(minfo, "BASETHRESH", &minfo->offsets.basethresh); 
+    if (status != 0) {
+        printf("dxpRecord:init_record cannot find BASETHRESH\n");
+        goto bad;
+    }
+    status = getParamOffset(minfo, "BASTHRADJ", &minfo->offsets.basethreshadj); 
+    if (status != 0) {
+        printf("dxpRecord:init_record cannot find BASTHRADJ\n");
+        goto bad;
+    }
+    status = getParamOffset(minfo, "BASEBINNING", &minfo->offsets.basebinning); 
+    if (status != 0) {
+        printf("dxpRecord:init_record cannot find BASEBINNING\n");
+        goto bad;
+    }
+    status = getParamOffset(minfo, "SLOWLEN", &minfo->offsets.slowlen); 
+    if (status != 0) {
+        printf("dxpRecord:init_record cannot find SLOWLEN\n");
         goto bad;
     }
 
@@ -327,11 +373,27 @@ static long init_record(struct dxpRecord *pdxp, int pass)
     /* Allocate the space for the baseline histogram array */
     pdxp->bptr = (long *)calloc(minfo->nbase_histogram, sizeof(long));
 
+    /* Allocate the space for the baseline cut array */
+    pdxp->bcptr = (long *)calloc(minfo->nbase_histogram, sizeof(long));
+
+    /* Allocate the space for the baseline histogram X array */
+    pdxp->bxptr = (float *)calloc(minfo->nbase_histogram, sizeof(float));
+
     /* Allocate the space for the baseline history array */
     pdxp->bhptr = (long *)calloc(minfo->nbase_history, sizeof(long));
 
+    /* Allocate the space for the baseline history X array */
+    pdxp->bhxptr = (float *)calloc(minfo->nbase_history, sizeof(float));
+
     /* Allocate the space for the trace array */
     pdxp->tptr = (long *)calloc(minfo->ntrace, sizeof(long));
+
+    /* Allocate the space for the trace X array */
+    pdxp->txptr = (float *)calloc(minfo->ntrace, sizeof(float));
+    /* Compute the trace X array */
+    for (i=0; i<minfo->ntrace; i++) {
+        pdxp->txptr[i] = pdxp->trace_wait * i;
+    }
 
     /* Allocate the space for the readback structure */
     pdxp->rbptr = (void *)calloc(1, sizeof(dxpReadbacks));
@@ -341,12 +403,13 @@ static long init_record(struct dxpRecord *pdxp, int pass)
      * require information on the current device parameters must be done in process,
      * after the first time the device is read */
                                   
+    /* Set default SCAs.  Must do this first, else get errors because other
+     * calls will try to read SCAs, which Handel will complain it cannot find */
+    setSCAs(pdxp);
+
     /* Download the high-level parameters if PINI is true and PKTIM is non-zero
      * which is a sanity check that save_restore worked */
     if (pdxp->pini && (pdxp->pktim != 0.)) {
-        /* Set default SCAs.  Must do this first, else get errors because other
-         * calls will try to read SCAs, which Handel will complain it cannot find */
-        setSCAs(pdxp);
         status = (*pdset->send_dxp_msg)
                    (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
                    pdxp->slow_trig, &pdxp->slow_trig);
@@ -367,10 +430,11 @@ static long init_record(struct dxpRecord *pdxp, int pass)
                    pdxp->trig_gaptim, &pdxp->trig_gaptim);
         status = (*pdset->send_dxp_msg)
                    (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
-                   pdxp->emax, &pdxp->emax);
+                   pdxp->adc_rule, &pdxp->adc_rule);
+        /* Must do this at the end */
         status = (*pdset->send_dxp_msg)
                    (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
-                   pdxp->adc_rule, &pdxp->adc_rule);
+                   pdxp->emax, &pdxp->emax);
     }
 
     /* Initialize the tasks */
@@ -396,24 +460,48 @@ static long cvt_dbaddr(struct dbAddr *paddr)
       paddr->field_type = DBF_LONG;
       paddr->field_size = sizeof(long);
       paddr->dbr_field_type = DBF_LONG;
+   } else if (paddr->pfield == &(pdxp->base_cut)) {
+      paddr->pfield = (void *)(pdxp->bcptr);
+      paddr->no_elements = minfo->nbase_histogram;
+      paddr->field_type = DBF_LONG;
+      paddr->field_size = sizeof(long);
+      paddr->dbr_field_type = DBF_LONG;
+   } else if (paddr->pfield == &(pdxp->base_x)) {
+      paddr->pfield = (void *)(pdxp->bxptr);
+      paddr->no_elements = minfo->nbase_histogram;
+      paddr->field_type = DBF_FLOAT;
+      paddr->field_size = sizeof(float);
+      paddr->dbr_field_type = DBF_FLOAT;
    } else if (paddr->pfield == &(pdxp->parm)) {
-         paddr->pfield = (void *)(pdxp->pptr);
-         paddr->no_elements = minfo->nparams;
-         paddr->field_type = DBF_USHORT;
-         paddr->field_size = sizeof(short);
-         paddr->dbr_field_type = DBF_USHORT;
+      paddr->pfield = (void *)(pdxp->pptr);
+      paddr->no_elements = minfo->nparams;
+      paddr->field_type = DBF_USHORT;
+      paddr->field_size = sizeof(short);
+      paddr->dbr_field_type = DBF_USHORT;
    } else if (paddr->pfield == &(pdxp->bhist)) {
-         paddr->pfield = (void *)(pdxp->bhptr);
-         paddr->no_elements = minfo->nbase_history;
-         paddr->field_type = DBF_LONG;
-         paddr->field_size = sizeof(long);
-         paddr->dbr_field_type = DBF_LONG;
+      paddr->pfield = (void *)(pdxp->bhptr);
+      paddr->no_elements = minfo->nbase_history;
+      paddr->field_type = DBF_LONG;
+      paddr->field_size = sizeof(long);
+      paddr->dbr_field_type = DBF_LONG;
+   } else if (paddr->pfield == &(pdxp->bhist_x)) {
+      paddr->pfield = (void *)(pdxp->bhxptr);
+      paddr->no_elements = minfo->nbase_history;
+      paddr->field_type = DBF_FLOAT;
+      paddr->field_size = sizeof(float);
+      paddr->dbr_field_type = DBF_FLOAT;
    } else if (paddr->pfield == &(pdxp->trace)) {
-         paddr->pfield = (void *)(pdxp->tptr);
-         paddr->no_elements = minfo->ntrace;
-         paddr->field_type = DBF_LONG;
-         paddr->field_size = sizeof(long);
-         paddr->dbr_field_type = DBF_LONG;
+      paddr->pfield = (void *)(pdxp->tptr);
+      paddr->no_elements = minfo->ntrace;
+      paddr->field_type = DBF_LONG;
+      paddr->field_size = sizeof(long);
+      paddr->dbr_field_type = DBF_LONG;
+   } else if (paddr->pfield == &(pdxp->trace_x)) {
+      paddr->pfield = (void *)(pdxp->txptr);
+      paddr->no_elements = minfo->ntrace;
+      paddr->field_type = DBF_FLOAT;
+      paddr->field_size = sizeof(float);
+      paddr->dbr_field_type = DBF_FLOAT;
    } else {
       if (dxpRecordDebug > 1) printf("(cvt_dbaddr): field=unknown\n");
    }
@@ -431,13 +519,25 @@ static long get_array_info(struct dbAddr *paddr, long *no_elements, long *offset
    if (paddr->pfield == pdxp->bptr) {
       *no_elements = minfo->nbase_histogram;
       *offset = 0;
+   } else if (paddr->pfield == pdxp->bcptr) {
+      *no_elements = minfo->nbase_histogram;
+      *offset = 0;
+   } else if (paddr->pfield == pdxp->bxptr) {
+      *no_elements = minfo->nbase_histogram;
+      *offset = 0;
    } else if (paddr->pfield == pdxp->bhptr) {
+      *no_elements =  minfo->nbase_history;
+      *offset = 0;
+   } else if (paddr->pfield == pdxp->bhxptr) {
       *no_elements =  minfo->nbase_history;
       *offset = 0;
    } else if (paddr->pfield == pdxp->pptr) {
       *no_elements =  minfo->nparams;
       *offset = 0;
    } else if (paddr->pfield == pdxp->tptr) {
+      *no_elements =  minfo->ntrace;
+      *offset = 0;
+   } else if (paddr->pfield == pdxp->txptr) {
       *no_elements =  minfo->ntrace;
       *offset = 0;
    } else {
@@ -474,7 +574,6 @@ static long process(struct dxpRecord *pdxp)
     if (dxpRecordDebug > 5) printf("dxpRecord(process): exit\n");
     return(0);
 }
-
 
 static long monitor(struct dxpRecord *pdxp)
 {
@@ -489,7 +588,19 @@ static long monitor(struct dxpRecord *pdxp)
    DXP_TASK_PARAM *task_param;
    DXP_SCA *sca;
    MODULE_INFO *minfo = &moduleInfo[pdxp->mtyp];
-   unsigned short runtasks;
+   int blCutEnbl;
+   int newBlCut;
+   int runtasks       = pdxp->pptr[minfo->offsets.runtasks];
+   int blmin          = (short)pdxp->pptr[minfo->offsets.blmin];
+   int blmax          = (short)pdxp->pptr[minfo->offsets.blmax];
+   int blcut          = pdxp->pptr[minfo->offsets.blcut];
+   int blfilter       = pdxp->pptr[minfo->offsets.blfilter];
+   int basethresh     = pdxp->pptr[minfo->offsets.basethresh];
+   int basethreshadj  = pdxp->pptr[minfo->offsets.basethreshadj];
+   int basebinning    = pdxp->pptr[minfo->offsets.basebinning];
+   int slowlen        = pdxp->pptr[minfo->offsets.slowlen];
+   double eVPerADC;
+   double eVPerBin;
 
     if (dxpRecordDebug > 5) printf("dxpRecord(monitor): entry\n");
    /* Get the value of each parameter, post monitor if it is different
@@ -545,7 +656,6 @@ static long monitor(struct dxpRecord *pdxp)
 
    /* Set the task menus based on the value of runtasks readback */
    task_param = (DXP_TASK_PARAM *)&pdxp->t01v;
-   runtasks = pdxp->pptr[minfo->offsets.runtasks];
    for (i=0; i<NUM_TASK_PARAMS; i++) {
       short_val = ((runtasks & (1 << i)) != 0);
       if (dxpRecordDebug > 5) printf("dxpRecord: short_val=%d\n", short_val);
@@ -645,6 +755,16 @@ static long monitor(struct dxpRecord *pdxp)
    if (pdxpReadbacks->newBaselineHistogram) {
       pdxpReadbacks->newBaselineHistogram = 0;
       db_post_events(pdxp,pdxp->bptr,monitor_mask);
+      /* See if the x-axis has also changed */
+      eVPerADC = 1000.*pdxp->emax/2. / (pdxp->adc_rule/100. * 1024);
+      eVPerBin = ((1 << basebinning) / (slowlen * 4.0)) * eVPerADC;
+      if (eVPerBin != pdxpReadbacks->eVPerBin) {
+         pdxpReadbacks->eVPerBin = eVPerBin;
+         for (i=0; i<minfo->nbase_histogram; i++) {
+            pdxp->bxptr[i] = (i-512) * eVPerBin / 1000.;
+         }
+         db_post_events(pdxp,pdxp->bxptr,monitor_mask);
+      }
    }
    if (pdxpReadbacks->newBaselineHistory) {
       pdxpReadbacks->newBaselineHistory = 0;
@@ -653,6 +773,57 @@ static long monitor(struct dxpRecord *pdxp)
    if (pdxpReadbacks->newAdcTrace) {
       pdxpReadbacks->newAdcTrace = 0;
       db_post_events(pdxp,pdxp->tptr,monitor_mask);
+   }
+   /* If BLMIN, BLMAX, or RUNTASKS bit for baseline cut have changed then
+    * recompute the BASE_CUT array */
+   blCutEnbl = (runtasks & RUNTASKS_BLCUT) != 0;
+   newBlCut = 0;
+   if (blCutEnbl != pdxpReadbacks->blCutEnbl) {
+      newBlCut = 1;
+      pdxpReadbacks->blCutEnbl = blCutEnbl;
+   }
+   if (blmin != pdxpReadbacks->blmin) {
+      newBlCut = 1;
+      pdxpReadbacks->blmin = blmin;
+   }
+   if (blmax != pdxpReadbacks->blmax) {
+      newBlCut = 1;
+      pdxpReadbacks->blmax = blmax;
+   }
+   if (newBlCut) {
+      for (i=0; i<minfo->nbase_histogram; i++) pdxp->bcptr[i] = 1;
+      if (blCutEnbl) {
+         blmin = pdxpReadbacks->blmin / (1 << basebinning);
+         blmin += 512;
+         if (blmin < 0) blmin = 0;
+         blmax = pdxpReadbacks->blmax / (1 << basebinning);
+         blmax += 512;
+         if (blmax > minfo->nbase_histogram) blmax = minfo->nbase_histogram;
+         for (i=blmin; i<blmax; i++) {
+            pdxp->bcptr[i] = 65535;
+         }
+      }
+      db_post_events(pdxp,pdxp->bcptr,monitor_mask);
+   }
+   if (blcut != pdxpReadbacks->blcut) {
+      pdxpReadbacks->blcut = blcut;
+      pdxp->base_cut_pct = pdxpReadbacks->blcut / 32768. * 100.;
+      db_post_events(pdxp,&pdxp->base_cut_pct,monitor_mask);
+   }
+   if (blfilter != pdxpReadbacks->blfilter) {
+      pdxpReadbacks->blfilter = blfilter;
+      pdxp->base_len = 32768. / blfilter;
+      db_post_events(pdxp,&pdxp->base_len,monitor_mask);
+   }
+   if (basethresh != pdxp->base_thresh) {
+      /* Next release of Handel will have a baseline_threshold parameter */
+      pdxp->base_thresh = basethresh;
+      db_post_events(pdxp,&pdxp->base_thresh,monitor_mask);
+   }
+   if (basethreshadj != pdxp->base_threshadj) {
+      /* Next release of Handel will have a baseline_threshadj parameter */
+      pdxp->base_threshadj = basethreshadj;
+      db_post_events(pdxp,&pdxp->base_threshadj,monitor_mask);
    }
 
    if (dxpRecordDebug > 5) printf("dxpRecord(monitor): exit\n");
@@ -667,10 +838,12 @@ static long special(struct dbAddr *paddr, int after)
     short offset;
     int i;
     int status;
+    unsigned short monitor_mask = DBE_VALUE | DBE_LOG;
     DXP_SHORT_PARAM *short_param;
     DXP_TASK_PARAM *task_param;
     int nparams;
     DXP_SCA *sca;
+    MODULE_INFO *minfo = &moduleInfo[pdxp->mtyp];
 
     if (!after) return(0);  /* Don't do anything if field not yet changed */
 
@@ -758,6 +931,19 @@ static long special(struct dbAddr *paddr, int after)
                        NULL, 0, 0., NULL);
          goto found_param;
     }
+
+    /* Trace wait, recompute X axis for ADC trace */
+    if (paddr->pfield == (void *) &pdxp->trace_wait) {
+         /* Recompute the trace_x array, erase trace array */
+         for (i=0; i<minfo->ntrace; i++) {
+            pdxp->tptr[i] = 0;
+            pdxp->txptr[i] = pdxp->trace_wait * i;
+         }
+         db_post_events(pdxp,pdxp->tptr,monitor_mask);
+         db_post_events(pdxp,pdxp->txptr,monitor_mask);
+         goto found_param;
+    }
+  
 
     /* This must be a DBF_DOUBLE parameter */
     status = (*pdset->send_dxp_msg)
@@ -848,6 +1034,7 @@ static long get_precision(struct dbAddr *paddr, long *precision)
         case dxpRecordADC_RULE_RBV:
         case dxpRecordGAPTIM:
         case dxpRecordGAPTIM_RBV:
+        case dxpRecordBASE_CUT_PCT:
             *precision = 2;
             break;
         case dxpRecordPGAIN:
