@@ -394,6 +394,7 @@ static void readDxpParams(asynUser *pasynUser)
     dxpReadbacks *pdxpReadbacks = pdxp->rbptr;
     int i;
     int detChan;
+    int acquiring;
 
     pasynManager->getAddr(pasynUser, &detChan);
     xiaGetRunData(detChan, "input_count_rate", &pdxpReadbacks->icr);
@@ -403,9 +404,9 @@ static void readDxpParams(asynUser *pasynUser)
     pdxpReadbacks->ocr *= 1000.;
     xiaGetRunData(detChan, "triggers", &pdxpReadbacks->fast_peaks);
     xiaGetRunData(detChan, "events_in_run", &pdxpReadbacks->slow_peaks);
-    xiaGetRunData(detChan, "run_active", &pdxpReadbacks->acquiring);
+    xiaGetRunData(detChan, "run_active", &acquiring);
     /* run_active returns multiple bits - convert to 0/1 */
-    if (pdxpReadbacks->acquiring != 0) pdxpReadbacks->acquiring = 1;
+    pdxpReadbacks->acquiring = (acquiring != 0);
     xiaGetParamData(detChan, "values", pdxp->pptr);
     /* Only read the following if the channel is not acquiring. They
      * have already been read when they were last changed, and we want
@@ -451,6 +452,7 @@ static void readDxpParams(asynUser *pasynUser)
         "output_count_rate:    %f\n"
         "triggers:             %d\n"
         "events_in_run:        %d\n"
+        "run_active:           %d\n"
         "energy_threshold:     %f\n"
         "peaking_time:         %f\n"
         "gap_time:             %f\n"
@@ -461,7 +463,7 @@ static void readDxpParams(asynUser *pasynUser)
         "mca_bin_width:        %f\n"
         "number_mca_channels:  %f\n",
         pdxpReadbacks->icr, pdxpReadbacks->ocr,
-        pdxpReadbacks->fast_peaks, pdxpReadbacks->slow_peaks,
+        pdxpReadbacks->fast_peaks, pdxpReadbacks->slow_peaks, acquiring,
         pdxpReadbacks->slow_trig, pdxpReadbacks->pktim,
         pdxpReadbacks->gaptim,
         pdxpReadbacks->fast_trig, pdxpReadbacks->trig_pktim,
