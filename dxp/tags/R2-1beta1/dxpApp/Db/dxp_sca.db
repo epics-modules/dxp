@@ -1,0 +1,19 @@
+# Database that copies MCA ROI definitions to DXP SCAs
+#   Mark Rivers
+
+record(calcout, "$(P)$(D)SCA$(N)_LO") {
+    field(INPA, "$(P)$(M).R$(N)LO CP MS")
+    field(OUT, "$(P)$(D).SCA$(N)_LO PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA$(N)_HI") {
+    field(INPA, "$(P)$(M).R$(N)HI CP MS")
+    field(OUT, "$(P)$(D).SCA$(N)_HI PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}

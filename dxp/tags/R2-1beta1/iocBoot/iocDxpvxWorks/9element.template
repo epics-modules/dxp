@@ -1,0 +1,30 @@
+file mcaApp/Db/simple_mca.db mca
+{
+pattern
+{P,           M,       DTYP,         INP          PREC,  CHANS}
+{13GE2:med:   mca1  "MPF MCA",   "#C0 S0  @DXP1",  2,     2048}
+{13GE2:med:   mca2  "MPF MCA",   "#C0 S1  @DXP1",  2,     2048}
+{13GE2:med:   mca3  "MPF MCA",   "#C0 S2  @DXP1",  2,     2048}
+{13GE2:med:   mca4  "MPF MCA",   "#C0 S3  @DXP1",  2,     2048}
+{13GE2:med:   mca5  "MPF MCA",   "#C0 S4  @DXP2",  2,     2048}
+{13GE2:med:   mca6  "MPF MCA",   "#C0 S5  @DXP2",  2,     2048}
+{13GE2:med:   mca7  "MPF MCA",   "#C0 S6  @DXP2",  2,     2048}
+{13GE2:med:   mca8  "MPF MCA",   "#C0 S7  @DXP2",  2,     2048}
+{13GE2:med:   mca9  "MPF MCA",   "#C0 S8  @DXP3",  2,     2048}
+}
+
+# DXP records
+file camacApp/Db/dxp2x.db camac
+{
+pattern
+{P,           R,        INP       }
+{13GE2:med:   dxp1   "#C0 S0  @DXP1"}
+{13GE2:med:   dxp2   "#C0 S1  @DXP1"}
+{13GE2:med:   dxp3   "#C0 S2  @DXP1"}
+{13GE2:med:   dxp4   "#C0 S3  @DXP1"}
+{13GE2:med:   dxp5   "#C0 S4  @DXP2"}
+{13GE2:med:   dxp6   "#C0 S5  @DXP2"}
+{13GE2:med:   dxp7   "#C0 S6  @DXP2"}
+{13GE2:med:   dxp8   "#C0 S7  @DXP2"}
+{13GE2:med:   dxp9   "#C0 S8  @DXP3"}
+}

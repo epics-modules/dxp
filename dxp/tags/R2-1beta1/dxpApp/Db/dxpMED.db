@@ -1,0 +1,157 @@
+# dxpMED.db
+# Author:  Mark Rivers
+# Date:    January 9, 2005
+# Database for multi-element detector with DXP2X MCAs from XIA.
+
+record(bo,"$(P)EraseAll") {
+}
+
+record(bo,"$(P)EraseStart") {
+        field(FLNK,"$(P)SetAcquireBusy")
+}
+
+record(bo,"$(P)StartAll") {
+        field(FLNK,"$(P)SetAcquireBusy")
+}
+
+grecord(bo,"$(P)SetAcquireBusy") {
+        field(DISV,"1")
+        field(SDIS,"$(P)AcquireBusy NPP NMS")
+        field(OMSL,"closed_loop")
+        field(DOL,"1")
+        field(OUT,"$(P)AcquireBusy PP MS")
+        field(FLNK,"$(P)SetClientWait")
+}
+
+record(busy,"$(P)AcquireBusy") {
+}
+
+record(bo,"$(P)StopAll") {
+}
+
+record(ao,"$(P)PresetReal") {
+        field(PREC, "2")
+}
+
+record(ao,"$(P)PresetLive") {
+        field(PREC, "2")
+}
+
+record(bi,"$(P)Acquiring") {
+}
+
+record(ai,"$(P)ElapsedReal") {
+        field(PREC, "2")
+}
+
+record(ai,"$(P)ElapsedLive") {
+        field(PREC, "2")
+}
+
+record(ai,"$(P)DeadTime") {
+        field(PREC, "2")
+}
+
+grecord(bo,"$(P)StatusAll") {
+        field(SCAN,".5 second")
+        field(DISV,"0")
+        field(SDIS,"$(P)Acquiring NPP NMS")
+        field(VAL, "1")
+        field(OUT, "$(P)DoStatusAll PP MS")
+}
+
+grecord(bo,"$(P)DoStatusAll") {
+}
+
+record(bo,"$(P)ReadAll") {
+        field(SCAN,"1 second")
+        field(DISV,"0")
+        field(SDIS,"$(P)Acquiring NPP NMS")
+        field(VAL, "1")
+        field(OUT, "$(P)DoReadAll PP MS")
+}
+
+grecord(bo,"$(P)DoReadAll") {
+}
+
+record(bo,"$(P)ReadDXPs") {
+        field(SCAN,"1 second")
+        field(VAL, "1")
+        field(OUT, "$(P)DoReadDXPs PP MS")
+}
+
+grecord(bo,"$(P)DoReadDXPs") {
+}
+
+record(bo,"$(P)ReadDXPBaselines") {
+        field(SCAN,"Passive")
+        field(VAL, "1")
+        field(OUT, "$(P)DoReadDXPBaselines PP MS")
+}
+
+grecord(bo,"$(P)DoReadDXPBaselines") {
+}
+
+record(bo,"$(P)CopyTRIG_PKTIM") {
+}
+
+record(bo,"$(P)CopyTRIG_GAPTIM") {
+}
+
+record(bo,"$(P)CopyFAST_TRIG") {
+}
+
+record(bo,"$(P)CopyPKTIM") {
+}
+
+record(bo,"$(P)CopyGAPTIM") {
+}
+
+record(bo,"$(P)CopySLOW_TRIG") {
+}
+
+record(bo,"$(P)CopyMAX_WIDTH") {
+}
+
+record(bo,"$(P)CopyBASE_CUT_PCT") {
+}
+
+record(bo,"$(P)CopyBASE_CUT_ENBL") {
+}
+
+record(bo,"$(P)CopyBASE_THRESH") {
+}
+
+record(bo,"$(P)CopyBASE_THRESH_ENBL") {
+}
+
+record(bo,"$(P)CopyBASE_THRESHADJ") {
+}
+
+record(bo,"$(P)CopyEMAX") {
+}
+
+record(bo,"$(P)CopyADC_RULE") {
+}
+
+# These records are for waiting for IDL or other clients
+grecord(bo,"$(P)EnableClientWait") {
+        field(ZNAM,"Disable")
+        field(ONAM,"Enable")
+}
+
+grecord(bo,"$(P)SetClientWait") {
+        field(DISV,"0")
+        field(SDIS,"$(P)EnableClientWait NPP NMS")
+        field(OMSL,"closed_loop")
+        field(DOL,"1")
+        field(OUT,"$(P)ClientWait PP MS")
+}
+
+grecord(busy,"$(P)ClientWait") {
+}
+
+# These records are not used, but they must exist for the IDL EPICS_MED class
+grecord(ao,"$(P)Dwell") {}
+grecord(bo,"$(P)ChannelAdvance") {}
+grecord(ao,"$(P)Prescale") {}

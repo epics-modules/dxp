@@ -1,0 +1,21 @@
+file "$(DXP)/dxpApp/Db/dxp_sca.db"
+{
+pattern
+{P,          M,    D,   N}
+{dxpLinux:, mca1, dxp1, 0}
+{dxpLinux:, mca1, dxp1, 1}
+{dxpLinux:, mca1, dxp1, 2}
+{dxpLinux:, mca1, dxp1, 3}
+{dxpLinux:, mca1, dxp1, 4}
+{dxpLinux:, mca1, dxp1, 5}
+{dxpLinux:, mca1, dxp1, 6}
+{dxpLinux:, mca1, dxp1, 7}
+{dxpLinux:, mca1, dxp1, 8}
+{dxpLinux:, mca1, dxp1, 9}
+{dxpLinux:, mca1, dxp1, 10}
+{dxpLinux:, mca1, dxp1, 11}
+{dxpLinux:, mca1, dxp1, 12}
+{dxpLinux:, mca1, dxp1, 13}
+{dxpLinux:, mca1, dxp1, 14}
+{dxpLinux:, mca1, dxp1, 15}
+}
