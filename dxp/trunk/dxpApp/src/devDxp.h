@@ -36,10 +36,16 @@ typedef struct dxpReadbacks {
     int newBaselineHistogram;
     int newAdcTrace;
     int acquiring;
+    int blcut;
+    int blCutEnbl;
+    int blmin;
+    int blmax;
+    int blfilter;
     double number_scas;
     double sca_lo[NUM_DXP_SCAS];
     double sca_hi[NUM_DXP_SCAS];
     int sca_counts[NUM_DXP_SCAS];
+    double eVPerBin;
 } dxpReadbacks;
 
 typedef struct devDxpDset {
