@@ -33,6 +33,8 @@
                 Low-level Fields</a></li>
   <li><a href="#Record Processing">
                 Record Processing</a></li>
+  <li><a href="#Debugging">
+                Debugging</a></li>
   <li><a href="#Implementation Details">
                 Implementation Details</a></li>
   <li><a href="#Future Plans">
@@ -41,7 +43,8 @@
                 MEDM screens</a></li>
 </ul>
 
-<h2 align="center"><a name="Overview">Overview</a></h2>
+<h2 align="center"><a name="Overview">
+                            Overview</a></h2>
 
 <p>The DXP record provides EPICS control of all of the
 parameters for detector electronics from 
@@ -1288,6 +1291,43 @@ Writing to any high-level parameter such as the peaking time (.PKTIM), or to any
 low-level parameter (e.g. .A01V) will cause the record to read back all of the 
 parameters, as if the .READ_PARAMS field had been set to 1.  The .VAL field
 of the DXP record exists, but it is not used.</p>
+
+<p> </p>
+<hr>
+<h2 align="center"><a name="Debugging">
+                            Debugging</a></h2>
+
+<p>There are 3 types of debugging messages that can be enabled for the DXP software:
+<ol>
+
+<li>Record level debugging.  To print out debugging messages from the dxpRecord code
+type the following at the IOC prompt.  On Windows or Linux:
+<pre>
+var dxpRecordDebug 10
+</pre>
+On vxWorks
+<pre>
+dxpRecordDebug=10
+</pre>
+</li>
+
+<li>EPICS device support and driver level debugging.  To turn on these messages
+type the following at the IOC prompt (assuming your DXP asyn server is called DXP1):
+<pre>
+asynSetTraceMask("DXP1",0,255)
+asynSetTraceIOMask("DXP1",0,2)
+</pre>
+</li>
+
+<li>Handel debugging.  To turn on informational messages from the XIA Handel and 
+Xerxes software type the following command at the IOC prompt:
+<pre>
+xiaSetLogLevel(2)
+</pre>
+The logging level can be set to 1=error, 2=warning, 3=information, 4=debug.
+</li>
+</ol>
+
 
 <p> </p>
 <hr>
