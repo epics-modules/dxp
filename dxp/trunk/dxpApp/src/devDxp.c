@@ -28,14 +28,13 @@
 #include <epicsThread.h>
 
 #include <asynDriver.h>
-#include <asynInt32.h>
 #include <asynEpicsUtils.h>
 
 #include "dxpRecord.h"
 #include "devDxp.h"
 #include "handel.h"
 
-typedef struct dxpReadbacks {
+typedef struct {
     long fast_peaks;
     long slow_peaks;
     double icr;
@@ -146,6 +145,7 @@ static long init_record(dxpRecord *pdxp, int *detChan)
     if (status != asynSuccess) {
         errlogPrintf("devDxp::init_record %s bad link %s\n",
                      pdxp->name, pasynUser->errorMessage);
+        goto bad;
     }
 
     *detChan = pPvt->channel;
@@ -216,10 +216,11 @@ void asynCallback(asynUser *pasynUser)
     dxpReadbacks *pdxpReadbacks = &pPvt->dxpReadbacks;
     int status;
     int detChan;
-    void *pfield;
+    double *pfield;
     double info[2];
     double dvalue;
     int i;
+    int runActive=0;
     DXP_SCA *sca;
 
     pasynManager->getAddr(pasynUser, &detChan);
@@ -229,7 +230,7 @@ void asynCallback(asynUser *pasynUser)
 
      switch(pmsg->dxpCommand) {
      case MSG_DXP_START_RUN:
-         xiaStartRun(detChan, 0);
+         xiaStartRun(detChan, 1);
          break;
      case MSG_DXP_STOP_RUN:
          xiaStopRun(detChan);
@@ -239,42 +240,42 @@ void asynCallback(asynUser *pasynUser)
              "devDxp::asynCallback, MSG_DXP_SET_SHORT_PARAM"
              " calling xiaSetAcquisitionValues name=%s value=%d\n",
              pmsg->name, pmsg->param);
-         /* Must stop run before setting parameters.  We should restart if it was running */
+         xiaGetRunData(detChan, "run_active", &runActive);
          xiaStopRun(detChan);
          /* Note that we use xiaSetAcquisitionValues rather than xiaSetParameter
-          * so that the new value will be save with xiaSaveSystem */
+          * so that the new value will be saved with xiaSaveSystem */
          dvalue = pmsg->param;
          xiaSetAcquisitionValues(detChan, pmsg->name, &dvalue);
          readDxpParams(pasynUser);
          break;
      case MSG_DXP_SET_DOUBLE_PARAM:
-         /* Must stop run before setting parameters.  We should restart if it was running */
+         xiaGetRunData(detChan, "run_active", &runActive);
          xiaStopRun(detChan);
-         pfield = pmsg->pointer;
-         if (pfield == (void *)&pdxp->slow_trig) {
+         pfield = (double *)pmsg->pointer;
+         if (pfield == &pdxp->slow_trig) {
              /* Convert from keV to eV */
              dvalue = pmsg->dvalue * 1000.;
              asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
                  "devDxp::asynCallback, MSG_DXP_SET_DOUBLE_PARAM"
                  " setting energy_threshold=%f\n",
                  pmsg->dvalue);
-             xiaSetAcquisitionValues(detChan, "energy_threshold", &pmsg->dvalue);
+             xiaSetAcquisitionValues(detChan, "energy_threshold", &dvalue);
          }
-         else if (pfield == (void *)&pdxp->pktim) {
+         else if (pfield == &pdxp->pktim) {
              asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
                  "devDxp::asynCallback, MSG_DXP_SET_DOUBLE_PARAM"
                  " setting peaking_time=%f\n",
                  pmsg->dvalue);
              xiaSetAcquisitionValues(detChan, "peaking_time", &pmsg->dvalue);
          }
-         else if (pfield == (void *)&pdxp->gaptim) {
+         else if (pfield == &pdxp->gaptim) {
              asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
                  "devDxp::asynCallback, MSG_DXP_SET_DOUBLE_PARAM"
                  " setting gap_time=%f\n",
                  pmsg->dvalue);
              xiaSetAcquisitionValues(detChan, "gap_time", &pmsg->dvalue);
          }
-         else if (pfield == (void *)&pdxp->adc_rule) {
+         else if (pfield == &pdxp->adc_rule) {
              /* Make our "calibration energy be emax/2. in eV */
              dvalue = pdxp->emax * 1000. / 2.;
              asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
@@ -288,7 +289,7 @@ void asynCallback(asynUser *pasynUser)
                  pmsg->dvalue);
              xiaSetAcquisitionValues(detChan, "adc_percent_rule", &pmsg->dvalue);
          }
-         else if (pfield == (void *)&pdxp->fast_trig) {
+         else if (pfield == &pdxp->fast_trig) {
              /* Convert from keV to eV */
              dvalue = pmsg->dvalue * 1000.;
              asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
@@ -297,21 +298,21 @@ void asynCallback(asynUser *pasynUser)
                  dvalue);
              xiaSetAcquisitionValues(detChan, "trigger_threshold", &dvalue);
          }
-         else if (pfield == (void *)&pdxp->trig_pktim) {
+         else if (pfield == &pdxp->trig_pktim) {
              asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
                  "devDxp::asynCallback, MSG_DXP_SET_DOUBLE_PARAM"
                  " setting trigger_peaking_time=%f\n",
                  pmsg->dvalue);
              xiaSetAcquisitionValues(detChan, "trigger_peaking_time", &pmsg->dvalue);
          }
-         else if (pfield == (void *)&pdxp->trig_gaptim) {
+         else if (pfield == &pdxp->trig_gaptim) {
              asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
                  "devDxp::asynCallback, MSG_DXP_SET_DOUBLE_PARAM"
                  " setting trigger_gap_time=%f\n",
                  pmsg->dvalue);
              xiaSetAcquisitionValues(detChan, "trigger_gap_time", &pmsg->dvalue);
          }
-         else if (pfield == (void *)&pdxp->base_cut_pct) {
+         else if (pfield == &pdxp->base_cut_pct) {
              asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
                  "devDxp::asynCallback, MSG_DXP_SET_DOUBLE_PARAM"
                  " setting baseline cut=%f\n",
@@ -320,7 +321,7 @@ void asynCallback(asynUser *pasynUser)
              dvalue = pmsg->dvalue/100. * 32768 + 0.5;
              xiaSetAcquisitionValues(detChan, "BLCUT", &dvalue);
          }
-         else if (pfield == (void *)&pdxp->base_len) {
+         else if (pfield == &pdxp->base_len) {
              asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
                  "devDxp::asynCallback, MSG_DXP_SET_DOUBLE_PARAM"
                  " setting baseline filter length=%f\n",
@@ -329,7 +330,7 @@ void asynCallback(asynUser *pasynUser)
              dvalue = 32768./pmsg->dvalue + 0.5;
              xiaSetAcquisitionValues(detChan, "BLFILTER", &dvalue);
          }
-         else if (pfield == (void *)&pdxp->base_thresh) {
+         else if (pfield == &pdxp->base_thresh) {
              asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
                  "devDxp::asynCallback, MSG_DXP_SET_DOUBLE_PARAM"
                  " setting baseline threshold=%f\n",
@@ -337,7 +338,7 @@ void asynCallback(asynUser *pasynUser)
              /* We will be able to use an acquisition value for this in the next release */ 
              xiaSetAcquisitionValues(detChan, "BASETHRESH", &pmsg->dvalue);
          }
-         else if (pfield == (void *)&pdxp->base_threshadj) {
+         else if (pfield == &pdxp->base_threshadj) {
              asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
                  "devDxp::asynCallback, MSG_DXP_SET_DOUBLE_PARAM"
                  " setting baseline threshold adjust=%f\n",
@@ -345,7 +346,7 @@ void asynCallback(asynUser *pasynUser)
              /* We will be able to use an acquisition value for this in the next release */ 
              xiaSetAcquisitionValues(detChan, "BASTHRADJ", &pmsg->dvalue);
          }
-         else if (pfield == (void *)&pdxp->emax) {
+         else if (pfield == &pdxp->emax) {
              /* If emax changes then we need to re-do the calibration energy and adc rule */
              /* Make our "calibration energy be emax/2. in eV */
              dvalue = pmsg->dvalue * 1000. / 2.;
@@ -370,14 +371,14 @@ void asynCallback(asynUser *pasynUser)
                  pmsg->dvalue, dvalue);
              xiaSetAcquisitionValues(detChan, "mca_bin_width", &dvalue);
          }
-         else if (pfield == (void *)&pdxp->trace_wait) {
+         else if (pfield == &pdxp->trace_wait) {
              /* New value of trace wait.  Just set flag, monitor() will post events */
              pdxpReadbacks->newTraceWait = 1;
          } 
          readDxpParams(pasynUser);
          break;
      case MSG_DXP_SET_SCAS:
-         /* Must stop run before setting SCAs.  We should restart if it was running */
+         xiaGetRunData(detChan, "run_active", &runActive);
          xiaStopRun(detChan);
          xiaSetAcquisitionValues(detChan, "number_of_scas", &pmsg->dvalue);
          sca = (DXP_SCA *)&pdxp->sca0_lo;
@@ -394,7 +395,7 @@ void asynCallback(asynUser *pasynUser)
          pdxpReadbacks->newBaselineHistogram = 1;
          break;
      case MSG_DXP_CONTROL_TASK:
-         /* Must stop run before setting parameters.  We should restart if it was running */
+         xiaGetRunData(detChan, "run_active", &runActive);
          xiaStopRun(detChan);
          info[0] = 1.;
          info[1] = pmsg->dvalue;
@@ -437,6 +438,7 @@ void asynCallback(asynUser *pasynUser)
                    pmsg->dxpCommand);
          break;
      }
+     if (runActive) xiaStartRun(detChan, 1);
      pasynManager->memFree(pmsg, sizeof(*pmsg));
      status = pasynManager->freeAsynUser(pasynUser);
      if (status != asynSuccess) {
