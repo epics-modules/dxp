@@ -1,0 +1,1 @@
+tar cvf dxpStandalone.tar -C .. mca/mcaApp/Db/ mca/mcaApp/op/adl/ dxp/dxpApp/Db dxp/dxpApp/op/adl dxp/bin/ dxp/dbd/ dxp/iocBoot/iocDxpLinux_Reset dxp/iocBoot/iocDxpLinux_RC
