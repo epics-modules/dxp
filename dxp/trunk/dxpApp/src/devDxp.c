@@ -64,7 +64,7 @@ typedef struct {
     int value2;
 } devDxpMessage;
 
-static long init_record(dxpRecord *pdxp);
+static long init_record(dxpRecord *pdxp, int *module);
 static long send_mca_msg(dxpRecord *pdxp, mcaCommand command); 
 static long send_dxp_msg(dxpRecord *pdxp, devDxpCommand command, 
                          int v1, int v2);
@@ -85,7 +85,7 @@ static const struct devDxpDset devDxp = {
 epicsExportAddress(dset, devDxp);
 
 
-static long init_record(dxpRecord *pdxp)
+static long init_record(dxpRecord *pdxp, int *module)
 {
     char *userParam;
     asynUser *pasynUser;
@@ -110,6 +110,8 @@ static long init_record(dxpRecord *pdxp)
         errlogPrintf("devDxp::init_record %s bad link %s\n",
                      pdxp->name, pasynUser->errorMessage);
     }
+
+    *module = pPvt->channel;
 
     /* Connect to device */
     status = pasynManager->connectDevice(pasynUser, pPvt->portName, 
@@ -253,7 +255,9 @@ void asynCallback(asynUser *pasynUser)
             asynPrint(pasynUser, ASYN_TRACE_ERROR, 
                       "devDxp::asynCallback, invalid command=%d\n",
                       pmsg->dxpCommand);
+            break;
         }
+        break;
     default:
         asynPrint(pasynUser, ASYN_TRACE_ERROR, 
                   "devDxp::asynCallback, invalid message type=%d\n",
