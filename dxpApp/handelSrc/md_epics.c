@@ -272,7 +272,7 @@ static int dxp_md_open(char* name, int* camChan)
 
 /* pull out the branch, crate and station number and call the internal routine*/
 
-  sscanf(name,"%2d%1d%2d",&branch,&crate,&station);
+  sscanf(name,"%1d%1d%2d",&branch,&crate,&station);
   status = dxp_md_open_bcn(&branch,&crate,&station,camChan);
 
   return status;
