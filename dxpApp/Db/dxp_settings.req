@@ -1,5 +1,6 @@
 # FILE... dxp_settings.req
 # USAGE.. dxp2x.db or dxp4c.db fields autosave'd.
+$(P)$(R).SCAN
 $(P)$(R).GAIN
 $(P)$(R).EMAX
 $(P)$(R).PKTM
