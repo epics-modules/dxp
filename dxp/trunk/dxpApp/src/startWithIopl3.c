@@ -6,7 +6,7 @@
  */
 
 /*
- * $Id: startWithIopl3.c,v 1.1 2004-11-15 04:08:11 rivers Exp $
+ * $Id: startWithIopl3.c,v 1.2 2005-01-05 14:15:37 rivers Exp $
  */
 
 #include <stdio.h>
