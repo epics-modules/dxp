@@ -13,9 +13,13 @@
 # 10-MAR-2002  MLR Added FIPPI, EMAXRBV, GAINRBV fields
 # 07-DEC-2004  MLR Major re-write for Handel API
 
+menu(dxpNY) {
+    choice(dxpNY_No,"No")
+    choice(dxpNY_Yes,"Yes")
+}
 menu(dxpYN) {
-    choice(dxpYN_No,"No")
     choice(dxpYN_Yes,"Yes")
+    choice(dxpYN_No,"No")
 }
 
 recordtype(dxp) {
@@ -2055,7 +2059,7 @@ recordtype(dxp) {
         interest(1)
         special(SPC_MOD)
         pp(TRUE)
-        menu(dxpYN)
+        menu(dxpNY)
     }
     field(T01L,DBF_STRING) {
         prompt("")
@@ -2070,7 +2074,7 @@ recordtype(dxp) {
         interest(1)
         special(SPC_MOD)
         pp(TRUE)
-        menu(dxpYN)
+        menu(dxpNY)
     }
     field(T02L,DBF_STRING) {
         prompt("")
@@ -2085,7 +2089,7 @@ recordtype(dxp) {
         interest(1)
         special(SPC_MOD)
         pp(TRUE)
-        menu(dxpYN)
+        menu(dxpNY)
     }
     field(T03L,DBF_STRING) {
         prompt("")
@@ -2100,7 +2104,7 @@ recordtype(dxp) {
         interest(1)
         special(SPC_MOD)
         pp(TRUE)
-        menu(dxpYN)
+        menu(dxpNY)
     }
     field(T04L,DBF_STRING) {
         prompt("")
@@ -2115,7 +2119,7 @@ recordtype(dxp) {
         interest(1)
         special(SPC_MOD)
         pp(TRUE)
-        menu(dxpYN)
+        menu(dxpNY)
     }
     field(T05L,DBF_STRING) {
         prompt("")
@@ -2130,7 +2134,7 @@ recordtype(dxp) {
         interest(1)
         special(SPC_MOD)
         pp(TRUE)
-        menu(dxpYN)
+        menu(dxpNY)
     }
     field(T06L,DBF_STRING) {
         prompt("")
@@ -2145,7 +2149,7 @@ recordtype(dxp) {
         interest(1)
         special(SPC_MOD)
         pp(TRUE)
-        menu(dxpYN)
+        menu(dxpNY)
     }
     field(T07L,DBF_STRING) {
         prompt("")
@@ -2160,7 +2164,7 @@ recordtype(dxp) {
         interest(1)
         special(SPC_MOD)
         pp(TRUE)
-        menu(dxpYN)
+        menu(dxpNY)
     }
     field(T08L,DBF_STRING) {
         prompt("")
@@ -2175,7 +2179,7 @@ recordtype(dxp) {
         interest(1)
         special(SPC_MOD)
         pp(TRUE)
-        menu(dxpYN)
+        menu(dxpNY)
     }
     field(T09L,DBF_STRING) {
         prompt("")
@@ -2190,7 +2194,7 @@ recordtype(dxp) {
         interest(1)
         special(SPC_MOD)
         pp(TRUE)
-        menu(dxpYN)
+        menu(dxpNY)
     }
     field(T10L,DBF_STRING) {
         prompt("")
@@ -2205,7 +2209,7 @@ recordtype(dxp) {
         interest(1)
         special(SPC_MOD)
         pp(TRUE)
-        menu(dxpYN)
+        menu(dxpNY)
     }
     field(T11L,DBF_STRING) {
         prompt("")
@@ -2220,7 +2224,7 @@ recordtype(dxp) {
         interest(1)
         special(SPC_MOD)
         pp(TRUE)
-        menu(dxpYN)
+        menu(dxpNY)
     }
     field(T12L,DBF_STRING) {
         prompt("")
@@ -2235,7 +2239,7 @@ recordtype(dxp) {
         interest(1)
         special(SPC_MOD)
         pp(TRUE)
-        menu(dxpYN)
+        menu(dxpNY)
     }
     field(T13L,DBF_STRING) {
         prompt("")
@@ -2244,6 +2248,8 @@ recordtype(dxp) {
         special(SPC_NOMOD)
     }
 
+    # Note, this menu is reversed (0=Yes, 1=No) to keep the logic
+    # clear, because 1 = disable auto
     field(T14V,DBF_MENU) {
         prompt("")
         promptgroup(GUI_COMMON)
@@ -2265,7 +2271,7 @@ recordtype(dxp) {
         interest(1)
         special(SPC_MOD)
         pp(TRUE)
-        menu(dxpYN)
+        menu(dxpNY)
     }
     field(T15L,DBF_STRING) {
         prompt("")
@@ -2280,7 +2286,7 @@ recordtype(dxp) {
         interest(1)
         special(SPC_MOD)
         pp(TRUE)
-        menu(dxpYN)
+        menu(dxpNY)
     }
     field(T16L,DBF_STRING) {
         prompt("")
