@@ -1,0 +1,259 @@
+# Database that copies MCA ROI definitions to DXP SCAs
+#   Mark Rivers
+
+record(calcout, "$(P)$(D)SCA1_LO") {
+    field(INPA, "$(P)$(M).R1LO CP MS")
+    field(OUT, "$(P)$(D).SCA1_LO PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA1_HI") {
+    field(INPA, "$(P)$(M).R1HI CP MS")
+    field(OUT, "$(P)$(D).SCA1_HI PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA2_LO") {
+    field(INPA, "$(P)$(M).R2LO CP MS")
+    field(OUT, "$(P)$(D).SCA2_LO PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA2_HI") {
+    field(INPA, "$(P)$(M).R2HI CP MS")
+    field(OUT, "$(P)$(D).SCA2_HI PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA3_LO") {
+    field(INPA, "$(P)$(M).R3LO CP MS")
+    field(OUT, "$(P)$(D).SCA3_LO PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA3_HI") {
+    field(INPA, "$(P)$(M).R3HI CP MS")
+    field(OUT, "$(P)$(D).SCA3_HI PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA4_LO") {
+    field(INPA, "$(P)$(M).R4LO CP MS")
+    field(OUT, "$(P)$(D).SCA4_LO PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA4_HI") {
+    field(INPA, "$(P)$(M).R4HI CP MS")
+    field(OUT, "$(P)$(D).SCA4_HI PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA5_LO") {
+    field(INPA, "$(P)$(M).R5LO CP MS")
+    field(OUT, "$(P)$(D).SCA5_LO PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA5_HI") {
+    field(INPA, "$(P)$(M).R5HI CP MS")
+    field(OUT, "$(P)$(D).SCA5_HI PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA6_LO") {
+    field(INPA, "$(P)$(M).R6LO CP MS")
+    field(OUT, "$(P)$(D).SCA6_LO PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA6_HI") {
+    field(INPA, "$(P)$(M).R6HI CP MS")
+    field(OUT, "$(P)$(D).SCA6_HI PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA7_LO") {
+    field(INPA, "$(P)$(M).R7LO CP MS")
+    field(OUT, "$(P)$(D).SCA7_LO PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA7_HI") {
+    field(INPA, "$(P)$(M).R7HI CP MS")
+    field(OUT, "$(P)$(D).SCA7_HI PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA8_LO") {
+    field(INPA, "$(P)$(M).R8LO CP MS")
+    field(OUT, "$(P)$(D).SCA8_LO PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA8_HI") {
+    field(INPA, "$(P)$(M).R8HI CP MS")
+    field(OUT, "$(P)$(D).SCA8_HI PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA9_LO") {
+    field(INPA, "$(P)$(M).R9LO CP MS")
+    field(OUT, "$(P)$(D).SCA9_LO PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA9_HI") {
+    field(INPA, "$(P)$(M).R9HI CP MS")
+    field(OUT, "$(P)$(D).SCA9_HI PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA10_LO") {
+    field(INPA, "$(P)$(M).R10LO CP MS")
+    field(OUT, "$(P)$(D).SCA10_LO PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA10_HI") {
+    field(INPA, "$(P)$(M).R10HI CP MS")
+    field(OUT, "$(P)$(D).SCA10_HI PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA11_LO") {
+    field(INPA, "$(P)$(M).R11LO CP MS")
+    field(OUT, "$(P)$(D).SCA11_LO PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA11_HI") {
+    field(INPA, "$(P)$(M).R11HI CP MS")
+    field(OUT, "$(P)$(D).SCA11_HI PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA12_LO") {
+    field(INPA, "$(P)$(M).R12LO CP MS")
+    field(OUT, "$(P)$(D).SCA12_LO PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA12_HI") {
+    field(INPA, "$(P)$(M).R12HI CP MS")
+    field(OUT, "$(P)$(D).SCA12_HI PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA13_LO") {
+    field(INPA, "$(P)$(M).R13LO CP MS")
+    field(OUT, "$(P)$(D).SCA13_LO PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA13_HI") {
+    field(INPA, "$(P)$(M).R13HI CP MS")
+    field(OUT, "$(P)$(D).SCA13_HI PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA14_LO") {
+    field(INPA, "$(P)$(M).R14LO CP MS")
+    field(OUT, "$(P)$(D).SCA14_LO PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA14_HI") {
+    field(INPA, "$(P)$(M).R14HI CP MS")
+    field(OUT, "$(P)$(D).SCA14_HI PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA15_LO") {
+    field(INPA, "$(P)$(M).R15LO CP MS")
+    field(OUT, "$(P)$(D).SCA15_LO PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA15_HI") {
+    field(INPA, "$(P)$(M).R15HI CP MS")
+    field(OUT, "$(P)$(D).SCA15_HI PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA16_LO") {
+    field(INPA, "$(P)$(M).R16LO CP MS")
+    field(OUT, "$(P)$(D).SCA16_LO PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
+record(calcout, "$(P)$(D)SCA16_HI") {
+    field(INPA, "$(P)$(M).R16HI CP MS")
+    field(OUT, "$(P)$(D).SCA16_HI PP MS")
+    field(CALC, "A>0")
+    field(OCAL, "A")
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use OCAL")
+}
