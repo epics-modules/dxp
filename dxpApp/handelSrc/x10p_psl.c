@@ -4092,12 +4092,12 @@ PSL_STATIC int PSL_API pslDoParam(int detChan, char *name, void *value, XiaDefau
 {
     int status;
   
-	unsigned short val = 0x0000;
+    unsigned short val = 0x0000;
 
     double dTmp = 0.0;
 
-    dTmp = (double)(*((parameter_t *)value));
-	val  = (unsigned short)dTmp;
+    dTmp = *(double *)value;
+    val  = (unsigned short)dTmp;
 	
     status = pslSetDefault(name, (void *)&dTmp, defaults);
 
