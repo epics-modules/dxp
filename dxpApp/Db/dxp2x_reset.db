@@ -130,20 +130,25 @@ grecord(calc,"$(P)$(R):icrocr") {
     field(PREC,3)
 }
 
-# These records are used to read the baseline histogram,
+# These records are used to read the parameters, baseline histogram,
 # ADC trace and baseline history periodically
+record(bo, "$(P)$(R):ReadParams") {
+    field(OUT, "$(P)$(R).READ_PARAMS PP MS")
+    field(SCAN, "Passive")
+    field(VAL,"1")
+}
 record(bo, "$(P)$(R):ReadTrace") {
-    field(OUT, "$(P)$(R).READ_TRACE")
+    field(OUT, "$(P)$(R).READ_TRACE PP MS")
     field(SCAN, "Passive")
     field(VAL,"1")
 }
 record(bo, "$(P)$(R):ReadHistory") {
-    field(OUT, "$(P)$(R).READ_HISTORY")
+    field(OUT, "$(P)$(R).READ_HISTORY PP MS")
     field(SCAN, "Passive")
     field(VAL,"1")
 }
 record(bo, "$(P)$(R):ReadHistogram") {
-    field(OUT, "$(P)$(R).READ_HISTOGRAM")
+    field(OUT, "$(P)$(R).READ_HISTOGRAM PP MS")
     field(SCAN, "Passive")
     field(VAL,"1")
 }
