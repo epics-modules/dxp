@@ -354,11 +354,21 @@ recordtype(dxp) {
         special(SPC_MOD)
         initial(-1)
     }
+    field(SCA0_LO_RBV,DBF_LONG) {
+        prompt("SCA0 low channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
     field(SCA0_HI,DBF_LONG) {
         prompt("SCA0 high channel")
         asl(ASL0)
         special(SPC_MOD)
         initial(-1)
+    }
+    field(SCA0_HI_RBV,DBF_LONG) {
+        prompt("SCA0 high channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
     }
     field(SCA0_CTS,DBF_LONG) {
         prompt("SCA0 counts")
@@ -372,11 +382,21 @@ recordtype(dxp) {
         special(SPC_MOD)
         initial(-1)
     }
+    field(SCA1_LO_RBV,DBF_LONG) {
+        prompt("SCA1 low channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
     field(SCA1_HI,DBF_LONG) {
         prompt("SCA1 high channel")
         asl(ASL0)
         special(SPC_MOD)
         initial(-1)
+    }
+    field(SCA1_HI_RBV,DBF_LONG) {
+        prompt("SCA1 high channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
     }
     field(SCA1_CTS,DBF_LONG) {
         prompt("SCA1 counts")
@@ -390,11 +410,21 @@ recordtype(dxp) {
         special(SPC_MOD)
         initial(-1)
     }
+    field(SCA2_LO_RBV,DBF_LONG) {
+        prompt("SCA2 low channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
     field(SCA2_HI,DBF_LONG) {
         prompt("SCA2 high channel")
         asl(ASL0)
         special(SPC_MOD)
         initial(-1)
+    }
+    field(SCA2_HI_RBV,DBF_LONG) {
+        prompt("SCA2 high channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
     }
     field(SCA2_CTS,DBF_LONG) {
         prompt("SCA2 counts")
@@ -408,11 +438,21 @@ recordtype(dxp) {
         special(SPC_MOD)
         initial(-1)
     }
+    field(SCA3_LO_RBV,DBF_LONG) {
+        prompt("SCA3 low channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
     field(SCA3_HI,DBF_LONG) {
         prompt("SCA3 high channel")
         asl(ASL0)
         special(SPC_MOD)
         initial(-1)
+    }
+    field(SCA3_HI_RBV,DBF_LONG) {
+        prompt("SCA3 high channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
     }
     field(SCA3_CTS,DBF_LONG) {
         prompt("SCA3 counts")
@@ -426,11 +466,21 @@ recordtype(dxp) {
         special(SPC_MOD)
         initial(-1)
     }
+    field(SCA4_LO_RBV,DBF_LONG) {
+        prompt("SCA4 low channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
     field(SCA4_HI,DBF_LONG) {
         prompt("SCA4 high channel")
         asl(ASL0)
         special(SPC_MOD)
         initial(-1)
+    }
+    field(SCA4_HI_RBV,DBF_LONG) {
+        prompt("SCA4 high channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
     }
     field(SCA4_CTS,DBF_LONG) {
         prompt("SCA4 counts")
@@ -444,11 +494,21 @@ recordtype(dxp) {
         special(SPC_MOD)
         initial(-1)
     }
+    field(SCA5_LO_RBV,DBF_LONG) {
+        prompt("SCA5 low channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
     field(SCA5_HI,DBF_LONG) {
         prompt("SCA5 high channel")
         asl(ASL0)
         special(SPC_MOD)
         initial(-1)
+    }
+    field(SCA5_HI_RBV,DBF_LONG) {
+        prompt("SCA5 high channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
     }
     field(SCA5_CTS,DBF_LONG) {
         prompt("SCA5 counts")
@@ -462,11 +522,21 @@ recordtype(dxp) {
         special(SPC_MOD)
         initial(-1)
     }
+    field(SCA6_LO_RBV,DBF_LONG) {
+        prompt("SCA6 low channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
     field(SCA6_HI,DBF_LONG) {
         prompt("SCA6 high channel")
         asl(ASL0)
         special(SPC_MOD)
         initial(-1)
+    }
+    field(SCA6_HI_RBV,DBF_LONG) {
+        prompt("SCA6 high channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
     }
     field(SCA6_CTS,DBF_LONG) {
         prompt("SCA6 counts")
@@ -480,11 +550,21 @@ recordtype(dxp) {
         special(SPC_MOD)
         initial(-1)
     }
+    field(SCA7_LO_RBV,DBF_LONG) {
+        prompt("SCA7 low channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
     field(SCA7_HI,DBF_LONG) {
         prompt("SCA7 high channel")
         asl(ASL0)
         special(SPC_MOD)
         initial(-1)
+    }
+    field(SCA7_HI_RBV,DBF_LONG) {
+        prompt("SCA7 high channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
     }
     field(SCA7_CTS,DBF_LONG) {
         prompt("SCA7 counts")
@@ -498,11 +578,21 @@ recordtype(dxp) {
         special(SPC_MOD)
         initial(-1)
     }
+    field(SCA8_LO_RBV,DBF_LONG) {
+        prompt("SCA8 low channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
     field(SCA8_HI,DBF_LONG) {
         prompt("SCA8 high channel")
         asl(ASL0)
         special(SPC_MOD)
         initial(-1)
+    }
+    field(SCA8_HI_RBV,DBF_LONG) {
+        prompt("SCA8 high channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
     }
     field(SCA8_CTS,DBF_LONG) {
         prompt("SCA8 counts")
@@ -516,11 +606,21 @@ recordtype(dxp) {
         special(SPC_MOD)
         initial(-1)
     }
+    field(SCA9_LO_RBV,DBF_LONG) {
+        prompt("SCA9 low channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
     field(SCA9_HI,DBF_LONG) {
         prompt("SCA9 high channel")
         asl(ASL0)
         special(SPC_MOD)
         initial(-1)
+    }
+    field(SCA9_HI_RBV,DBF_LONG) {
+        prompt("SCA9 high channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
     }
     field(SCA9_CTS,DBF_LONG) {
         prompt("SCA9 counts")
@@ -534,11 +634,21 @@ recordtype(dxp) {
         special(SPC_MOD)
         initial(-1)
     }
+    field(SCA10_LO_RBV,DBF_LONG) {
+        prompt("SCA10 low channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
     field(SCA10_HI,DBF_LONG) {
         prompt("SCA10 high channel")
         asl(ASL0)
         special(SPC_MOD)
         initial(-1)
+    }
+    field(SCA10_HI_RBV,DBF_LONG) {
+        prompt("SCA10 high channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
     }
     field(SCA10_CTS,DBF_LONG) {
         prompt("SCA10 counts")
@@ -552,11 +662,21 @@ recordtype(dxp) {
         special(SPC_MOD)
         initial(-1)
     }
+    field(SCA11_LO_RBV,DBF_LONG) {
+        prompt("SCA11 low channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
     field(SCA11_HI,DBF_LONG) {
         prompt("SCA11 high channel")
         asl(ASL0)
         special(SPC_MOD)
         initial(-1)
+    }
+    field(SCA11_HI_RBV,DBF_LONG) {
+        prompt("SCA11 high channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
     }
     field(SCA11_CTS,DBF_LONG) {
         prompt("SCA11 counts")
@@ -570,11 +690,21 @@ recordtype(dxp) {
         special(SPC_MOD)
         initial(-1)
     }
+    field(SCA12_LO_RBV,DBF_LONG) {
+        prompt("SCA12 low channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
     field(SCA12_HI,DBF_LONG) {
         prompt("SCA12 high channel")
         asl(ASL0)
         special(SPC_MOD)
         initial(-1)
+    }
+    field(SCA12_HI_RBV,DBF_LONG) {
+        prompt("SCA12 high channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
     }
     field(SCA12_CTS,DBF_LONG) {
         prompt("SCA12 counts")
@@ -588,11 +718,21 @@ recordtype(dxp) {
         special(SPC_MOD)
         initial(-1)
     }
+    field(SCA13_LO_RBV,DBF_LONG) {
+        prompt("SCA13 low channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
     field(SCA13_HI,DBF_LONG) {
         prompt("SCA13 high channel")
         asl(ASL0)
         special(SPC_MOD)
         initial(-1)
+    }
+    field(SCA13_HI_RBV,DBF_LONG) {
+        prompt("SCA13 high channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
     }
     field(SCA13_CTS,DBF_LONG) {
         prompt("SCA13 counts")
@@ -606,11 +746,21 @@ recordtype(dxp) {
         special(SPC_MOD)
         initial(-1)
     }
+    field(SCA14_LO_RBV,DBF_LONG) {
+        prompt("SCA14 low channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
     field(SCA14_HI,DBF_LONG) {
         prompt("SCA14 high channel")
         asl(ASL0)
         special(SPC_MOD)
         initial(-1)
+    }
+    field(SCA14_HI_RBV,DBF_LONG) {
+        prompt("SCA14 high channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
     }
     field(SCA14_CTS,DBF_LONG) {
         prompt("SCA14 counts")
@@ -624,11 +774,21 @@ recordtype(dxp) {
         special(SPC_MOD)
         initial(-1)
     }
+    field(SCA15_LO_RBV,DBF_LONG) {
+        prompt("SCA15 low channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
     field(SCA15_HI,DBF_LONG) {
         prompt("SCA15 high channel")
         asl(ASL0)
         special(SPC_MOD)
         initial(-1)
+    }
+    field(SCA15_HI_RBV,DBF_LONG) {
+        prompt("SCA15 high channel readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
     }
     field(SCA15_CTS,DBF_LONG) {
         prompt("SCA15 counts")
