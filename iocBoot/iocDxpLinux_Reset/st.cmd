@@ -4,8 +4,6 @@
 dbLoadDatabase("../../dbd/dxp.dbd")
 dxp_registerRecordDeviceDriver(pdbbase)
 
-var(dxpRecordDebug,1)
-var
 
 # DXP and mca records for the Vortex detector
 
@@ -19,10 +17,17 @@ DXPConfig("DXP1",  1)
 
 dbLoadRecords("$(DXP)/dxpApp/Db/dxp2x_reset.db","P=dxpLinux:, R=dxp1, INP=@asyn(DXP1 0)")
 dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=dxpLinux:, M=mca1, DTYP=asynMCA,INP=@asyn(DXP1 0),NCHAN=2048")
+dbLoadRecords("$(DXP)/dxpApp/Db/dxp_sca.db","P=dxpLinux:, D=dxp1, M=mca1, INP=@asyn(DXP1 0)")
 
 set_savefile_path("autosave")
 set_pass0_restoreFile(auto_settings.sav)
 set_pass1_restoreFile(auto_settings.sav)
+
+# Debugging flags
+#asynSetTraceMask DXP1 0 255
+#var mcaRecordDebug 10
+#var dxpRecordDebug 10
+
 iocInit
 
 ### Start up the autosave task and tell it what to do.
@@ -40,4 +45,3 @@ set_requestfile_path("$(MCA)/mcaApp/Db")
 # save other things every thirty seconds
 create_monitor_set("auto_settings.req", 30)
 
-#asynSetTraceMask DXP1 0 3
