@@ -1,7 +1,7 @@
 
 file {
-	name="j:\epics\support\camac\camacApp\op\adl\9element_dxp.adl"
-	version=020306
+	name="j:\epics\synApps5-1beta2\dxp\dxpApp\op\adl\9element_dxp.adl"
+	version=030003
 }
 display {
 	object {
@@ -260,21 +260,6 @@ rectangle {
 	}
 	label="Stop"
 	press_msg="1"
-}
-"related display" {
-	object {
-		x=327
-		y=49
-		width=60
-		height=20
-	}
-	display[0] {
-		label="All DXPs"
-		name="9element_dxp_all.adl"
-		args="P=$(P)"
-	}
-	clr=14
-	bclr=4
 }
 text {
 	object {
@@ -935,4 +920,24 @@ text {
 		clr=14
 	}
 	textix="ROIs 5-9"
+}
+"related display" {
+	object {
+		x=326
+		y=49
+		width=60
+		height=20
+	}
+	display[0] {
+		label="DXP Control"
+		name="9element_dxp_all.adl"
+		args="P=$(P)"
+	}
+	display[1] {
+		label="DXP Statistics"
+		name="9element_dxp_statistics.adl"
+		args="P=$(P)"
+	}
+	clr=14
+	bclr=4
 }
