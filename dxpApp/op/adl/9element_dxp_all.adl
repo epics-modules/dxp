@@ -108,7 +108,7 @@ text {
 	"basic attribute" {
 		clr=0
 	}
-	textix="16 Element DXPs"
+	textix="9 Element DXPs"
 }
 "related display" {
 	object {
