@@ -4,29 +4,16 @@
 dbLoadDatabase("../../dbd/dxp.dbd")
 dxp_registerRecordDeviceDriver(pdbbase)
 
-var(dxpRecordDebug,0)
+var(dxpRecordDebug,1)
 var
 
 # DXP and mca records for the Vortex detector
 
-# Change the following environment variable to point to the desired
-# system configuration file
-epicsEnvSet("XIA_CONFIG", "xiasystem.cfg")
-
-# Set environment variables for the FiPPI files. 
-# FIPPI0,FIPPI1,FIPPI2,FIPPI3 should point to the files for 
-# decimation=0,2,4,6 respectively. FIPPI_DEFAULT should point to the
-# file that will be loaded initially at boot time.
-epicsEnvSet("FIPPI0", "fxrc00.fip")
-epicsEnvSet("FIPPI1", "fxrc20.fip")
-epicsEnvSet("FIPPI2", "fxrc40.fip")
-epicsEnvSet("FIPPI3", "fxrc60.fip")
-epicsEnvSet("FIPPI_DEFAULT", "$(FIPPI1)")
-
 # Set logging level (1=ERROR, 2=WARNING, 3=XXX, 4=DEBUG)
-dxp_md_set_log_level(2)
-
-dxp_initialize
+xiaSetLogLevel(3)
+#xiaInit("ketek.ini")
+xiaInit("test2.ini")
+xiaStartSystem
 
 # DXPConfig(serverName, detChan1, detChan2, detChan3, detChan4, queueSize)
 DXPConfig("DXP1",  0,  -1, -1, -1, 300)
@@ -54,3 +41,4 @@ set_requestfile_path("$(MCA)/mcaApp/Db")
 # save other things every thirty seconds
 create_monitor_set("auto_settings.req", 30)
 
+#asynSetTraceMask DXP1 0 255
