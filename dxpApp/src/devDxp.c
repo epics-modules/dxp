@@ -104,7 +104,7 @@ static long init_record(dxpRecord *pdxp, int *module)
     }
 
     return(0);
-bad:
+    bad:
     pdxp->pact = 1;
     return(0);
 }
@@ -171,41 +171,73 @@ void asynCallback(asynUser *pasynUser)
      switch(pmsg->dxpCommand) {
      case MSG_DXP_SET_SHORT_PARAM:
          asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
-             "devDxp::asynCallback, calling xiaSetAcquisitionValues name=%s value=%d\n",
+             "devDxp::asynCallback, MSG_DXP_SET_SHORT_PARAM"
+             " calling xiaSetAcquisitionValues name=%s value=%d\n",
              pmsg->name, pmsg->param);
          /* Note that we use xiaSetAcquisitionValues rather than xiaSetParameter
           * so that the new value will be save with xiaSaveSystem */
-         dvalue = pmsg->param;
-         xiaSetAcquisitionValues(detChan, pmsg->name, &dvalue);
+         xiaSetAcquisitionValues(detChan, pmsg->name, &pmsg->param);
          break;
      case MSG_DXP_SET_DOUBLE_PARAM:
          pfield = pmsg->pointer;
          if (pfield == (void *)&pdxp->slow_trig) {
              /* Convert from keV to eV */
              dvalue = pmsg->dvalue * 1000.;
+             asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
+                 "devDxp::asynCallback, MSG_DXP_SET_DOUBLE_PARAM"
+                 " setting energy_threshold=%f\n",
+                 pmsg->dvalue);
              xiaSetAcquisitionValues(detChan, "energy_threshold", &pmsg->dvalue);
          }
          else if (pfield == (void *)&pdxp->pktim) {
+             asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
+                 "devDxp::asynCallback, MSG_DXP_SET_DOUBLE_PARAM"
+                 " setting peaking_time=%f\n",
+                 pmsg->dvalue);
              xiaSetAcquisitionValues(detChan, "peaking_time", &pmsg->dvalue);
          }
          else if (pfield == (void *)&pdxp->gaptim) {
+             asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
+                 "devDxp::asynCallback, MSG_DXP_SET_DOUBLE_PARAM"
+                 " setting gap_time=%f\n",
+                 pmsg->dvalue);
              xiaSetAcquisitionValues(detChan, "gap_time", &pmsg->dvalue);
          }
          else if (pfield == (void *)&pdxp->adc_rule) {
              /* Make our "calibration energy be emax/2. in eV */
              dvalue = pdxp->emax * 1000. / 2.;
+             asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
+                 "devDxp::asynCallback, MSG_DXP_SET_DOUBLE_PARAM"
+                 " setting calibration_energy=%f\n",
+                 dvalue);
              xiaSetAcquisitionValues(detChan, "calibration_energy", &dvalue);
+             asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
+                 "devDxp::asynCallback, MSG_DXP_SET_DOUBLE_PARAM"
+                 " setting adc_percent_rule=%f\n",
+                 pmsg->dvalue);
              xiaSetAcquisitionValues(detChan, "adc_percent_rule", &pmsg->dvalue);
          }
          else if (pfield == (void *)&pdxp->fast_trig) {
              /* Convert from keV to eV */
              dvalue = pmsg->dvalue * 1000.;
+             asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
+                 "devDxp::asynCallback, MSG_DXP_SET_DOUBLE_PARAM"
+                 " setting trigger_threshold=%f\n",
+                 dvalue);
              xiaSetAcquisitionValues(detChan, "trigger_threshold", &dvalue);
          }
          else if (pfield == (void *)&pdxp->trig_pktim) {
+             asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
+                 "devDxp::asynCallback, MSG_DXP_SET_DOUBLE_PARAM"
+                 " setting trigger_peaking_time=%f\n",
+                 pmsg->dvalue);
              xiaSetAcquisitionValues(detChan, "trigger_peaking_time", &pmsg->dvalue);
          }
          else if (pfield == (void *)&pdxp->trig_gaptim) {
+             asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
+                 "devDxp::asynCallback, MSG_DXP_SET_DOUBLE_PARAM"
+                 " setting trigger_gap_time=%f\n",
+                 pmsg->dvalue);
              xiaSetAcquisitionValues(detChan, "trigger_gap_time", &pmsg->dvalue);
          }
          else if (pfield == (void *)&pdxp->emax) {
@@ -213,26 +245,43 @@ void asynCallback(asynUser *pasynUser)
                  pdxpReadbacks->number_mca_channels = 2048.;
              /* Set the bin width in eV */
              dvalue = pmsg->dvalue *1000. / pdxpReadbacks->number_mca_channels;
+             asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
+                 "devDxp::asynCallback, MSG_DXP_SET_DOUBLE_PARAM"
+                 " setting mca_bin_width=%f\n",
+                 pmsg->dvalue);
              xiaSetAcquisitionValues(detChan, "mca_bin_width", &dvalue);
          }
          break;
      case MSG_DXP_CONTROL_TASK:
          info[0] = 1.;
          info[1] = pmsg->dvalue;
+         asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
+             "devDxp::asynCallback, MSG_DXP_CONTROL_TASK"
+             " doing special run=%s, info=%f %f\n",
+             pmsg->name, info[0], info[1]);
          xiaDoSpecialRun(detChan, pmsg->name, info);
          if (strcmp(pmsg->name, "adc_trace") == 0) {
             epicsThreadSleep(0.1);
             xiaStopRun(detChan);
+            asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
+                 "devDxp::asynCallback, MSG_DXP_CONTROL_TASK"
+                 " reading adc_trace\n",
+                 pmsg->dvalue);
             xiaGetSpecialRunData(detChan, "adc_trace", pdxp->tptr);
             pdxpReadbacks->newAdcTrace = 1;
          }
          else if (strcmp(pmsg->name, "baseline_history") == 0) {
             epicsThreadSleep(0.1);
             xiaStopRun(detChan);
+            asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
+                 "devDxp::asynCallback, MSG_DXP_CONTROL_TASK"
+                 " reading baseline_history\n",
+                 pmsg->dvalue);
             xiaGetSpecialRunData(detChan, "baseline_history", pdxp->bhptr);
             pdxpReadbacks->newBaselineHistory = 1;
          }   
          break;
+     /* We should probably read all of the parameters after anything is written */
      case MSG_DXP_READ_PARAMS:
          xiaGetRunData(detChan, "baseline", pdxp->bptr);
          pdxpReadbacks->newBaselineHistogram = 1;
@@ -247,18 +296,41 @@ void asynCallback(asynUser *pasynUser)
                                  &pdxpReadbacks->pktim);
          xiaGetAcquisitionValues(detChan, "gap_time", 
                                  &pdxpReadbacks->gaptim);
-         xiaGetAcquisitionValues(detChan, "adc_percent_rule", 
-                                 &pdxpReadbacks->adc_rule);
          xiaGetAcquisitionValues(detChan, "trigger_threshold", 
                                  &pdxpReadbacks->fast_trig);
          xiaGetAcquisitionValues(detChan, "trigger_peaking_time", 
                                  &pdxpReadbacks->trig_pktim);
          xiaGetAcquisitionValues(detChan, "trigger_gap_time", 
                                  &pdxpReadbacks->trig_gaptim);
+         xiaGetAcquisitionValues(detChan, "adc_percent_rule", 
+                                 &pdxpReadbacks->adc_rule);
          xiaGetAcquisitionValues(detChan, "mca_bin_width", 
                                  &pdxpReadbacks->mca_bin_width);
          xiaGetAcquisitionValues(detChan, "number_mca_channels", 
                                  &pdxpReadbacks->number_mca_channels);
+         asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
+             "devDxp::asynCallback, MSG_DXP_READ_PARAMS\n"
+             "input_count_rate:     %f\n"
+             "output_count_rate:    %f\n"
+             "triggers:             %d\n"
+             "events_in_run:        %d\n"
+             "energy_threshold:     %f\n"
+             "peaking_time:         %f\n"
+             "gap_time:             %f\n"
+             "trigger_threshold:    %f\n"
+             "trigger_peaking_time: %f\n"
+             "trigger_gap_time:     %f\n"
+             "adc_percent_rule:     %f\n"
+             "mca_bin_width:        %f\n"
+             "number_mca_channels:  %f\n",
+             pdxpReadbacks->icr, pdxpReadbacks->ocr, 
+             pdxpReadbacks->fast_peaks, pdxpReadbacks->slow_peaks,
+             pdxpReadbacks->slow_trig, pdxpReadbacks->pktim, 
+             pdxpReadbacks->gaptim,
+             pdxpReadbacks->fast_trig, pdxpReadbacks->trig_pktim, 
+             pdxpReadbacks->trig_gaptim,
+             pdxpReadbacks->adc_rule, pdxpReadbacks->mca_bin_width,
+             pdxpReadbacks->number_mca_channels);
          /* Convert count rates from kHz to Hz */
          pdxpReadbacks->icr *= 1000.;
          pdxpReadbacks->ocr *= 1000.;
