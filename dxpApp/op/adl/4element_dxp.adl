@@ -1,7 +1,7 @@
 
 file {
-	name="p:\epics\support\camac\camacApp\op\adl\4element_dxp.adl"
-	version=020306
+	name="i:\epics\synApps5-1beta2\dxp\dxpApp\op\adl\4element_dxp.adl"
+	version=030003
 }
 display {
 	object {
@@ -264,34 +264,7 @@ rectangle {
 "related display" {
 	object {
 		x=326
-		y=49
-		width=60
-		height=20
-	}
-	display[0] {
-		label="All DXPs"
-		name="4element_dxp_all.adl"
-		args="P=$(P)dxp"
-	}
-	clr=14
-	bclr=4
-}
-text {
-	object {
-		x=391
-		y=49
-		width=150
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="DXPs"
-}
-"related display" {
-	object {
-		x=326
-		y=74
+		y=72
 		width=60
 		height=20
 	}
@@ -326,7 +299,7 @@ text {
 text {
 	object {
 		x=391
-		y=74
+		y=72
 		width=140
 		height=20
 	}
@@ -338,7 +311,7 @@ text {
 "related display" {
 	object {
 		x=326
-		y=99
+		y=97
 		width=60
 		height=20
 	}
@@ -373,7 +346,7 @@ text {
 text {
 	object {
 		x=391
-		y=99
+		y=97
 		width=150
 		height=20
 	}
@@ -385,7 +358,7 @@ text {
 "related display" {
 	object {
 		x=326
-		y=124
+		y=122
 		width=60
 		height=20
 	}
@@ -400,7 +373,7 @@ text {
 text {
 	object {
 		x=391
-		y=124
+		y=122
 		width=40
 		height=20
 	}
@@ -412,7 +385,7 @@ text {
 "related display" {
 	object {
 		x=326
-		y=149
+		y=147
 		width=60
 		height=20
 	}
@@ -427,7 +400,7 @@ text {
 text {
 	object {
 		x=391
-		y=149
+		y=147
 		width=40
 		height=20
 	}
@@ -439,7 +412,7 @@ text {
 "related display" {
 	object {
 		x=326
-		y=174
+		y=172
 		width=60
 		height=20
 	}
@@ -454,7 +427,7 @@ text {
 text {
 	object {
 		x=391
-		y=174
+		y=172
 		width=40
 		height=20
 	}
@@ -466,7 +439,7 @@ text {
 "related display" {
 	object {
 		x=326
-		y=199
+		y=197
 		width=60
 		height=20
 	}
@@ -496,7 +469,7 @@ text {
 text {
 	object {
 		x=391
-		y=199
+		y=197
 		width=40
 		height=20
 	}
@@ -508,7 +481,7 @@ text {
 "related display" {
 	object {
 		x=326
-		y=224
+		y=222
 		width=60
 		height=20
 	}
@@ -523,7 +496,7 @@ text {
 text {
 	object {
 		x=391
-		y=224
+		y=222
 		width=40
 		height=20
 	}
@@ -877,4 +850,36 @@ composite {
 			}
 		}
 	}
+}
+"related display" {
+	object {
+		x=326
+		y=47
+		width=60
+		height=20
+	}
+	display[0] {
+		label="DXP Control"
+		name="4element_dxp_all.adl"
+		args="P=$(P)"
+	}
+	display[1] {
+		label="DXP Statistics"
+		name="4element_dxp_statistics.adl"
+		args="P=$(P)"
+	}
+	clr=14
+	bclr=4
+}
+text {
+	object {
+		x=391
+		y=47
+		width=150
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="DXPs"
 }
