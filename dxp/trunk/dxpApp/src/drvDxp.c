@@ -371,17 +371,17 @@ int DXPConfig(const char *portName, int chan1, int chan2,
         errlogPrintf("dxpConfig: Can't register common.\n");
         return(-1);
     }
-    status = pasynManager->registerInterface(portName,&pPvt->int32);
+    status = pasynInt32Base->initialize(portName,&pPvt->int32);
     if (status != asynSuccess) {
         errlogPrintf("dxpConfig: Can't register int32.\n");
         return(-1);
     }
-    status = pasynManager->registerInterface(portName,&pPvt->float64);
+    status = pasynFloat64Base->initialize(portName,&pPvt->float64);
     if (status != asynSuccess) {
         errlogPrintf("dxpConfig: Can't register float64.\n");
         return(-1);
     }
-    status = pasynManager->registerInterface(portName,&pPvt->int32Array);
+    status = pasynInt32ArrayBase->initialize(portName,&pPvt->int32Array);
     if (status != asynSuccess) {
         errlogPrintf("dxpConfig: Can't register int32Array.\n");
         return(-1);
@@ -438,7 +438,7 @@ static asynStatus drvDxpWrite(void *drvPvt, asynUser *pasynUser,
                               epicsInt32 ivalue, epicsFloat64 dvalue)
 {
     drvDxpPvt *pPvt = (drvDxpPvt *)drvPvt;
-    mcaCommand command, *pcommand=pasynUser->drvUser;
+    mcaCommand command=pasynUser->reason;
     asynStatus status=asynSuccess;
     unsigned short resume;
     int s;
@@ -448,13 +448,6 @@ static asynStatus drvDxpWrite(void *drvPvt, asynUser *pasynUser,
     int signal;
     dxpChannel_t *dxpChan;
 
-
-    if (!pcommand) {
-        asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                  "drvDxp::drvDxpRead:: null command pointer\n");
-        return(asynError);
-    }
-    command = *pcommand;
     pasynManager->getAddr(pasynUser, &signal);
     dxpChan = findChannel(pPvt, pasynUser, signal);
 
@@ -604,17 +597,11 @@ static asynStatus drvDxpRead(void *drvPvt, asynUser *pasynUser,
                              epicsInt32 *pivalue, epicsFloat64 *pfvalue)
 {
     drvDxpPvt *pPvt = (drvDxpPvt *)drvPvt;
-    mcaCommand command, *pcommand=pasynUser->drvUser;
+    mcaCommand command=pasynUser->reason;
     asynStatus status=asynSuccess;
     int signal;
     dxpChannel_t *dxpChan;
 
-    if (!pcommand) {
-        asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                  "drvDxp::drvDxpRead:: null command pointer\n");
-        return(asynError);
-    }
-    command = *pcommand;
     pasynManager->getAddr(pasynUser, &signal);
     dxpChan = findChannel(pPvt, pasynUser, signal);
     pPvt->detChan = signal;
@@ -992,7 +979,7 @@ static asynStatus drvUserCreate(void *drvPvt, asynUser *pasynUser,
     for (i=0; i<MAX_MCA_COMMANDS; i++) {
         pstring = mcaCommands[i].commandString;
         if (epicsStrCaseCmp(drvInfo, pstring) == 0) {
-            pasynUser->drvUser = &mcaCommands[i].command;
+            pasynUser->reason = mcaCommands[i].command;
             if (pptypeName) *pptypeName = epicsStrDup(pstring);
             if (psize) *psize = sizeof(mcaCommands[i].command);
             asynPrint(pasynUser, ASYN_TRACE_FLOW,
@@ -1008,15 +995,13 @@ static asynStatus drvUserCreate(void *drvPvt, asynUser *pasynUser,
 static asynStatus drvUserGetType(void *drvPvt, asynUser *pasynUser,
                                  const char **pptypeName, size_t *psize)
 {
-    mcaCommand *pcommand = pasynUser->drvUser;
+    mcaCommand command = pasynUser->reason;
 
     *pptypeName = NULL;
     *psize = 0;
-    if (pcommand) {
-        if (pptypeName)
-            *pptypeName = epicsStrDup(mcaCommands[*pcommand].commandString);
-        if (psize) *psize = sizeof(*pcommand);
-    }
+    if (pptypeName)
+        *pptypeName = epicsStrDup(mcaCommands[command].commandString);
+    if (psize) *psize = sizeof(command);
     return(asynSuccess);
 }
 
