@@ -13,9 +13,9 @@ grecord(dxp,"$(P)$(R)")
     field(A04L,"INPUTENABLE")
     field(A05L,"RESETWAIT")
     field(A06L,"RESETINT")
-    field(A07L,"SGRANULAR")
-    field(A08L,"TRKDACVAL")
-    field(A09L,"TDACWIDTH")
+    field(A07L,"TAURC")
+    field(A08L,"RCFCOR")
+    field(A09L,"Unused")
 
 # FiPPI parameters - 10 total
     field(F01L,"FASTLEN")
@@ -41,13 +41,15 @@ grecord(dxp,"$(P)$(R)")
     field(D09L,"WHICHTEST")
     field(D10L,"RUNTASKS")
 
-# Baseline parameters - 6 total
+# Baseline parameters - 8 total
     field(B01L,"BLFILTER")
     field(B02L,"BLFILTERF")
     field(B03L,"BASEBINNING")
     field(B04L,"BLCUT")
     field(B05L,"BLMIN")
     field(B06L,"BLMAX")
+    field(B07L,"BASETHRESH")
+    field(B08L,"BASTHRADJ")
 
 # Read-only parameters - 16 total
     field(R01L,"CODEREV")
