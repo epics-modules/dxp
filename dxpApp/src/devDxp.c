@@ -219,7 +219,7 @@ void asynCallback(asynUser *pasynUser)
 
     switch (pmsg->type) {
     case mcaMessage:
-        pPvt->pasynUser->drvUser = &pmsg->mcaCommand;
+        pPvt->pasynUser->reason = pmsg->mcaCommand;
         pPvt->pint32->write(pPvt->asynInt32Pvt,
                             pPvt->pasynUser,
                             0);
