@@ -19,10 +19,8 @@ MCA=/corvette/home/epics/3-14-devel/mca
 CALC=/corvette/home/epics/3-14-devel/calc
 SSCAN=/corvette/home/epics/3-14-devel/sscan
 AUTOSAVE=/corvette/home/epics/3-14-devel/autosave
-STD=/corvette/home/epics/3-14-devel/std
-GPIBCORE=/corvette/home/epics/3-14-devel/gpibCore/1-3
-DXP=/corvette/home/epics/3-14-devel/dxp
 CAMAC=/corvette/home/epics/3-14-devel/camac
+DXP=/corvette/home/epics/3-14-devel/dxp
 
 #Capfast users may need the following definitions
 #CAPFAST_TEMPLATES=
