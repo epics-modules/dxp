@@ -107,3 +107,12 @@ grecord(dxp,"$(P)$(R)")
     field(T11V,"No")
 
 }
+grecord(calc,"$(P)$(R):icrocr") {
+        field(INPA,"$(P)$(R).S01V CP NMS")
+        field(INPB,"$(P)$(R).S04V CP NMS")
+        field(INPC,"$(P)$(R).S07V CP NMS")
+        field(INPD,"$(P)$(R).S08V CP NMS")
+        field(CALC,"B*C/((A+.1)*(D+.1))")
+	field(DESC,"icr*livetime/ocr*realtime")
+	field(PREC,3)
+}
