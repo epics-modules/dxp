@@ -44,7 +44,7 @@ pattern
 }
 
 # Database to automatically set DXP SCAs from MCA ROIs
-file "../../dxpApp/Db/dxp_sca.db"
+file "../../dxpApp/Db/roi_to_sca.db"
 {
 pattern
 {P,          M,     D,     N}
