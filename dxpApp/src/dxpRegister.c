@@ -2,15 +2,9 @@
 
 #include <iocsh.h>
 #include <epicsExport.h>
-#include <epicsTypes.h>
-#include <symTable.h>
 
 #include <xerxes.h>
 #include <xia_md.h>
-
-extern volatile int mcaDXPServerDebug;
-extern volatile int dxpRecordDebug;
-extern volatile int devDxpMpfDebug;
 
 int DXPConfig(const char *serverName, int chan1, int chan2,
                          int chan3, int chan4, int queueSize);
@@ -50,9 +44,6 @@ static void dxp_initializeCallFunc(const iocshArgBuf *args)
 
 void dxpRegister(void)
 {
-    addSymbol("mcaDXPServerDebug", (epicsInt32 *)&mcaDXPServerDebug, epicsInt32T);
-    addSymbol("dxpRecordDebug", (epicsInt32 *)&dxpRecordDebug, epicsInt32T);
-    addSymbol("devDxpMpfDebug", (epicsInt32 *)&devDxpMpfDebug, epicsInt32T);
     iocshRegister(&dxp_initializeFuncDef,dxp_initializeCallFunc);
     iocshRegister(&dxp_logFuncDef,dxp_logCallFunc);
     iocshRegister(&DXPConfigFuncDef,DXPConfigCallFunc);

@@ -16,3 +16,8 @@ device(dxp,VME_IO,devDxpMpf,"MPF DXP")
 # REGISTRATION
 ################
 registrar(dxpRegister)
+
+variable("mcaDXPServerDebug", int)
+variable("dxpRecordDebug", int)
+variable("devDxpMpfDebug", int)
+ 

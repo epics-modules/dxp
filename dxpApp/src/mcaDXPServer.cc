@@ -39,6 +39,7 @@
 #include <errlog.h>
 #include <epicsMutex.h>
 #include <epicsThread.h>
+#include <epicsExport.h>
 #include <epicsTime.h>
 
 #ifdef linux
@@ -67,6 +68,7 @@ extern "C"
 #endif
 volatile int mcaDXPServerDebug = 0;
 }
+epicsExportAddress(int, mcaDXPServerDebug);
 
 #define MAX_CHANS_PER_DXP 4
 #define STOP_DELAY 0.01   // Number of seconds to wait after issuing stop 
