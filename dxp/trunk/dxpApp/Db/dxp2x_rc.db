@@ -13,8 +13,8 @@ grecord(dxp,"$(P)$(R)")
     field(A04L,"INPUTENABLE")
     field(A05L,"RESETWAIT")
     field(A06L,"RESETINT")
-    field(A07L,"TAURC")
-    field(A08L,"RCFCOR")
+    field(A07L,"RCTAU")
+    field(A08L,"RCTAUFRAC")
     field(A09L,"Unused")
 
 # FiPPI parameters - 10 total
