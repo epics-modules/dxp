@@ -26,7 +26,7 @@
 #include <epicsString.h>
 
 #include <asynDriver.h>
-#include <asynUtils.h>
+#include <asynEpicsUtils.h>
 
 #include "dxpRecord.h"
 #include "devDxp.h"
@@ -86,7 +86,6 @@ epicsExportAddress(dset, devDxp);
 
 static long init_record(dxpRecord *pdxp)
 {
-    int card;
     char *userParam;
     asynUser *pasynUser;
     asynStatus status;
@@ -103,9 +102,9 @@ static long init_record(dxpRecord *pdxp)
     pPvt->pdxp = pdxp;
     pdxp->dpvt = pPvt;
 
-    status = pasynUtils->parseVmeIo(pasynUser, &pdxp->inp, &card,
-                                    &pPvt->channel, &pPvt->portName, 
-                                    &userParam);
+    status = pasynEpicsUtils->parseLink(pasynUser, &pdxp->inp,
+                                        &pPvt->portName, &pPvt->channel,
+                                        &userParam);
     if (status != asynSuccess) {
         errlogPrintf("devDxp::init_record %s bad link %s\n",
                      pdxp->name, pasynUser->errorMessage);
