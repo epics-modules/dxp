@@ -238,10 +238,10 @@ recordtype(dxp) {
         special(SPC_NOMOD)
     }
     field(FAST_TRIG,DBF_DOUBLE) {
-        prompt("Fast trigger threshold (eV)")
+        prompt("Fast trigger threshold (keV)")
         asl(ASL0)
         special(SPC_MOD)
-        initial(1000.)
+        initial(1.0)
     }
     field(FAST_TRIG_RBV,DBF_DOUBLE) {
         prompt("Fast trigger readback")
