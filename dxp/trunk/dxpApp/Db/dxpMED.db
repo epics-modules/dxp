@@ -75,7 +75,7 @@ grecord(bo,"$(P)DoReadAll") {
 }
 
 record(bo,"$(P)ReadDXPs") {
-        field(SCAN,"1 second")
+        field(SCAN,"Passive")
         field(VAL, "1")
         field(OUT, "$(P)DoReadDXPs PP MS")
 }
