@@ -6,6 +6,34 @@
 
 #define NUM_DXP_SCAS 16
 
+/* This is the bit position in RUNTASKS for enable baseline cut */
+#define RUNTASKS_BLCUT 0x400
+
+typedef struct {
+   unsigned short runtasks;
+   unsigned short gaindac;
+   unsigned short blmin;
+   unsigned short blmax;
+   unsigned short blcut;
+   unsigned short blfilter;
+   unsigned short basethresh;
+   unsigned short basethreshadj;
+   unsigned short basebinning;
+   unsigned short slowlen;
+} PARAM_OFFSETS;
+
+typedef struct {
+   char **names;
+   unsigned short *access;
+   unsigned short *lbound;
+   unsigned short *ubound;
+   unsigned short nparams;
+   unsigned int nbase_histogram;
+   unsigned int nbase_history;
+   unsigned int ntrace;
+   PARAM_OFFSETS offsets;
+} MODULE_INFO;
+
 typedef enum {
     MSG_DXP_START_RUN,
     MSG_DXP_STOP_RUN,
@@ -14,40 +42,18 @@ typedef enum {
     MSG_DXP_SET_SCAS,
     MSG_DXP_CONTROL_TASK,
     MSG_DXP_READ_BASELINE,
-    MSG_DXP_READ_PARAMS
+    MSG_DXP_READ_PARAMS,
+    MSG_DXP_FINISH,
 } devDxpCommand;
 
-typedef struct dxpReadbacks {
-    long fast_peaks;
-    long slow_peaks;
-    double icr;
-    double ocr;
-    double slow_trig;
-    double pktim;
-    double gaptim;
-    double adc_rule;
-    double mca_bin_width;
-    double number_mca_channels;
-    double fast_trig;
-    double trig_pktim;
-    double trig_gaptim;
-    int newBaselineHistory;
-    int newBaselineHistogram;
-    int newAdcTrace;
-    int acquiring;
-    int blcut;
-    int blCutEnbl;
-    int blmin;
-    int blmax;
-    int blfilter;
-    double number_scas;
-    double sca_lo[NUM_DXP_SCAS];
-    double sca_lo_rbv[NUM_DXP_SCAS];
-    double sca_hi[NUM_DXP_SCAS];
-    double sca_hi_rbv[NUM_DXP_SCAS];
-    int sca_counts[NUM_DXP_SCAS];
-    double eVPerBin;
-} dxpReadbacks;
+/* This structure must match the order of the SCA fields in the record */
+typedef struct  {
+    long lo;
+    long lo_rbv;
+    long hi;
+    long hi_rbv;
+    long counts;
+} DXP_SCA;
 
 typedef struct devDxpDset {
         long            number;
