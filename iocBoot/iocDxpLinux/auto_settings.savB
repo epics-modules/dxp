@@ -1,0 +1,186 @@
+# save/restore V3.2	Automatically generated - DO NOT MODIFY
+dxpLinux:dxp1.B06V 0
+dxpLinux:dxp1.B05V 0
+dxpLinux:dxp1.B04V 0
+dxpLinux:dxp1.B03V 0
+dxpLinux:dxp1.B02V 0
+dxpLinux:dxp1.B01V 0
+dxpLinux:dxp1.D10V 0
+dxpLinux:dxp1.D09V 0
+dxpLinux:dxp1.D08V 0
+dxpLinux:dxp1.D07V 0
+dxpLinux:dxp1.D06V 0
+dxpLinux:dxp1.D05V 0
+dxpLinux:dxp1.D04V 0
+dxpLinux:dxp1.D03V 0
+dxpLinux:dxp1.D02V 0
+dxpLinux:dxp1.D01V 0
+dxpLinux:dxp1.F10V 0
+dxpLinux:dxp1.F09V 0
+dxpLinux:dxp1.F08V 0
+dxpLinux:dxp1.F07V 0
+dxpLinux:dxp1.F06V 0
+dxpLinux:dxp1.F05V 0
+dxpLinux:dxp1.F04V 0
+dxpLinux:dxp1.F03V 0
+dxpLinux:dxp1.F02V 0
+dxpLinux:dxp1.F01V 0
+dxpLinux:dxp1.A09V 0
+dxpLinux:dxp1.A08V 0
+dxpLinux:dxp1.A07V 0
+dxpLinux:dxp1.A06V 0
+dxpLinux:dxp1.A05V 0
+dxpLinux:dxp1.A04V 0
+dxpLinux:dxp1.A03V 0
+dxpLinux:dxp1.A02V 0
+dxpLinux:dxp1.A01V 0
+dxpLinux:dxp1.PGAIN 4
+dxpLinux:dxp1.FIPPI 1
+dxpLinux:dxp1.PKTM 0
+dxpLinux:dxp1.EMAX 20
+dxpLinux:dxp1.GAIN 1
+dxpLinux:dxp_adc1Status.SCAN 9
+dxpLinux:dxp_adc1Read.SCAN 6
+dxpLinux:dxp_adc1.R31NM 
+dxpLinux:dxp_adc1.R31IP 0
+dxpLinux:dxp_adc1.R31HI -1
+dxpLinux:dxp_adc1.R31LO -1
+dxpLinux:dxp_adc1.R30NM 
+dxpLinux:dxp_adc1.R30IP 0
+dxpLinux:dxp_adc1.R30HI -1
+dxpLinux:dxp_adc1.R30LO -1
+dxpLinux:dxp_adc1.R29NM 
+dxpLinux:dxp_adc1.R29IP 0
+dxpLinux:dxp_adc1.R29HI -1
+dxpLinux:dxp_adc1.R29LO -1
+dxpLinux:dxp_adc1.R28NM 
+dxpLinux:dxp_adc1.R28IP 0
+dxpLinux:dxp_adc1.R28HI -1
+dxpLinux:dxp_adc1.R28LO -1
+dxpLinux:dxp_adc1.R27NM 
+dxpLinux:dxp_adc1.R27IP 0
+dxpLinux:dxp_adc1.R27HI -1
+dxpLinux:dxp_adc1.R27LO -1
+dxpLinux:dxp_adc1.R26NM 
+dxpLinux:dxp_adc1.R26IP 0
+dxpLinux:dxp_adc1.R26HI -1
+dxpLinux:dxp_adc1.R26LO -1
+dxpLinux:dxp_adc1.R25NM 
+dxpLinux:dxp_adc1.R25IP 0
+dxpLinux:dxp_adc1.R25HI -1
+dxpLinux:dxp_adc1.R25LO -1
+dxpLinux:dxp_adc1.R24NM 
+dxpLinux:dxp_adc1.R24IP 0
+dxpLinux:dxp_adc1.R24HI -1
+dxpLinux:dxp_adc1.R24LO -1
+dxpLinux:dxp_adc1.R23NM 
+dxpLinux:dxp_adc1.R23IP 0
+dxpLinux:dxp_adc1.R23HI -1
+dxpLinux:dxp_adc1.R23LO -1
+dxpLinux:dxp_adc1.R22NM 
+dxpLinux:dxp_adc1.R22IP 0
+dxpLinux:dxp_adc1.R22HI -1
+dxpLinux:dxp_adc1.R22LO -1
+dxpLinux:dxp_adc1.R21NM 
+dxpLinux:dxp_adc1.R21IP 0
+dxpLinux:dxp_adc1.R21HI -1
+dxpLinux:dxp_adc1.R21LO -1
+dxpLinux:dxp_adc1.R20NM 
+dxpLinux:dxp_adc1.R20IP 0
+dxpLinux:dxp_adc1.R20HI -1
+dxpLinux:dxp_adc1.R20LO -1
+dxpLinux:dxp_adc1.R19NM 
+dxpLinux:dxp_adc1.R19IP 0
+dxpLinux:dxp_adc1.R19HI -1
+dxpLinux:dxp_adc1.R19LO -1
+dxpLinux:dxp_adc1.R18NM 
+dxpLinux:dxp_adc1.R18IP 0
+dxpLinux:dxp_adc1.R18HI -1
+dxpLinux:dxp_adc1.R18LO -1
+dxpLinux:dxp_adc1.R17NM 
+dxpLinux:dxp_adc1.R17IP 0
+dxpLinux:dxp_adc1.R17HI -1
+dxpLinux:dxp_adc1.R17LO -1
+dxpLinux:dxp_adc1.R16NM 
+dxpLinux:dxp_adc1.R16IP 0
+dxpLinux:dxp_adc1.R16HI -1
+dxpLinux:dxp_adc1.R16LO -1
+dxpLinux:dxp_adc1.R15NM 
+dxpLinux:dxp_adc1.R15IP 0
+dxpLinux:dxp_adc1.R15HI -1
+dxpLinux:dxp_adc1.R15LO -1
+dxpLinux:dxp_adc1.R14NM 
+dxpLinux:dxp_adc1.R14IP 0
+dxpLinux:dxp_adc1.R14HI -1
+dxpLinux:dxp_adc1.R14LO -1
+dxpLinux:dxp_adc1.R13NM 
+dxpLinux:dxp_adc1.R13IP 0
+dxpLinux:dxp_adc1.R13HI -1
+dxpLinux:dxp_adc1.R13LO -1
+dxpLinux:dxp_adc1.R12NM 
+dxpLinux:dxp_adc1.R12IP 0
+dxpLinux:dxp_adc1.R12HI -1
+dxpLinux:dxp_adc1.R12LO -1
+dxpLinux:dxp_adc1.R11NM 
+dxpLinux:dxp_adc1.R11IP 0
+dxpLinux:dxp_adc1.R11HI -1
+dxpLinux:dxp_adc1.R11LO -1
+dxpLinux:dxp_adc1.R10NM 
+dxpLinux:dxp_adc1.R10IP 0
+dxpLinux:dxp_adc1.R10HI -1
+dxpLinux:dxp_adc1.R10LO -1
+dxpLinux:dxp_adc1.R9NM 
+dxpLinux:dxp_adc1.R9IP 0
+dxpLinux:dxp_adc1.R9HI -1
+dxpLinux:dxp_adc1.R9LO -1
+dxpLinux:dxp_adc1.R8NM 
+dxpLinux:dxp_adc1.R8IP 0
+dxpLinux:dxp_adc1.R8HI -1
+dxpLinux:dxp_adc1.R8LO -1
+dxpLinux:dxp_adc1.R7NM 
+dxpLinux:dxp_adc1.R7IP 0
+dxpLinux:dxp_adc1.R7HI -1
+dxpLinux:dxp_adc1.R7LO -1
+dxpLinux:dxp_adc1.R6NM 
+dxpLinux:dxp_adc1.R6IP 0
+dxpLinux:dxp_adc1.R6HI -1
+dxpLinux:dxp_adc1.R6LO -1
+dxpLinux:dxp_adc1.R5NM 
+dxpLinux:dxp_adc1.R5IP 0
+dxpLinux:dxp_adc1.R5HI -1
+dxpLinux:dxp_adc1.R5LO -1
+dxpLinux:dxp_adc1.R4NM 
+dxpLinux:dxp_adc1.R4IP 0
+dxpLinux:dxp_adc1.R4HI -1
+dxpLinux:dxp_adc1.R4LO -1
+dxpLinux:dxp_adc1.R3NM 
+dxpLinux:dxp_adc1.R3IP 0
+dxpLinux:dxp_adc1.R3HI -1
+dxpLinux:dxp_adc1.R3LO -1
+dxpLinux:dxp_adc1.R2NM 
+dxpLinux:dxp_adc1.R2IP 0
+dxpLinux:dxp_adc1.R2HI -1
+dxpLinux:dxp_adc1.R2LO -1
+dxpLinux:dxp_adc1.R1NM 
+dxpLinux:dxp_adc1.R1IP 0
+dxpLinux:dxp_adc1.R1HI -1
+dxpLinux:dxp_adc1.R1LO -1
+dxpLinux:dxp_adc1.R0NM 
+dxpLinux:dxp_adc1.R0IP 0
+dxpLinux:dxp_adc1.R0HI -1
+dxpLinux:dxp_adc1.R0LO -1
+dxpLinux:dxp_adc1.MODE 0
+dxpLinux:dxp_adc1.CHAS 0
+dxpLinux:dxp_adc1.PSCL 1
+dxpLinux:dxp_adc1.DWEL 1
+dxpLinux:dxp_adc1.PCTH 0
+dxpLinux:dxp_adc1.PCTL 0
+dxpLinux:dxp_adc1.PCT 0
+dxpLinux:dxp_adc1.PLTM 0
+dxpLinux:dxp_adc1.PRTM 0
+dxpLinux:dxp_adc1.TTH 10
+dxpLinux:dxp_adc1.EGU 
+dxpLinux:dxp_adc1.CALQ 0
+dxpLinux:dxp_adc1.CALS 1
+dxpLinux:dxp_adc1.CALO 0
+<END>
