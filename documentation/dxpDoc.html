@@ -42,6 +42,46 @@ criteria, etc.
 </OL>
 
 <P>
+To use the Saturn model (also packaged as the Vortex from Radiant) on Linux 
+requires access to the EPP I/O port.  Obtaining access to those ports requires
+root privilege.  This can be done in any of following 3 ways:
+<OL>
+<LI> Prefered method. This application builds a program on Linux called startWithIopl3.
+This program calls iopl(3) as root, and then reverts back to the non-root account 
+to run dxpApp.  To use this method the application startWithIopl3 must be installed
+as suid root.  Do this as follows:
+<PRE>
+> su root
+(password)
+> chmod +s bin/linux-x86/startWithIopl3
+</PRE>
+The dxpApp application can then be run without root privilege as follows:
+<PRE>
+> cd iocBoot/iocDxpLinux
+> ../../bin/linux-x86/startWithIopl3 ../../bin/linux-x86/dxpApp st.cmd
+</PRE>
+</LI>
+<LI> Not as good. Install the dxpApp application as suid root.  Do this as follows:
+<PRE>
+> su root
+> chmod +s /bin/linux-x86/dxpApp
+</PRE>
+The dxpApp application can then be run without root priviledge as follows:
+<PRE>
+> ../../bin/linux-x86/dxpApp st.cmd
+</PRE>
+</LI>
+<LI> Worst method.  Run dxpApp as root:
+<PRE>
+> su root
+(password)
+> ../../bin/linux-x86/dxpApp st.cmd
+<PRE>
+</LI>
+</OL>
+
+
+<P>
 <HR>
 <ADDRESS>
 Suggestions and comments to: 
