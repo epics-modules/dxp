@@ -97,7 +97,7 @@ extern "C" {
         DevDxpMpf::read_array
     };
 };
-epicsExportAddress(DXPMPF_DSET, devDxpMpf);
+epicsExportAddress(dset, devDxpMpf);
 
 
 DevDxpMpf::DevDxpMpf(dbCommon* pr,DBLINK* l) : DevMpf(pr,l,false)
