@@ -16,7 +16,6 @@ $(P)$(R).BASE_THRESHADJ
 $(P)$(R).EMAX
 $(P)$(R).ADC_RULE
 $(P)$(R).TRACE_WAIT
-$(P)$(R).SCAN
 $(P)$(R).SCA0_LO
 $(P)$(R).SCA0_HI
 $(P)$(R).SCA1_LO
@@ -49,6 +48,7 @@ $(P)$(R).SCA14_LO
 $(P)$(R).SCA14_HI
 $(P)$(R).SCA15_LO
 $(P)$(R).SCA15_HI
+$(P)$(R):ReadParams.SCAN
 $(P)$(R):ReadHistogram.SCAN
 $(P)$(R):ReadTrace.SCAN
 $(P)$(R):ReadHistory.SCAN
