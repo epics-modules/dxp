@@ -9,18 +9,18 @@ TEMPLATE_TOP=$(EPICS_BASE)/templates/makeBaseApp/top
 #INSTALL_LOCATION_APP=<fullpathname>
 
 #If using the sequencer, point SNCSEQ at its top directory:
-SNCSEQ=/home/oxygen/MOONEY/epics/synApps_5_1/support/seq/2-0-9
+#SNCSEQ=/corvette/usr/local/epics/seq-2.0.4
 
 # EPICS_BASE usually appears last so other apps can override stuff:
-EPICS_BASE=/home/oxygen/MOONEY/epics/base-3.14.7
+EPICS_BASE=/corvette/usr/local/epics/base-3.14.6
 
-ASYN=/home/oxygen/MOONEY/epics/synApps_5_1/support/asyn/4-1
-MCA=/home/oxygen/MOONEY/epics/synApps_5_1/support/mca/cvs
-CALC=/home/oxygen/MOONEY/epics/synApps_5_1/support/calc/2-4
-SSCAN=/home/oxygen/MOONEY/epics/synApps_5_1/support/sscan/2-4
-AUTOSAVE=/home/oxygen/MOONEY/epics/synApps_5_1/support/autosave/4-1
-CAMAC=/home/oxygen/MOONEY/epics/synApps_5_1/support/camac/cvs
-DXP=/home/oxygen/MOONEY/epics/synApps_5_1/support/dxp/cvs
+ASYN=/corvette/home/epics/synApps5-1beta/asyn/3-3beta
+MCA=/corvette/home/epics/synApps5-1beta/mca
+CALC=/corvette/home/epics/synApps5-1beta/calc
+SSCAN=/corvette/home/epics/synApps5-1beta/sscan
+AUTOSAVE=/corvette/home/epics/synApps5-1beta/autosave/
+CAMAC=/corvette/home/epics/synApps5-1beta/camac
+DXP=/corvette/home/epics/synApps5-1beta/dxp
 
 #Capfast users may need the following definitions
 #CAPFAST_TEMPLATES=
