@@ -31,8 +31,8 @@ dxp_SRCS += dxpRegister.c
 
 dxp_LIBS += xerxes
 dxp_LIBS += mca 
-dxp_LIBS += calc sscan autosave
 dxp_LIBS += mpf mpfEpics
+dxp_LIBS += std
 dxp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #=============================
@@ -51,7 +51,7 @@ dxpApp_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary
 
 dxpApp_LIBS += dxp xerxes
 dxpApp_LIBS += mca
-dxpApp_LIBS += calc sscan autosave
+dxpApp_LIBS += std
 dxpApp_LIBS_vxWorks += camac
 dxpApp_LIBS += mpf mpfEpics
 dxpApp_LIBS += $(EPICS_BASE_IOC_LIBS)

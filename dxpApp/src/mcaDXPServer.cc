@@ -188,8 +188,8 @@ extern "C" int DXPConfig(const char *serverName, int chan1, int chan2,
     	p->maxStatusTime = DXP2X_CACHE_TIME;
     }
     else if (p->moduleType == MODEL_DXPX10P) {
-    	/* DXPX10P is 800ns clock period */
-    	p->clockRate = 1./ 800.e-9;
+    	/* DXPX10P is 400ns clock period */
+    	p->clockRate = 1./ 400.e-9;
     	/* Maximum time to use old data before a new query is sent. */
     	p->maxStatusTime = DXPX10P_CACHE_TIME;
     }

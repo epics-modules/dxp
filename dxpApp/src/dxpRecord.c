@@ -267,7 +267,7 @@ static long init_record(struct dxpRecord *pdxp, int pass)
     /* Initialize values for each type of module */
     moduleInfo[MODEL_DXP4C].clock = .050;
     moduleInfo[MODEL_DXP2X].clock = .025;
-    moduleInfo[MODEL_DXPX10P].clock = .050;
+    moduleInfo[MODEL_DXPX10P].clock = .025;
     moduleInfo[MODEL_DXP4C].adc_gain = 1024./1000.;  /* ADC bits/mV */
     moduleInfo[MODEL_DXP2X].adc_gain = 1024./1000.;
     moduleInfo[MODEL_DXPX10P].adc_gain = 1024./1000.;

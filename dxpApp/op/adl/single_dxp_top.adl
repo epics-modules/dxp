@@ -1,7 +1,7 @@
 
 file {
-	name="/home/epics/3-14-devel/dxp/dxpApp/op/adl/single_dxp_top.adl"
-	version=030000
+	name="j:\epics\3.14\dxp\dxpApp\op\adl\single_dxp_top.adl"
+	version=020306
 }
 display {
 	object {
@@ -185,7 +185,7 @@ rectangle {
 		height=20
 	}
 	control {
-		chan="$(P)$(M)Erase"
+		chan="$(P)$(M).ERAS"
 		clr=14
 		bclr=51
 	}
@@ -200,7 +200,7 @@ rectangle {
 		height=20
 	}
 	control {
-		chan="$(P)$(M)EraseStart"
+		chan="$(P)$(M).ERST"
 		clr=14
 		bclr=51
 	}
@@ -215,7 +215,7 @@ rectangle {
 		height=20
 	}
 	control {
-		chan="$(P)$(M)Start"
+		chan="$(P)$(M).STRT"
 		clr=14
 		bclr=51
 	}
@@ -230,7 +230,7 @@ rectangle {
 		height=20
 	}
 	control {
-		chan="$(P)$(M)Stop"
+		chan="$(P)$(M).STOP"
 		clr=14
 		bclr=51
 	}
