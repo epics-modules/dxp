@@ -1,6 +1,6 @@
 
 file {
-	name="C:\Program Files\EPICS\adls\dxp_baseline_history.adl"
+	name="C:\epics\adl\dxp_baseline_history.adl"
 	version=020306
 }
 display {
@@ -115,16 +115,41 @@ display {
 }
 "message button" {
 	object {
-		x=310
-		y=353
-		width=50
+		x=389
+		y=351
+		width=80
 		height=20
 	}
 	control {
-		chan="$(P)$(R).READ_HISTORY"
+		chan="$(P)$(R):ReadHistory.PROC"
 		clr=14
 		bclr=51
 	}
-	label="Read"
+	label="Read Once"
 	press_msg="1"
+}
+text {
+	object {
+		x=194
+		y=351
+		width=105
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Read Rate:"
+}
+menu {
+	object {
+		x=302
+		y=352
+		width=80
+		height=18
+	}
+	control {
+		chan="$(P)$(R):ReadHistory.SCAN"
+		clr=14
+		bclr=51
+	}
 }

@@ -1,14 +1,14 @@
 
 file {
-	name="C:\Program Files\EPICS\adls\dxp_trace.adl"
+	name="C:\epics\adl\dxp_trace.adl"
 	version=020306
 }
 display {
 	object {
-		x=644
-		y=95
+		x=71
+		y=375
 		width=650
-		height=350
+		height=373
 	}
 	clr=14
 	bclr=4
@@ -95,8 +95,8 @@ display {
 		height=350
 	}
 	plotcom {
-		title="$(P)$(R) ADC or Baseline Trace"
-		xlabel="Time"
+		title="$(P)$(R) ADC Trace"
+		xlabel="Time Bin (time=bin*time per point)"
 		ylabel="ADC units"
 		clr=14
 		bclr=4
@@ -105,5 +105,117 @@ display {
 	trace[0] {
 		ydata="$(P)$(R).TRACE"
 		data_clr=54
+	}
+	x_axis {
+		rangeStyle="auto-scale"
+	}
+	y1_axis {
+		rangeStyle="auto-scale"
+	}
+}
+text {
+	object {
+		x=156
+		y=341
+		width=0
+		height=40
+	}
+	"basic attribute" {
+		clr=14
+	}
+	"dynamic attribute" {
+		chan="$(P)$(R).TRACE_WAIT"
+	}
+}
+"text entry" {
+	object {
+		x=227
+		y=351
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R).TRACE_WAIT"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=8
+		y=351
+		width=210
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Time per point (usec):"
+}
+"message button" {
+	object {
+		x=498
+		y=351
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(R):ReadTrace.PROC"
+		clr=14
+		bclr=51
+	}
+	label="Read Once"
+	press_msg="1"
+}
+menu {
+	object {
+		x=652
+		y=696
+		width=126
+		height=40
+	}
+	control {
+		chan="$(P)$(R):ReadTrace.SCAN"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=490
+		y=698
+		width=158
+		height=40
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Read rate:"
+}
+text {
+	object {
+		x=303
+		y=351
+		width=105
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Read Rate:"
+}
+menu {
+	object {
+		x=411
+		y=352
+		width=80
+		height=18
+	}
+	control {
+		chan="$(P)$(R):ReadTrace.SCAN"
+		clr=14
+		bclr=51
 	}
 }
