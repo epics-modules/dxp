@@ -85,7 +85,7 @@ grecord(dxp,"$(P)$(R)")
     field(S13L,"NUMUPSETS0")
     field(S14L,"NUMZIGZAG0")
 
-# Run tasks labels - 11 total
+# Run tasks labels - 16 total
     field(T01L,"Collect baseline histgrm")
     field(T01V,"Yes")
     field(T02L,"Update slope")
@@ -108,6 +108,16 @@ grecord(dxp,"$(P)$(R)")
     field(T10V,"No")
     field(T11L,"Enable baseline cut")
     field(T11V,"No")
+    field(T12L,"Special timing mode")
+    field(T12V,"No")
+    field(T13L,"Skip filling")
+    field(T13V,"No")
+    field(T14L,"Auto base threshold")
+    field(T14V,"Yes")
+    field(T15L,"Unused")
+    field(T15V,"No")
+    field(T16L,"Unused")
+    field(T16V,"No")
 
 }
 grecord(calc,"$(P)$(R):icrocr") {
