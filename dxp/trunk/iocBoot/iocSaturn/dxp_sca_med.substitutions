@@ -1,0 +1,21 @@
+file "../../dxpApp/Db/dxp_sca.db"
+{
+pattern
+{P,          M,    D,   N}
+{dxpSaturn:med:, mca1, dxp1, 0}
+{dxpSaturn:med:, mca1, dxp1, 1}
+{dxpSaturn:med:, mca1, dxp1, 2}
+{dxpSaturn:med:, mca1, dxp1, 3}
+{dxpSaturn:med:, mca1, dxp1, 4}
+{dxpSaturn:med:, mca1, dxp1, 5}
+{dxpSaturn:med:, mca1, dxp1, 6}
+{dxpSaturn:med:, mca1, dxp1, 7}
+{dxpSaturn:med:, mca1, dxp1, 8}
+{dxpSaturn:med:, mca1, dxp1, 9}
+{dxpSaturn:med:, mca1, dxp1, 10}
+{dxpSaturn:med:, mca1, dxp1, 11}
+{dxpSaturn:med:, mca1, dxp1, 12}
+{dxpSaturn:med:, mca1, dxp1, 13}
+{dxpSaturn:med:, mca1, dxp1, 14}
+{dxpSaturn:med:, mca1, dxp1, 15}
+}
