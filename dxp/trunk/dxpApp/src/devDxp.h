@@ -4,10 +4,16 @@
 #include <dxpRecord.h>
 #include <devSup.h>
 
+#define NUM_DXP_SCAS 16
+
 typedef enum {
+    MSG_DXP_START_RUN,
+    MSG_DXP_STOP_RUN,
     MSG_DXP_SET_SHORT_PARAM,
     MSG_DXP_SET_DOUBLE_PARAM,
+    MSG_DXP_SET_SCAS,
     MSG_DXP_CONTROL_TASK,
+    MSG_DXP_READ_BASELINE,
     MSG_DXP_READ_PARAMS
 } devDxpCommand;
 
@@ -29,6 +35,11 @@ typedef struct dxpReadbacks {
     int newBaselineHistory;
     int newBaselineHistogram;
     int newAdcTrace;
+    int acquiring;
+    double number_scas;
+    double sca_lo[NUM_DXP_SCAS];
+    double sca_hi[NUM_DXP_SCAS];
+    int sca_counts[NUM_DXP_SCAS];
 } dxpReadbacks;
 
 typedef struct devDxpDset {
