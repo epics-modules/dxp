@@ -16,6 +16,7 @@ option +r;
 int i;
 int det;
 int nDetectors;
+int prevAcquiring;
 char temp[100];
 
 char *prefix;
@@ -117,6 +118,11 @@ assign  readDXP to {"","","","","","","","","","","","","","","","","","","","",
 int     readDXPs; assign readDXPs to "{P}DoReadDXPs";
 monitor readDXPs; evflag readDXPsMon; sync readDXPs readDXPsMon;
 
+int     readDXPBaseline[MAX_DETECTORS]; 
+assign  readDXPBaseline to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
+int     readDXPBaselines; assign readDXPBaselines to "{P}DoReadDXPBaselines";
+monitor readDXPBaselines; evflag readDXPBaselinesMon; sync readDXPBaselines readDXPBaselinesMon;
+
 int     readMCA[MAX_DETECTORS]; 
 assign  readMCA to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
 int     ReadMCAs; assign ReadMCAs to "{P}DoReadAll";
@@ -157,6 +163,8 @@ assign  mcaDeadTime to {"","","","","","","","","","","","","","","","","","",""
 double  DeadTime; assign DeadTime to "{P}DeadTime";
 evflag  DeadTimeMon; sync mcaDeadTime DeadTimeMon;
 
+int     AcquireBusy; assign AcquireBusy to "{P}AcquireBusy";
+
 ss dxp_control {
     state init {
         when() {
@@ -166,6 +174,7 @@ ss dxp_control {
             dxp = macValueGet("DXP");
             mca = macValueGet("MCA");
             nDetectors = atoi(macValueGet("N_DETECTORS"));
+            prevAcquiring = Acquiring;
             for (i=0; i<nDetectors; i++) {
                det = i+1;
                sprintf(temp, "%s%s%d.TRIG_PKTIM", prefix, dxp, det);
@@ -206,6 +215,8 @@ ss dxp_control {
                pvAssign(mcaEraseStart[i], temp);
                sprintf(temp, "%s%s%d.PROC", prefix, dxp, det);
                pvAssign(readDXP[i], temp);
+               sprintf(temp, "%s%s%d:ReadHistogram.PROC", prefix, dxp, det);
+               pvAssign(readDXPBaseline[i], temp);
                sprintf(temp, "%s%s%d.READ", prefix, mca, det);
                pvAssign(readMCA[i], temp);
                sprintf(temp, "%s%s%d.PROC", prefix, mca, det);
@@ -379,6 +390,15 @@ ss dxp_control {
             pvPut(readDXPs);
         } state monitor_changes
 
+        when(efTestAndClear(readDXPBaselinesMon) && (readDXPBaselines == 1)) {
+            for (i=0; i<nDetectors; i++) {
+                readDXPBaseline[i] = 1;
+                pvPut(readDXPBaseline[i]);
+            }
+            readDXPBaselines = 0;
+            pvPut(readDXPBaselines);
+        } state monitor_changes
+
         when(efTestAndClear(ReadMCAsMon) && (ReadMCAs == 1)) {
             for (i=0; i<nDetectors; i++) {
                 readMCA[i] = 1;
@@ -456,6 +476,12 @@ ss dxp_control {
                 if (mcaAcquiring[i]) Acquiring = 1;
             }
             pvPut(Acquiring);
+            /* On the transition from Acquiring=1 to 0 clear the AcquireBusy record */
+            if ((Acquiring == 0) && (prevAcquiring == 1)) {
+               AcquireBusy = 0;
+               pvPut(AcquireBusy);
+            }
+            prevAcquiring = Acquiring;
         } state monitor_changes
 
         when(efTestAndClear(ElapsedRealMon)) {
