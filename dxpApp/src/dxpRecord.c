@@ -247,13 +247,20 @@ static long init_record(struct dxpRecord *pdxp, int pass)
     if (pass != 0) return(0);
     Debug(5, "(init_record): entry\n");
 
-    /* pdxp->inp must be VME_IO */
-    if (pdxp->inp.type != VME_IO) {
-        recGblRecordError(S_db_badField,(void *)pdxp,
-                "dxpRecord (init_record) Illegal INP field");
-        return(S_db_badField);
+    /* must have dset defined */
+    if (!(pdset = (struct devDxpDset *)(pdxp->dset))) {
+        recGblRecordError(S_dev_noDSET,(void *)pdxp,"dxp: init_record1");
+        return(S_dev_noDSET);
     }
-    module = pdxp->inp.value.vmeio.signal;
+    /* must have read_array function defined */
+    if ( (pdset->number < 7) || (pdset->read_array == NULL) ) {
+        recGblRecordError(S_dev_missingSup,(void *)pdxp,"dxp: init_record2");
+        printf("%ld %p\n",pdset->number, pdset->read_array);
+        return(S_dev_missingSup);
+    }
+    if (pdset->init_record) {
+        if ((status=(*pdset->init_record)(pdxp, &module))) return(status);
+    }
 
     /* Initialize values for each type of module */
     moduleInfo[MODEL_DXP4C].clock = .050;
@@ -270,21 +277,6 @@ static long init_record(struct dxpRecord *pdxp, int pass)
     else if (strcmp(boardString, "dxpx10p") == 0) pdxp->mtyp = MODEL_DXPX10P;
     else Debug(1, "(init_record), unknown board type\n");
     minfo = &moduleInfo[pdxp->mtyp];
-
-    /* must have dset defined */
-    if (!(pdset = (struct devDxpDset *)(pdxp->dset))) {
-        recGblRecordError(S_dev_noDSET,(void *)pdxp,"mca: init_record1");
-        return(S_dev_noDSET);
-    }
-    /* must have read_array function defined */
-    if ( (pdset->number < 7) || (pdset->read_array == NULL) ) {
-        recGblRecordError(S_dev_missingSup,(void *)pdxp,"dxp: init_record2");
-        printf("%ld %p\n",pdset->number, pdset->read_array);
-        return(S_dev_missingSup);
-    }
-    if (pdset->init_record) {
-        if ((status=(*pdset->init_record)(pdxp))) return(status);
-    }
 
     /* If minfo->nsymbols=0 then this is the first DXP record of this 
      * module type, allocate global (not record instance) structures */
