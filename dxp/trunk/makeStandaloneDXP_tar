@@ -1,1 +1,11 @@
-tar cvf dxpStandalone.tar -C .. mca/mcaApp/Db/ mca/mcaApp/op/adl/ dxp/dxpApp/Db dxp/dxpApp/op/adl dxp/bin/ dxp/dbd/ dxp/iocBoot/iocDxpLinux_Reset dxp/iocBoot/iocDxpLinux_RC
+tar czvf /home/epics/public_html/pub/dxpStandalone.tar.gz -C .. \
+mca/mcaApp/Db/ \
+mca/mcaApp/op/adl/ \
+autosave/asApp/Db/ \
+autosave/asApp/op/adl/ \
+dxp/dxpApp/Db \
+dxp/dxpApp/op/adl \
+dxp/bin/cygwin-x86 \
+dxp/bin/linux-x86 \
+dxp/dbd/ \
+dxp/iocBoot
