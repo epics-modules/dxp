@@ -37,6 +37,7 @@
 #include "asynInt32Array.h"
 #include "asynDrvUser.h"
 #include "handel.h"
+#include "xia_xerxes.h"
 
 
 typedef struct {
@@ -115,25 +116,25 @@ static const struct asynCommon drvDxpCommon = {
 };
 
 /* asynInt32 methods */
-static const asynInt32 drvDxpInt32 = {
+static asynInt32 drvDxpInt32 = {
     int32Write,
     int32Read,
     getBounds
 };
 
 /* asynFloat64 methods */
-static const asynFloat64 drvDxpFloat64 = {
+static asynFloat64 drvDxpFloat64 = {
     float64Write,
     float64Read
 };
 
 /* asynInt32Array methods */
-static const asynInt32Array drvDxpInt32Array = {
+static asynInt32Array drvDxpInt32Array = {
     int32ArrayWrite,
     int32ArrayRead
 };
 
-static const asynDrvUser drvDxpDrvUser = {
+static asynDrvUser drvDxpDrvUser = {
     drvUserCreate,
     drvUserGetType,
     drvUserDestroy
@@ -631,12 +632,20 @@ static void DXPConfigCallFunc(const iocshArgBuf *args)
     DXPConfig(args[0].sval, args[1].ival);
 }
 
-static const iocshArg xiaLogArg0 = { "logging level",iocshArgInt};
-static const iocshArg * const xiaLogArgs[1] = {&xiaLogArg0};
-static const iocshFuncDef xiaLogFuncDef = {"xiaSetLogLevel",1,xiaLogArgs};
-static void xiaLogCallFunc(const iocshArgBuf *args)
+static const iocshArg xiaLogLevelArg0 = { "logging level",iocshArgInt};
+static const iocshArg * const xiaLogLevelArgs[1] = {&xiaLogLevelArg0};
+static const iocshFuncDef xiaLogLevelFuncDef = {"xiaSetLogLevel",1,xiaLogLevelArgs};
+static void xiaLogLevelCallFunc(const iocshArgBuf *args)
 {
     xiaSetLogLevel(args[0].ival);
+}
+
+static const iocshArg xiaLogOutputArg0 = { "logging level",iocshArgString};
+static const iocshArg * const xiaLogOutputArgs[1] = {&xiaLogOutputArg0};
+static const iocshFuncDef xiaLogOutputFuncDef = {"xiaSetLogOutput",1,xiaLogOutputArgs};
+static void xiaLogOutputCallFunc(const iocshArgBuf *args)
+{
+    xiaSetLogOutput(args[0].sval);
 }
 
 static const iocshArg xiaInitArg0 = { "ini file",iocshArgString};
@@ -653,6 +662,16 @@ static void xiaStartSystemCallFunc(const iocshArgBuf *args)
     xiaStartSystem();
 }
 
+static const iocshArg dxp_mem_dumpArg0 = { "channel",iocshArgInt};
+static const iocshArg * const dxp_mem_dumpArgs[1] = {&dxp_mem_dumpArg0};
+static const iocshFuncDef dxp_mem_dumpFuncDef = {"dxp_mem_dump",1,dxp_mem_dumpArgs};
+static void dxp_mem_dumpCallFunc(const iocshArgBuf *args)
+{
+    int channel = args[0].ival;
+
+    dxp_mem_dump(&channel);
+}
+
 static const iocshArg xiaSaveSystemArg0 = { "ini file",iocshArgString};
 static const iocshArg * const xiaSaveSystemArgs[1] = {&xiaSaveSystemArg0};
 static const iocshFuncDef xiaSaveSystemFuncDef = {"xiaSaveSystem",1,xiaSaveSystemArgs};
@@ -664,9 +683,11 @@ static void xiaSaveSystemCallFunc(const iocshArgBuf *args)
 void dxpRegister(void)
 {
     iocshRegister(&xiaInitFuncDef,xiaInitCallFunc);
-    iocshRegister(&xiaLogFuncDef,xiaLogCallFunc);
+    iocshRegister(&xiaLogLevelFuncDef,xiaLogLevelCallFunc);
+    iocshRegister(&xiaLogOutputFuncDef,xiaLogOutputCallFunc);
     iocshRegister(&xiaStartSystemFuncDef,xiaStartSystemCallFunc);
     iocshRegister(&xiaSaveSystemFuncDef,xiaSaveSystemCallFunc);
+    iocshRegister(&dxp_mem_dumpFuncDef,dxp_mem_dumpCallFunc);
     iocshRegister(&DXPConfigFuncDef,DXPConfigCallFunc);
 }
 
