@@ -129,7 +129,7 @@ static long init_record(dxpRecord *pdxp, int *detChan)
     return(0);
     bad:
     pdxp->pact = 1;
-    return(0);
+    return(-1);
 }
 
 
@@ -474,8 +474,8 @@ static void readDxpParams(asynUser *pasynUser)
          *                      &pdxpReadbacks->number_scas); */
         pdxpReadbacks->number_scas = 16;
         for (i=0; i<pdxpReadbacks->number_scas; i++) {
-            xiaGetAcquisitionValues(detChan, sca_lo[i], &pdxpReadbacks->sca_lo[i]);
-            xiaGetAcquisitionValues(detChan, sca_hi[i], &pdxpReadbacks->sca_hi[i]);
+            xiaGetAcquisitionValues(detChan, sca_lo[i], &pdxpReadbacks->sca_lo_rbv[i]);
+            xiaGetAcquisitionValues(detChan, sca_hi[i], &pdxpReadbacks->sca_hi_rbv[i]);
         }
         xiaGetRunData(detChan, "sca", pdxpReadbacks->sca_counts);
     }
