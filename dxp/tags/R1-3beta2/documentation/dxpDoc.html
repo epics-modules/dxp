@@ -1,0 +1,94 @@
+<HTML>
+<HEAD>
+<TITLE>XIA DXP-4 Device Device Support for the MCA Record</TITLE>
+</HEAD>
+<BODY>
+<H1>XIA DXP Digital Signal Processing Systems</H1>
+
+<ADDRESS>Mark Rivers</ADDRESS>
+
+<H2>This document is under construction, and will be completed soon.</H2>
+
+<HR>
+<H2>Contents</H2>
+<UL>
+<LI><A HREF="#Overview">Overview</A>
+<LI><A HREF="#Files">Files</A>
+<LI><A HREF="#Example">Example Startup Script</A>
+<LI><A HREF="#Performance">Performance Measurements</A>
+</UL>
+
+<A NAME="Overview">
+<H2>Overview</H2></A>
+<P>
+The DXP is a Digital Signal Processor based multichannel analyzer from X-ray
+Instrumentation Associates.  It is a single-width CAMAC module with up to 4
+input channels.  Each channel contains the equivalent electronics of the
+shaping amplifier, ADC and MCA of a
+conventional pulse-height analysis system.
+
+The Saturn model has the same functionality, but is packaged as a standalone 
+box, and is interfaced with an Enhanced Parallel Port (EPP) interface.&nbsp; 
+Support for the DXP modules under EPICS is provided in the following manner:
+
+<OL>
+<LI> Device support for the MCA record. This permits each channel of the DXP to
+be connected to an MCA record identically with other supported MCA hardware,
+including the Canberra AIM.
+<P>
+<LI> A new DXP record.  This record is used to set all of the many software
+selectable parameters for the DXP, including shaping times, pileup rejection
+criteria, etc.
+</OL>
+
+<P>
+To use the Saturn model (also packaged as the Vortex from Radiant) on Linux 
+requires access to the EPP I/O port.  Obtaining access to those ports requires
+root privilege.  This can be done in any of following 3 ways:
+<OL>
+<LI> Prefered method. This application builds a program on Linux called startWithIopl3.
+This program calls iopl(3) as root, and then reverts back to the non-root account 
+to run dxpApp.  To use this method the application startWithIopl3 must be installed
+as suid root.  Do this as follows:
+<PRE>
+> su root
+(password)
+> chmod +s bin/linux-x86/startWithIopl3
+</PRE>
+The dxpApp application can then be run without root privilege as follows:
+<PRE>
+> cd iocBoot/iocDxpLinux
+> ../../bin/linux-x86/startWithIopl3 ../../bin/linux-x86/dxpApp st.cmd
+</PRE>
+</LI>
+<LI> Not as good. Install the dxpApp application as suid root.  Do this as follows:
+<PRE>
+> su root
+> chmod +s /bin/linux-x86/dxpApp
+</PRE>
+The dxpApp application can then be run without root priviledge as follows:
+<PRE>
+> ../../bin/linux-x86/dxpApp st.cmd
+</PRE>
+</LI>
+<LI> Worst method.  Run dxpApp as root:
+<PRE>
+> su root
+(password)
+> ../../bin/linux-x86/dxpApp st.cmd
+<PRE>
+</LI>
+</OL>
+
+
+<P>
+<HR>
+<ADDRESS>
+Suggestions and comments to: 
+<A HREF="mailto:rivers@cars.uchicago.edu">
+Mark Rivers </A> : (rivers@cars.uchicago.edu)
+<BR>
+Last modified: January 27, 2004</ADDRESS>
+
+</BODY>
+</HTML>
