@@ -1,7 +1,7 @@
 
 file {
-	name="j:\epics\devel\camac\camacApp\op\adl\16element_dxp.adl"
-	version=020306
+	name="/home/epics/synApps5-1beta2/dxp/dxpApp/op/adl/16element_dxp.adl"
+	version=030000
 }
 display {
 	object {
@@ -269,9 +269,14 @@ rectangle {
 		height=20
 	}
 	display[0] {
-		label="All DXPs"
+		label="DXP Control"
 		name="16element_dxp_all.adl"
-		args="P=$(P)dxp"
+		args="P=$(P)"
+	}
+	display[1] {
+		label="DXP Statistics"
+		name="16element_dxp_statistics.adl"
+		args="P=$(P)"
 	}
 	clr=14
 	bclr=4
