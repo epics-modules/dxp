@@ -194,9 +194,9 @@ XIA_MD_SHARED void dxp_md_error(char* routine, char* message, int* error_code, c
 
 	time_t current = time(NULL);
 	struct tm *localTime = localtime(&current);
-	char logTimeFormat[20];
+	char logTimeFormat[30];
 
-	strftime(logTimeFormat, 20, "%c", localTime);
+	strftime(logTimeFormat, 30, "%c", localTime);
 
 /*	printf("%s [ERROR] [%d] %s: %s\n", logTimeFormat, *error_code, routine, message); */
 	fprintf(out_stream, "[ERROR] [%d] %s %s, line = %d, %s: %s\n", *error_code, logTimeFormat, file, line, routine, message);
@@ -216,9 +216,9 @@ XIA_MD_SHARED void dxp_md_warning(char *routine, char *message, char *file, int 
 {
 	time_t current = time(NULL);
 	struct tm *localTime = localtime(&current);
-	char logTimeFormat[20];
+	char logTimeFormat[30];
 
-	strftime(logTimeFormat, 20, "%c", localTime);
+	strftime(logTimeFormat, 30, "%c", localTime);
 
 	fprintf(out_stream, "[WARN] %s %s, line = %d, %s: %s\n", logTimeFormat, file, line, routine, message);
 	fflush(out_stream);
