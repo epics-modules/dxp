@@ -42,7 +42,9 @@ typedef struct dxpReadbacks {
     int blfilter;
     double number_scas;
     double sca_lo[NUM_DXP_SCAS];
+    double sca_lo_rbv[NUM_DXP_SCAS];
     double sca_hi[NUM_DXP_SCAS];
+    double sca_hi_rbv[NUM_DXP_SCAS];
     int sca_counts[NUM_DXP_SCAS];
     double eVPerBin;
 } dxpReadbacks;
