@@ -1,28 +1,47 @@
-# This is a demonstration startup for for stdApp on non-vxWorks systems
+# Allocate 96MB of memory temporarily so that all code loads in 32MB.
+mem = malloc(1024*1024*96)
+
+# vxWorks startup file
+< cdCommands
+
+< ../nfsCommands
+
+cd topbin
+ld < dxpApp.munch
+cd startup
 
 # Tell EPICS all about the record types, device-support modules, drivers,
-# etc. in this build from stdApp
-dbLoadDatabase("../../dbd/std.dbd")
-registerRecordDeviceDriver(pdbbase)
+# etc. in this build from CARSApp
+dbLoadDatabase("$(TOP)/dbd/dxpVX.dbd")
+dxpVX_registerRecordDeviceDriver(pdbbase)
 
+# Initialize MPF stuff
 routerInit
+
+# Initialize local MPF connection
 localMessageRouterStart(0)
 
-showSymbol
+# Set debugging flags
+mcaRecordDebug = 0
+dxpRecordDebug=0
+mcaDXPServerDebug=0
+devDxpMpfDebug=0
 
-# Set up 2 serial ports
-initTtyPort("serial1", "/dev/ttyS0", 9600, "N", 1, 8, "N", 1000)
-initTtyPort("serial2", "/dev/ttyS1", 19200, "N", 1, 8, "N", 1000)
-initSerialServer("serial1", "serial1", 1000, 20, "")
-initSerialServer("serial2", "serial2", 1000, 20, "")
+# Setup the ksc2917 hardware definitions
+# These are all actually the defaults, so this is not really necessary
+# num_cards, addrs, ivec, irq_level
+ksc2917_setup(1, 0xFF00, 0x00A0, 2)
 
-#PID slow
-dbLoadTemplate "pid_slow.template"
+# Initialize the CAMAC library.  Note that this is normally done automatically
+# in iocInit, but we need to get the CAMAC routines working before iocInit
+# because we need to initialize the DXP hardware.
+camacLibInit
 
-# A set of scan parameters for each positioner.  This is a convenience
-# for the user.  It can contain an entry for each scannable thing in the
-# crate.
-dbLoadTemplate "scanParms.template"
+# Load the DXP stuff
+< 16element.cmd
+
+# Generic CAMAC record
+dbLoadRecords("$(CAMAC)/camacApp/Db/generic_camac.db","P=13GE2:,R=camac1,SIZE=2048")
 
 ### Scan-support software
 # crate-resident scan.  This executes 1D, 2D, 3D, and 4D scans, and caches
@@ -30,33 +49,34 @@ dbLoadTemplate "scanParms.template"
 # or the equivalent for that.)  This database is configured to use the
 # "alldone" database (above) to figure out when motors have stopped moving
 # and it's time to trigger detectors.
-dbLoadRecords("../../../std/stdApp/Db/scan.db", "P=stdTest:,MAXPTS1=2000,MAXPTS2=200,MAXPTS3=20,MAXPTS4=10,MAXPTSH=10")
+dbLoadRecords("$(STD)/stdApp/Db/scan.db","P=13GE2:,MAXPTS1=2000,MAXPTS2=200,MAXPTS3=20,MAXPTS4=10,MAXPTSH=10")
 
-# Free-standing user string/number calculations (sCalcout records)
-dbLoadRecords("../../../std/stdApp/Db/userStringCalcs10.db", "P=stdTest:")
+################################################################################
+# Setup device/driver support addresses, interrupt vectors, etc.
 
-# Free-standing user transforms (transform records)
-dbLoadRecords("../../../std/stdApp/Db/userTransforms10.db", "P=stdTest:")
-
-# Miscellaneous PV's, such as burtResult
-dbLoadRecords("../../../std/stdApp/Db/misc.db", "P=stdTest:")
+# dbrestore setup
+sr_restore_incomplete_sets_ok = 1
+#reboot_restoreDebug=5
 
 iocInit
+
+#Reset the CAMAC crate - may not want to do this after things are all working
+#ext = 0
+#cdreg &ext, 0, 0, 1, 0
+#cccz ext
+
 
 ### Start up the autosave task and tell it what to do.
 # The task is actually named "save_restore".
 # (See also, 'initHooks' above, which is the means by which the values that
 # will be saved by the task we're starting here are going to be restored.
-#
-# Load the list of search directories for request files
+
 < ../requestFileCommands
-
+#
 # save positions every five seconds
-create_monitor_set("auto_positions.req", 5)
+#create_monitor_set("auto_positions.req",5)
 # save other things every thirty seconds
-create_monitor_set("auto_settings.req", 30)
+create_monitor_set("auto_settings.req",30)
 
-# Enable user string calcs and user transforms
-dbpf "stdTest:EnableUserTrans.PROC","1"
-dbpf "stdTest:EnableUserSCalcs.PROC","1"
-
+# Free the memory we allocated at the beginning of this script
+free(mem)
