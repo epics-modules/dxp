@@ -1,15 +1,16 @@
+< envPaths
 # Tell EPICS all about the record types, device-support modules, drivers,
 # etc. in this build from dxpApp
 dbLoadDatabase("../../dbd/dxp.dbd")
-registerRecordDeviceDriver(pdbbase)
+dxp_registerRecordDeviceDriver(pdbbase)
 
 routerInit
 localMessageRouterStart(0)
 
-setSymbol(dxpRecordDebug,0)
-setSymbol(mcaDXPServerDebug,0)
-setSymbol(devDxpMpfDebug,0)
-showSymbol
+var(dxpRecordDebug,0)
+var(mcaDXPServerDebug,0)
+var(devDxpMpfDebug,0)
+var
 
 # DXP and mca records for the Vortex detector
 
@@ -35,9 +36,11 @@ dxp_initialize
 # DXPConfig(serverName, detChan1, detChan2, detChan3, detChan4, queueSize)
 DXPConfig("DXP1",  0,  -1, -1, -1, 300)
 
-dbLoadRecords("../../../dxp/dxpApp/Db/dxp2x.db","P=dxpLinux:, R=dxp1, INP=#C0 S0  @DXP1")
-dbLoadRecords("../../../mca/mcaApp/Db/mca.db", "P=dxpLinux:,M=dxp_adc1,DTYPE=MPF MCA,INP=#C0 S0 @DXP1,NCHAN= 2048")
+dbLoadRecords("$(DXP)/dxpApp/Db/dxp2x.db","P=dxpLinux:, R=dxp1, INP=#C0 S0  @DXP1")
+dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=dxpLinux:,M=dxp_mca1,DTYPE=MPF MCA,INP=#C0 S0 @DXP1,NCHAN= 2048")
 
+set_pass0_restoreFile(auto_settings.sav)
+set_pass1_restoreFile(auto_settings.sav)
 iocInit
 
 ### Start up the autosave task and tell it what to do.
@@ -49,7 +52,7 @@ iocInit
 < ../requestFileCommands
 
 # save positions every five seconds
-create_monitor_set("auto_positions.req", 5)
+#create_monitor_set("auto_positions.req", 5)
 # save other things every thirty seconds
 create_monitor_set("auto_settings.req", 30)
 
