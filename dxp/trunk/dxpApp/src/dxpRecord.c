@@ -196,11 +196,6 @@ typedef struct  {
    (NUM_ASC_PARAMS + NUM_FIPPI_PARAMS + NUM_DSP_PARAMS + NUM_BASELINE_PARAMS)
 #define NUM_SHORT_READ_PARAMS (NUM_SHORT_WRITE_PARAMS +  NUM_READONLY_PARAMS)
 
-/* The number of module types.  Currently 2: DXP4C and DXP2X. */
-#define MAX_MODULE_TYPES 2
-#define DXP4C 0
-#define DXP2X 1
-
 #define MAX_PEAKING_TIMES 5
 static int peakingTimes[MAX_PEAKING_TIMES] = {5,10,15,20,25};
 #define MAX_DECIMATIONS 4
@@ -269,15 +264,18 @@ static long init_record(struct dxpRecord *pdxp, int pass)
     module = pdxp->inp.value.vmeio.signal;
 
     /* Initialize values for each type of module */
-    moduleInfo[DXP4C].clock = .050;
-    moduleInfo[DXP2X].clock = .025;
-    moduleInfo[DXP4C].adc_gain = 1024./1000.;  /* ADC bits/mV */
-    moduleInfo[DXP2X].adc_gain = 1024./1000.;
+    moduleInfo[MODEL_DXP4C].clock = .050;
+    moduleInfo[MODEL_DXP2X].clock = .025;
+    moduleInfo[MODEL_DXPX10P].clock = .025;
+    moduleInfo[MODEL_DXP4C].adc_gain = 1024./1000.;  /* ADC bits/mV */
+    moduleInfo[MODEL_DXP2X].adc_gain = 1024./1000.;
+    moduleInfo[MODEL_DXPX10P].adc_gain = 1024./1000.;
 
     /* Figure out what kind of module this is */
     dxp_get_board_type(&module, boardString);
-    if (strcmp(boardString, "dxp4c") == 0) pdxp->mtyp = MODEL_DXP4C;
+    if (strcmp(boardString, "dxp4c") == 0) pdxp->mtyp        = MODEL_DXP4C;
     else if (strcmp(boardString, "dxp4c2x") == 0) pdxp->mtyp = MODEL_DXP2X;
+    else if (strcmp(boardString, "dxpx10p") == 0) pdxp->mtyp = MODEL_DXPX10P;
     else Debug(1, "(init_record), unknown board type\n");
     minfo = &moduleInfo[pdxp->mtyp];
 
@@ -352,11 +350,12 @@ static long init_record(struct dxpRecord *pdxp, int pass)
     dxp_get_symbol_index(&module, "MCALIMHI",    &minfo->offsets.mcalimhi);
     /* For some reason the DXP2X uses PEAKSAM rather than PEAKSAMP */
     switch (pdxp->mtyp) {
-       case DXP4C:
+       case MODEL_DXP4C:
           dxp_get_symbol_index(&module, "PEAKSAMP",   &minfo->offsets.peaksamp);
           dxp_get_symbol_index(&module, "BINFACT",   &minfo->offsets.binfact);
           break;
-       case DXP2X:
+       case MODEL_DXP2X:
+       case MODEL_DXPX10P:
           dxp_get_symbol_index(&module, "PEAKSAM",   &minfo->offsets.peaksamp);
           dxp_get_symbol_index(&module, "GAINDAC",   &minfo->offsets.gaindac);
           dxp_get_symbol_index(&module, "BINFACT1",   &minfo->offsets.binfact);
@@ -580,7 +579,8 @@ static long monitor(struct dxpRecord *pdxp)
    switch (pdxp->mtyp) {
       unsigned short gaindac;
       float gain;
-      case DXP2X:
+      case MODEL_DXP2X:
+      case MODEL_DXPX10P:
          /* See comments in function setGain below *
           * Gain = 0.5*10^((GAINDAC/65536)*40/20) */
          gaindac = pdxp->pptr[minfo->offsets.gaindac];
@@ -590,7 +590,7 @@ static long monitor(struct dxpRecord *pdxp)
             db_post_events(pdxp,&pdxp->gainrbv, monitor_mask);
          }
          break;
-      case DXP4C:
+      case MODEL_DXP4C:
          /* Work needed here !!! set coarse gain, fine gain?*/
          break;
    }
@@ -601,7 +601,8 @@ static long monitor(struct dxpRecord *pdxp)
       unsigned short binfact1;
       float binwidth;
       float emax;
-      case DXP2X:
+      case MODEL_DXP2X:
+      case MODEL_DXPX10P:
          slowlen = pdxp->pptr[minfo->offsets.slowlen];
          binfact1 = pdxp->pptr[minfo->offsets.binfact];
          binwidth = binfact1 / (pdxp->pgain * pdxp->gain * minfo->adc_gain * 4. * 
@@ -612,7 +613,7 @@ static long monitor(struct dxpRecord *pdxp)
             db_post_events(pdxp,&pdxp->emaxrbv, monitor_mask);
          }
          break;
-      case DXP4C:
+      case MODEL_DXP4C:
          /* Work needed here !!!*/
          break;
    }
@@ -780,7 +781,7 @@ static void setPeakingTimeStrings(struct dxpRecord *pdxp)
    for (i=0; i < MAX_PEAKING_TIMES; i++) {
       peakingTime = peakingTimes[i] * minfo->clock * (1<<decimation);
       /* Minimum peaking time on the DXP4C of .5 microsecond */
-      if ((pdxp->mtyp == DXP4C) && (peakingTime < 0.5)) peakingTime = 0.5;
+      if ((pdxp->mtyp == MODEL_DXP4C) && (peakingTime < 0.5)) peakingTime = 0.5;
       sprintf(pdxp->pkl+DXP_STRING_SIZE*i, "%.2f us", peakingTime);
    }
 }
@@ -813,7 +814,7 @@ static void setPeakingTime(struct dxpRecord *pdxp)
    int decimation = pdxp->pptr[minfo->offsets.decimation];
 
    /* The shortest shaping time is not allowed on DXP4C */
-   if ((pdxp->mtyp == DXP4C) && (decimation == 0) && (index == 0)) index=1;
+   if ((pdxp->mtyp == MODEL_DXP4C) && (decimation == 0) && (index == 0)) index=1;
    slowlen = peakingTimes[index];
    slowgap = pdxp->pptr[minfo->offsets.slowgap];
    switch (decimation) {
@@ -858,7 +859,8 @@ static void setGain(struct dxpRecord *pdxp)
     * Compute new values of GAINDAC, etc. */
 
    switch (pdxp->mtyp) {
-      case DXP2X:
+      case MODEL_DXP2X:
+      case MODEL_DXPX10P:
          /* This algorithm is from page 49 of the DXP2X User's Manual
           * Gain = Gin * Gvar * Gbase
           * Gin = 1, Gbase=~.5, Gvar=10^((GAINDAC/65536)*40/20)
@@ -873,7 +875,7 @@ static void setGain(struct dxpRecord *pdxp)
          (*pdset->send_msg)
             (pdxp,  MSG_DXP_SET_SHORT_PARAM, minfo->offsets.gaindac, gaindac);
          break;
-      case DXP4C:
+      case MODEL_DXP4C:
          /* Work needed here !!! set coarse gain, fine gain?*/
          break;
    }
@@ -893,7 +895,8 @@ static void setBinWidth(struct dxpRecord *pdxp)
     * time is changed. */
 
    switch (pdxp->mtyp) {
-      case DXP2X:
+      case MODEL_DXP2X:
+      case MODEL_DXPX10P:
          binwidth = pdxp->emax / pdxp->pptr[minfo->offsets.mcalimhi];
          slowlen = pdxp->pptr[minfo->offsets.slowlen];
          binfact1 = pdxp->pgain * pdxp->gain * minfo->adc_gain * 4. * 
@@ -904,7 +907,7 @@ static void setBinWidth(struct dxpRecord *pdxp)
          (*pdset->send_msg)
             (pdxp,  MSG_DXP_SET_SHORT_PARAM, minfo->offsets.binfact, binfact1);
          break;
-      case DXP4C:
+      case MODEL_DXP4C:
          /* Work needed here !!! */
          break;
    }
