@@ -121,7 +121,21 @@ typedef struct {
     asynInterface int32Array;
     asynInterface drvUser;
     asynInterface dxp;
+    int iopl_called;
 } drvDxpPvt;
+
+/* The following is terribly ugly.  But on Linux with the MODEL_DXPX10P we need
+ * to all iopl(3) once in each thread before doing I/O.  Hopefully we will
+ * find a way to have threads inherit iopl privilege  */
+#ifdef linux
+#define CHECK_IOPL \
+    if (!pPvt->iopl_called && pPvt->moduleType == MODEL_DXPX10P) { \
+        iopl(3); \
+        pPvt->iopl_called = 1; \
+    }
+#else
+#define CHECK_IOPL
+#endif
 
 
 /* These functions are private, not in any interface */
@@ -332,12 +346,6 @@ int DXPConfig(const char *portName, int chan1, int chan2,
     }
     pPvt->forceRead = 1;  /* Don't use cache first time */
 
-#ifdef linux
-    /* The following should only be done on Linux, and is ugly. 
-     * Hopefully we can get rid of it*/
-    if (pPvt->moduleType == MODEL_DXPX10P) iopl(3);
-#endif
-
     /* Link with higher level routines */
     pPvt->common.interfaceType = asynCommonType;
     pPvt->common.pinterface  = (void *)&drvDxpCommon;
@@ -448,6 +456,7 @@ static asynStatus drvDxpWrite(void *drvPvt, asynUser *pasynUser,
     int signal;
     dxpChannel_t *dxpChan;
 
+    CHECK_IOPL;
     pasynManager->getAddr(pasynUser, &signal);
     dxpChan = findChannel(pPvt, pasynUser, signal);
 
@@ -602,6 +611,7 @@ static asynStatus drvDxpRead(void *drvPvt, asynUser *pasynUser,
     int signal;
     dxpChannel_t *dxpChan;
 
+    CHECK_IOPL;
     pasynManager->getAddr(pasynUser, &signal);
     dxpChan = findChannel(pPvt, pasynUser, signal);
     pPvt->detChan = signal;
@@ -649,6 +659,7 @@ static asynStatus int32ArrayRead(void *drvPvt, asynUser *pasynUser,
     int signal;
     dxpChannel_t *dxpChan;
 
+    CHECK_IOPL;
     pasynManager->getAddr(pasynUser, &signal);
     dxpChan = findChannel(pPvt, pasynUser, signal);
     if (dxpChan == NULL) return(asynError);
@@ -679,6 +690,7 @@ static asynStatus dxpReadParams(void *drvPvt, asynUser *pasynUser,
     int signal;
     dxpChannel_t *dxpChan;
 
+    CHECK_IOPL;
     pasynManager->getAddr(pasynUser, &signal);
     dxpChan = findChannel(pPvt, pasynUser, signal);
     if (dxpChan == NULL) return(asynError);
@@ -697,6 +709,7 @@ static asynStatus dxpSetShortParam(void *drvPvt, asynUser *pasynUser,
     int signal;
     int nparams;
 
+    CHECK_IOPL;
     pasynManager->getAddr(pasynUser, &signal);
     pPvt->detChan = signal;
     /* Set a short parameter */
@@ -712,7 +725,10 @@ static asynStatus dxpCalibrate(void *drvPvt, asynUser *pasynUser,
                                         int ivalue)
 {
     /* Calibrate */
+    drvDxpPvt *pPvt = (drvDxpPvt *)drvPvt;
     int signal;
+
+    CHECK_IOPL;
     pasynManager->getAddr(pasynUser, &signal);
     dxp_calibrate_one_channel(&signal, &ivalue);
     return(asynSuccess);
@@ -725,6 +741,7 @@ static asynStatus dxpDownloadFippi(void *drvPvt, asynUser *pasynUser,
     int signal;
     pasynManager->getAddr(pasynUser, &signal);
 
+    CHECK_IOPL;
     pPvt->detChan = signal;
     /* Download new FiPPI file */
     asynPrint(pasynUser, ASYN_TRACE_FLOW,
