@@ -143,7 +143,7 @@ static long send_dxp_msg(dxpRecord *pdxp, devDxpCommand command,
     devDxpMessage *pmsg;
 
     asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW,
-              "devDxp::send_dxp_msg: command=%d, pact=%d"
+              "devDxp::send_dxp_msg: command=%d, pact=%d, "
               "name=%s, param=%d, dvalue=%f, pointer=%p\n",
               command, pdxp->pact,
               name, param, dvalue, pointer);
@@ -315,11 +315,12 @@ void asynCallback(asynUser *pasynUser)
              if (pdxpReadbacks->number_mca_channels <= 0.)
                  pdxpReadbacks->number_mca_channels = 2048.;
              /* Set the bin width in eV */
+             pdxpReadbacks->emax = pmsg->dvalue;
              dvalue = pmsg->dvalue *1000. / pdxpReadbacks->number_mca_channels;
              asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
                  "devDxp::asynCallback, MSG_DXP_SET_DOUBLE_PARAM"
-                 " setting mca_bin_width=%f\n",
-                 pmsg->dvalue);
+                 " setting emax=%f, mca_bin_width=%f\n",
+                 pmsg->dvalue, dvalue);
              xiaSetAcquisitionValues(detChan, "mca_bin_width", &dvalue);
          }
          readDxpParams(pasynUser);
@@ -393,6 +394,8 @@ static void readDxpParams(asynUser *pasynUser)
     dxpRecord *pdxp = pPvt->pdxp;
     dxpReadbacks *pdxpReadbacks = pdxp->rbptr;
     int i;
+    double number_mca_channels;
+    double dvalue;
     int detChan;
     int acquiring;
 
@@ -433,7 +436,24 @@ static void readDxpParams(asynUser *pasynUser)
         xiaGetAcquisitionValues(detChan, "mca_bin_width",
                                 &pdxpReadbacks->mca_bin_width);
         xiaGetAcquisitionValues(detChan, "number_mca_channels",
-                                &pdxpReadbacks->number_mca_channels);
+                                &number_mca_channels);
+        /* If the number of mca channels has changed then recompute mca_bin_width from
+         * emax */
+        if (number_mca_channels != pdxpReadbacks->number_mca_channels) {
+           pdxpReadbacks->number_mca_channels = number_mca_channels;
+           if (pdxpReadbacks->number_mca_channels <= 0.)
+               pdxpReadbacks->number_mca_channels = 2048.;
+           /* Set the bin width in eV */
+           dvalue = pdxpReadbacks->emax *1000. / pdxpReadbacks->number_mca_channels;
+           asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
+               "devDxp::readDxpParams resetting mca_bin_width"
+               " setting emax=%f, mca_bin_width=%f\n",
+               pdxpReadbacks->emax, dvalue);
+           xiaSetAcquisitionValues(detChan, "mca_bin_width", &dvalue);
+           xiaGetAcquisitionValues(detChan, "mca_bin_width",
+                                   &pdxpReadbacks->mca_bin_width);
+        }
+ 
         /* There seems to be a bug in Handel.  It gives error reading number_of_scas
          * written to, and then it always reads backs as 16, no matter what was written
          * Comment out reading it, just set to 16 for now
@@ -447,7 +467,7 @@ static void readDxpParams(asynUser *pasynUser)
         xiaGetRunData(detChan, "sca", pdxpReadbacks->sca_counts);
     }
     asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
-        "devDxp::asynCallback, MSG_DXP_READ_PARAMS\n"
+        "devDxp::readDxpParams\n"
         "input_count_rate:     %f\n"
         "output_count_rate:    %f\n"
         "triggers:             %d\n"
