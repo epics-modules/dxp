@@ -655,7 +655,7 @@ static long special(struct dbAddr *paddr, int after)
      if (paddr->pfield == (void *) &pdxp->strt) {
         if (pdxp->strt != 0) {
             status = (*pdset->send_mca_msg)
-                     (pdxp, MSG_ACQUIRE);
+                     (pdxp, mcaStartAcquire);
             pdxp->strt=0;
         }
         goto found_param;
@@ -663,7 +663,7 @@ static long special(struct dbAddr *paddr, int after)
      if (paddr->pfield == (void *) &pdxp->stop) {
         if (pdxp->stop != 0) {
             status = (*pdset->send_mca_msg)
-                     (pdxp, MSG_STOP_ACQUISITION);
+                     (pdxp, mcaStopAcquire);
             pdxp->stop=0;
         }
         goto found_param;
@@ -672,7 +672,7 @@ static long special(struct dbAddr *paddr, int after)
      if (paddr->pfield == (void *) &pdxp->eras) {
         if (pdxp->eras != 0) {
             status = (*pdset->send_mca_msg)
-                     (pdxp, MSG_ERASE);
+                     (pdxp, mcaErase);
             pdxp->eras=0;
         }
         goto found_param;
