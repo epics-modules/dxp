@@ -52,6 +52,8 @@
 
 #include "mca.h"
 #include "dxp.h"
+#include "asynDriver.h"
+#include "asynInt32Array.h"
 #include "asynMca.h"
 #include "asynDxp.h"
 #include "xerxes_structures.h"
@@ -112,6 +114,7 @@ typedef struct {
     char *portName;
     asynInterface common;
     asynInterface mca;
+    asynInterface int32Array;
     asynInterface dxp;
 } drvDxpPvt;
 
@@ -139,9 +142,11 @@ static asynStatus mcaDoCommand(        void *drvPvt, asynUser *pasynUser,
                                        int ivalue, double dvalue);
 static asynStatus mcaReadStatus(       void *drvPvt, asynUser *pasynUser,
                                        mcaAsynAcquireStatus *pstat);
-static asynStatus mcaReadData(          void *drvPvt, asynUser *pasynUser, 
-                                       int maxChans, int *nactual, 
-                                       int *data);
+static asynStatus mcaReadData(         void *drvPvt, asynUser *pasynUser, 
+                                       epicsInt32 *data, size_t maxChans,
+                                       size_t *nactual);
+static asynStatus mcaWriteData(        void *drvPvt, asynUser *pasynUser, 
+                                       epicsInt32 *data, size_t maxChans);
 static asynStatus dxpSetShortParam(    void *drvPvt, asynUser *pasynUser, 
                                        unsigned short offset, 
                                        unsigned short value);
@@ -167,7 +172,12 @@ static const struct asynCommon drvDxpCommon = {
 /* mca methods */
 static const asynMca drvDxpMca = {
     mcaDoCommand,
-    mcaReadStatus,
+    mcaReadStatus
+};
+
+/* int32Array methods */
+static const asynInt32Array drvDxpInt32Array = {
+    mcaWriteData,
     mcaReadData
 };
 
@@ -302,6 +312,9 @@ int DXPConfig(const char *portName, int chan1, int chan2,
     pPvt->mca.interfaceType = asynMcaType;
     pPvt->mca.pinterface  = (void *)&drvDxpMca;
     pPvt->mca.drvPvt = pPvt;
+    pPvt->int32Array.interfaceType = asynInt32ArrayType;
+    pPvt->int32Array.pinterface  = (void *)&drvDxpInt32Array;
+    pPvt->int32Array.drvPvt = pPvt;
     pPvt->dxp.interfaceType = asynDxpType;
     pPvt->dxp.pinterface  = (void *)&drvDxpDxp;
     pPvt->dxp.drvPvt = pPvt;
@@ -322,6 +335,11 @@ int DXPConfig(const char *portName, int chan1, int chan2,
     status = pasynManager->registerInterface(portName,&pPvt->mca);
     if (status != asynSuccess) {
         errlogPrintf("dxpConfig: Can't register mca.\n");
+        return(-1);
+    }
+    status = pasynManager->registerInterface(portName,&pPvt->int32Array);
+    if (status != asynSuccess) {
+        errlogPrintf("dxpConfig: Can't register int32Array.\n");
         return(-1);
     }
     status = pasynManager->registerInterface(portName,&pPvt->dxp);
@@ -515,7 +533,8 @@ static asynStatus mcaReadStatus(void *drvPvt, asynUser *pasynUser,
 }
 
 static asynStatus mcaReadData(void *drvPvt, asynUser *pasynUser, 
-                       int maxChans, int *nactual, int *data)
+                              epicsInt32 *data, size_t maxChans, 
+                              size_t *nactual)
 {
     drvDxpPvt *pPvt = (drvDxpPvt *)drvPvt;
     int signal;
@@ -533,6 +552,14 @@ static asynStatus mcaReadData(void *drvPvt, asynUser *pasynUser,
     }
     *nactual = pPvt->nchans;
     return(asynSuccess);
+}
+
+static asynStatus mcaWriteData(void *drvPvt, asynUser *pasynUser,
+                               epicsInt32 *data, size_t maxChans)
+{
+    asynPrint(pasynUser, ASYN_TRACE_ERROR,
+              "drvDxp::mcaWriteData, write operations not allowed\n");
+    return(asynError);
 }
 
 
