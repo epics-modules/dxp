@@ -1,5 +1,3 @@
-/*<Thu May 23 11:38:03 2002--ALPHA_FRINK--0.0.6--Do not remove--XIA>*/
-
 /*
  *  xerxes_errors.h
  *
@@ -61,6 +59,7 @@
 #define DXP_MDSIZE             7
 #define DXP_MDOVERFLOW         8
 #define DXP_MDUNKNOWN          9
+#define DXP_MDCLOSE           10
 
 /*  primitive level error codes (due to mdio failures) 101-200*/
 #define DXP_WRITE_TSAR       101
@@ -133,6 +132,9 @@
 #define DXP_DSPTIMEOUT       319
 #define DXP_INITORDER        320
 #define DXP_UDXPS            321
+#define DXP_NOSUPPORT        322
+#define DXP_WRONG_FIRMWARE   323
+#define DXP_UDXP             324
 
 /*  host machine errors codes:  401-500 */
 #define DXP_NOMEM            401
@@ -145,4 +147,3 @@
 #define DXP_LOG_LEVEL		 501	/** Log level invalid */
 
 #endif						/* Endif for XERXES_ERRORS_H */
-

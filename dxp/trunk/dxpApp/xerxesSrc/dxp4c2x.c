@@ -1,5 +1,3 @@
-/*<Thu May 23 11:38:03 2002--ALPHA_FRINK--0.0.6--Do not remove--XIA>*/
-
 /*
  * dxp4c2x.c
  *
@@ -158,6 +156,15 @@ int dxp_init_dxp4c2x(Functions* funcs)
 
   funcs->dxp_setup_cmd = dxp_setup_cmd;
 
+  funcs->dxp_read_memory = dxp_read_memory;
+
+  funcs->dxp_write_reg = dxp_write_reg;
+  funcs->dxp_read_reg  = dxp_read_reg;
+
+  funcs->dxp_do_cmd = dxp_do_cmd;
+
+  funcs->dxp_unhook = dxp_unhook;
+  
   return DXP_SUCCESS;
 }
 /******************************************************************************
@@ -2915,7 +2922,7 @@ static int dxp_begin_control_task(int* ioChan, int* modChan, short *type,
 	return status;
   }
 
-  sprintf(info_string, "RUNTASKS(read) = %#x", temp);
+  sprintf(info_string, "RUNTASKS(read) = %#lx", temp);
   dxp_log_debug("dxp_begin_control_task", info_string);
 
 
@@ -3063,7 +3070,7 @@ static int dxp_end_control_task(int* ioChan, int* modChan, Board *board)
 	return status;
   }
 
-  sprintf(info_string, "RUNTASKS (read) = %#x", temp);
+  sprintf(info_string, "RUNTASKS (read) = %#lx", temp);
   dxp_log_debug("dxp_end_control_task", info_string);
 
   /* Remove the CONTROL_TASK bit and add the WRITE_BASELINE bit */
@@ -3470,19 +3477,27 @@ static int dxp_check_calibration(int* calibtest, unsigned short* params, Dsp_Inf
 static int dxp_get_runstats(unsigned short array[], Dsp_Info* dsp, 
 							unsigned int* evts, unsigned int* under, 
 							unsigned int* over, unsigned int* fast, 
-							unsigned int* base, double* live)
+							unsigned int* base, double* live,
+							double* icr, double* ocr)
 	 /* unsigned short array[];			Input: array from parameter block   */
 	 /* Dsp_Info *dsp;					Input: Relavent DSP info					*/
 	 /* unsigned int *evts;				Output: number of events in spectrum*/
-	 /* unsigned int *under;				Output: number of underflows        */
+	 /* unsigned int *under;			Output: number of underflows        */
 	 /* unsigned int *over;				Output: number of overflows         */
 	 /* unsigned int *fast;				Output: number of fast filter events*/
 	 /* unsigned int *base;				Output: number of baseline events   */
 	 /* double *live;					Output: livetime in seconds         */
+	 /* double *icr;					Output: input count rate in kHz     */
+	 /* double *ocr;					Output: output count rate in kHz    */
 {
 
   unsigned short addr[3]={USHRT_MAX, USHRT_MAX, USHRT_MAX};
   int status=DXP_SUCCESS;
+
+  /* Temporary values from the DSP code */
+  double real = 0.;
+  unsigned long nEvents = 0;
+  double liveclock_tick = 0;
 
   /* Use unsigned long temp variables since we will be bit shifting 
    * by more than an unsigned short or int in the routine */
@@ -3490,8 +3505,20 @@ static int dxp_get_runstats(unsigned short array[], Dsp_Info* dsp,
 
   /* Now retrieve the location of DSP parameters and fill variables */
 
+  /* Retrieve the clock speed of this board */
+  status = dxp_loc("SYSMICROSEC", dsp, &addr[0]);
+  /* If we succeed in retrieving the parameter, then use it, else
+   * default to 20 MHz 
+   */
+  if (status == DXP_SUCCESS) 
+    {
+      liveclock_tick = 16.e-6 / ((double) array[addr[0]]);
+    } else {
+      liveclock_tick = 16.e-6 / 40.;
+    }
+
   /* Events in the run */
-  status += dxp_loc("EVTSINRUN0", dsp, &addr[0]);
+  status = dxp_loc("EVTSINRUN0", dsp, &addr[0]);
   status += dxp_loc("EVTSINRUN1", dsp, &addr[1]);
   temp0 = (unsigned long) array[addr[1]];
   temp1 = (unsigned long) array[addr[0]];
@@ -3532,8 +3559,35 @@ static int dxp_get_runstats(unsigned short array[], Dsp_Info* dsp,
   temp0 = (unsigned long) array[addr[1]];
   temp1 = (unsigned long) array[addr[0]];
   temp2 = (unsigned long) array[addr[2]];
-  *live = ((double) (temp0 + temp1*65536. + temp2*65536.*65536.)) * LIVECLOCK_TICK_TIME;
-
+  *live = ((double) (temp0 + temp1*65536. + temp2*65536.*65536.)) * liveclock_tick;
+  
+  /* Realtime for the run */
+  status += dxp_loc("REALTIME0", dsp, &addr[0]);
+  status += dxp_loc("REALTIME1", dsp, &addr[1]);
+  status += dxp_loc("REALTIME2", dsp, &addr[2]);
+  temp0 = (unsigned long) array[addr[1]];
+  temp1 = (unsigned long) array[addr[0]];
+  temp2 = (unsigned long) array[addr[2]];
+  real = ((double) (temp0 + temp1*pow(2,16) + temp2*pow(2,32))) * liveclock_tick;
+  
+  /* Calculate the number of events in the run */
+  
+  nEvents = *evts + *under + *over;
+  
+  /* Calculate the event rates */
+  if(*live > 0.)
+	{
+	  *icr = 0.001 * (*fast) / (*live);
+	} else {
+	  *icr = -999.;
+	}
+  if(real > 0.)
+	{
+	  *ocr = 0.001 * nEvents / real;
+	} else {
+	  *ocr = -999.;
+	}
+  
   if(status!=DXP_SUCCESS){
 	status = DXP_NOSYMBOL;
 	dxp_log_error("dxp_get_runstats",
@@ -4085,7 +4139,8 @@ static FILE *dxp_find_file(const char* filename, const char* mode)
  * This routine does nothing for this product.
  **********/
 static int dxp_setup_cmd(Board *board, char *name, unsigned int *lenS, 
-						 byte_t *send, unsigned int *lenR, byte_t *receive)
+						 byte_t *send, unsigned int *lenR, byte_t *receive,
+						 byte_t ioFlags)
 {
   UNUSED(board);
   UNUSED(name);
@@ -4093,7 +4148,317 @@ static int dxp_setup_cmd(Board *board, char *name, unsigned int *lenS,
   UNUSED(send);
   UNUSED(lenR);
   UNUSED(receive);
+  UNUSED(ioFlags);
 
   return DXP_SUCCESS;
 }
 
+
+/**********
+ * This routine reads out a specific memory type
+ * or returns an error if that type isn't supported.
+ **********/
+static int dxp_read_memory(int *ioChan, int *modChan, Board *board,
+						   char *name, unsigned long *data)
+{
+  int status;
+
+  char info_string[INFO_LEN];
+
+
+  /* The currently allowed types are:
+   * 1) "internal_multisca"
+   */
+  if (STREQ(name, "internal_multisca")) {
+
+	status = dxp_internal_multisca(ioChan, modChan, board, data);
+
+  } else {
+
+	status = DXP_NOSUPPORT;
+  }
+
+  if (status != DXP_SUCCESS) {
+
+	sprintf(info_string, "Error getting %s data for "
+			"ioChan = %d, modChan = %d", name, *ioChan, *modChan);
+	dxp_log_error("dxp_read_memory", info_string, status);
+	return status;
+  }  
+
+  return DXP_SUCCESS;
+}
+
+
+/**********
+ * This routine reads out the data associated
+ * with the internal multisca firmware type.
+ * It attempts to verify that the currently 
+ * running DSP code supports this type of firmware.
+ **********/
+static int dxp_internal_multisca(int *ioChan, int *modChan, Board *board,
+								 unsigned long *data)
+{
+  int status;
+
+  unsigned long CODEVAR    = 0x0000;
+  unsigned long NUMPOINTS  = 0x0000;
+  unsigned long NUMSCA     = 0x0000;
+  unsigned long SPECTSTART = 0x0000;
+  unsigned long len        = 0;
+  unsigned long i;
+
+  unsigned short *shortData = NULL;
+
+  char info_string[INFO_LEN];
+
+
+  /* Check CODEVAR first */
+  status = dxp_read_dspsymbol(ioChan, modChan, "CODEVAR",
+							  board->dsp[*modChan], &CODEVAR);
+
+  if (status != DXP_SUCCESS) {
+
+	sprintf(info_string, "Error reading CODEVAR for ioChan = %d, "
+			"modChan = %d", *ioChan, *modChan);
+	dxp_log_error("dxp_internal_multisca", info_string, status);
+	return status;
+  }
+  
+  if (CODEVAR != INTERNAL_MULTISCA) {
+
+	status = DXP_WRONG_FIRMWARE;
+	dxp_log_error("dxp_internal_multisca", "Current DSP code does not support "
+				  "Internal MultiSCA Mapping mode", status);
+	return status;
+  }
+  
+
+  /* Check for an active run first? */
+  
+  
+  status = dxp_read_dspsymbol(ioChan, modChan, "NUMPOINTS",
+							  board->dsp[*modChan], &NUMPOINTS);
+
+  if (status != DXP_SUCCESS) {
+
+	sprintf(info_string, "Error reading NUMPOINTS for ioChan = %d, "
+			"modChan = %d", *ioChan, *modChan);
+	dxp_log_error("dxp_internal_multisca", info_string, status);
+	return status;
+  }
+
+  status = dxp_read_dspsymbol(ioChan, modChan, "NUMSCA",
+							  board->dsp[*modChan], &NUMSCA);
+
+  if (status != DXP_SUCCESS) {
+
+	sprintf(info_string, "Error reading NUMSCA for ioChan = %d, "
+			"modChan = %d", *ioChan, *modChan);
+	dxp_log_error("dxp_internal_multisca", info_string, status);
+	return status;
+  }
+
+  status = dxp_read_dspsymbol(ioChan, modChan, "SPECTSTART", 
+							  board->dsp[*modChan], &SPECTSTART);
+
+  if (status != DXP_SUCCESS) {
+
+	sprintf(info_string, "Error reading SPECTSTART for ioChan = %d, "
+			"modChan = %d", *ioChan, *modChan);
+	dxp_log_error("dxp_internal_multisca", info_string, status);
+	return status;
+  }
+
+  /* Size in terms of 24-bit words
+   * (i.e., *not* unsigned short)
+   */
+  len = NUMPOINTS * (NUMSCA + 4);
+  
+  /* Now in terms of shorts */
+  len *= 2;
+
+  sprintf(info_string, "NUMPOINTS = %lu", NUMPOINTS);
+  dxp_log_debug("dxp_internal_multisca", info_string);
+  sprintf(info_string, "NUMSCA = %lu", NUMSCA);
+  dxp_log_debug("dxp_internal_multisca", info_string);
+  sprintf(info_string, "len = %lu", len);
+  dxp_log_debug("dxp_internal_multisca", info_string);
+  sprintf(info_string, "SPECTSTART = %lu", SPECTSTART);
+  dxp_log_debug("dxp_internal_multisca", info_string);
+
+  /* Now, we are actually only reading
+   * out unsigned shorts so we need
+   * to scale things by 2 so that we
+   * pass in an array of the correct size.
+   */
+  shortData = (unsigned short *)dxp4c2x_md_alloc(len * sizeof(unsigned short));
+
+  if (shortData == NULL) {
+
+	status = DXP_NOMEM;
+	dxp_log_error("dxp_internal_multisca", "Out-of-memory creating shortData", status);
+	return status;
+  }
+  
+  status = dxp_read_block(ioChan, modChan, ((unsigned short *)&SPECTSTART), ((unsigned int *)&len), shortData);
+
+  if (status != DXP_SUCCESS) {
+
+	dxp4c2x_md_free((void *)shortData);
+
+	sprintf(info_string, "Error reading data block at addr = %#lx, len = %lu, "
+			"ioChan = %d, modChan = %d", SPECTSTART, len, *ioChan, *modChan);
+	dxp_log_error("dxp_internal_multisca", info_string, status);
+	return status;
+  }
+
+  /* Convert the array of 16-bit words
+   * into an array of 32-bit words that
+   * only use 24 of their bits. (The
+   * DSP Program memory is 24-bits
+   * wide.)
+   */
+  for (i = 0; i < (len / 2); i++) {
+
+	data[i] = (unsigned long)((unsigned long)shortData[i * 2] + ((unsigned long)(shortData[(i * 2) + 1] & 0xFF) << 16));
+  }
+  
+  dxp4c2x_md_free((void *)shortData);
+
+  return DXP_SUCCESS;
+}
+
+
+
+/**********
+ * This routine writes to the specified
+ * register, provided that it is defined
+ * for this product.
+ **********/
+static int dxp_write_reg(int *ioChan, int *modChan, char *name, unsigned short *data)
+{
+  int status;
+
+  unsigned int f   = 0;
+  unsigned int a   = 0;
+  unsigned int len = 0;
+
+  char info_string[INFO_LEN];
+
+  UNUSED(modChan);
+
+
+  if (STREQ("tcr", name)) {
+
+	f = DXP_TCR_F_WRITE;
+	a = DXP_TCR_A_WRITE;
+	
+	len = 1;
+
+  } else {
+
+	status = DXP_NOMATCH;
+	sprintf(info_string, "Register %s does not match known types", name);
+	dxp_log_error("dxp_write_reg", info_string, status);
+	return status;
+  }
+
+  status = dxp4c2x_md_io(ioChan, &f, &a, data, &len);
+
+  if (status != DXP_SUCCESS) {
+
+	sprintf(info_string, "Error reading %s register for ioChan = %d",
+			name, *ioChan);
+	dxp_log_error("dxp_write_reg", info_string, status);
+	return status;
+  }
+
+  return DXP_SUCCESS;
+}
+
+
+/**********
+ * This routine reads from the specified
+ * register, provided that it is defined for
+ * this product.
+ **********/
+XERXES_STATIC int XERXES_API dxp_read_reg(int *ioChan, int *modChan,
+					  char *name, unsigned short *data)
+{
+    int status;
+
+    unsigned int f   = 0;
+    unsigned int a   = 0;
+    unsigned int len = 0;
+
+    char info_string[INFO_LEN];
+
+    UNUSED(modChan);
+
+
+    if (STREQ("tcr", name)) {
+	
+	f = DXP_TCR_F_READ;
+	a = DXP_TCR_A_READ;
+
+	len = 1;
+
+    } else {
+
+	status = DXP_NOMATCH;
+	sprintf(info_string, "Register %s does not match known types", name);
+	dxp_log_error("dxp_read_reg", info_string, status);
+	return status;
+    }
+
+    status = dxp4c2x_md_io(ioChan, &f, &a, data, &len);
+
+    if (status != DXP_SUCCESS) {
+	sprintf(info_string, 
+		"Error reading %s register for ioChan = %d",
+		name,
+		*ioChan);
+	dxp_log_error("dxp_read_reg", info_string, status);
+	return status;
+    }
+ 
+    return DXP_SUCCESS;
+}
+
+
+/**********
+ * This routine does nothing currently.
+ **********/
+XERXES_STATIC int XERXES_API dxp_do_cmd(int *ioChan, byte_t cmd, unsigned int lenS,
+					byte_t *send, unsigned int lenR, byte_t *receive,
+					byte_t ioFlags)
+{
+    UNUSED(ioChan);
+    UNUSED(cmd);
+    UNUSED(lenS);
+    UNUSED(send);
+    UNUSED(lenR);
+    UNUSED(receive);
+    UNUSED(ioFlags);
+    
+    return DXP_SUCCESS;
+}
+
+
+/**********
+ * Calls the interface close routine.
+ **********/
+XERXES_STATIC int XERXES_API dxp_unhook(Board *board)
+{
+    int status;
+
+    
+    status = board->iface->funcs->dxp_md_close(0);
+
+    /* Ignore the status due to some issues involving
+     * repetitive function calls.
+     */
+    
+    return DXP_SUCCESS;
+}

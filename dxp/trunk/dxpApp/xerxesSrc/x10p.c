@@ -1,5 +1,3 @@
-/*<Thu May 23 11:38:03 2002--ALPHA_FRINK--0.0.6--Do not remove--XIA>*/
-
 /*
  * x10p.c
  *
@@ -159,6 +157,15 @@ int dxp_init_dxpx10p(Functions* funcs)
 
 	funcs->dxp_setup_cmd = dxp_setup_cmd;
 
+	funcs->dxp_read_memory = dxp_read_memory;
+
+	funcs->dxp_write_reg = dxp_write_reg;
+	funcs->dxp_read_reg  = dxp_read_reg; 
+	
+	funcs->dxp_do_cmd = dxp_do_cmd;
+
+	funcs->dxp_unhook = dxp_unhook;
+	
 	return DXP_SUCCESS;
 }
 /******************************************************************************
@@ -782,6 +789,10 @@ static int dxp_download_fpgaconfig(int* ioChan, int* modChan, char *name, Board*
       dxp_log_error("dxp_download_fpgaconfig",info_string,status);
       return status;
     }
+	/* Now that a run is started, update the board information as well */
+	board->state[4] = task;
+	board->state[0] = 1;
+
     /* Now wait for BUSY=7 to indicate the DSP is asleep */
     value = 7;
     timeout = 2.0;
@@ -863,6 +874,10 @@ static int dxp_download_fpgaconfig(int* ioChan, int* modChan, char *name, Board*
       dxp_log_error("dxp_download_fpgaconfig",info_string,status);
       return status;
     }
+	/* Now that the run is over, update the board information as well */
+	board->state[4] = 0;
+	board->state[0] = 0;
+
     /* Now wait for BUSY=0 to indicate the DSP is ready */
     value = 0;
     timeout = 2.0;
@@ -1374,6 +1389,7 @@ static int dxp_load_dspfile(FILE* fp, Dsp_Info* dsp)
 		return status;
 	}
 	
+
 /* Load the configuration */
 	
 	if ((status = dxp_load_dspconfig(fp, dsp))!=DXP_SUCCESS) {
@@ -2894,18 +2910,10 @@ static int dxp_end_control_task(int* ioChan, int* modChan, Board *board)
 	float timeout;
 
 	mod = board->mod;
-/* Read WHICHTEST, check if this was a DSP Sleep mode control task */
-	if((status=dxp_read_dspsymbol(ioChan,modChan,
-							"WHICHTEST",board->dsp[*modChan],&temp))!=DXP_SUCCESS){
-		sprintf(info_string,
-			"Error reading WHICHTEST from module %d chan %d",mod,*modChan);
-		dxp_log_error("dxp_end_control_task",info_string,status);
-        return status;
-    }
 
 /* Special case for SLEEP mode.  Merely start a run prior to ending the run and the DSP will 
  * awaken */
-	if (temp==WHICHTEST_SLEEP_DSP) {
+	if (board->state[4] == CT_DXPX10P_SLEEP_DSP) {
 		if ((status = dxp_begin_run(ioChan, modChan, &gate, 
 									&resume, board)) != DXP_SUCCESS) {
 			sprintf(info_string, "Error starting run to end DSP sleep for module %i", mod);
@@ -2925,12 +2933,16 @@ static int dxp_end_control_task(int* ioChan, int* modChan, Board *board)
 		}
 	}
 	
-	if((status=dxp_end_run(ioChan,modChan))!=DXP_SUCCESS){
-		sprintf(info_string,
-			"Error ending control task run for chan %d",*modChan);
-		dxp_log_error("dxp_end_control_task",info_string,status);
-        return status;
-    }
+	/* Do not need to end the run if the control task was baseline history */
+	if (board->state[4] != CT_DXPX10P_BASELINE_HIST) 
+	  {
+		if((status=dxp_end_run(ioChan,modChan))!=DXP_SUCCESS){
+		  sprintf(info_string,
+				  "Error ending control task run for chan %d",*modChan);
+		  dxp_log_error("dxp_end_control_task",info_string,status);
+		  return status;
+		}
+	  }
 
 /* Read/Modify/Write the RUNTASKS parameter */
 /* read */
@@ -2943,8 +2955,13 @@ static int dxp_end_control_task(int* ioChan, int* modChan, Board *board)
     }
 /* Remove the CONTROL_TASK bit and add the WRITE_BASELINE bit */
 /* modify */
-	runtasks = (unsigned short) ((temp & ~CONTROL_TASK) & ~STOP_BASELINE);
-	
+	if (board->state[4] != CT_DXPX10P_BASELINE_HIST) 
+	  {
+		runtasks = (unsigned short) (temp & ~CONTROL_TASK);
+	  } else {
+		runtasks = (unsigned short) (temp & ~STOP_BASELINE);
+	  }
+
 	sprintf(info_string, "runtasks = %#x\n", runtasks);
 	dxp_log_debug("dxp_end_control_task", info_string);
 	
@@ -2989,43 +3006,44 @@ static int dxp_control_task_params(int* ioChan, int* modChan, short *type,
 	info[2] = 0;
 
 /* Check the control task type */
-	if (*type==CT_DXPX10P_SET_ASCDAC) {
-	} else if ((*type==CT_ADC) || (*type==CT_DXPX10P_ADC)) {
-/* length=spectrum length*/
+	if (*type==CT_DXPX10P_SET_ASCDAC) 
+	  {
+	  } else if ((*type==CT_ADC) || (*type==CT_DXPX10P_ADC)) {
+		/* length=spectrum length*/
 		info[0] = dxp_get_history_length(board->dsp[*modChan], board->params[*modChan]);
-/* Recommend waiting 4ms initially, 400ns*spectrum length */
+		/* Recommend waiting 4ms initially, 400ns*spectrum length */
 		info[1] = 4;
-/* Recomment 1ms polling after initial wait */
+		/* Recomment 1ms polling after initial wait */
 		info[2] = 1;
-	} else if (*type==CT_DXPX10P_TRKDAC) {
-/* length=1, the value of the tracking DAC */
+	  } else if (*type==CT_DXPX10P_TRKDAC) {
+		/* length=1, the value of the tracking DAC */
 		info[0] = 1;
-/* Recommend waiting 10ms initially */
+		/* Recommend waiting 10ms initially */
 		info[1] = 10;
-/* Recomment 1ms polling after initial wait */
+		/* Recomment 1ms polling after initial wait */
 		info[2] = 1;
-	} else if (*type==CT_DXPX10P_SLOPE_CALIB) {
-	} else if (*type==CT_DXPX10P_SLEEP_DSP) {
-	} else if (*type==CT_DXPX10P_PROGRAM_FIPPI) {
-	} else if (*type==CT_DXPX10P_SET_POLARITY) {
-	} else if (*type==CT_DXPX10P_CLOSE_INPUT_RELAY) {
-	} else if (*type==CT_DXPX10P_OPEN_INPUT_RELAY) {
-	} else if (*type==CT_DXPX10P_RC_BASELINE) {
-	} else if (*type==CT_DXPX10P_RC_EVENT) {
-	} else if (*type==CT_DXPX10P_BASELINE_HIST) {
+	  } else if (*type==CT_DXPX10P_SLOPE_CALIB) {
+	  } else if (*type==CT_DXPX10P_SLEEP_DSP) {
+	  } else if (*type==CT_DXPX10P_PROGRAM_FIPPI) {
+	  } else if (*type==CT_DXPX10P_SET_POLARITY) {
+	  } else if (*type==CT_DXPX10P_CLOSE_INPUT_RELAY) {
+	  } else if (*type==CT_DXPX10P_OPEN_INPUT_RELAY) {
+	  } else if (*type==CT_DXPX10P_RC_BASELINE) {
+	  } else if (*type==CT_DXPX10P_RC_EVENT) {
+	  } else if (*type==CT_DXPX10P_BASELINE_HIST) {
 		info[0] = dxp_get_history_length(board->dsp[*modChan], board->params[*modChan]);
-/* Recommend waiting 0ms, baseline history is available immediately */
+		/* Recommend waiting 0ms, baseline history is available immediately */
 		info[1] = 1;
-/* Recomment 0ms polling, baseline history is available immediately */
+		/* Recomment 0ms polling, baseline history is available immediately */
 		info[2] = 1;
-	} else if (*type==CT_DXPX10P_RESET) {
-	} else {
+	  } else if (*type==CT_DXPX10P_RESET) {
+	  } else {
 		status=DXP_NOCONTROLTYPE;
 		sprintf(info_string,
-			"Unknown control type %d for this DXP4C2X module",*type);
+				"Unknown control type %d for this DXP4C2X module",*type);
 		dxp_log_error("dxp_control_task_params",info_string,status);
 		return status;
-	}
+	  }
 	
 	return status;
 
@@ -3335,69 +3353,116 @@ static int dxp_check_calibration(int* calibtest, unsigned short* params, Dsp_Inf
 static int dxp_get_runstats(unsigned short array[], Dsp_Info* dsp, 
 							unsigned int* evts, unsigned int* under, 
 							unsigned int* over, unsigned int* fast, 
-							unsigned int* base, double* live)
+							unsigned int* base, double* live,
+							double* icr, double* ocr)
 /* unsigned short array[];			Input: array from parameter block   */
-/* Dsp_Info *dsp;					Input: Relavent DSP info					*/
+/* Dsp_Info *dsp;					Input: Relavent DSP info		    */
 /* unsigned int *evts;				Output: number of events in spectrum*/
 /* unsigned int *under;				Output: number of underflows        */
 /* unsigned int *over;				Output: number of overflows         */
 /* unsigned int *fast;				Output: number of fast filter events*/
 /* unsigned int *base;				Output: number of baseline events   */
 /* double *live;					Output: livetime in seconds         */
+/* double *icr;					    Output: Input Count Rate in kHz     */
+/* double *ocr;					    Output: Output Count Rate in kHz    */
 {
 
     unsigned short addr[3]={USHRT_MAX, USHRT_MAX, USHRT_MAX};
-	int status=DXP_SUCCESS;
+    int status=DXP_SUCCESS;
+    
+    /* Temporary values from the DSP code */
+    double real = 0.;
+    unsigned long nEvents = 0;
+    double liveclock_tick = 0;
 
-/* Use unsigned long temp variables since we will be bit shifting 
- * by more than an unsigned short or int in the routine */
-	unsigned long temp0, temp1, temp2;
+    /* Use unsigned long temp variables since we will be bit shifting 
+     * by more than an unsigned short or int in the routine */
+    unsigned long temp0, temp1, temp2;
+    
+    /* Now retrieve the location of DSP parameters and fill variables */
+    
+    /* Retrieve the clock speed of this board */
+    status = dxp_loc("SYSMICROSEC", dsp, &addr[0]);
+    /* If we succeed in retrieving the parameter, then use it, else
+     * default to 20 MHz 
+     */
+    if (status == DXP_SUCCESS) 
+      {
+	liveclock_tick = 16.e-6 / ((double) array[addr[0]]);
+      } else {
+	liveclock_tick = 16.e-6 / 20.;
+      }
 
-/* Now retrieve the location of DSP parameters and fill variables */
-
-/* Events in the run */
-	status += dxp_loc("EVTSINRUN0", dsp, &addr[0]);
-	status += dxp_loc("EVTSINRUN1", dsp, &addr[1]);
-	temp0 = (unsigned long) array[addr[1]];
-	temp1 = (unsigned long) array[addr[0]];
-	*evts = (unsigned int) (temp0 + temp1*pow(2,16));
-
-/* Underflows in the run */
-	status += dxp_loc("UNDRFLOWS0", dsp, &addr[0]);
-	status += dxp_loc("UNDRFLOWS1", dsp, &addr[1]);
-	temp0 = (unsigned long) array[addr[1]];
-	temp1 = (unsigned long) array[addr[0]];
-	*under = (unsigned int) (temp0 + temp1*pow(2,16));
-
-/* Overflows in the run */
-	status += dxp_loc("OVERFLOWS0", dsp, &addr[0]);
-	status += dxp_loc("OVERFLOWS1", dsp, &addr[1]);
-	temp0 = (unsigned long) array[addr[1]];
-	temp1 = (unsigned long) array[addr[0]];
-	*over = (unsigned int) (temp0 + temp1*pow(2,16));
-
-/* Fast Peaks in the run */
-	status += dxp_loc("FASTPEAKS0", dsp, &addr[0]);
-	status += dxp_loc("FASTPEAKS1", dsp, &addr[1]);
-	temp0 = (unsigned long) array[addr[1]];
-	temp1 = (unsigned long) array[addr[0]];
-	*fast = (unsigned int) (temp0 + temp1*pow(2,16));
-
-/* Baseline Events in the run */
-	status += dxp_loc("BASEEVTS0", dsp, &addr[0]);
-	status += dxp_loc("BASEEVTS1", dsp, &addr[1]);
-	temp0 = (unsigned long) array[addr[1]];
-	temp1 = (unsigned long) array[addr[0]];
-	*base = (unsigned int) (temp0 + temp1*pow(2,16));
-
-/* Livetime for the run */
-	status += dxp_loc("LIVETIME0", dsp, &addr[0]);
-	status += dxp_loc("LIVETIME1", dsp, &addr[1]);
-	status += dxp_loc("LIVETIME2", dsp, &addr[2]);
-	temp0 = (unsigned long) array[addr[1]];
-	temp1 = (unsigned long) array[addr[0]];
-	temp2 = (unsigned long) array[addr[2]];
-	*live = ((double) (temp0 + temp1*pow(2,16) + temp2*pow(2,32))) * LIVECLOCK_TICK_TIME;
+    /* Events in the run */
+    status = dxp_loc("EVTSINRUN0", dsp, &addr[0]);
+    status += dxp_loc("EVTSINRUN1", dsp, &addr[1]);
+    temp0 = (unsigned long) array[addr[1]];
+    temp1 = (unsigned long) array[addr[0]];
+    *evts = (unsigned int) (temp0 + temp1*65536.);
+    
+    /* Underflows in the run */
+    status += dxp_loc("UNDRFLOWS0", dsp, &addr[0]);
+    status += dxp_loc("UNDRFLOWS1", dsp, &addr[1]);
+    temp0 = (unsigned long) array[addr[1]];
+    temp1 = (unsigned long) array[addr[0]];
+    *under = (unsigned int) (temp0 + temp1*65536.);
+    
+    /* Overflows in the run */
+    status += dxp_loc("OVERFLOWS0", dsp, &addr[0]);
+    status += dxp_loc("OVERFLOWS1", dsp, &addr[1]);
+    temp0 = (unsigned long) array[addr[1]];
+    temp1 = (unsigned long) array[addr[0]];
+    *over = (unsigned int) (temp0 + temp1*65536.);
+    
+    /* Fast Peaks in the run */
+    status += dxp_loc("FASTPEAKS0", dsp, &addr[0]);
+    status += dxp_loc("FASTPEAKS1", dsp, &addr[1]);
+    temp0 = (unsigned long) array[addr[1]];
+    temp1 = (unsigned long) array[addr[0]];
+    *fast = (unsigned int) (temp0 + temp1*65536.);
+    
+    /* Baseline Events in the run */
+    status += dxp_loc("BASEEVTS0", dsp, &addr[0]);
+    status += dxp_loc("BASEEVTS1", dsp, &addr[1]);
+    temp0 = (unsigned long) array[addr[1]];
+    temp1 = (unsigned long) array[addr[0]];
+    *base = (unsigned int) (temp0 + temp1*65536.);
+    
+    /* Livetime for the run */
+    status += dxp_loc("LIVETIME0", dsp, &addr[0]);
+    status += dxp_loc("LIVETIME1", dsp, &addr[1]);
+    status += dxp_loc("LIVETIME2", dsp, &addr[2]);
+    temp0 = (unsigned long) array[addr[1]];
+    temp1 = (unsigned long) array[addr[0]];
+    temp2 = (unsigned long) array[addr[2]];
+    *live = ((double) (temp0 + temp1*65536. + temp2*65536.*65536.)) * liveclock_tick;
+    
+    /* Realtime for the run */
+    status += dxp_loc("REALTIME0", dsp, &addr[0]);
+    status += dxp_loc("REALTIME1", dsp, &addr[1]);
+    status += dxp_loc("REALTIME2", dsp, &addr[2]);
+    temp0 = (unsigned long) array[addr[1]];
+    temp1 = (unsigned long) array[addr[0]];
+    temp2 = (unsigned long) array[addr[2]];
+    real = ((double) (temp0 + temp1*65536. + temp2*65536.*65536.)) * liveclock_tick;
+    
+    /* Calculate the number of events in the run */
+    
+    nEvents = *evts + *under + *over;
+    
+    /* Calculate the event rates */
+    if(*live > 0.)
+	  {
+		*icr = 0.001 * (*fast) / (*live);
+	  } else {
+		*icr = -999.;
+	  }
+    if(real > 0.)
+	  {
+		*ocr = 0.001 * nEvents / real;
+	  } else {
+		*ocr = -999.;
+	  }
 
 	if(status!=DXP_SUCCESS){
 		status = DXP_NOSYMBOL;
@@ -3949,7 +4014,8 @@ static FILE *dxp_find_file(const char* filename, const char* mode)
  * This routine does nothing for this product.
  **********/
 static int dxp_setup_cmd(Board *board, char *name, unsigned int *lenS,
-						 byte_t *send, unsigned int *lenR, byte_t *receive)
+						 byte_t *send, unsigned int *lenR, byte_t *receive,
+						 byte_t ioFlags)
 {
   UNUSED(board);
   UNUSED(name);
@@ -3957,7 +4023,89 @@ static int dxp_setup_cmd(Board *board, char *name, unsigned int *lenS,
   UNUSED(send);
   UNUSED(lenR);
   UNUSED(receive);
+  UNUSED(ioFlags);
 
   return DXP_SUCCESS;
 }
 
+
+/**********
+ * This routine currently does nothing.
+ **********/
+static int dxp_read_memory(int *ioChan, int *modChan, Board *board,
+						   char *name, unsigned long *data)
+{
+  UNUSED(ioChan);
+  UNUSED(modChan);
+  UNUSED(board);
+  UNUSED(name);
+  UNUSED(data);
+
+  return DXP_SUCCESS;
+}
+
+
+
+/**********
+ * This routine does nothing currently.
+ **********/
+static int dxp_write_reg(int *ioChan, int *modChan, char *name, unsigned short *data)
+{
+  UNUSED(ioChan);
+  UNUSED(modChan);
+  UNUSED(name);
+  UNUSED(data);
+
+  return DXP_SUCCESS;
+}
+
+
+/**********
+ * This routine currently does nothing.
+ **********/
+XERXES_STATIC int dxp_read_reg(int *ioChan, int *modChan, char *name, unsigned short *data)
+{
+    UNUSED(ioChan);
+    UNUSED(modChan);
+    UNUSED(name);
+    UNUSED(data);
+
+    return DXP_SUCCESS;
+}
+
+
+/**********
+ * This routine does nothing currently.
+ **********/
+XERXES_STATIC int XERXES_API dxp_do_cmd(int *ioChan, byte_t cmd, unsigned int lenS,
+					byte_t *send, unsigned int lenR, byte_t *receive,
+					byte_t ioFlags)
+{
+    UNUSED(ioChan);
+    UNUSED(cmd);
+    UNUSED(lenS);
+    UNUSED(send);
+    UNUSED(lenR);
+    UNUSED(receive);
+    UNUSED(ioFlags);
+    
+    return DXP_SUCCESS;
+}
+
+
+/**********
+ * Calls the interface close routine.
+ **********/
+XERXES_STATIC int XERXES_API dxp_unhook(Board *board)
+{
+    int status;
+
+    
+    status = board->iface->funcs->dxp_md_close(0);
+
+    /* Ignore the status due to some issues involving
+     * repetitive function calls.
+     */
+    
+    return DXP_SUCCESS;
+}

@@ -1,5 +1,3 @@
-/*<Thu May 23 11:38:03 2002--ALPHA_FRINK--0.0.6--Do not remove--XIA>*/
-
 /**
  *
  * xia_md.h
@@ -49,6 +47,8 @@
 #include "xerxes_structures.h"
 
 #include "xia_mddef.h"
+#include "xia_common.h"
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -105,13 +105,5 @@ extern FILE *out_stream;
 #define dxp_md_log_info(x, y)		dxp_md_log(MD_INFO,    (x), (y), 0,   __FILE__, __LINE__)
 #define dxp_md_log_debug(x, y)		dxp_md_log(MD_DEBUG,   (x), (y), 0,   __FILE__, __LINE__)
 
-/* Useful Macros */
-#define STREQ(x, y)		(strcmp((x), (y)) == 0)
-
-/* Boolean support */
-typedef unsigned char boolean;
-#define TRUE_	(1==1)
-#define FALSE_	(1==0)
 
 #endif /* XIA_MD_H */
-

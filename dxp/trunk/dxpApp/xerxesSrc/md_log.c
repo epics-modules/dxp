@@ -1,5 +1,3 @@
-/*<Thu May 23 11:38:03 2002--ALPHA_FRINK--0.0.6--Do not remove--XIA>*/
-
 /*
  * md_log.c
  *
@@ -54,14 +52,15 @@
 #include "xerxes_structures.h"
 #include "md_generic.h"
 #include "xia_md.h"
+#include "xia_common.h"
 
 #define INFO_LEN	400
 
 /* Current output for the logging routines. By default, this is set to stdout */
-FILE *out_stream = stdout;
+FILE *out_stream = NULL;
 
 /* Static variables */
-static boolean isSuppressed = FALSE_;
+static boolean_t isSuppressed = FALSE_;
 static int	   logLevel     = MD_ERROR;
 
 /*****************************************************************************
@@ -122,6 +121,9 @@ XIA_MD_SHARED void XIA_MD_API dxp_md_log(int level, char *routine, char *message
 /* int error;							Input: Only used if this is an ERROR */
 {
 
+/* If out_stream is NULL then set it to stdout */
+	if (out_stream == NULL) out_stream = stdout;
+   
 /* If logging is disabled or we aren't set
  * to log this message level then return gracefully, NOW! 
  */
@@ -187,7 +189,7 @@ XIA_MD_SHARED void dxp_md_error(char* routine, char* message, int* error_code, c
 	struct tm *localTime = localtime(&current);
 	char logTimeFormat[20];
 
-	strftime(logTimeFormat, 20, "%c", localTime);
+	strftime(logTimeFormat, 20, "%X", localTime);
 
 /*	printf("%s [ERROR] [%d] %s: %s\n", logTimeFormat, *error_code, routine, message); */
 	fprintf(out_stream, "[ERROR] [%d] %s %s, line = %d, %s: %s\n", *error_code, logTimeFormat, file, line, routine, message);
@@ -209,7 +211,7 @@ XIA_MD_SHARED void dxp_md_warning(char *routine, char *message, char *file, int 
 	struct tm *localTime = localtime(&current);
 	char logTimeFormat[20];
 
-	strftime(logTimeFormat, 20, "%c", localTime);
+	strftime(logTimeFormat, 20, "%X", localTime);
 
 	fprintf(out_stream, "[WARN] %s %s, line = %d, %s: %s\n", logTimeFormat, file, line, routine, message);
 	fflush(out_stream);
@@ -303,4 +305,3 @@ XIA_MD_SHARED void dxp_md_output(char *filename)
 	return;
 
 }
-

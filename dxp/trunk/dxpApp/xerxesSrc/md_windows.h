@@ -1,5 +1,3 @@
-/*<Thu May 23 11:38:03 2002--ALPHA_FRINK--0.0.6--Do not remove--XIA>*/
-
 /*
  *  machine_dependant.h
  *
@@ -51,9 +49,10 @@
 #ifndef DXP_MD_H
 #define DXP_MD_H
 
-#ifndef XIA_MDDEF_H
-#include <xia_mddef.h>
-#endif
+
+#include "xia_mddef.h"
+#include "xia_common.h"
+
 
 /* Remove this when the uDXP is ready to go live */
 /*#define EXCLUDE_UDXP    0xDEAD*/
@@ -69,115 +68,169 @@ extern "C" {
 #endif
 
 #ifdef _DXP_PROTO_						/* ANSI C prototypes */
-  XIA_MD_STATIC int XIA_MD_API dxp_md_initialize(unsigned int *, char *);
-  XIA_MD_STATIC int XIA_MD_API dxp_md_open(char *, int *);
-  XIA_MD_STATIC int XIA_MD_API dxp_md_open_bcn(int *, int *, int *, int *);
-  XIA_MD_STATIC int XIA_MD_API dxp_md_io(int *,unsigned int *,unsigned int *,unsigned short *,unsigned int *);
+XIA_MD_STATIC int XIA_MD_API dxp_md_initialize(unsigned int *, char *);
+XIA_MD_STATIC int XIA_MD_API dxp_md_open(char *, int *);
+XIA_MD_STATIC int XIA_MD_API dxp_md_open_bcn(int *, int *, int *, int *);
+XIA_MD_STATIC int XIA_MD_API dxp_md_io(int *,unsigned int *,unsigned int *,unsigned short *,unsigned int *);
+XIA_MD_STATIC int XIA_MD_API dxp_md_close(int *camChan);
 
 #if !(defined(EXCLUDE_DXPX10P) && defined(EXCLUDE_DGFG200))
-  XIA_MD_STATIC int XIA_MD_API dxp_md_epp_initialize(unsigned int *, char *);
-  XIA_MD_STATIC int XIA_MD_API dxp_md_epp_open(char *, int *);
-  XIA_MD_STATIC int XIA_MD_API dxp_md_epp_io(int *,unsigned int *,unsigned int *,unsigned short *,unsigned int *);
+XIA_MD_STATIC int XIA_MD_API dxp_md_epp_initialize(unsigned int *, char *);
+XIA_MD_STATIC int XIA_MD_API dxp_md_epp_open(char *, int *);
+XIA_MD_STATIC int XIA_MD_API dxp_md_epp_io(int *,unsigned int *,unsigned int *,unsigned short *,unsigned int *);
+XIA_MD_STATIC int XIA_MD_API dxp_md_epp_close(int *camChan);
 #endif /* EXCLUDE_DXPX10P */
 
+#ifndef EXCLUDE_USB
+XIA_MD_STATIC int XIA_MD_API dxp_md_usb_initialize(unsigned int *maxMod, char *dllName);
+XIA_MD_STATIC int XIA_MD_API dxp_md_usb_open(char *ioname, int *camChan);
+XIA_MD_STATIC int XIA_MD_API dxp_md_usb_io(int *camChan, unsigned int *function, 
+					   unsigned int *address, unsigned short *data,
+					   unsigned int *length);
+XIA_MD_STATIC int XIA_MD_API dxp_md_usb_close(int *camChan);
+#endif /* EXCLUDE_USB */
+
 #ifndef EXCLUDE_UDXP
-  XIA_MD_STATIC int XIA_MD_API dxp_md_serial_initialize(unsigned int *maxMod, char *dllName);
-  XIA_MD_STATIC int XIA_MD_API dxp_md_serial_open(char *ioname, int *camChan);
-  XIA_MD_STATIC int XIA_MD_API dxp_md_serial_io(int *camChan, unsigned int *function, 
-												unsigned int *address, unsigned short *data,
-												unsigned int *length);
+XIA_MD_STATIC int XIA_MD_API dxp_md_serial_initialize(unsigned int *maxMod, char *dllName);
+XIA_MD_STATIC int XIA_MD_API dxp_md_serial_open(char *ioname, int *camChan);
+XIA_MD_STATIC int XIA_MD_API dxp_md_serial_io(int *camChan, unsigned int *function, 
+					      unsigned int *address, unsigned short *data,
+					      unsigned int *length);
+XIA_MD_STATIC int XIA_MD_API dxp_md_serial_close(int *camChan);
 #endif /* EXCLUDE_UDXP */
 
-  XIA_MD_STATIC int XIA_MD_API dxp_md_lock_resource(int *ioChan, int *modChan, short *lock);
-  XIA_MD_STATIC int XIA_MD_API dxp_md_wait(float *);
-  XIA_MD_STATIC void XIA_MD_API dxp_md_error_control(char *,int *);
-  XIA_MD_STATIC int XIA_MD_API dxp_md_get_maxblk(void);
-  XIA_MD_STATIC int XIA_MD_API dxp_md_set_maxblk(unsigned int *);
-  XIA_MD_STATIC int XIA_MD_API dxp_md_puts(char *);
+XIA_MD_STATIC int XIA_MD_API dxp_md_lock_resource(int *ioChan, int *modChan, short *lock);
+XIA_MD_STATIC int XIA_MD_API dxp_md_wait(float *);
+XIA_MD_STATIC void XIA_MD_API dxp_md_error_control(char *,int *);
+XIA_MD_STATIC int XIA_MD_API dxp_md_get_maxblk(void);
+XIA_MD_STATIC int XIA_MD_API dxp_md_set_maxblk(unsigned int *);
+XIA_MD_STATIC int XIA_MD_API dxp_md_puts(char *);
 
-  XIA_MD_IMPORT int XIA_MD_API xia_camxfr(short *camadr, short func, long nbytes, short mode, short *buf);
-  XIA_MD_IMPORT int XIA_MD_API xia_caminit(short *buf);
+#ifdef USE_SERIAL_DLPORTIO
+XIA_MD_STATIC void dxp_md_poll_and_read(unsigned short port, unsigned long nBytes, unsigned char *buf);
+XIA_MD_STATIC void dxp_md_serial_write(unsigned short port, unsigned long nBytes, unsigned char *buf);
+XIA_MD_STATIC void dxp_md_clear_port(unsigned short port);
+#endif
+
+XIA_MD_IMPORT int XIA_MD_API xia_camxfr(short *camadr, short func, long nbytes, short mode, short *buf);
+XIA_MD_IMPORT int XIA_MD_API xia_caminit(short *buf);
 
 #if !(defined(EXCLUDE_DXPX10P) && defined(EXCLUDE_DGFG200))
-  XIA_MD_IMPORT int XIA_MD_API DxpInitPortAddress(int );
-  XIA_MD_IMPORT int XIA_MD_API DxpInitEPP(int );
-  XIA_MD_IMPORT int XIA_MD_API DxpWriteWord(unsigned short,unsigned short);
-  XIA_MD_IMPORT int XIA_MD_API DxpWriteBlock(unsigned short,unsigned short *,int);
-  XIA_MD_IMPORT int XIA_MD_API DxpWriteBlocklong(unsigned short,unsigned long *, int);
-  XIA_MD_IMPORT int XIA_MD_API DxpReadWord(unsigned short,unsigned short *);
-  XIA_MD_IMPORT int XIA_MD_API DxpReadBlock(unsigned short, unsigned short *,int);
-  XIA_MD_IMPORT int XIA_MD_API DxpReadBlockd(unsigned short, double *,int);
-  XIA_MD_IMPORT int XIA_MD_API DxpReadBlocklong(unsigned short,unsigned long *,int);
-  XIA_MD_IMPORT int XIA_MD_API DxpReadBlocklongd(unsigned short, double *,int);
-  XIA_MD_IMPORT void XIA_MD_API DxpSetID(unsigned short id);
-  XIA_MD_IMPORT int XIA_MD_API DxpWritePort(unsigned short port, unsigned short data);
-  XIA_MD_IMPORT int XIA_MD_API DxpReadPort(unsigned short port, unsigned short *data);
+XIA_MD_IMPORT int XIA_MD_API DxpInitPortAddress(int );
+XIA_MD_IMPORT int XIA_MD_API DxpInitEPP(int );
+XIA_MD_IMPORT int XIA_MD_API DxpWriteWord(unsigned short,unsigned short);
+XIA_MD_IMPORT int XIA_MD_API DxpWriteBlock(unsigned short,unsigned short *,int);
+XIA_MD_IMPORT int XIA_MD_API DxpWriteBlocklong(unsigned short,unsigned long *, int);
+XIA_MD_IMPORT int XIA_MD_API DxpReadWord(unsigned short,unsigned short *);
+XIA_MD_IMPORT int XIA_MD_API DxpReadBlock(unsigned short, unsigned short *,int);
+XIA_MD_IMPORT int XIA_MD_API DxpReadBlockd(unsigned short, double *,int);
+XIA_MD_IMPORT int XIA_MD_API DxpReadBlocklong(unsigned short,unsigned long *,int);
+XIA_MD_IMPORT int XIA_MD_API DxpReadBlocklongd(unsigned short, double *,int);
+XIA_MD_IMPORT void XIA_MD_API DxpSetID(unsigned short id);
+XIA_MD_IMPORT int XIA_MD_API DxpWritePort(unsigned short port, unsigned short data);
+XIA_MD_IMPORT int XIA_MD_API DxpReadPort(unsigned short port, unsigned short *data);
 #endif /* EXCLUDE_DXPX10P */
 
+#ifndef EXCLUDE_USB
+XIA_MD_IMPORT int XIA_MD_API usb_open(char *device, HANDLE *hDevice);
+XIA_MD_IMPORT int XIA_MD_API usb_close(HANDLE hDevice);
+XIA_MD_IMPORT int XIA_MD_API usb_read(long address, long nWords, char *device, unsigned short *data);
+XIA_MD_IMPORT int XIA_MD_API usb_write(long address, long nWords, char *device, unsigned short *data);
+  
+#endif /* EXCLUDE_USB */
+
 #ifndef EXCLUDE_UDXP
-  XIA_MD_IMPORT int XIA_MD_API InitSerialPort(unsigned short port, unsigned long baud);
-  XIA_MD_IMPORT int XIA_MD_API CloseSerialPort(unsigned short port);
-  XIA_MD_IMPORT int XIA_MD_API NumBytesAtSerialPort(unsigned short port, unsigned long *numBytes);
-  XIA_MD_IMPORT int XIA_MD_API ReadSerialPort(unsigned short port, unsigned long size, char *data);
-  XIA_MD_IMPORT int XIA_MD_API WriteSerialPort(unsigned short port, unsigned long size, char *data);
+XIA_MD_IMPORT int XIA_MD_API InitSerialPort(unsigned short port, unsigned long baud);
+XIA_MD_IMPORT int XIA_MD_API CloseSerialPort(unsigned short port);
+XIA_MD_IMPORT int XIA_MD_API ReadSerialPort(unsigned short port, unsigned long size, char *data);
+XIA_MD_IMPORT int XIA_MD_API WriteSerialPort(unsigned short port, unsigned long size, char *data);
+XIA_MD_IMPORT int XIA_MD_API CheckAndClearTransmitBuffer(unsigned short port);
+XIA_MD_IMPORT int XIA_MD_API CheckAndClearReceiveBuffer(unsigned short port);
+#ifndef USE_SERIAL_DLPORTIO
+XIA_MD_IMPORT int XIA_MD_API NumBytesAtSerialPort(unsigned short port, unsigned long *numBytes);
+#endif /* USE_SERIAL_DLPORTIO */
+
+#ifdef USE_SERIAL_DLPORTIO
+XIA_MD_IMPORT unsigned short XIA_MD_API IsByteAtPort(unsigned short port);
+XIA_MD_IMPORT unsigned short XIA_MD_API IsClearForNextByte(unsigned short port);
+XIA_MD_IMPORT void XIA_MD_API DumpRegistersToConsole(unsigned short port);
+#endif /* USE_SERIAL_DLPORTIO */
+
 #endif /* EXCLUDE_UDXP */
 
 
 
 #else									/* old style prototypes */
 
-  XIA_MD_STATIC int XIA_MD_API dxp_md_initialize();
-  XIA_MD_STATIC int XIA_MD_API dxp_md_open();
-  XIA_MD_STATIC int XIA_MD_API dxp_md_open_bcn();
-  XIA_MD_STATIC int XIA_MD_API dxp_md_io();
+XIA_MD_STATIC int XIA_MD_API dxp_md_initialize();
+XIA_MD_STATIC int XIA_MD_API dxp_md_open();
+XIA_MD_STATIC int XIA_MD_API dxp_md_open_bcn();
+XIA_MD_STATIC int XIA_MD_API dxp_md_io();
+XIA_MD_STATIC int XIA_MD_API dxp_md_close();
 
 #if !(defined(EXCLUDE_DXPX10P) && defined(EXCLUDE_DGFG200))
-  XIA_MD_STATIC int XIA_MD_API dxp_md_epp_initialize();
-  XIA_MD_STATIC int XIA_MD_API dxp_md_epp_open();
-  XIA_MD_STATIC int XIA_MD_API dxp_md_epp_io();
+XIA_MD_STATIC int XIA_MD_API dxp_md_epp_initialize();
+XIA_MD_STATIC int XIA_MD_API dxp_md_epp_open();
+XIA_MD_STATIC int XIA_MD_API dxp_md_epp_io();
+XIA_MD_STATIC int XIA_MD_API dxp_md_epp_close();
 #endif /* EXCLUDE_DXPX10P */
 
+#ifndef EXCLUDE_USB
+XIA_MD_STATIC int XIA_MD_API dxp_md_usb_initialize();
+XIA_MD_STATIC int XIA_MD_API dxp_md_usb_open();
+XIA_MD_STATIC int XIA_MD_API dxp_md_usb_io();
+XIA_MD_STATIC int XIA_MD_API dxp_md_usb_close();
+#endif /* EXCLUDE_USB */
+
 #ifndef EXCLUDE_UDXP
-  XIA_MD_STATIC int XIA_MD_API dxp_md_serial_initialize();
-  XIA_MD_STATIC int XIA_MD_API dxp_md_serial_open();
-  XIA_MD_STATIC int XIA_MD_API dxp_md_serial_io();
+XIA_MD_STATIC int XIA_MD_API dxp_md_serial_initialize();
+XIA_MD_STATIC int XIA_MD_API dxp_md_serial_open();
+XIA_MD_STATIC int XIA_MD_API dxp_md_serial_io();
+XIA_MD_STATIC int XIA_MD_API dxp_md_serial_close();
 #endif /* EXCLUDE_UDXP */
 
 
-  XIA_MD_STATIC int XIA_MD_API dxp_md_lock_resource();
-  XIA_MD_STATIC int XIA_MD_API dxp_md_wait();
-  XIA_MD_STATIC void XIA_MD_API dxp_md_error_control();
-  XIA_MD_STATIC int XIA_MD_API dxp_md_get_maxblk();
-  XIA_MD_STATIC int XIA_MD_API dxp_md_set_maxblk();
-  XIA_MD_STATIC void XIA_MD_API *dxp_md_alloc();
-  XIA_MD_STATIC void XIA_MD_API dxp_md_free();
-  XIA_MD_STATIC int XIA_MD_API dxp_md_puts();
+XIA_MD_STATIC int XIA_MD_API dxp_md_lock_resource();
+XIA_MD_STATIC int XIA_MD_API dxp_md_wait();
+XIA_MD_STATIC void XIA_MD_API dxp_md_error_control();
+XIA_MD_STATIC int XIA_MD_API dxp_md_get_maxblk();
+XIA_MD_STATIC int XIA_MD_API dxp_md_set_maxblk();
+XIA_MD_STATIC void XIA_MD_API *dxp_md_alloc();
+XIA_MD_STATIC void XIA_MD_API dxp_md_free();
+XIA_MD_STATIC int XIA_MD_API dxp_md_puts();
 
-  XIA_MD_IMPORT int XIA_MD_API xia_camxfr();
-  XIA_MD_IMPORT int XIA_MD_API xia_caminit();
+XIA_MD_IMPORT int XIA_MD_API xia_camxfr();
+XIA_MD_IMPORT int XIA_MD_API xia_caminit();
 
 #if !(defined(EXCLUDE_DXPX10P) && defined(EXCLUDE_DGFG200))
-  XIA_MD_IMPORT int XIA_MD_API DxpInitPortAddress();
-  XIA_MD_IMPORT int XIA_MD_API DxpInitEPP();
-  XIA_MD_IMPORT int XIA_MD_API DxpWriteWord();
-  XIA_MD_IMPORT int XIA_MD_API DxpWriteBlock();
-  XIA_MD_IMPORT int XIA_MD_API DxpWriteBlocklong();
-  XIA_MD_IMPORT int XIA_MD_API DxpReadWord();
-  XIA_MD_IMPORT int XIA_MD_API DxpReadBlock();
-  XIA_MD_IMPORT int XIA_MD_API DxpReadBlockd();
-  XIA_MD_IMPORT int XIA_MD_API DxpReadBlocklong();
-  XIA_MD_IMPORT int XIA_MD_API DxpReadBlocklongd();
-  XIA_MD_IMPORT void XIA_MD_API DxpSetID();
-  XIA_MD_IMPORT int XIA_MD_API DxpWritePort();
-  XIA_MD_IMPORT int XIA_MD_API DxpReadPort();
+XIA_MD_IMPORT int XIA_MD_API DxpInitPortAddress();
+XIA_MD_IMPORT int XIA_MD_API DxpInitEPP();
+XIA_MD_IMPORT int XIA_MD_API DxpWriteWord();
+XIA_MD_IMPORT int XIA_MD_API DxpWriteBlock();
+XIA_MD_IMPORT int XIA_MD_API DxpWriteBlocklong();
+XIA_MD_IMPORT int XIA_MD_API DxpReadWord();
+XIA_MD_IMPORT int XIA_MD_API DxpReadBlock();
+XIA_MD_IMPORT int XIA_MD_API DxpReadBlockd();
+XIA_MD_IMPORT int XIA_MD_API DxpReadBlocklong();
+XIA_MD_IMPORT int XIA_MD_API DxpReadBlocklongd();
+XIA_MD_IMPORT void XIA_MD_API DxpSetID();
+XIA_MD_IMPORT int XIA_MD_API DxpWritePort();
+XIA_MD_IMPORT int XIA_MD_API DxpReadPort();
 #endif /* EXCLUDE_DXPX10P */
 
+#ifndef EXCLUDE_USB
+XIA_MD_IMPORT int XIA_MD_API usb_open();
+XIA_MD_IMPORT int XIA_MD_API usb_close();
+XIA_MD_IMPORT int XIA_MD_API usb_read();
+XIA_MD_IMPORT int XIA_MD_API usb_write();
+#endif /* EXCLUDE_USB */
+
 #ifndef EXCLUDE_UDXP
-  XIA_MD_IMPORT int XIA_MD_API InitSerialPort();
-  XIA_MD_IMPORT int XIA_MD_API CloseSerialPort();
-  XIA_MD_IMPORT int XIA_MD_API NumBytesAtSerialPort();
-  XIA_MD_IMPORT int XIA_MD_API ReadSerialPort();
-  XIA_MD_IMPORT int XIA_MD_API WriteSerialPort();
+XIA_MD_IMPORT int XIA_MD_API InitSerialPort();
+XIA_MD_IMPORT int XIA_MD_API CloseSerialPort();
+XIA_MD_IMPORT int XIA_MD_API NumBytesAtSerialPort();
+XIA_MD_IMPORT int XIA_MD_API ReadSerialPort();
+XIA_MD_IMPORT int XIA_MD_API WriteSerialPort();
 #endif /* EXCLUDE_UDXP */
 
 
@@ -186,5 +239,5 @@ extern "C" {
 }
 #endif
 
-#endif					/* End if for DXP_MD_H */
 
+#endif					/* End if for DXP_MD_H */

@@ -1,5 +1,3 @@
-/*<Thu May 23 11:38:03 2002--ALPHA_FRINK--0.0.6--Do not remove--XIA>*/
-
 /*****************************************************************************
  *
  *  md_win95.c
@@ -60,19 +58,20 @@
 #include "md_generic.h"
 #include "xia_md.h"
 #include "seriallib.h"
-
+#include "xia_common.h"
 
 #define MODE 4
 
 
-#define SERIAL_WAIT_TIMEOUT  99
+#define SERIAL_WAIT_TIMEOUT  ((unsigned long)500000)
 
 /* variables to store the IO channel information */
-static char *name[MAXMOD];
+static char *camacName[MAXMOD];
 
 /* total number of modules in the system */
 static unsigned int numDXP    = 0;
 static unsigned int numEPP    = 0;
+static unsigned int numUSB    = 0;
 static unsigned int numSerial = 0;
 static unsigned int numMod    = 0;
 
@@ -102,17 +101,42 @@ static unsigned int maxblk=0;
  * (initially included for handling multiple EPP modules hanging off the same
  * EPP address)
  */
-static int id[MAXMOD];
+static int eppID[MAXMOD];
+/* variables to store the IO channel information */
+static char *eppName[MAXMOD];
 /* Port stores the port number for each module, only used for the X10P/G200 */
 static unsigned short port;
 
 static unsigned short next_addr=0;
-#endif /* EXCLUDE_UDXP */
+#endif /* EXCLUDE_EPP Boards */
+
+#ifndef EXCLUDE_USB
+/* USB definitions */
+/* The id variable stores an optional ID number associated with each module 
+ */
+static int usbID[MAXMOD];
+/* variables to store the IO channel information */
+static char *usbName[MAXMOD];
+/* variables to store the USB Device Name */
+static char *usbDevice[MAXMOD];
+
+static HANDLE usbHandle[MAXMOD];
+
+static long usb_addr=0;
+#endif /* EXCLUDE_USB IO */
 
 #if !(defined(EXCLUDE_UDXP) && defined(EXCLUDE_UDXPS))
+/* variables to store the IO channel information */
+static char *serialName[MAXMOD];
 /* Serial port globals */
 static unsigned short comPort = 0;
 #endif /* EXCLUDE_UDXP */
+
+#ifdef USE_SERIAL_DLPORTIO
+static void dxp_md_poll_and_read(unsigned short port, unsigned long nBytes, unsigned char *buf);
+static void dxp_md_serial_write(unsigned short port, unsigned long nBytes, unsigned char *buf);
+static void dxp_md_clear_port(unsigned short port);
+#endif /* USE_SERIAL_DLPORTIO */
 
 
 /******************************************************************************
@@ -121,40 +145,40 @@ static unsigned short comPort = 0;
  * 
  ******************************************************************************/
 XIA_MD_EXPORT int XIA_MD_API dxp_md_init_util(Xia_Util_Functions* funcs, char* type)
-     /* Xia_Util_Functions *funcs;	*/
-     /* char *type;					*/
+/* Xia_Util_Functions *funcs;	*/
+/* char *type;					*/
 {
-  /* Check to see if we are intializing the library with this call in addition
-   * to assigning function pointers. 
-   */
+    /* Check to see if we are intializing the library with this call in addition
+     * to assigning function pointers. 
+     */
 
-  if (type != NULL) 
-	{
-	  if (STREQ(type, "INIT_LIBRARY")) { numMod = 0; }
-	}
-
-  funcs->dxp_md_error_control = dxp_md_error_control;
-  funcs->dxp_md_alloc         = dxp_md_alloc;
-  funcs->dxp_md_free          = dxp_md_free;
-  funcs->dxp_md_puts          = dxp_md_puts;
-  funcs->dxp_md_wait          = dxp_md_wait;
-
-  funcs->dxp_md_error         = dxp_md_error;
-  funcs->dxp_md_warning       = dxp_md_warning;
-  funcs->dxp_md_info          = dxp_md_info;
-  funcs->dxp_md_debug         = dxp_md_debug;
-  funcs->dxp_md_output        = dxp_md_output;
-  funcs->dxp_md_suppress_log  = dxp_md_suppress_log;
-  funcs->dxp_md_enable_log    = dxp_md_enable_log;
-  funcs->dxp_md_set_log_level = dxp_md_set_log_level;
-  funcs->dxp_md_log	        = dxp_md_log;
-
-  if (out_stream == NULL)
+    if (type != NULL) 
     {
-      out_stream = stdout;
+	if (STREQ(type, "INIT_LIBRARY")) { numMod = 0; }
     }
 
-  return DXP_SUCCESS;
+    funcs->dxp_md_error_control = dxp_md_error_control;
+    funcs->dxp_md_alloc         = dxp_md_alloc;
+    funcs->dxp_md_free          = dxp_md_free;
+    funcs->dxp_md_puts          = dxp_md_puts;
+    funcs->dxp_md_wait          = dxp_md_wait;
+
+    funcs->dxp_md_error         = dxp_md_error;
+    funcs->dxp_md_warning       = dxp_md_warning;
+    funcs->dxp_md_info          = dxp_md_info;
+    funcs->dxp_md_debug         = dxp_md_debug;
+    funcs->dxp_md_output        = dxp_md_output;
+    funcs->dxp_md_suppress_log  = dxp_md_suppress_log;
+    funcs->dxp_md_enable_log    = dxp_md_enable_log;
+    funcs->dxp_md_set_log_level = dxp_md_set_log_level;
+    funcs->dxp_md_log	        = dxp_md_log;
+
+    if (out_stream == NULL)
+    {
+	out_stream = stdout;
+    }
+
+    return DXP_SUCCESS;
 }
 
 /******************************************************************************
@@ -163,51 +187,64 @@ XIA_MD_EXPORT int XIA_MD_API dxp_md_init_util(Xia_Util_Functions* funcs, char* t
  * 
  ******************************************************************************/
 XIA_MD_EXPORT int XIA_MD_API dxp_md_init_io(Xia_Io_Functions* funcs, char* type)
-     /* Xia_Io_Functions *funcs;		*/
-     /* char *type;					*/
+/* Xia_Io_Functions *funcs;		*/
+/* char *type;					*/
 {
-  unsigned int i;
+    unsigned int i;
 	
-  for (i = 0; i < strlen(type); i++) {
+    for (i = 0; i < strlen(type); i++) {
 
-    type[i]= (char)tolower(type[i]);
-  }
+	type[i]= (char)tolower(type[i]);
+    }
 
 
 #if !(defined(EXCLUDE_DXP4C) && defined(EXCLUDE_DXP4C2X))
-  if (STREQ(type, "camac")) {
+    if (STREQ(type, "camac")) {
 
-    funcs->dxp_md_io         = dxp_md_io;
-    funcs->dxp_md_initialize = dxp_md_initialize;
-    funcs->dxp_md_open       = dxp_md_open;
-  } 
+	funcs->dxp_md_io         = dxp_md_io;
+	funcs->dxp_md_initialize = dxp_md_initialize;
+	funcs->dxp_md_open       = dxp_md_open;
+	funcs->dxp_md_close      = dxp_md_close;
+    } 
 #endif
 
 #if !(defined(EXCLUDE_DXPX10P) && defined(EXCLUDE_DGFG200))
-  if (STREQ(type, "epp")) {
+    if (STREQ(type, "epp")) {
 
-    funcs->dxp_md_io         = dxp_md_epp_io;
-    funcs->dxp_md_initialize = dxp_md_epp_initialize;
-    funcs->dxp_md_open       = dxp_md_epp_open;
-  }
+	funcs->dxp_md_io         = dxp_md_epp_io;
+	funcs->dxp_md_initialize = dxp_md_epp_initialize;
+	funcs->dxp_md_open       = dxp_md_epp_open;
+	funcs->dxp_md_close      = dxp_md_epp_close;
+    }
 #endif
 
-#ifndef EXCLUDE_UDXP
-  if (STREQ(type, "serial")) {
+#ifndef EXCLUDE_USB
+    if (STREQ(type, "usb")) 
+	  {
+		funcs->dxp_md_io            = dxp_md_usb_io;
+		funcs->dxp_md_initialize    = dxp_md_usb_initialize;
+		funcs->dxp_md_open          = dxp_md_usb_open;
+		funcs->dxp_md_close         = dxp_md_usb_close;
+	  }
+#endif /* EXCLUDE_USB */
 
-    funcs->dxp_md_io            = dxp_md_serial_io;
-    funcs->dxp_md_initialize    = dxp_md_serial_initialize;
-    funcs->dxp_md_open          = dxp_md_serial_open;
-  }
+#ifndef EXCLUDE_UDXP
+    if (STREQ(type, "serial")) 
+	  {
+		funcs->dxp_md_io            = dxp_md_serial_io;
+		funcs->dxp_md_initialize    = dxp_md_serial_initialize;
+		funcs->dxp_md_open          = dxp_md_serial_open;
+		funcs->dxp_md_close         = dxp_md_serial_close;
+	  }
 #endif /* EXCLUDE_UDXP */
 
 
-  funcs->dxp_md_get_maxblk = dxp_md_get_maxblk;
-  funcs->dxp_md_set_maxblk = dxp_md_set_maxblk;
-  funcs->dxp_md_lock_resource = NULL;
+    funcs->dxp_md_get_maxblk = dxp_md_get_maxblk;
+    funcs->dxp_md_set_maxblk = dxp_md_set_maxblk;
+    funcs->dxp_md_lock_resource = NULL;
 
 
-  return DXP_SUCCESS;
+    return DXP_SUCCESS;
 }
 
 #if !(defined(EXCLUDE_DXP4C) && defined(EXCLUDE_DXP4C2X))
@@ -218,46 +255,46 @@ XIA_MD_EXPORT int XIA_MD_API dxp_md_init_io(Xia_Io_Functions* funcs, char* type)
  * 
  *****************************************************************************/
 XIA_MD_STATIC int XIA_MD_API dxp_md_initialize(unsigned int* maxMod, char* dllname)
-     /* unsigned int *maxMod;					Input: maximum number of dxp modules allowed */
-     /* char *dllname;							Input: name of the DLL						*/
+/* unsigned int *maxMod;					Input: maximum number of dxp modules allowed */
+/* char *dllname;							Input: name of the DLL						*/
 {
-  int status = DXP_SUCCESS; 
-  int lstatus = -1;
-  int len;
+    int status = DXP_SUCCESS; 
+    int lstatus = -1;
+    int len;
 	
-  short buf[256];
+    short buf[256];
 
-  /* "dllname" argument should be used to keep the compiler happy.
-   * We may choose to expand the functionality of the library
-   * to use this in the future...
-   */
-  len = strlen(dllname);
+    /* "dllname" argument should be used to keep the compiler happy.
+     * We may choose to expand the functionality of the library
+     * to use this in the future...
+     */
+    len = strlen(dllname);
 
 
-  /* Initialize the CAMAC interface */
+    /* Initialize the CAMAC interface */
 		
-  /* check if all the memory was allocated */
-  if (*maxMod>MAXMOD){
-    status = DXP_NOMEM;
-    sprintf(error_string,"Calling routine requests %d maximum modules: only %d available.", 
-			*maxMod, MAXMOD);
-    dxp_md_log_error("dxp_md_initialize", error_string, status);
-    return status;
-  }
+    /* check if all the memory was allocated */
+    if (*maxMod>MAXMOD){
+	status = DXP_NOMEM;
+	sprintf(error_string,"Calling routine requests %d maximum modules: only %d available.", 
+		*maxMod, MAXMOD);
+	dxp_md_log_error("dxp_md_initialize", error_string, status);
+	return status;
+    }
 
-  /* Zero out the number of modules currently in the system */
-  numDXP = 0;
+    /* Zero out the number of modules currently in the system */
+    numDXP = 0;
 
-  /* Initialize the camac-SCSI interface */
-  lstatus = xia_caminit(buf);
-  if (lstatus!=0){
-    sprintf(error_string,"camxfr error: status = 0x%lX, while trying to initialize DLL",lstatus);
-    dxp_md_log_error("dxp_md_initialize",error_string,status);
-    status = DXP_MDINITIALIZE;
-    return status;
-  }
+    /* Initialize the camac-SCSI interface */
+    lstatus = xia_caminit(buf);
+    if (lstatus!=0){
+	sprintf(error_string,"camxfr error: status = 0x%lX, while trying to initialize DLL",lstatus);
+	dxp_md_log_error("dxp_md_initialize",error_string,status);
+	status = DXP_MDINITIALIZE;
+	return status;
+    }
 	
-  return status;
+    return status;
 }
 /*****************************************************************************
  * 
@@ -270,39 +307,39 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_initialize(unsigned int* maxMod, char* dllna
  * 
  *****************************************************************************/
 XIA_MD_STATIC int XIA_MD_API dxp_md_open(char* ioname, int* camChan)
-     /* char *ioname;						Input:  string used to specify this IO 
-		channel */
-	 /* int *camChan;						Output: returns a reference number for
-		this module */
+/* char *ioname;						Input:  string used to specify this IO 
+   channel */
+/* int *camChan;						Output: returns a reference number for
+   this module */
 {
-  unsigned int i;
-  int status=DXP_SUCCESS;
+    unsigned int i;
+    int status=DXP_SUCCESS;
 
-  /* First loop over the existing names to make sure this module 
-   * was not already configured?  Don't want/need to perform
-   * this operation 2 times. */
+    /* First loop over the existing names to make sure this module 
+     * was not already configured?  Don't want/need to perform
+     * this operation 2 times. */
     
-  for(i=0;i<numMod;i++){
-    if(STREQ(name[i],ioname)) {
-      status=DXP_SUCCESS;
-      *camChan = i;
-      return status;
+    for(i=0;i<numDXP;i++){
+	if(STREQ(camacName[i],ioname)) {
+	    status=DXP_SUCCESS;
+	    *camChan = i;
+	    return status;
+	}
     }
-  }
 
-  /* Got a new one.  Increase the number existing and assign the global 
-   * information */
+    /* Got a new one.  Increase the number existing and assign the global 
+     * information */
 
-  if (name[numMod]!=NULL) {
-    dxp_md_free(name[numMod]);
-  }
-  name[numMod] = (char *) dxp_md_alloc((strlen(ioname)+1)*sizeof(char));
-  strcpy(name[numMod],ioname);
+    if (camacName[numDXP]!=NULL) {
+	dxp_md_free(camacName[numDXP]);
+    }
+    camacName[numDXP] = (char *) dxp_md_alloc((strlen(ioname)+1)*sizeof(char));
+    strcpy(camacName[numDXP],ioname);
 
-  *camChan = numMod++;
-  numDXP++;
+    *camChan = numDXP++;
+    numMod++;
 
-  return status;
+    return status;
 }
 
 /*****************************************************************************
@@ -314,50 +351,65 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_open(char* ioname, int* camChan)
  * 
  *****************************************************************************/
 XIA_MD_STATIC int XIA_MD_API dxp_md_io(int* camChan, unsigned int* function, 
-									   unsigned int* address, unsigned short* data,
-									   unsigned int* length)
-     /* int *camChan;						Input: pointer to IO channel to access		*/
-     /* unsigned int *function;				Input: function number to access (CAMAC F)	*/
-     /* unsigned int *address;				Input: address to access	(CAMAC A)		*/
-     /* unsigned short *data;				I/O:  data read or written					*/
-     /* unsigned int *length;				Input: how much data to read or write		*/
+				       unsigned int* address, unsigned short* data,
+				       unsigned int* length)
+/* int *camChan;						Input: pointer to IO channel to access		*/
+/* unsigned int *function;				Input: function number to access (CAMAC F)	*/
+/* unsigned int *address;				Input: address to access	(CAMAC A)		*/
+/* unsigned short *data;				I/O:  data read or written					*/
+/* unsigned int *length;				Input: how much data to read or write		*/
 {
 
-  short camadr[4];
-  long lstatus=0;
-  int status;
-  int branch, crate, station;
-  /* mode defines Q-stop, etc... types of transfer */
-  short mode=MODE;
+    short camadr[4];
+    long lstatus=0;
+    int status;
+    int branch, crate, station;
+    /* mode defines Q-stop, etc... types of transfer */
+    short mode=MODE;
 
-  short func = (short) *function;
-  unsigned long  nbytes;
+    short func = (short) *function;
+    unsigned long  nbytes;
 
-  sscanf(name[*camChan],"%1d%1d%2d",&branch,&crate,&station);
+    sscanf(camacName[*camChan],"%1d%1d%2d",&branch,&crate,&station);
 
-  /* prelimenary definitions used by the DLL routine */
-  nbytes=2*(*length);
-  camadr[0] = (short) branch;
-  camadr[1] = (short) crate;
-  camadr[2] = (short) station;
-  camadr[3] = (short) *address;
+    /* prelimenary definitions used by the DLL routine */
+    nbytes=2*(*length);
+    camadr[0] = (short) branch;
+    camadr[1] = (short) crate;
+    camadr[2] = (short) station;
+    camadr[3] = (short) *address;
 
-  /* Now perform the read or write operation using the routine */
+    /* Now perform the read or write operation using the routine */
 
-  lstatus = xia_camxfr(camadr, func, nbytes, mode, (short*) data);
-  if ((lstatus!=0)&&(lstatus!=4)){
-    status = DXP_MDIO;
-    sprintf(error_string,"camxfr error: status = 0x%lX",lstatus);
-    dxp_md_log_error("dxp_md_io",error_string,status);
+    lstatus = xia_camxfr(camadr, func, nbytes, mode, (short*) data);
+    if ((lstatus!=0)&&(lstatus!=4)){
+	status = DXP_MDIO;
+	sprintf(error_string,"camxfr error: status = 0x%lX",lstatus);
+	dxp_md_log_error("dxp_md_io",error_string,status);
+	return status;
+    }
+
+    /* All done, free the library and get out */
+    status=DXP_SUCCESS;
+
     return status;
-  }
-
-  /* All done, free the library and get out */
-  status=DXP_SUCCESS;
-
-  return status;
 }
+
+
+/**********
+ * This routine is used to "close" the CAMAC connection.
+ * For CAMAC, nothing needs to be done...
+ **********/
+XIA_MD_STATIC int XIA_MD_API dxp_md_close(int *camChan)
+{
+    UNUSED(camChan);
+
+    return DXP_SUCCESS;
+}
+
 #endif
+
+
 #if !(defined(EXCLUDE_DXPX10P) && defined(EXCLUDE_DGFG200))
 /*****************************************************************************
  * 
@@ -366,58 +418,58 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_io(int* camChan, unsigned int* function,
  * 
  *****************************************************************************/
 XIA_MD_STATIC int XIA_MD_API dxp_md_epp_initialize(unsigned int* maxMod, char* dllname)
-     /* unsigned int *maxMod;					Input: maximum number of dxp modules allowed */
-     /* char *dllname;							Input: name of the DLL						*/
+/* unsigned int *maxMod;					Input: maximum number of dxp modules allowed */
+/* char *dllname;							Input: name of the DLL						*/
 {
-  int status = DXP_SUCCESS;
-  int rstat = 0;
+    int status = DXP_SUCCESS;
+    int rstat = 0;
 
-  /* EPP initialization */
+    /* EPP initialization */
 
-  /* check if all the memory was allocated */
-  if (*maxMod>MAXMOD){
-    status = DXP_NOMEM;
-    sprintf(error_string,"Calling routine requests %d maximum modules: only %d available.", 
-			*maxMod, MAXMOD);
-    dxp_md_log_error("dxp_md_epp_initialize",error_string,status);
-    return status;
-  }
+    /* check if all the memory was allocated */
+    if (*maxMod>MAXMOD){
+	status = DXP_NOMEM;
+	sprintf(error_string,"Calling routine requests %d maximum modules: only %d available.", 
+		*maxMod, MAXMOD);
+	dxp_md_log_error("dxp_md_epp_initialize",error_string,status);
+	return status;
+    }
 
-  /* Zero out the number of modules currently in the system */
-  numEPP = 0;
+    /* Zero out the number of modules currently in the system */
+    numEPP = 0;
 
-  /* Initialize the EPP port */
-  rstat = sscanf(dllname,"%x",&port);
-  if (rstat!=1) {
-    status = DXP_NOMATCH;
-    dxp_md_log_error("dxp_md_epp_initialize",
-					 "Unable to read the EPP port address",status);
-    return status;
-  }
+    /* Initialize the EPP port */
+    rstat = sscanf(dllname,"%x",&port);
+    if (rstat!=1) {
+	status = DXP_NOMATCH;
+	dxp_md_log_error("dxp_md_epp_initialize",
+			 "Unable to read the EPP port address",status);
+	return status;
+    }
 													 
-  sprintf(error_string, "EPP Port = %#x", port);
-  dxp_md_log_debug("dxp_md_epp_initialize", error_string);
+    sprintf(error_string, "EPP Port = %#x", port);
+    dxp_md_log_debug("dxp_md_epp_initialize", error_string);
 
-  /* Move the call to InitEPP() to the open() routine, this will allow daisy chain IDs to work. 
-   * NOTE: since the port number is stored in a static global, init() better not get called again
-   * with a different port, before the open() call!!!!!
-   */ 
-  /* Call the EPPLIB.DLL routine */	
-  /*  rstat = DxpInitEPP((int)port);*/
+    /* Move the call to InitEPP() to the open() routine, this will allow daisy chain IDs to work. 
+     * NOTE: since the port number is stored in a static global, init() better not get called again
+     * with a different port, before the open() call!!!!!
+     */ 
+    /* Call the EPPLIB.DLL routine */	
+    /*  rstat = DxpInitEPP((int)port);*/
 
 
-  /* Check for Success */
-  /*  if (rstat==0) {
-    status = DXP_SUCCESS;
-  } else {
-    status = DXP_INITIALIZE;
-    sprintf(error_string,
-			"Unable to initialize the EPP port: rstat=%d",rstat);
-    dxp_md_log_error("dxp_md_epp_initialize", error_string,status);
+    /* Check for Success */
+    /*  if (rstat==0) {
+	status = DXP_SUCCESS;
+	} else {
+	status = DXP_INITIALIZE;
+	sprintf(error_string,
+	"Unable to initialize the EPP port: rstat=%d",rstat);
+	dxp_md_log_error("dxp_md_epp_initialize", error_string,status);
+	return status;
+	}*/
+
     return status;
-    }*/
-
-  return status;
 }
 /*****************************************************************************
  * 
@@ -430,92 +482,92 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_epp_initialize(unsigned int* maxMod, char* d
  * 
  *****************************************************************************/
 XIA_MD_STATIC int XIA_MD_API dxp_md_epp_open(char* ioname, int* camChan)
-     /* char *ioname;							Input:  string used to specify this IO 
-		channel */
-	 /* int *camChan;						Output: returns a reference number for
-		this module */
+/* char *ioname;							Input:  string used to specify this IO 
+   channel */
+/* int *camChan;						Output: returns a reference number for
+   this module */
 {
-  unsigned int i;
-  int status=DXP_SUCCESS;
-  int rstat = 0;
+    unsigned int i;
+    int status=DXP_SUCCESS;
+    int rstat = 0;
 
 	
-  sprintf(error_string, "ioname = %s", ioname);
-  dxp_md_log_debug("dxp_md_epp_open", error_string);
+    sprintf(error_string, "ioname = %s", ioname);
+    dxp_md_log_debug("dxp_md_epp_open", error_string);
 
-  /* First loop over the existing names to make sure this module 
-   * was not already configured?  Don't want/need to perform
-   * this operation 2 times. */
+    /* First loop over the existing names to make sure this module 
+     * was not already configured?  Don't want/need to perform
+     * this operation 2 times. */
     
-  for(i=0;i<numMod;i++){
-    if(STREQ(name[i],ioname)) {
-      status=DXP_SUCCESS;
-      *camChan = i;
-      return status;
+	for(i=0;i<numEPP;i++){
+	if(STREQ(eppName[i],ioname)) {
+	    status=DXP_SUCCESS;
+	    *camChan = i;
+	    return status;
+	}
     }
-  }
 
-  /* Got a new one.  Increase the number existing and assign the global 
-   * information */
+    /* Got a new one.  Increase the number existing and assign the global 
+     * information */
 
-  if (name[numMod]!=NULL) {
-    dxp_md_free(name[numMod]);
-  }
-  name[numMod] = (char *) dxp_md_alloc((strlen(ioname)+1)*sizeof(char));
-  strcpy(name[numMod],ioname);
+    if (eppName[numEPP]!=NULL) {
+	dxp_md_free(eppName[numEPP]);
+    }
+    eppName[numEPP] = (char *) dxp_md_alloc((strlen(ioname)+1)*sizeof(char));
+    strcpy(eppName[numEPP],ioname);
 
-  /* See if this is a multi-module EPP chain, if not set its ID to -1 */
-  if (ioname[0] == ':') 
+    /* See if this is a multi-module EPP chain, if not set its ID to -1 */
+    if (ioname[0] == ':') 
     {
-      sscanf(ioname, ":%d", &(id[numMod]));
+	sscanf(ioname, ":%d", &(eppID[numEPP]));
 
-      sprintf(error_string, "ID = %i", id[numMod]);
-      dxp_md_log_debug("dxp_md_epp_open", error_string);
+	sprintf(error_string, "ID = %i", eppID[numEPP]);
+	dxp_md_log_debug("dxp_md_epp_open", error_string);
 
-      /* Initialize the port address first */
-      rstat = DxpInitPortAddress((int) port);
-      if (rstat != 0) 
+	/* Initialize the port address first */
+	rstat = DxpInitPortAddress((int) port);
+	if (rstat != 0) 
 	{
-	  status = DXP_INITIALIZE;
-	  sprintf(error_string,
-		  "Unable to initialize the EPP port address: port=%d", port);
-	  dxp_md_log_error("dxp_md_epp_open", error_string, status);
-	  return status;
+	    status = DXP_INITIALIZE;
+	    sprintf(error_string,
+		    "Unable to initialize the EPP port address: port=%d", port);
+	    dxp_md_log_error("dxp_md_epp_open", error_string, status);
+	    return status;
 	}
 
-      /* Call setID now to setup the port for Initialization */
-      DxpSetID((unsigned short) id[numMod]); 
-      /* No return value
-	 if (rstat != 0) 
-	{
-	  status = DXP_INITIALIZE;
-	  sprintf(error_string,
-		  "Unable to set the EPP Port ID: ID=%d", id[numMod]);
-	  dxp_md_log_error("dxp_md_epp_open", error_string, status);
-	  return status;
-	  }*/
+	/* Call setID now to setup the port for Initialization */
+	DxpSetID((unsigned short) eppID[numEPP]); 
+	/* No return value
+	   if (rstat != 0) 
+	   {
+	   status = DXP_INITIALIZE;
+	   sprintf(error_string,
+	   "Unable to set the EPP Port ID: ID=%d", id[numEPP]);
+	   dxp_md_log_error("dxp_md_epp_open", error_string, status);
+	   return status;
+	   }*/
     } else {
-      id[numMod] = -1;
+	eppID[numEPP] = -1;
     }
 
-  /* Call the EPPLIB.DLL routine */	
-  rstat = DxpInitEPP((int)port);
+    /* Call the EPPLIB.DLL routine */	
+    rstat = DxpInitEPP((int)port);
 
-  /* Check for Success */
-  if (rstat==0) {
-    status = DXP_SUCCESS;
-  } else {
-    status = DXP_INITIALIZE;
-    sprintf(error_string,
-	    "Unable to initialize the EPP port: rstat=%d",rstat);
-    dxp_md_log_error("dxp_md_epp_open", error_string,status);
-    return status;
-  }
+    /* Check for Success */
+    if (rstat==0) {
+	status = DXP_SUCCESS;
+    } else {
+	status = DXP_INITIALIZE;
+	sprintf(error_string,
+		"Unable to initialize the EPP port: rstat=%d",rstat);
+	dxp_md_log_error("dxp_md_epp_open", error_string,status);
+	return status;
+    }
   
- *camChan = numMod++;
-  numEPP++;
+    *camChan = numEPP++;
+    numMod++;
 
-  return status;
+    return status;
 }
 
 
@@ -530,105 +582,268 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_epp_open(char* ioname, int* camChan)
 XIA_MD_STATIC int XIA_MD_API dxp_md_epp_io(int* camChan, unsigned int* function, 
 					   unsigned int* address, unsigned short* data,
 					   unsigned int* length)
-     /* int *camChan;				Input: pointer to IO channel to access	*/
-     /* unsigned int *function;			Input: XIA EPP function definition	*/
-     /* unsigned int *address;			Input: XIA EPP address definition	*/
-     /* unsigned short *data;			I/O:  data read or written		*/
-     /* unsigned int *length;			Input: how much data to read or write	*/
+/* int *camChan;				Input: pointer to IO channel to access	*/
+/* unsigned int *function;			Input: XIA EPP function definition	*/
+/* unsigned int *address;			Input: XIA EPP address definition	*/
+/* unsigned short *data;			I/O:  data read or written		*/
+/* unsigned int *length;			Input: how much data to read or write	*/
+{
+    int rstat = 0; 
+    int status;
+  
+    unsigned int i;
+
+    unsigned long *temp=NULL;
+
+    static int currentID = -1;
+
+    if ((currentID != eppID[*camChan]) && (eppID[*camChan] != -1))
+    {
+	DxpSetID((unsigned short) eppID[*camChan]);
+      
+	/* Update the currentID */
+	currentID = eppID[*camChan];
+
+	sprintf(error_string, "calling SetID = %i, camChan = %i", eppID[*camChan], *camChan);
+	dxp_md_log_debug("dxp_md_epp_io", error_string);
+    }
+  
+    /* Data*/
+    if (*address==0) {
+	/* Perform short reads and writes if not in program address space */
+	if (next_addr>=0x4000) {
+	    if (*length>1) {
+		if (*function==0) {
+		    rstat = DxpReadBlock(next_addr, data, (int) *length);
+		} else {
+		    rstat = DxpWriteBlock(next_addr, data, (int) *length);
+		}
+	    } else {
+		if (*function==0) {
+		    rstat = DxpReadWord(next_addr, data);
+		} else {
+		    rstat = DxpWriteWord(next_addr, data[0]);
+		}
+	    }
+	} else {
+	    /* Perform long reads and writes if in program address space (24-bit) */
+	    /* Allocate memory */
+	    temp = (unsigned long *) dxp_md_alloc(sizeof(unsigned short)*(*length));
+	    if (*function==0) {
+		rstat = DxpReadBlocklong(next_addr, temp, (int) *length/2);
+		/* reverse the byte order for the EPPLIB library */
+		for (i=0;i<*length/2;i++) {
+		    data[2*i] = (unsigned short) (temp[i]&0xFFFF);
+		    data[2*i+1] = (unsigned short) ((temp[i]>>16)&0xFFFF);
+		}
+	    } else {
+		/* reverse the byte order for the EPPLIB library */
+		for (i=0;i<*length/2;i++) {
+		    temp[i] = ((data[2*i]<<16) + data[2*i+1]);
+		}
+		rstat = DxpWriteBlocklong(next_addr, temp, (int) *length/2);
+	    }
+	    /* Free the memory */
+	    dxp_md_free(temp);
+	}
+	/* Address port*/
+    } else if (*address==1) {
+	next_addr = (unsigned short) *data;
+	/* Control port*/
+    } else if (*address==2) {
+	/*		dest = cport;
+	 *length = 1;
+	 */
+	/* Status port*/
+    } else if (*address==3) {
+	/*		dest = sport;
+	 *length = 1;*/
+    } else {
+	sprintf(error_string,"Unknown EPP address=%d",*address);
+	status = DXP_MDIO;
+	dxp_md_log_error("dxp_md_epp_io",error_string,status);
+	return status;
+    }
+
+    if (rstat!=0) {
+	status = DXP_MDIO;
+	sprintf(error_string,"Problem Performing I/O to Function: %d, address: %#hx",*function, *address);
+	dxp_md_log_error("dxp_md_epp_io",error_string,status);
+	sprintf(error_string,"Trying to write to internal address: %d, length %d",next_addr, *length);
+	dxp_md_log_error("dxp_md_epp_io",error_string,status);
+	return status;
+    }
+	
+    status=DXP_SUCCESS;
+
+    return status;
+}
+
+
+/**********
+ * "Closes" the EPP connection, which means that it does nothing.
+ **********/
+XIA_MD_STATIC int XIA_MD_API dxp_md_epp_close(int *camChan)
+{
+    UNUSED(camChan);
+    
+    return DXP_SUCCESS;
+}
+
+#endif
+
+#ifndef EXCLUDE_USB
+/*****************************************************************************
+ * 
+ * Initialize the USB system.  
+ * 
+ *****************************************************************************/
+XIA_MD_STATIC int XIA_MD_API dxp_md_usb_initialize(unsigned int* maxMod, char* dllname)
+/* unsigned int *maxMod;					Input: maximum number of dxp modules allowed */
+/* char *dllname;							Input: name of the DLL						*/
+{
+    int status = DXP_SUCCESS;
+
+	UNUSED(dllname);
+
+    /* USB initialization */
+
+    /* check if all the memory was allocated */
+    if (*maxMod>MAXMOD)
+	  {
+		status = DXP_NOMEM;
+		sprintf(error_string,"Calling routine requests %d maximum modules: only %d available.", 
+				*maxMod, MAXMOD);
+		dxp_md_log_error("dxp_md_usb_initialize",error_string,status);
+		return status;
+	  }
+
+    /* Zero out the number of modules currently in the system */
+    numUSB = 0;
+
+    return status;
+}
+/*****************************************************************************
+ * 
+ * Routine is passed the user defined configuration string *name.  This string
+ * contains all the information needed to point to the proper IO channel by 
+ * future calls to dxp_md_io().  In the case of a simple CAMAC crate, the string 
+ * should contain a branch number (representing the SCSI bus number in this case),
+ * a crate number (single SCSI can control multiple crates) and a station 
+ * number (better known as a slot number).
+ * 
+ *****************************************************************************/
+XIA_MD_STATIC int XIA_MD_API dxp_md_usb_open(char* ioname, int* camChan)
+	 /* char *ioname;				 Input:  string used to specify this IO channel */
+	 /* int *camChan;				 Output: returns a reference number for this module */
+{
+  int status=DXP_SUCCESS;
+  unsigned int i;
+
+  /* Temporary name so that we can get the length */
+  char tempName[200];
+  
+  sprintf(error_string, "ioname = %s", ioname);
+  dxp_md_log_debug("dxp_md_usb_open", error_string);
+  
+  /* First loop over the existing names to make sure this module 
+   * was not already configured?  Don't want/need to perform
+   * this operation 2 times. */
+  
+  for(i=0;i<numUSB;i++)
+	{
+	  if(STREQ(usbName[i],ioname)) 
+		{
+		  status=DXP_SUCCESS;
+		  *camChan = i;
+		  return status;
+		}
+	}
+  
+  /* Got a new one.  Increase the number existing and assign the global 
+   * information */
+  sprintf(tempName, "\\\\.\\ezusb-%s", ioname); 
+  
+  if (usbName[numUSB]!=NULL) 
+	{
+	  dxp_md_free(usbName[numUSB]);
+	}
+  usbName[numUSB] = (char *) dxp_md_alloc((strlen(tempName)+1)*sizeof(char));
+  strcpy(usbName[numUSB],tempName);
+  
+  /*  dxp_md_log_info("dxp_md_usb_open", "Attempting to open usb handel");
+	  if (usb_open(usbName[numUSB], &usbHandle[numUSB]) != 0) 
+	  {
+	  dxp_md_log_info("dxp_md_usb_open", "Unable to open usb handel");
+	  }
+	  sprintf(error_string, "device = %s, handle = %i", usbName[numUSB], usbHandle[numUSB]);
+	  dxp_md_log_info("dxp_md_usb_open", error_string);
+  */
+    *camChan = numUSB++;
+    numMod++;
+
+    return status;
+}
+
+
+/*****************************************************************************
+ * 
+ * This routine performs the IO call to read or write data.  The pointer to 
+ * the desired IO channel is passed as camChan.  The address to write to is
+ * specified by function and address.  The data length is specified by 
+ * length.  And the data itself is stored in data.
+ * 
+ *****************************************************************************/
+XIA_MD_STATIC int XIA_MD_API dxp_md_usb_io(int* camChan, unsigned int* function, 
+										   unsigned int* address, unsigned short* data,
+										   unsigned int* length)
+	 /* int *camChan;				Input: pointer to IO channel to access	*/
+	 /* unsigned int *function;		Input: XIA EPP function definition	    */
+	 /* unsigned int *address;		Input: XIA EPP address definition	    */
+	 /* unsigned short *data;		I/O:  data read or written		        */
+	 /* unsigned int *length;		Input: how much data to read or write	*/
 {
   int rstat = 0; 
   int status;
-  int garbage;
   
-  unsigned int i;
+  if (*address == 0) 
+	{
+	  if (*function==0) 
+		{
+		  rstat = usb_read(usb_addr, (long) *length, usbName[*camChan], data);
+		} else {
+		  rstat = usb_write(usb_addr, (long) *length, usbName[*camChan], data);
+		}
+	} else if (*address ==1) {
+	  usb_addr = (long) data[0];
+	}
 
-  unsigned long *temp=NULL;
-
-  static int currentID = -1;
-
-  garbage = *camChan;
-
-  if ((currentID != id[*camChan]) && (id[*camChan] != -1))
-    {
-      DxpSetID((unsigned short) id[*camChan]);
-      
-      /* Update the currentID */
-      currentID = id[*camChan];
-
-      sprintf(error_string, "calling SetID = %i, camChan = %i", id[*camChan], *camChan);
-      dxp_md_log_debug("dxp_md_epp_io", error_string);
-    }
+  if (rstat != 0) 
+	{
+	  status = DXP_MDIO;
+	  sprintf(error_string,"Problem Performing USB I/O to Function: %d, address: %d",*function, *address);
+	  dxp_md_log_error("dxp_md_usb_io",error_string,status);
+	  sprintf(error_string,"Trying to write to internal address: %#hx, length %d", usb_addr, *length);
+	  dxp_md_log_error("dxp_md_usb_io",error_string,status);
+	  return status;
+	}
   
-  /* Data*/
-  if (*address==0) {
-    /* Perform short reads and writes if not in program address space */
-    if (next_addr>=0x4000) {
-      if (*length>1) {
-	if (*function==0) {
-	  rstat = DxpReadBlock(next_addr, data, (int) *length);
-	} else {
-	  rstat = DxpWriteBlock(next_addr, data, (int) *length);
-	}
-      } else {
-	if (*function==0) {
-	  rstat = DxpReadWord(next_addr, data);
-	} else {
-	  rstat = DxpWriteWord(next_addr, data[0]);
-	}
-      }
-    } else {
-      /* Perform long reads and writes if in program address space (24-bit) */
-      /* Allocate memory */
-      temp = (unsigned long *) dxp_md_alloc(sizeof(unsigned short)*(*length));
-      if (*function==0) {
-	rstat = DxpReadBlocklong(next_addr, temp, (int) *length/2);
-	/* reverse the byte order for the EPPLIB library */
-	for (i=0;i<*length/2;i++) {
-	  data[2*i] = (unsigned short) (temp[i]&0xFFFF);
-	  data[2*i+1] = (unsigned short) ((temp[i]>>16)&0xFFFF);
-	}
-      } else {
-	/* reverse the byte order for the EPPLIB library */
-	for (i=0;i<*length/2;i++) {
-	  temp[i] = ((data[2*i]<<16) + data[2*i+1]);
-	}
-	rstat = DxpWriteBlocklong(next_addr, temp, (int) *length/2);
-      }
-      /* Free the memory */
-      dxp_md_free(temp);
-    }
-    /* Address port*/
-  } else if (*address==1) {
-    next_addr = (unsigned short) *data;
-    /* Control port*/
-  } else if (*address==2) {
-    /*		dest = cport;
-     *length = 1;
-     */
-    /* Status port*/
-  } else if (*address==3) {
-    /*		dest = sport;
-     *length = 1;*/
-  } else {
-    sprintf(error_string,"Unknown EPP address=%d",*address);
-    status = DXP_MDIO;
-    dxp_md_log_error("dxp_md_epp_io",error_string,status);
-    return status;
-  }
-
-  if (rstat!=0) {
-    status = DXP_MDIO;
-    sprintf(error_string,"Problem Performing I/O to Function: %d, address: %#hx",*function, *address);
-    dxp_md_log_error("dxp_md_epp_io",error_string,status);
-    sprintf(error_string,"Trying to write to internal address: %d, length %d",next_addr, *length);
-    dxp_md_log_error("dxp_md_epp_io",error_string,status);
-    return status;
-  }
-	
   status=DXP_SUCCESS;
-
+  
   return status;
 }
+
+
+/**********
+ * "Closes" the USB connection, which means that it does nothing.
+ **********/
+XIA_MD_STATIC int XIA_MD_API dxp_md_usb_close(int *camChan)
+{
+    UNUSED(camChan);
+
+    return DXP_SUCCESS;
+}
+
 #endif
 
 
@@ -639,55 +854,58 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_epp_io(int* camChan, unsigned int* function,
  **********/
 XIA_MD_STATIC int XIA_MD_API dxp_md_serial_initialize(unsigned int *maxMod, char *dllname)
 {
-  int status;
-  int statusSerial;
+    int status;
+    int statusSerial;
   
 
-  if (*maxMod > MAXMOD) {
-
-    status = DXP_NOMEM;
-    sprintf(error_string, "Calling routine requests %d maximum modules: only"
-			"%d available.", *maxMod, MAXMOD);
-    dxp_md_log_error("dxp_md_serial_initialize", error_string, status);
-    return status;
-  }
+    if (*maxMod > MAXMOD) 
+    {
+	status = DXP_NOMEM;
+	sprintf(error_string, "Calling routine requests %d maximum modules: only"
+		"%d available.", *maxMod, MAXMOD);
+	dxp_md_log_error("dxp_md_serial_initialize", error_string, status);
+	return status;
+    }
   
-  sprintf(error_string, "dllname = %s", dllname);
-  dxp_md_log_debug("dxp_md_serial_initialize", error_string);
+    sprintf(error_string, "dllname = %s", dllname);
+    dxp_md_log_debug("dxp_md_serial_initialize", error_string);
   
-  /* Reset # of currently defined 
-   * serial mods in the system.
-   */
-  numSerial = 0;
+    /* Reset # of currently defined 
+     * serial mods in the system.
+     */
+    numSerial = 0;
 
-  sscanf(dllname, "COM%u", &comPort);
+    sscanf(dllname, "COM%u", &comPort);
 
-  sprintf(error_string, "COM Port = %u", comPort);
-  dxp_md_log_debug("dxp_md_serial_initialize", error_string);
+    sprintf(error_string, "COM Port = %u", comPort);
+    dxp_md_log_debug("dxp_md_serial_initialize", error_string);
   
-  statusSerial = InitSerialPort(comPort, 115200);
+    statusSerial = InitSerialPort(comPort, 115200);
 
-  if (statusSerial != SERIAL_SUCCESS) {
+    if (statusSerial != SERIAL_SUCCESS) 
+    {
+	status = DXP_INITIALIZE;
+	sprintf(error_string, "Unable to initialize the serial port: status = %d",
+		statusSerial);
+	dxp_md_log_error("dxp_md_serial_initialize", error_string, status);
+	return status;
+    }
 
-    status = DXP_INITIALIZE;
-    sprintf(error_string, "Unable to initialize the serial port: status = %d",
-			statusSerial);
-    dxp_md_log_error("dxp_md_serial_initialize", error_string, status);
-    return status;
-  }
+    /* Close the port */
 
-  /* Close the port */
-  statusSerial = CloseSerialPort(comPort);
+    /*
+    statusSerial = CloseSerialPort(comPort);
 
-  if (statusSerial != SERIAL_SUCCESS) {
+    if (statusSerial != SERIAL_SUCCESS) 
+    {
+	status = DXP_INITIALIZE;
+	sprintf(error_string, "Error closing serial port: status = %d", statusSerial);
+	dxp_md_log_error("dxp_md_serial_initialize", error_string, status);
+	return status;
+    }
+    */
 
-    status = DXP_INITIALIZE;
-    sprintf(error_string, "Error closing serial port: status = %d", statusSerial);
-    dxp_md_log_error("dxp_md_serial_initialize", error_string, status);
-    return status;
-  }
-
-  return DXP_SUCCESS;
+    return DXP_SUCCESS;
 }
 
 
@@ -697,211 +915,235 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_serial_initialize(unsigned int *maxMod, char
  **********/ 
 XIA_MD_STATIC int XIA_MD_API dxp_md_serial_open(char* ioname, int* camChan)
 {
-  unsigned int i;
+    unsigned int i;
 
 
-  sprintf(error_string, "ioname = %s", ioname);
-  dxp_md_log_debug("dxp_md_serial_open", error_string);
+    sprintf(error_string, "ioname = %s", ioname);
+    dxp_md_log_debug("dxp_md_serial_open", error_string);
 
-  /* First loop over the existing names to make sure this module 
-   * was not already configured?  Don't want/need to perform
-   * this operation 2 times. */
+    /* First loop over the existing names to make sure this module 
+     * was not already configured?  Don't want/need to perform
+     * this operation 2 times. */
     
-  for(i = 0; i < numMod; i++){
-
-    if(STREQ(name[i], ioname)) {
-
-      *camChan = i;
-      return DXP_SUCCESS;
+    for(i = 0; i < numSerial; i++)
+    {
+	if(STREQ(serialName[i], ioname)) 
+	{
+	    *camChan = i;
+	    return DXP_SUCCESS;
+	}
     }
-  }
+  
+    /* Got a new one.  Increase the number existing and assign the global 
+     * information */
+    if (serialName[numSerial] != NULL) { dxp_md_free(serialName[numSerial]); }
 
-  /* Got a new one.  Increase the number existing and assign the global 
-   * information */
-  if (name[numMod] != NULL) { dxp_md_free(name[numMod]); }
+    serialName[numSerial] = (char *)dxp_md_alloc((strlen(ioname) + 1) * sizeof(char));
+    strcpy(serialName[numSerial], ioname);
 
-  name[numMod] = (char *)dxp_md_alloc((strlen(ioname) + 1) * sizeof(char));
-  strcpy(name[numMod], ioname);
+    *camChan = numSerial++;
+    numMod++;
 
-  *camChan = numMod;
-  numMod++;
-  numSerial++;
-
-  return DXP_SUCCESS;
+    return DXP_SUCCESS;
 }
 
 
+#ifndef USE_SERIAL_DLPORTIO
 /**********
  * This routine performs the read/write operations 
  * on the serial port.
  **********/
 XIA_MD_STATIC int XIA_MD_API dxp_md_serial_io(int *camChan,
-											  unsigned int *function,
-											  unsigned int *address,
-											  unsigned short *data,
-											  unsigned int *length)
+					      unsigned int *function,
+					      unsigned int *address,
+					      unsigned short *data,
+					      unsigned int *length)
 {
-  int status;
-  int statusSerial;
+    LARGE_INTEGER freq;
+    LARGE_INTEGER before, after;
 
-  unsigned int i;
-  unsigned int addrGarbage;
+    int status;
+    int statusSerial;
 
-  unsigned short timeout;
+    unsigned int i;
+ 
+    unsigned long timeout;
+    unsigned long numBytes        = 0;
+    unsigned long totalBytes      = 0;
+    unsigned long bytesLeftToRead = 0;
+    unsigned long loopCnt         = 0;
 
-  unsigned long numBytes        = 0;
-  unsigned long totalBytes      = 0;
-  unsigned long bytesLeftToRead = 0;
+    char lowByte;
+    char highByte;
 
-  char lowByte;
-  char highByte;
+    char sizeBuf[4];
 
-  char sizeBuf[4];
+    char *dataBuf    = NULL;
+    char *bufPtr     = NULL;
 
-  char *dataBuf    = NULL;
-  char *bufPtr     = NULL;
-  char *bufGarbage = NULL;
+    float wait = .001f;
 
-  float wait = .002f;
+    UNUSED(address); 
 
 
-  addrGarbage = *address; 
+    /* Dump some debug information */
+    /*
+      sprintf(error_string, "camChan = %d, func = %u",
+      *camChan, *function);
+      dxp_md_log_debug("dxp_md_serial_io", error_string);
+    */
 
-  /* Dump some debug information */
-  sprintf(error_string, "camChan = %d, func = %u, addr = %u, len = %u",
-		  *camChan, *function, *address, *length);
-  dxp_md_log_debug("dxp_md_serial_io", error_string);
-
-  /* Get the proper comPort information 
-   * Use this when we need to support multiple
-   * serial ports.
-   */
-  sscanf(name[*camChan], "%u", &comPort);
-
-  /* Check to see if this is a read or a write:
-   * function = 0 : Read
-   * function = 1 : Write
-   * function = 2 : Open Port
-   * function = 3 : Close Port
-   */
-  if (*function == 0) {
-
-    /*Procedure to read:
-     * 1) Wait for 4 bytes
-     * 2) Read first 4 bytes from buffer
-     * 3) Get total buffer information from bytes read (BytesLeftToRead)
-     * 4) Poll buffer for # of bytes n
-     * 5) If n < BytesLeftToRead, read n bytes and subtract from BytesLeftToRead
-     * 6) if n >= BytesLeftToRead, read BytesLeftToRead and return
-     * 7) Repeat (4)-(6)
+    /* Get the proper comPort information 
+     * Use this when we need to support multiple
+     * serial ports.
      */
-    timeout = 0;
-    
-    do {
+    sscanf(serialName[*camChan], "%u", &comPort);
+	   
+    QueryPerformanceFrequency(&freq);
 
-      dxp_md_wait(&wait);
 
-      statusSerial = NumBytesAtSerialPort(comPort, &numBytes);
+    /* Check to see if this is a read or a write:
+     * function = 0 : Read
+     * function = 1 : Write
+     * function = 2 : Open Port
+     * function = 3 : Close Port
+     */
+    if (*function == 0) {
 
-      if (statusSerial != SERIAL_SUCCESS) {
+	/*Procedure to read:
+	 * 1) Wait for 4 bytes
+	 * 2) Read first 4 bytes from buffer
+	 * 3) Get total buffer information from bytes read (BytesLeftToRead)
+	 * 4) Poll buffer for # of bytes n
+	 * 5) If n < BytesLeftToRead, read n bytes and subtract from BytesLeftToRead
+	 * 6) if n >= BytesLeftToRead, read BytesLeftToRead and return
+	 * 7) Repeat (4)-(6)
+	 */
+	timeout = 0;
 
-		status = DXP_MDIO;
-		sprintf(error_string, "Error waiting for number of bytes at COM%u",
-				comPort);
-		dxp_md_log_error("dxp_md_serial_io", error_string, status);
-		return status;
-      }
+	QueryPerformanceCounter(&before);
 
-      if (timeout == SERIAL_WAIT_TIMEOUT) {
+	do {
 
-		status = DXP_MDTIMEOUT;
-		sprintf(error_string, "Timeout waiting for first 4 bytes at COM%u",
-				comPort);
-		dxp_md_log_error("dxp_md_serial_io", error_string, status);
-		return status;
-      }
+	    dxp_md_wait(&wait);
+
+	    statusSerial = NumBytesAtSerialPort(comPort, &numBytes);
 	  
-      timeout++;
+	    if (numBytes > 0) {
+		timeout = 0;
+	    } else {
+		timeout++;
+	    }
 
-    } while (numBytes < 4);
-		
-    statusSerial = ReadSerialPort(comPort, 4, sizeBuf);
+	    if (timeout == SERIAL_WAIT_TIMEOUT) {
+		break;
+	    }
 
-    if (statusSerial != SERIAL_SUCCESS) {
+	    /*dxp_md_wait(&wait);*/
 
-      status = DXP_MDIO;
-      sprintf(error_string, "Error reading size from COM%u", comPort);
-      dxp_md_log_error("dxp_md_serial_io", error_string, status);
-      return status;
-    }
+	} while (numBytes < 4);
+	
+	QueryPerformanceCounter(&after);
 
-    lowByte  = sizeBuf[2];
-    highByte = sizeBuf[3];
+	/*
+	sprintf(error_string, "READ Loop = %lf (secs)", 
+		((double)after.QuadPart - (double)before.QuadPart) / (double)freq.QuadPart);
+	dxp_md_log_debug("dxp_md_serial_io", error_string);
+	*/
 
-    sprintf(error_string, "lowByte = %#x, highByte = %#x", 
-			lowByte, highByte);
-    dxp_md_log_debug("dxp_md_serial_io", error_string);
+	if (timeout == SERIAL_WAIT_TIMEOUT) {
 
-    totalBytes |= (unsigned long)lowByte;
-    totalBytes |= (((unsigned long)lowByte) << 8);
+	    status = DXP_MDTIMEOUT;
+	    sprintf(error_string, "Timeout waiting for first 4 bytes at COM%u",
+		    comPort);
+	    dxp_md_log_error("dxp_md_serial_io", error_string, status);
+	    return status;
+	}
 
-    sprintf(error_string, "totalBytes = %#x (%u)", totalBytes, totalBytes);
-    dxp_md_log_debug("dxp_md_serial_io", error_string);
+	statusSerial = ReadSerialPort(comPort, 4, sizeBuf);
 
+	if (statusSerial != SERIAL_SUCCESS) {
 
-    /* Create buffer here */
-    dataBuf = (char *)dxp_md_alloc((totalBytes + 1) * sizeof(char));
+	    status = DXP_MDIO;
+	    sprintf(error_string, "Error reading size from COM%u", comPort);
+	    dxp_md_log_error("dxp_md_serial_io", error_string, status);
+	    return status;
+	}
 
-    if (dataBuf == NULL) {
+	lowByte  = sizeBuf[2];
+	highByte = sizeBuf[3];
 
-      status = DXP_NOMEM;
-      dxp_md_log_error("dxp_md_serial_io", "Out-of-memory allocating memory for read buffer", 
-					   status);
-      return status;
-    }
+	/*
+	  sprintf(error_string, "lowByte = %#x, highByte = %#x", 
+	  lowByte, highByte);
+	  dxp_md_log_debug("dxp_md_serial_io", error_string);
+	*/	
 
-    bytesLeftToRead = totalBytes + 1;
+	totalBytes |= (unsigned long)lowByte & 0xFF;
+	totalBytes |= (((unsigned long)highByte & 0xFF) << 8);
 
-    do {
+	/* Create buffer here */
+	dataBuf = (char *)dxp_md_alloc((totalBytes + 1) * sizeof(char));
 
-      dxp_md_wait(&wait);
+	if (dataBuf == NULL) {
 
-      statusSerial = NumBytesAtSerialPort(comPort, &numBytes);
+	    status = DXP_NOMEM;
+	    dxp_md_log_error("dxp_md_serial_io", "Out-of-memory allocating memory for read buffer", 
+			     status);
+	    return status;
+	}
 
-      if (statusSerial != SERIAL_SUCCESS) {
+	bytesLeftToRead = totalBytes + 1;
+
+	/* Reset the timeout again. In principle,
+	 * any time that we are querying for 
+	 * number of bytes in a loop we should be
+	 * waiting for a timeout.
+	 */
+	timeout = 0;
+
+	do {
+
+	    /*
+	      dxp_md_wait(&wait);
+	    */
+
+	    statusSerial = NumBytesAtSerialPort(comPort, &numBytes);
+
+	    if (statusSerial != SERIAL_SUCCESS) {
 		
 		free((void *)dataBuf);
 		dataBuf = NULL;
 
 		status = DXP_MDIO;
 		sprintf(error_string, "Error waiting for number of bytes at COM%u", 
-				comPort);
+			comPort);
 		dxp_md_log_error("dxp_md_serial_io", error_string, status);
 		return status;
-      }
+	    }
 
-      if (!(numBytes <= bytesLeftToRead)) {
+	    if (numBytes > bytesLeftToRead) {
 
 		dxp_md_free((void *)dataBuf);
 		dataBuf = NULL;
 		bufPtr  = NULL;
 
 		status = DXP_MDOVERFLOW;
-		sprintf(error_string, "Number of bytes (%u bytes) at COM%u is greater "
-				"then the number of bytes left to read (%u bytes)",
-				numBytes, comPort, bytesLeftToRead);
+		sprintf(error_string, "Number of bytes (%#x bytes) at COM%u is greater "
+			"then the number of bytes left to read (%#x bytes)",
+			numBytes, comPort, bytesLeftToRead);
 		dxp_md_log_error("dxp_md_serial_io", error_string, status);
 		return status;
-      }
+	    }
 
-      /* We only want to fill info in dataBuf
-       * from where we left off last time.
-       */
-      bufPtr = dataBuf + ((totalBytes + 1) - bytesLeftToRead);
+	    /* We only want to fill info in dataBuf
+	     * from where we left off last time.
+	     */
+	    bufPtr = dataBuf + ((totalBytes + 1) - bytesLeftToRead);
 
-      statusSerial = ReadSerialPort(comPort, numBytes, bufPtr);
+	    statusSerial = ReadSerialPort(comPort, numBytes, bufPtr);
 	  
-      if (statusSerial != SERIAL_SUCCESS) {
+	    if (statusSerial != SERIAL_SUCCESS) {
 
 		dxp_md_free((void *)dataBuf);
 		dataBuf = NULL;
@@ -909,167 +1151,319 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_serial_io(int *camChan,
 
 		status = DXP_MDIO;
 		sprintf(error_string, "Error reading %u bytes from COM%u", 
-				numBytes, comPort);
+			numBytes, comPort);
 		dxp_md_log_error("dxp_md_serial_io", error_string, status);
 		return status;
-      }
+	    }
 
-      bytesLeftToRead -= numBytes;
-	
-    } while (bytesLeftToRead != 0);
+	    bytesLeftToRead -= numBytes;
+      
+	    if (timeout == SERIAL_WAIT_TIMEOUT) {
+		status = DXP_MDTIMEOUT;
+		sprintf(error_string,
+			"Timeout at COM%u waiting for %u bytes",
+			comPort, bytesLeftToRead);
+		dxp_md_log_error("dxp_md_serial_io", error_string, status);
+		return status;
+	    }
+      
+	    /* Reset the timeout if we read
+	     * any bytes at all.
+	     */
+	    if (numBytes > 0) {
+		/*
+		sprintf(error_string, "%u: Timeout reset", sizeBuf[1]);
+		dxp_md_log_debug("dxp_md_serial_io", error_string);
+		*/
+		timeout = 0;
+	    } else {
+		/*
+		sprintf(error_string, "%u: In Timeout mode", sizeBuf[1]);
+		dxp_md_log_debug("dxp_md_serial_io", error_string);
+		*/
+		timeout++;
+	    }
 
-    /* Transfer data from the local array to 
-     * the user's array.
-     */
 
-    /* totalBytes = # of data 
-     * +1         = for checksum
-     * +4         = for sizeBuf bytes
-     */
-    if ((totalBytes + 5) > *length) {
+	} while (bytesLeftToRead != 0);
 
-      dxp_md_free((void *)dataBuf);
-      dataBuf = NULL;
-      bufPtr  = NULL;
+	/* Transfer data from the local array to 
+	 * the user's array.
+	 */
 
-      status = DXP_MDSIZE;
-	  sprintf(error_string, "Local data buffer (%u bytes) is larger then "
-			  "user data buffer (%u bytes)", totalBytes + 1, *length);
-      dxp_md_log_error("dxp_md_serial_io", error_string, status);
-      return status;
-    }
+	/* totalBytes = # of data 
+	 * +1         = for checksum
+	 * +4         = for sizeBuf bytes
+	 */
+	if ((totalBytes + 5) > *length) {
 
-    /* Do sizeBuf copy first */
-    for (i = 0; i < 4; i++) {
+	    /* For debugging purposes,
+	     * let's see where things went wrong.
+	     */
+	    
 
-      data[i] = (unsigned short)sizeBuf[i];
-    }
+	    dxp_md_free((void *)dataBuf);
+	    dataBuf = NULL;
+	    bufPtr  = NULL;
 
-    /* Now the rest of the data */
-    for (i = 0; i < (totalBytes + 1); i++) {
+	    status = DXP_MDSIZE;
+	    sprintf(error_string, "Local data buffer (%u bytes) is larger then "
+		    "user data buffer (%u bytes)", totalBytes + 5, *length);
+	    dxp_md_log_error("dxp_md_serial_io", error_string, status);
+	    return status;
+	}
 
-      data[i + 4] = (unsigned short)dataBuf[i];
-    }
+	/* Do sizeBuf copy first */
+	for (i = 0; i < 4; i++) {
+
+	    data[i] = (unsigned short)sizeBuf[i];
+	}
+
+	/* Now the rest of the data */
+	for (i = 0; i < (totalBytes + 1); i++) {
+
+	    data[i + 4] = (unsigned short)dataBuf[i];
+	}
   
-    dxp_md_free((void *)dataBuf);
-    dataBuf = NULL;
-    bufPtr  = NULL;
+	dxp_md_free((void *)dataBuf);
+	dataBuf = NULL;
+	bufPtr  = NULL;
 
-  } else if (*function == 1) {
+    } else if (*function == 1) {
 
 	/* Write to the serial port */
 
-	/* Make sure that the buffer is
-	 * empty before proceeding.
-	 */
-	statusSerial = NumBytesAtSerialPort(comPort, &numBytes);
+	statusSerial = CheckAndClearTransmitBuffer(comPort);
+
+	if (statusSerial != SERIAL_SUCCESS) {
+	    status = DXP_MDIO;
+	    dxp_md_log_error("dxp_md_serial_io", "Error clearing transmit buffer", status);
+	    return status;
+	}
+
+	statusSerial = CheckAndClearReceiveBuffer(comPort);
+
+	if (statusSerial != SERIAL_SUCCESS) {
+	    status = DXP_MDIO;
+	    dxp_md_log_error("dxp_md_serial_io", "Error clearing receive buffer", status);
+	    return status;
+	}
+
+	dataBuf = (char *)dxp_md_alloc(*length * sizeof(char));
+
+	if (dataBuf == NULL) {
+
+	    status = DXP_NOMEM;
+	    sprintf(error_string, "Error allocating %u bytes for dataBuf",
+		    *length);
+	    dxp_md_log_error("dxp_md_serial_io", error_string, status);
+	    return status;
+	}
+
+	for (i = 0; i < *length; i++) {
+
+	    dataBuf[i] = (char)data[i];
+	}
+
+	statusSerial = WriteSerialPort(comPort, *length, dataBuf);
 
 	if (statusSerial != SERIAL_SUCCESS) {
 
-	  status = DXP_MDIO;
-	  sprintf(error_string, "Error reading number of bytes from COM%u",
-			  comPort);
-	  dxp_md_log_error("dxp_md_serial_io", error_string, status);
-	  return status;
+	    dxp_md_free((void *)dataBuf);
+	    dataBuf = NULL;
+
+	    status = DXP_MDIO;
+	    sprintf(error_string, "Error writing %u bytes to COM%u",
+		    *length, comPort);
+	    dxp_md_log_error("dxp_md_serial_io", error_string, status);
+	    return status;
 	}
 
-	if (numBytes != 0) {
+	dxp_md_free((void *)dataBuf);
+	dataBuf = NULL;
 
-	  bufGarbage = (char *)dxp_md_alloc(numBytes * sizeof(char));
-
-	  if (bufGarbage == NULL) {
-
-		status = DXP_NOMEM;
-		dxp_md_log_error("dxp_md_serial_io", "Out-of-memory creating bufGarbage",
-						 status);
-		return status;
-	  }
-
-	  statusSerial = ReadSerialPort(comPort, numBytes, bufGarbage);
-
-	  dxp_md_free((void *)bufGarbage);
-	  bufGarbage = NULL;
-
-	  if (statusSerial != SERIAL_SUCCESS) {
-
-		status = DXP_MDIO;
-		sprintf(error_string, "Error reading garbage from buffer on COM%u",
-				comPort);
-		dxp_md_log_error("dxp_md_serial_io", error_string, status);
-		return status;
-	  }
-	}
-
-    dataBuf = (char *)dxp_md_alloc(*length * sizeof(char));
-
-    if (dataBuf == NULL) {
-
-      status = DXP_NOMEM;
-      sprintf(error_string, "Error allocating %u bytes for dataBuf",
-			  *length);
-      dxp_md_log_error("dxp_md_serial_io", error_string, status);
-      return status;
-    }
-
-    for (i = 0; i < *length; i++) {
-
-      dataBuf[i] = (char)data[i];
-    }
-
-    statusSerial = WriteSerialPort(comPort, *length, dataBuf);
-
-    if (statusSerial != SERIAL_SUCCESS) {
-
-      dxp_md_free((void *)dataBuf);
-      dataBuf = NULL;
-
-      status = DXP_MDIO;
-	  sprintf(error_string, "Error writing %u bytes to COM%u",
-			  *length, comPort);
-      dxp_md_log_error("dxp_md_serial_io", error_string, status);
-      return status;
-    }
-
-    dxp_md_free((void *)dataBuf);
-    dataBuf = NULL;
-	  
-  } else if (*function == 2) {
+    } else if (*function == 2) {
 
 	/* Open the serial port */
+
+	/*
 	statusSerial = InitSerialPort(comPort, 115200);
 
 	if (statusSerial != SERIAL_SUCCESS) {
 
-	  status = DXP_INITIALIZE;
-	  sprintf(error_string, "Error opening serial port COM%u", comPort);
-	  dxp_md_log_error("dxp_md_serial_io", error_string, status);
-	  return status;
+	    status = DXP_INITIALIZE;
+	    sprintf(error_string, "Error opening serial port COM%u", comPort);
+	    dxp_md_log_error("dxp_md_serial_io", error_string, status);
+	    return status;
 	}
+	*/
 
-  } else if (*function == 3) {
+    } else if (*function == 3) {
 
 	/* Close the serial port */
+
+	/*
 	statusSerial = CloseSerialPort(comPort);
 
 	if (statusSerial != SERIAL_SUCCESS) {
 
-	  status = DXP_INITIALIZE;
-	  sprintf(error_string, "Error closing serial port: status = %u",
-			  statusSerial);
-	  dxp_md_log_error("dxp_md_serial_io", error_string, status);
-	  return status;
+	    status = DXP_INITIALIZE;
+	    sprintf(error_string, "Error closing serial port: status = %u",
+		    statusSerial);
+	    dxp_md_log_error("dxp_md_serial_io", error_string, status);
+	    return status;
+	}
+	*/
+    } else {
+
+	status = DXP_MDUNKNOWN;
+	sprintf(error_string, "Unknown function: %u", *function);
+	dxp_md_log_error("dxp_md_serial_io", error_string, status);
+	return status;
+    }
+
+    return DXP_SUCCESS;
+} 
+
+#else
+
+XIA_MD_STATIC int XIA_MD_API dxp_md_serial_io(int *camChan,
+					      unsigned int *function,
+					      unsigned int *address,
+					      unsigned short *data,
+					      unsigned int *length)
+{
+    int status;
+    
+    unsigned int i;
+
+    unsigned char lo = 0x00;
+    unsigned char hi = 0x00;
+
+    unsigned short total = 0x0000;
+
+    unsigned char sizeBuf[4];
+
+    unsigned char *buf = NULL;
+
+    UNUSED(address);
+
+
+    sscanf(serialName[*camChan], "%u", &comPort);
+
+    /* function = 0: Read
+     * function = 1: Write
+     * function = 2: Open Port
+     * function = 3: Close Port
+     */
+    if (*function == 0) {
+	dxp_md_poll_and_read(comPort, 4, sizeBuf);
+
+	lo = sizeBuf[2];
+	hi = sizeBuf[3];
+
+	total = (unsigned short)(((unsigned short)hi << 8) | lo);
+
+	buf = (unsigned char *)dxp_md_alloc((total + 1) * sizeof(unsigned char));
+
+	if (buf == NULL) {
+	    status = DXP_NOMEM;
+	    dxp_md_log_error("dxp_md_serial_io", 
+			     "Out-of-memory allocating memory for received data buffer",
+			     status);
+	    return status;
 	}
 
-  } else {
+	dxp_md_poll_and_read(comPort, (unsigned long)(total + 1), buf);
 
-    status = DXP_MDUNKNOWN;
-    sprintf(error_string, "Unknown function: %u", *function);
-    dxp_md_log_error("dxp_md_serial_io", error_string, status);
-    return status;
-  }
+	if ((unsigned int)(total + 5) > *length) {
+	    dxp_md_free(buf);
+	    status = DXP_MDSIZE;
+	    sprintf(error_string,
+		    "Local data buffer (%u bytes) is larger then user data buffer (%u bytes)",
+		    total + 5, *length);
+	    dxp_md_log_error("dxp_md_serial_io", error_string, status);
+	    return status;
+	}
 
-  return DXP_SUCCESS;
-} 
+	/* Copy the size info */
+	for (i = 0; i < 4; i++) {
+	    data[i] = (unsigned short)sizeBuf[i];
+	}
+
+	for (i = 0; i < (unsigned int)(total + 1); i++) {
+	    data[i + 4] = (unsigned short)buf[i];
+	}
+	
+	dxp_md_free(buf);
+	buf = NULL;
+    
+    } else if (*function == 1) {
+	
+	/* Clear buffer of any detritus */
+	dxp_md_clear_port(comPort);
+
+	/* Copy "unsigned short" data to an 
+	 * unsigned char * buffer
+	 */
+	buf = (unsigned char *)dxp_md_alloc(*length * sizeof(unsigned char));
+
+	if (buf == NULL) {
+	    status = DXP_NOMEM;
+	    dxp_md_log_error("dxp_md_serial_io",
+		    "Out-of-memory allocating memory for data buffer",
+		    status);
+	    return status;
+	}
+
+	for (i = 0; i < *length; i++) {
+	    buf[i] = (unsigned char)(data[i] & 0xFF);
+	}
+
+	dxp_md_serial_write(comPort, *length, buf);
+
+	dxp_md_free(buf);
+	buf = NULL;
+    
+    } else if (*function == 2) {
+	/* Don't need to do a thing! */
+
+    } else if (*function == 3) {
+	/* Don't need to do a thing! */
+    
+    } else {
+	status = DXP_MDUNKNOWN;
+	sprintf(error_string, "Unknown function: %u", *function);
+	dxp_md_log_error("dxp_md_serial_io", error_string, status);
+	return status;
+    }
+
+    return DXP_SUCCESS;
+}
+
+#endif /* USE_SERIAL_DLPORTIO */
+
+
+/**********
+ * Closes the serial port connection so that we don't
+ * crash due to interrupt vectors left lying around.
+ **********/
+XIA_MD_STATIC int XIA_MD_API dxp_md_serial_close(int *camChan)
+{
+    int status;
+    
+    UNUSED(camChan);
+
+
+    status = CloseSerialPort(0);
+
+    if (status != 0) {
+	return DXP_MDCLOSE;
+    }
+
+    return DXP_SUCCESS;
+}
+
 
 #endif /* EXCLUDE_UDXP && EXCLUDE_UDXPS */  
  
@@ -1082,20 +1476,20 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_serial_io(int *camChan,
  * 
  *****************************************************************************/
 XIA_MD_STATIC void XIA_MD_API dxp_md_error_control(char* keyword, int* value)
-     /* char *keyword;						Input: keyword to set for future use by dxp_md_error()	*/
-     /* int *value;							Input: value to set the keyword to					*/
+/* char *keyword;						Input: keyword to set for future use by dxp_md_error()	*/
+/* int *value;							Input: value to set the keyword to					*/
 {
 
-  /* Enable debugging */
+    /* Enable debugging */
 
-  if (strstr(keyword,"print_debug")!=NULL){
-    print_debug=(*value);
-    return;
-  }
+    if (strstr(keyword,"print_debug")!=NULL){
+	print_debug=(*value);
+	return;
+    }
 
-  /* Else we have a problem */
+    /* Else we have a problem */
 
-  dxp_md_puts("dxp_md_error_control: keyword %s not recognized..\n");
+    dxp_md_puts("dxp_md_error_control: keyword %s not recognized..\n");
 }
 
 /*****************************************************************************
@@ -1109,7 +1503,7 @@ XIA_MD_STATIC void XIA_MD_API dxp_md_error_control(char* keyword, int* value)
 XIA_MD_STATIC int XIA_MD_API dxp_md_get_maxblk(void)
 {
 
-  return maxblk;
+    return maxblk;
 
 }
 
@@ -1122,18 +1516,18 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_get_maxblk(void)
  * 
  *****************************************************************************/
 XIA_MD_STATIC int XIA_MD_API dxp_md_set_maxblk(unsigned int* blksiz)
-     /* unsigned int *blksiz;			*/
+/* unsigned int *blksiz;			*/
 {
-  int status; 
+    int status; 
 
-  if (*blksiz > 0) {
-    maxblk = *blksiz;
-  } else {
-    status = DXP_NEGBLOCKSIZE;
-    dxp_md_log_error("dxp_md_set_maxblk","Block size must be positive or zero",status);
-    return status;
-  }
-  return DXP_SUCCESS;
+    if (*blksiz > 0) {
+	maxblk = *blksiz;
+    } else {
+	status = DXP_NEGBLOCKSIZE;
+	dxp_md_log_error("dxp_md_set_maxblk","Block size must be positive or zero",status);
+	return status;
+    }
+    return DXP_SUCCESS;
 
 }
 
@@ -1144,14 +1538,13 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_set_maxblk(unsigned int* blksiz)
  * 
  *****************************************************************************/
 XIA_MD_STATIC int XIA_MD_API dxp_md_wait(float* time)
-     /* float *time;							Input: Time to wait in seconds	*/
+/* float *time;							Input: Time to wait in seconds	*/
 {
-  int status=DXP_SUCCESS;
+    DWORD wait = (DWORD)(1000.0 * (*time));
 
-  Sleep((DWORD) (1000.*(*time)));
+    Sleep(wait);
 
-  return status;
-
+    return DXP_SUCCESS;
 }
 
 /*****************************************************************************
@@ -1161,12 +1554,12 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_wait(float* time)
  * 
  *****************************************************************************/
 XIA_MD_SHARED void* XIA_MD_API dxp_md_alloc(size_t length)
-     /* size_t length;							Input: length of the memory to allocate
-		in units of size_t (defined to be a 
-		byte on most systems) */
+/* size_t length;							Input: length of the memory to allocate
+   in units of size_t (defined to be a 
+   byte on most systems) */
 {
 
-  return malloc(length);
+    return malloc(length);
 
 }
 
@@ -1177,10 +1570,10 @@ XIA_MD_SHARED void* XIA_MD_API dxp_md_alloc(size_t length)
  * 
  *****************************************************************************/
 XIA_MD_SHARED void XIA_MD_API dxp_md_free(void* array)
-     /* void *array;							Input: pointer to the memory to free */
+/* void *array;							Input: pointer to the memory to free */
 {
 
-  free(array);
+    free(array);
 
 }
 
@@ -1192,10 +1585,77 @@ XIA_MD_SHARED void XIA_MD_API dxp_md_free(void* array)
  * 
  *****************************************************************************/
 XIA_MD_STATIC int XIA_MD_API dxp_md_puts(char* s)
-     /* char *s;								Input: string to print or log	*/
+/* char *s;								Input: string to print or log	*/
 {
 
-  return printf("%s", s);
+    return printf("%s", s);
 
 }
+
+
+#ifdef USE_SERIAL_DLPORTIO
+/**********
+ * This routine polls the LSR for the data received bit and
+ * then puts the byte into a buffer. 
+ **********/
+static void dxp_md_poll_and_read(unsigned short port, unsigned long nBytes, unsigned char *buf)
+{
+    unsigned long cnt = 0;
+
+
+    sprintf(error_string, "port = %u, nBytes = %u", port, nBytes);
+    dxp_md_log_debug("dxp_md_poll_and_read", error_string);
+
+    while (cnt < nBytes) {
+	
+	if (IsByteAtPort(port)) {
+	    ReadSerialPort(port, 1, (char *)&buf[cnt]);
+	    cnt++;
+
+	    sprintf(error_string, "Found a byte (%u total) at port = %u" ,cnt, port);
+	    dxp_md_log_debug("dxp_md_poll_and_read", error_string);
+	}
+	
+	/* Do the timeout here */
+
+    }
+}
+
+static void dxp_md_serial_write(unsigned short port, unsigned long nBytes, unsigned char *buf)
+{
+    unsigned long i = 0;
+
+    float myWait = .001f;
+
+
+    DumpRegistersToConsole(port);
+
+    sprintf(error_string, "port = %u, nBytes = %u", port, nBytes);
+    dxp_md_log_debug("dxp_md_serial_write", error_string);
+
+    for (i = 0; i < nBytes; i++) {
+
+	while (!IsClearForNextByte) {
+	    dxp_md_wait(&myWait);
+	}
+
+	WriteSerialPort(port, 1, (char *)&buf[i]);
+	
+	dxp_md_log_debug("dxp_md_serial_write", "Wrote a byte");
+    }
+}
+
+static void dxp_md_clear_port(unsigned short port)
+{
+    char byte = 0x00;
+
+    while (IsByteAtPort(port)) {
+	ReadSerialPort(port, 1, (char *)&byte);
+    }
+}
+#endif /* USE_SERIAL_DLPORTIO */
+
+
+
+
 

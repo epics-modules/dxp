@@ -1,5 +1,3 @@
-/*<Thu May 23 11:38:03 2002--ALPHA_FRINK--0.0.6--Do not remove--XIA>*/
-
 /*
  *  dxp4c.h
  *
@@ -168,4 +166,3 @@
 #define DXP_DSP_A_WRITE			2
 
 #endif						/* Endif for DXP4C_H */
-

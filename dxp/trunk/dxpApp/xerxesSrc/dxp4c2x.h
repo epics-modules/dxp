@@ -1,4 +1,3 @@
-/*<Thu May 23 11:38:03 2002--ALPHA_FRINK--0.0.6--Do not remove--XIA>*/
 
 /*
  *  dxp4c2x.h
@@ -69,7 +68,6 @@
 #define MAXDSP_LEN       0x8000
 #define MAXFIP_LEN   0x00020000
 #define MAX_FIPPI			  5
-#define LIVECLOCK_TICK_TIME 4.e-7f
 /* 
  * Control words for the RUNTASKS parameter
  */
@@ -128,21 +126,22 @@
 /*
  *     CAMAC status Register bit positions
  */
-#define MASK_RUNENABLE    0x0001
-#define MASK_RESETMCA     0x0002
-#define MASK_UNUSED1      0x0004
-#define MASK_LAMENABLE    0x0008
-#define MASK_DSPRESET     0x0010
-#define MASK_FIPRESET     0x0020
-#define MASK_ALLCHAN      0x0100
-#define MASK_UNUSED2      0x0200
-#define MASK_UNUSED3      0x0400
-#define MASK_IGNOREGATE   0x0800
-#define MASK_UNUSED5      0x1000
-#define MASK_UNUSED6      0x2000
-#define MASK_UNUSED7      0x4000
-#define MASK_UNUSED8      0x8000
-#define MASK_CHANNELS     0x0170
+#define MASK_RUNENABLE       0x0001
+#define MASK_RESETMCA        0x0002
+#define MASK_UNUSED1         0x0004
+#define MASK_LAMENABLE       0x0008
+#define MASK_DSPRESET        0x0010
+#define MASK_FIPRESET        0x0020
+#define MASK_ALLCHAN         0x0100
+#define MASK_UNUSED2         0x0200
+#define MASK_UNUSED3         0x0400
+#define MASK_IGNOREGATE      0x0800
+#define MASK_UNUSED5         0x1000
+#define MASK_UNUSED6         0x2000
+#define MASK_UNUSED7         0x4000
+#define MASK_UNUSED8         0x8000
+#define MASK_CHANNELS        0x0170
+#define MASK_GATE_INTERRUPTS 0x0002     
 
 /* Definitions of CAMAC addresses for the DXP boards */
 #define DXP_TSAR_F_WRITE		17
@@ -171,6 +170,13 @@
 #define DXP_CLEAR_LAM_A			0
 #define DXP_FIPPI_F_WRITE		17
 #define DXP_FIPPI_A_WRITE		3
+#define DXP_TCR_F_WRITE         17
+#define DXP_TCR_A_WRITE         6
+#define DXP_TCR_F_READ          1
+#define DXP_TCR_A_READ          6
+
+
+/* CODEVAR constants */
+#define INTERNAL_MULTISCA       9
 
 #endif						/* Endif for DXP4C2X_H */
-

@@ -1,5 +1,3 @@
-/*<Thu May 23 11:38:03 2002--ALPHA_FRINK--0.0.6--Do not remove--XIA>*/
-
 /*
  *  xia_xerxes_structures.h
  *
@@ -45,9 +43,7 @@
 #define XIA_XERXES_STRUCTURES_H
 
 #include <xerxesdef.h>
-
-
-typedef unsigned char byte_t;
+#include "xia_common.h"
 
 /* 
  * Begin XerXes structures 
@@ -271,7 +267,7 @@ typedef int (*DXP_END_CONTROL_TASK)(int *ioChan, int *modChan, Board *board);
 typedef int (*DXP_CONTROL_TASK_PARAMS)(int *ioChan, int *modChan, short *type, Board *board, int *info);
 typedef int (*DXP_CONTROL_TASK_DATA)(int *ioChan, int *modChan, short *type, Board *board, void *data);
 typedef int (*DXP_GET_RUNSTATS)(unsigned short *, Dsp_Info *, unsigned int *, unsigned int *, 
-								unsigned int *, unsigned int *, unsigned int *, double *);
+								unsigned int *, unsigned int *, unsigned int *, double *, double *, double *);
 typedef int (*DXP_DECODE_ERROR)(unsigned short *, Dsp_Info *, unsigned short *, unsigned short *);
 typedef int (*DXP_CLEAR_ERROR)(int *, int *, Dsp_Info *);
 typedef int (*DXP_CHANGE_GAINS)(int *, int *, int *, float *, Dsp_Info *);
@@ -279,7 +275,16 @@ typedef int (*DXP_SETUP_ASC)(int *, int *, int *, float *, float *, unsigned sho
 								float *, float *, float *, Dsp_Info *);
 typedef int (*DXP_PREP_FOR_READOUT)(int *, int *);
 typedef int (*DXP_DONE_WITH_READOUT)(int *, int *, Board *);
-typedef int (*DXP_SETUP_CMD)(Board *, char *, unsigned int *, byte_t *, unsigned int *, byte_t *);
+typedef int (*DXP_SETUP_CMD)(Board *, char *, unsigned int *, byte_t *, unsigned int *, byte_t *, byte_t);
+
+typedef int (*DXP_READ_MEMORY)(int *, int *, Board *, char *, unsigned long *);
+
+typedef int (*DXP_WRITE_REG)(int *, int *, char *, unsigned short *);
+typedef int (*DXP_READ_REG)(int *, int *, char *, unsigned short *);
+
+typedef int (*DXP_DO_CMD)(int *, byte_t, unsigned int, byte_t *, unsigned int, byte_t *, byte_t);
+
+typedef int (*DXP_UNHOOK)(Board *board);
 
 struct Functions {
   DXP_INIT_DRIVER dxp_init_driver;
@@ -335,6 +340,17 @@ struct Functions {
 	DXP_DONE_WITH_READOUT dxp_done_with_readout;
 
   DXP_SETUP_CMD dxp_setup_cmd;
+
+  DXP_READ_MEMORY dxp_read_memory;
+  
+  DXP_WRITE_REG dxp_write_reg;
+
+    DXP_DO_CMD dxp_do_cmd;
+
+    DXP_READ_REG dxp_read_reg;
+    
+    DXP_UNHOOK dxp_unhook;
+
 };
 typedef struct Functions Functions;
 
@@ -372,4 +388,3 @@ struct System_Info {
 typedef struct System_Info System_Info;
 
 #endif						/* Endif for XIA_XERXES_STRUCTURES_H */
-

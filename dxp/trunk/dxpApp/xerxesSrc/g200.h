@@ -1,5 +1,3 @@
-/*<Thu May 23 11:38:03 2002--ALPHA_FRINK--0.0.6--Do not remove--XIA>*/
-
 /*
  *  g200.h
  *
@@ -130,4 +128,3 @@
 #define G200_MMU_ADDRESS     0x8006
 
 #endif						/* Endif for X10P_H */
-

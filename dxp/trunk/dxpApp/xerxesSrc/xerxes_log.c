@@ -1,5 +1,3 @@
-/*<Thu May 23 11:38:03 2002--ALPHA_FRINK--0.0.6--Do not remove--XIA>*/
-
 /*
  * xerxes_log.c
  *
@@ -119,4 +117,3 @@ XERXES_EXPORT int XERXES_API dxp_set_log_output(char *filename)
 
 	return DXP_SUCCESS;
 }
-

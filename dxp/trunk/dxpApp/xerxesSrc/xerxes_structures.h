@@ -1,5 +1,3 @@
-/*<Thu May 23 11:38:03 2002--ALPHA_FRINK--0.0.6--Do not remove--XIA>*/
-
 /*
  *  xerxes_structures.h
  *
@@ -61,6 +59,7 @@ typedef int (*DXP_MD_OPEN)(char *, int *);
 typedef int (*DXP_MD_GET_MAXBLK)(void);
 typedef int (*DXP_MD_SET_MAXBLK)(unsigned int *);
 typedef int (*DXP_MD_LOCK_RESOURCE)(int *, int*, short *);
+typedef int (*DXP_MD_CLOSE)(int *);
 struct Xia_Io_Functions {
 	DXP_MD_IO dxp_md_io;
 	DXP_MD_INITIALIZE dxp_md_initialize;
@@ -68,6 +67,7 @@ struct Xia_Io_Functions {
 	DXP_MD_GET_MAXBLK dxp_md_get_maxblk;
 	DXP_MD_SET_MAXBLK dxp_md_set_maxblk;
 	DXP_MD_LOCK_RESOURCE dxp_md_lock_resource;
+    DXP_MD_CLOSE dxp_md_close;
 };
 typedef struct Xia_Io_Functions Xia_Io_Functions;
 /*
@@ -109,4 +109,3 @@ struct Xia_Util_Functions {
 typedef struct Xia_Util_Functions Xia_Util_Functions;
 
 #endif						/* Endif for XERXES_STRUCTURES_H */
-

@@ -1,5 +1,3 @@
-/*<Thu May 23 11:38:03 2002--ALPHA_FRINK--0.0.6--Do not remove--XIA>*/
-
 /*
  *  md_generic.h
  *
@@ -50,5 +48,12 @@
 #define MD_INFO			3
 #define	MD_DEBUG		4
 
-#endif						/* Endif for MD_GENERIC_H */
+/* IO Flags for serial port communications */
+#define IO_NORMAL    0x01
+#define IO_OPEN      0x02
+#define IO_CRITICAL  0x04
+#define IO_CLOSE     0x08
+#define IO_SNIFF_ON  0x10
+#define IO_SNIFF_OFF 0x20
 
+#endif						/* Endif for MD_GENERIC_H */

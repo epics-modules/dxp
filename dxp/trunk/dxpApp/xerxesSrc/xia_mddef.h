@@ -1,5 +1,3 @@
-/*<Thu May 23 11:38:03 2002--ALPHA_FRINK--0.0.6--Do not remove--XIA>*/
-
 /*
  *  xiadef.h
  *
@@ -138,4 +136,3 @@
 #endif               /* end of _DXP_SWITCH_*/
 
 #endif				 /* Endif for XIA_MDDEF_H */
-
