@@ -58,6 +58,9 @@ dxpApp_LIBS += asyn
 dxpApp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #===========================
+# Build application that lets other apps run with iopl(3)
+PROD_IOC_Linux += startWithIopl3
+startWithIopl3_SRCS += startWithIopl3.c
 
 include $(TOP)/configure/RULES
 #----------------------------------------
