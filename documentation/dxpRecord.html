@@ -1,6 +1,6 @@
 <html>
 <head>
-  <titleDXP - DXP Record</title>
+  <title>DXP - DXP Record</title>
   <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 </head>
 
@@ -39,8 +39,8 @@
                 Implementation Details</a></li>
   <li><a href="#Future Plans">
                 Future Plans</a></li>
-  <li><a href="#MEDM screens">
-                MEDM screens</a></li>
+  <li><a href="#Graphical Displays">
+                Graphical Displays</a></li>
 </ul>
 
 <h2 align="center"><a name="Overview">
@@ -55,7 +55,9 @@ is not intended for collecting spectra.  That is done using the
 <a href="http://cars.uchicago.edu/software/epics/mcaRecord.html"target="_blank">EPICS MCA record</a>.
 <p>
 The DXP Record communicates with the hardware using the 
-<a href="http://www.xia.com/DXP_Software.html#Drivers" target="_blank">XIA Handel library</a>.
+<a href="http://www.xia.com/DXP_Software.html#Drivers" target="_blank">XIA Handel library</a>,
+which in turn communicates with the
+<a href="http://www.xia.com/Manuals/XIA_Host_Software_Manual.pdf" target="_blank">XIA Xerxes library</a>.
 
 It currently supports the following hardware and operating systems:</p>
 <ul>
@@ -64,7 +66,7 @@ It currently supports the following hardware and operating systems:</p>
   <li>The DXP Saturn running the EPICS IOC on Linux, using the
       parallel port.</li>
   <li>The DXP2X running the EPICS IOC on vxWorks, using the 
-      Kintetic Systems VME to CAMAC interface.
+      Kinetic Systems VME to CAMAC interface.
   <li>As soon as XIA releases the new PXI DXP-XMAP hardware, support
       for that will be provided under Windows (and perhaps Linux).</li>
 </ul>
@@ -73,6 +75,7 @@ The DXP Record can perform the following tasks:
 <ul>
   <li>Set high-level parameters like peaking time, fast filter threshold,
       etc. that result in a number of low-level parameters being changed.</li>
+  <li>Start and stop data acquisition.</li>
   <li>Directly modify the low-level device parameters.  This is not recommended
       except for expert users!</li>
   <li>Read back the actual values of all high-level and low-level parameters.</li>
@@ -90,7 +93,7 @@ The DXP Record can perform the following tasks:
 <p>This document does not attempt to explain the meaning or use of all of the DXP parameters.
 The best documentation of the operation of the DXP modules is provided by XIA in the 
 <a href="http://www.xia.com/Manuals/Kepler_Saturn_Manual_4.0.1.pdf" target="_blank">
-Saturn User's Manual.</a>.  That manual also describes the Kepler software, which does
+Saturn User's Manual</a>.  That manual also describes the Kepler software, which does
 not apply to EPICS users, but it provides an excellent description of the theory of
 digital pulse processing as implemented in the DXP models from XIA.</p>
 
@@ -209,7 +212,7 @@ digital pulse processing as implemented in the DXP models from XIA.</p>
       <td>The baseline history array.  This array is read from the hardware
           by writing 1 to the .READ_HISTORY field.  The baseline history 
           provides a valuable diagnostic of the electronic noise in the system.
-          It provides a plot of the more recent baseline values versus time.</td>
+          It provides a plot of the most recent baseline values versus time.</td>
     </tr>
     <tr valign="top">
       <td>BHIST­_X</td>
@@ -288,7 +291,7 @@ digital pulse processing as implemented in the DXP models from XIA.</p>
 </table>
 
 <p>Note that if the MCA record is being used, then it is normally used to control
-acquisition, rather then the fields above.</p>
+acquisition, rather than tha fields above.</p>
 
 <p> </p>
 <hr>
@@ -483,7 +486,7 @@ acquisition, rather then the fields above.</p>
       <td>"Maximum energy (keV)"</td>
       <td>DBF_DOUBLE</td>
       <td>The energy of the last channel in the spectrum in keV.  Modifying this value causes Handel to
-          a number of low-level parameters, including BINFACT and the analog input gain.  If the
+          change a number of low-level parameters, including BINFACT and the analog input gain.  If the
           actual energy of the last channel is not equal to this value, then one should
           edit the .ini file to modify the value of the pre-amp gain.</td>
     </tr>
@@ -684,7 +687,7 @@ low-level parameters.
 
 <p>The low-level parameter control is provided in a flexible and extensible way, 
 because the parameters are specific to
-each firmware type and release.  For example the parameters are different for different types 
+each firmware type and release.  For example, the parameters are different for different types 
 of pre-amplifiers (RC versus reset).</p>
 
 <p>The flexibility is provided in the following manner.  Each low level parameter is associated with 3 
@@ -766,7 +769,7 @@ The following table summarizes the low-level fields:
 <p>The following table lists the current low-level parameters associated with each
 low-level DXP record field.  Differences between the RC and reset firmware are noted.  Every effort 
 will be made to keep the same DXP record field name associated with the same firmware parameter name
-in subsequent software and firmware releases.  This may not be possible, particularly if existing 
+in subsequent software and firmware releases.  This may not always be possible, particularly if existing 
 firmware parameters are deleted or renamed.</p>
 <table cellpadding="5" border="1">
   <tbody>
@@ -781,12 +784,12 @@ firmware parameters are deleted or renamed.</p>
     <tr valign="top">
       <td>A01</td>
       <td>GAINDAC</td>
-      <td>Gain DAC for setting analog input gain</td>
+      <td>Gain DAC for setting analog input gain.</td>
     </tr>
     <tr valign="top">
       <td>A02</td>
       <td>HIGHGAIN</td>
-      <td>See manual</td>
+      <td>See manual.</td>
     </tr>
     <tr valign="top">
       <td>A03</td>
@@ -797,32 +800,32 @@ firmware parameters are deleted or renamed.</p>
     <tr valign="top">
       <td>A04</td>
       <td>INPUTENABLE</td>
-      <td>See manual</td>
+      <td>See manual.</td>
     </tr>
     <tr valign="top">
       <td>A05</td>
       <td>RESETWAIT</td>
-      <td>The time to wait after a reset before collecting data.</td>
+      <td>Time to wait after a reset before collecting data.</td>
     </tr>
     <tr valign="top">
       <td>A06</td>
       <td>RESETINT</td>
-      <td>See manual</td>
+      <td>See manual.</td>
     </tr>
     <tr valign="top">
       <td>A07&nbsp;(reset)</td>
       <td>SGRANULAR</td>
-      <td>See manual</td>
+      <td>See manual.</td>
     </tr>
     <tr valign="top">
       <td>A07 (RC)</td>
       <td>RCTAU</td>
-      <td>The pre-amp time constant</td>
+      <td>Pre-amp time constant.</td>
     </tr>
     <tr valign="top">
       <td>A08 (reset)</td>
       <td>TRKDACVAL</td>
-      <td>See manual</td>
+      <td>See manual.</td>
     </tr>
     <tr valign="top">
       <td>A08 (RC)</td>
@@ -832,12 +835,12 @@ firmware parameters are deleted or renamed.</p>
     <tr valign="top">
       <td>A09 (reset)</td>
       <td>TDACWIDTH</td>
-      <td>See manual</td>
+      <td>See manual.</td>
     </tr>
     <tr valign="top">
       <td>A09 (RC)</td>
       <td>Unused</td>
-      <td>Unused</td>
+      <td>Unused.</td>
     </tr>
 
     <tr valign="top">
@@ -851,7 +854,7 @@ firmware parameters are deleted or renamed.</p>
     <tr valign="top">
       <td>F02</td>
       <td>FASTGAP</td>
-      <td>Length of the fast filter gap</td>
+      <td>Length of the fast filter gap.</td>
     </tr>
     <tr valign="top">
       <td>F03</td>
@@ -861,37 +864,37 @@ firmware parameters are deleted or renamed.</p>
     <tr valign="top">
       <td>F04</td>
       <td>SLOWGAP</td>
-      <td>Length of the slow filter gap</td>
+      <td>Length of the slow filter gap.</td>
     </tr>
     <tr valign="top">
       <td>F05</td>
       <td>MAXWIDTH</td>
-      <td>Maximum width of a valid pulse</td>
+      <td>Maximum width of a valid pulse.</td>
     </tr>
     <tr valign="top">
       <td>F06</td>
       <td>MINWIDTH</td>
-      <td>Minimum width of a valid pulse</td>
+      <td>Minimum width of a valid pulse.</td>
     </tr>
     <tr valign="top">
       <td>F07</td>
       <td>PEAKINT</td>
-      <td>See manual</td>
+      <td>See manual.</td>
     </tr>
     <tr valign="top">
       <td>F08</td>
       <td>PEAKSAM</td>
-      <td>Time to sample the peak height</td>
+      <td>Time to sample the peak height.</td>
     </tr>
     <tr valign="top">
       <td>F09</td>
       <td>THRESHOLD</td>
-      <td>Fast filter threshold</td>
+      <td>Fast filter threshold.</td>
     </tr>
     <tr valign="top">
       <td>F10</td>
       <td>SLOWTHRESH</td>
-      <td>Slow filter threshold</td>
+      <td>Slow filter threshold.</td>
     </tr>
 
     <tr valign="top">
@@ -900,17 +903,17 @@ firmware parameters are deleted or renamed.</p>
     <tr valign="top">
       <td>B01</td>
       <td>BLFILTER</td>
-      <td>Length of the baseline filter</td>
+      <td>Length of the baseline filter.</td>
     </tr>
     <tr valign="top">
       <td>B02</td>
       <td>BLFILTERF</td>
-      <td>See manual</td>
+      <td>See manual.</td>
     </tr>
     <tr valign="top">
       <td>B03</td>
       <td>BASEBINNING</td>
-      <td>Baseline binning factor when constructing baseline histogram</td>
+      <td>Binning factor when constructing baseline histogram.</td>
     </tr>
     <tr valign="top">
       <td>B04</td>
@@ -1199,42 +1202,46 @@ firmware parameters are deleted or renamed.</p>
     <tr valign="top">
       <td>S01</td>
       <td>EVTSINRUN0</td>
-      <td>Events in run.  These are pulses that were accumulated in the MCA spectrum.</td>
+      <td>Number of events in run.  
+          These are pulses that were accumulated in the MCA spectrum.</td>
     </tr>
     <tr valign="top">
       <td>S02</td>
       <td>UNDRFLOWS0</td>
-      <td>Underflows.  These are pulses that would have been in an MCA channel less than MCALIMLO.</td>
+      <td>Number of underflows.  
+          These are pulses that would have been in an MCA channel less than MCALIMLO.</td>
     </tr>
     <tr valign="top">
       <td>S03</td>
       <td>OVERFLOWS0</td>
-      <td>Overflows.  These are pulses that would have been in an MCA channel greater than MCALIMHI.</td>
+      <td>Number of overflows.  
+          These are pulses that would have been in an MCA channel greater than MCALIMHI.</td>
     </tr>
     <tr valign="top">
       <td>S04</td>
       <td>FASTPEAKS0</td>
-      <td>Fast peaks.  These are pulses counted by the fast (trigger) filter.</td>
+      <td>Number of fast peaks.  
+          These are pulses counted by the fast (trigger) filter.</td>
     </tr>
     <tr valign="top">
       <td>S05</td>
       <td>BASEEVTS0</td>
-      <td>Baseline events.  The total number of baseline events.</td>
+      <td>Number of baseline events.</td>
     </tr>
     <tr valign="top">
       <td>S06</td>
       <td>BASEMEAN0</td>
-      <td>Baseline mean.  The mean value of the baseline.</td>
+      <td>Mean value of the baseline.</td>
     </tr>
     <tr valign="top">
       <td>S07</td>
       <td>LIVETIME0</td>
-      <td>Livetime ticks.  The total number of livetime clock ticks.</td>
+      <td>Number of livetime clock ticks.</td>
     </tr>
     <tr valign="top">
       <td>S08</td>
       <td>REALTIME0</td>
-      <td>Realtime ticks.  The total number of realtime clock ticks.</td>
+      <td>Number of realtime clock ticks.</td>
     </tr>
     <tr valign="top">
       <td>S09</td>
@@ -1285,8 +1292,8 @@ simple EPICS records like ai and ao.  Processing the record does not actually
 do anything unless one has written to one of the fields in the record that has 
 the Process Passive attribute.  For example, writing a 1 to the .READ_HISTOGRAM
 field will cause the record to process, and to read the baseline histogram
-array from the hardware.  To read the DXP parameters write a 1 to the
-.READ_PARAMS field; to read the ADC trace, write a 1 to the .READ_TRACE field.
+array from the hardware.  Similarly, to read the DXP parameters write a 1 to the
+.READ_PARAMS field, and to read the ADC trace, write a 1 to the .READ_TRACE field.
 Writing to any high-level parameter such as the peaking time (.PKTIM), or to any
 low-level parameter (e.g. .A01V) will cause the record to read back all of the 
 parameters, as if the .READ_PARAMS field had been set to 1.  The .VAL field
@@ -1322,7 +1329,7 @@ asynSetTraceIOMask("DXP1",0,2)
 <li>Handel debugging.  To turn on informational messages from the XIA Handel and 
 Xerxes software type the following command at the IOC prompt:
 <pre>
-xiaSetLogLevel(2)
+xiaSetLogLevel(3)
 </pre>
 The logging level can be set to 1=error, 2=warning, 3=information, 4=debug.
 </li>
@@ -1338,11 +1345,11 @@ The logging level can be set to 1=error, 2=warning, 3=information, 4=debug.
 to the record and is intended to support all DXP models. It is not expected that there
 will be a need for additional device support.</p>
 
-<p>Software communicates with the DXP hardware through an
+<p>The EPICS Ssoftware communicates with the XIA Handel software through an
 <a href="http://www.aps.anl.gov/epics/modules/soft/asyn/"target="_blank">asyn server</a>.
 This server provides
 a single thread that is used for all calls to the Handel library.  For the MCA record the
-server actually performs the I/O, using standard asyn interfaces like asynInt32,
+server implements standard asyn interfaces like asynInt32,
 asynInt32Array, and asynFloat64.  The server makes calls to Handel in these interface 
 methods.</p>
 
@@ -1378,10 +1385,12 @@ and the PXI bus should allow much faster data acquisition than CAMAC for multi-e
 detectors.</li>
 
 <li>Implement multi-threading for multi-element detectors.  Although Handel is not thread-safe,
-it is still possible to have multiple threads (e.g. one thread per detector).  Access to Handel
-will need to be protected with a mutex, but multi-threading can still lead to 
+it is still possible to have multiple threads (e.g. one thread per detector element).  
+Access to Handel
+will need to be protected with a mutual exclusion semaphore, but multi-threading can still lead to 
 significant performance improvement.  When one thread is done reading a spectrum, for
-example, it can be computing ROIs while the next thread is reading its hardware via Handel.</li>
+example, it can be computing ROIs while the next thread is doing a DMA read 
+of its hardware via Handel.</li>
 
 <li>Make the asyn driver poll the hardware at a fast rate while it is acquiring (e.g. 60Hz) to
 see if it is done.  It can then issue a callback to the DXP and MCA device support indicating
@@ -1396,8 +1405,8 @@ DXP2X firmware.</li>
 
 <p> </p>
 <hr>
-<h2 align="center"><a name="MEDM screens">
-                            MEDM screens</a></h2>
+<h2 align="center"><a name="Graphical Displays">
+                            Graphical Displays</a></h2>
 
 <p>The following are screen shots of the medm screens provided for the DXP application
 on a single-element detector, such as the Saturn.  These screens display and control 
