@@ -8,12 +8,16 @@ include $(TOP)/configure/CONFIG
 #==================================================
 # build a support library
 
-LIBRARY_IOC += dxp
+# Currently this application only works on vxWorks (CAMAC) and
+# Linux (parallel port)
+
+LIBRARY_IOC_Linux   += dxp
+LIBRARY_IOC_vxWorks += dxp
 
 DBDINC += dxpRecord
 DBD += dxpSupport.dbd
+DBD += dxp.dbd
 
-USR_CFLAGS += -DEXCLUDE_DXPX10P
 USR_CFLAGS += -DXIA_SPECIAL_MEM
 USR_CFLAGS += -DEXCLUDE_DGFG200
 USR_CFLAGS += -DEXCLUDE_UDXPS
@@ -22,11 +26,33 @@ USR_CFLAGS += -DEXCLUDE_UDXPS
 dxp_SRCS += dxpRecord.c
 dxp_SRCS += mcaDXPServer.cc
 dxp_SRCS += devDXP.cc
+dxp_SRCS += dxpRegister.c
 
 dxp_LIBS += xerxes
 dxp_LIBS += mca 
 dxp_LIBS += mpf mpfEpics
+dxp_LIBS += std
 dxp_LIBS += $(EPICS_BASE_IOC_LIBS)
+
+#=============================
+# build an ioc application
+
+PROD_IOC_vxWorks += dxpApp
+PROD_IOC_Linux += dxpApp
+
+# <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
+dxpApp_SRCS += dxp_registerRecordDeviceDriver.cpp
+dxpApp_SRCS_Linux += dxpMain.cpp
+dxpApp_SRCS_vxWorks += -nil-
+#The following adds support from base/src/vxWorks
+dxpApp_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary
+
+dxpApp_LIBS += dxp xerxes
+dxpApp_LIBS += mca
+dxpApp_LIBS += std
+dxpApp_LIBS_vxWorks += camac
+dxpApp_LIBS += mpf mpfEpics
+dxpApp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #===========================
 
