@@ -1,12 +1,12 @@
 
 file {
-	name="C:\Documents and Settings\epics\Desktop\dxpApp\op\adl\single_dxp_top.adl"
-	version=020306
+	name="/home/epics/synApps5-1beta2/dxp/dxpApp/op/adl/single_dxp_top.adl"
+	version=030000
 }
 display {
 	object {
-		x=273
-		y=45
+		x=314
+		y=199
 		width=705
 		height=522
 	}
@@ -398,169 +398,158 @@ composite {
 		}
 	}
 }
-composite {
+"text update" {
 	object {
 		x=13
 		y=203
-		width=257
-		height=143
+		width=80
+		height=20
 	}
-	"composite name"=""
-	children {
-		"text update" {
-			object {
-				x=13
-				y=203
-				width=80
-				height=20
-			}
-			monitor {
-				chan="$(P)$(M).IDTIM"
-				clr=15
-				bclr=14
-			}
-			clrmod="alarm"
-			align="horiz. right"
-			limits {
-			}
-		}
-		text {
-			object {
-				x=100
-				y=204
-				width=170
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="% Dead time"
-		}
-		menu {
-			object {
-				x=13
-				y=229
-				width=80
-				height=20
-			}
-			control {
-				chan="$(P)$(M)Status.SCAN"
-				clr=14
-				bclr=51
-			}
-		}
-		text {
-			object {
-				x=99
-				y=230
-				width=110
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="MCA Status Read Rate"
-		}
-		menu {
-			object {
-				x=13
-				y=277
-				width=80
-				height=20
-			}
-			control {
-                                chan="$(P)$(D):ReadParams.SCAN"
-				clr=14
-				bclr=51
-			}
-		}
-		text {
-			object {
-				x=99
-				y=278
-				width=110
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="DXP Params. Read Rate"
-		}
-		menu {
-			object {
-				x=13
-				y=301
-				width=80
-				height=20
-			}
-			control {
-				chan="$(P)$(M)EnableWait"
-				clr=14
-				bclr=51
-			}
-		}
-		text {
-			object {
-				x=99
-				y=302
-				width=160
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Wait for client"
-		}
-		menu {
-			object {
-				x=13
-				y=325
-				width=80
-				height=20
-			}
-			control {
-				chan="$(P)$(M)ClientWait"
-				clr=14
-				bclr=51
-			}
-		}
-		text {
-			object {
-				x=99
-				y=326
-				width=160
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Client Wait"
-		}
-		text {
-			object {
-				x=99
-				y=254
-				width=110
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="MCA Data Read Rate"
-		}
-		menu {
-			object {
-				x=13
-				y=253
-				width=80
-				height=20
-			}
-			control {
-				chan="$(P)$(M)Read.SCAN"
-				clr=14
-				bclr=51
-			}
-		}
+	monitor {
+		chan="$(P)$(M).IDTIM"
+		clr=15
+		bclr=14
+	}
+	clrmod="alarm"
+	align="horiz. right"
+	limits {
+	}
+}
+text {
+	object {
+		x=100
+		y=204
+		width=170
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="% Dead time"
+}
+menu {
+	object {
+		x=13
+		y=229
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(M)Status.SCAN"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=99
+		y=230
+		width=110
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="MCA Status Read Rate"
+}
+menu {
+	object {
+		x=13
+		y=277
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(D):ReadParams.SCAN"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=99
+		y=278
+		width=110
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="DXP Params. Read Rate"
+}
+menu {
+	object {
+		x=13
+		y=301
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(M)EnableWait"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=99
+		y=302
+		width=160
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Wait for client"
+}
+menu {
+	object {
+		x=13
+		y=325
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(M)ClientWait"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=99
+		y=326
+		width=160
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Client Wait"
+}
+text {
+	object {
+		x=99
+		y=254
+		width=110
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="MCA Data Read Rate"
+}
+menu {
+	object {
+		x=13
+		y=253
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(M)Read.SCAN"
+		clr=14
+		bclr=51
 	}
 }
 composite {
@@ -1432,4 +1421,31 @@ rectangle {
 		fill="outline"
 		width=2
 	}
+}
+"related display" {
+	object {
+		x=13
+		y=349
+		width=80
+		height=22
+	}
+	display[0] {
+		label="Save/restore"
+		name="save_restoreStatus_more.adl"
+		args="P=$(P)"
+	}
+	clr=14
+	bclr=51
+}
+text {
+	object {
+		x=99
+		y=350
+		width=110
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Save/restore status"
 }
