@@ -2,6 +2,9 @@ Things to do on dxpApp
 
                                     Bugs
 
+- dxpRecord/devDxp need to be rewritten.  Messages being sent when
+  pact=1 are ignorred, which means baseline histogram can't process at same
+  rate as record, etc.
 - Get error when loading 1element_reset.ini
 - Get error when loading 16element_reset.ini
 - When using 1 microsecond peaking time it looks like we run out
@@ -9,14 +12,12 @@ Things to do on dxpApp
   and Kb is still too small?
 - OCR > ICR under these conditions, obviously deadtime corrections
   won't work.
+- Problem with xiaSetLogOutput not set after iocInit on vxWorks
 
 
                                Enhancements
 
 - Rename iocBoot directories
-- Check problem with adc_trace on DXP-2X - should be fixed now
-- Check problem with baseline_history on DXP-2X - should be fixed now
-- Fix problem with channel 13 not initializing in xiaStartSystem()
 - Once single-threading works on DXP-2X implement multiple threads with
   locks around Handel calls
 - Fit simple Gaussian to baseline histogram, give FWHM in ev
@@ -27,13 +28,9 @@ Things to do on dxpApp
   limit
 - Finish multi-element MEDM screens
 - Make DSP parameters USHORT so they display correctly
-- Track down problem with xiaSetLogOutput not set after iocInit on vxWorks
 - Documentation
 - Break md_epics into 3 files:
   md_epics - implements device-independent code md_wait, md_error, etc.
   md_linux - implements only EPP on Saturn
   md_vxworks - implements only CAMAC
-- Saturn problems on Cygwin
-  - mca record crashes system when it processes.  Not every time, but every
-    2-3 times
 - Build dxpApp on native Windows
