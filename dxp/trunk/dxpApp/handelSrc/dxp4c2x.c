@@ -3767,7 +3767,7 @@ static int dxp_get_runstats(unsigned short array[], Dsp_Info* dsp,
   temp2 = (unsigned long) array[addr[2]];
   real = ((double) (temp0 + temp1*pow(2,16) + temp2*pow(2,32))) * liveclock_tick;
 
-  sprintf(info_string, "evts = %u, under = %u, over = %u, fast = %u, live = %lf, real = %lf",
+  sprintf(info_string, "evts = %u, under = %u, over = %u, fast = %u, live = %f, real = %f",
 	  *evts, *under, *over, *fast, *live, real);
   dxp_log_debug("dxp_get_runstats", info_string);
   
@@ -4542,7 +4542,7 @@ static int dxp_internal_multisca(int *ioChan, int *modChan, Board *board,
 	return status;
   }
   
-  status = dxp_read_block(ioChan, modChan, &((unsigned short)SPECTSTART), &((unsigned int)len), shortData);
+  status = dxp_read_block(ioChan, modChan, &SPECTSTART, &((unsigned int)len), shortData);
 
   if (status != DXP_SUCCESS) {
 
