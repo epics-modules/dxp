@@ -217,7 +217,7 @@ PSL_SHARED int pslInvalidate(char *name, XiaDefaults *defs)
   }
 
   /* XXX What if state is modified? */
-  sprintf(info_string, "%#x: e->state = %#x", e, e->state);
+  sprintf(info_string, "%p: e->state = %#x", e, e->state);
   pslLogDebug("pslInvalidate", info_string);
 
   e->state = AV_STATE_UNKNOWN;
@@ -244,7 +244,7 @@ PSL_SHARED void pslDumpDefaults(XiaDefaults *defs)
   e = defs->entry;
 
   while (e != NULL) {
-	sprintf(info_string, "%#x: %s, %.3f, %.3f, %#x", e, e->name, e->data,
+	sprintf(info_string, "%p: %s, %.3f, %.3f, %#x", e, e->name, e->data,
 			e->pending, e->state);
 	pslLogDebug("pslDumpDefaults", info_string);
 
