@@ -64,7 +64,9 @@ handel_SRCS += handel_xerxes.c
 handel_LIBS_Linux += $(EPICS_BASE_IOC_LIBS)
 handel_LIBS_cygwin32 += $(EPICS_BASE_IOC_LIBS)
 handel_LIBS_vxWorks += $(EPICS_BASE_IOC_LIBS)
-handel_LIBS_WIN32 += DLPORTIO
+handel_LIBS_WIN32     += DLPORTIO
+LIB_INSTALLS_WIN32    += ../DLPORTIO.lib
+LIB_INSTALLS_cygwin32 += ../DLPORTIO.lib
 INC += xia_common.h
 INC += xia_xerxes.h
 INC += xerxes_generic.h
@@ -76,8 +78,24 @@ INC += handeldef.h
 INC += handel_generic.h
 
 #===========================
+ifneq ($(strip $(LIB_INSTALLS_$(OS_CLASS))),)
+LIB_INSTALLS+=$(subst -nil-,,$(LIB_INSTALLS_$(OS_CLASS)))
+else
+ifdef LIB_INSTALLS_DEFAULT
+LIB_INSTALLS+=$(LIB_INSTALLS_DEFAULT)
+endif
+endif
 
 include $(TOP)/configure/RULES
 #----------------------------------------
 #  ADD RULES AFTER THIS LINE
+
+ifdef LIB_INSTALLS
+buildInstall : libInstalls
+endif
+
+libInstalls:  $(LIB_INSTALLS)
+	@echo "Installing $(^F)"
+	@$(INSTALL) -d -m 555 $^ $(INSTALL_LIB)
+
 
