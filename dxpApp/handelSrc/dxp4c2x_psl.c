@@ -2850,7 +2850,7 @@ PSL_STATIC int PSL_API pslDoBaseHistory(int detChan, void *info)
 
     unsigned int len = 1;
 
-    short task = CT_DXPX10P_BASELINE_HIST;
+    short task = CT_DXP2X_BASELINE_HIST;
 
     float waitTime;
 
@@ -2898,7 +2898,7 @@ PSL_STATIC int PSL_API pslGetBaseHistoryLen(int detChan, void *value)
     int status;
     int info[3];
 
-    short task = CT_DXPX10P_BASELINE_HIST;
+    short task = CT_DXP2X_BASELINE_HIST;
 
     statusX = dxp_control_task_info(&detChan, &task, info);
 
@@ -2928,7 +2928,7 @@ PSL_STATIC int PSL_API pslGetBaseHistory(int detChan, void *value)
     int statusX;
     int status;
 
-    short task = CT_DXPX10P_BASELINE_HIST;
+    short task = CT_DXP2X_BASELINE_HIST;
 
 
     statusX = dxp_get_control_task_data(&detChan, &task, value);
@@ -2970,7 +2970,7 @@ PSL_STATIC int PSL_API pslDoOpenRelay(int detChan, void *info)
 
     unsigned int len = 1;
 
-    short task = CT_DXPX10P_OPEN_INPUT_RELAY;
+    short task = CT_DXP2X_OPEN_INPUT_RELAY;
 
 
     statusX = dxp_control_task_info(&detChan, &task, infoInfo);
@@ -3026,7 +3026,7 @@ PSL_STATIC int PSL_API pslDoCloseRelay(int detChan, void *info)
 
     unsigned int len = 1;
 
-    short task = CT_DXPX10P_CLOSE_INPUT_RELAY;
+    short task = CT_DXP2X_CLOSE_INPUT_RELAY;
 
 
     statusX = dxp_control_task_info(&detChan, &task, infoInfo);
