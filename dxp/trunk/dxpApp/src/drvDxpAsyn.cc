@@ -187,7 +187,6 @@ extern "C" int DXPConfig(const char *portName, int chan1, int chan2,
     dxpChannel_t *dxpChannel;
     int detChan;
     asynStatus status;
-    int priority=0;
 
     drvDxpAsyn *p = new drvDxpAsyn;
 
@@ -300,10 +299,10 @@ extern "C" int DXPConfig(const char *portName, int chan1, int chan2,
     p->dxp.pinterface  = (void *)&drvDxpAsynDxp;
     p->dxp.drvPvt = p;
     status = pasynManager->registerPort(portName,
-                                        0, /*not multiDevice*/
-                                        1,
-                                        priority,
-                                        0);
+                                        1, /* is multiDevice */
+                                        1, /* autoconnect */
+                                        epicsThreadPriorityMedium,
+                                        0); /* stack size */
     if (status != asynSuccess) {
         errlogPrintf("dxpConfig: Can't register myself.\n");
         return(-1);
