@@ -1752,6 +1752,15 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_wait(float* time)
 {
     double dtime = *time;
 
+#ifdef vxWorks
+    /* On vxWorks there is no guarantee that epicsThreadSleep will sleep for at least the
+     * requested time, there is only the guarantee that it will sleep until the next clock tick
+     * To guarantee we add 2 clock ticks to the requested time */
+    /* dtime += 2.*epicsThreadSleepQuantum(); */
+    /* This seems to fix a problem with initializing the DXP-2X.  Need to track down! */
+    if (dtime < 0.1) dtime = 0.1;
+#endif
+
     epicsThreadSleep(dtime);
 
     return DXP_SUCCESS;
