@@ -169,7 +169,9 @@ typedef struct  {
 
 typedef struct  {
     long lo;
+    long lo_rbv;
     long hi;
+    long hi_rbv;
     long counts;
 } DXP_SCA;
 
@@ -241,6 +243,9 @@ static long init_record(struct dxpRecord *pdxp, int pass)
     if (pass != 0) return(0);
     if (dxpRecordDebug > 5) printf("(init_record): entry\n");
 
+    /* Initialize mtyp field to -1, indicates not initialized */
+    pdxp->mtyp = -1;
+
     /* must have dset defined */
     if (!(pdset = (struct devDxpDset *)(pdxp->dset))) {
         printf("dxpRecord:init_record no dset\n");
@@ -248,7 +253,12 @@ static long init_record(struct dxpRecord *pdxp, int pass)
         goto bad;
     }
     if (pdset->init_record) {
-        if ((status=(*pdset->init_record)(pdxp, &detChan))) return(status);
+        status=(*pdset->init_record)(pdxp, &detChan);
+        if (status) {
+            printf("dxpRecord:init_record %s device support initialization failure\n",
+                pdxp->name);
+            goto bad;
+        }
     }
     if (detChan < 0) {
         printf("dxpRecord:init_record hardware communication error\n");
@@ -452,8 +462,10 @@ static long init_record(struct dxpRecord *pdxp, int pass)
 static long cvt_dbaddr(struct dbAddr *paddr)
 {
    struct dxpRecord *pdxp=(struct dxpRecord *)paddr->precord;
-   MODULE_INFO *minfo = &moduleInfo[pdxp->mtyp];
+   MODULE_INFO *minfo;
 
+   if (pdxp->mtyp < 0) return(-1);
+   minfo = &moduleInfo[pdxp->mtyp];
    if (paddr->pfield == &(pdxp->base)) {
       paddr->pfield = (void *)(pdxp->bptr);
       paddr->no_elements = minfo->nbase_histogram;
@@ -514,8 +526,10 @@ static long cvt_dbaddr(struct dbAddr *paddr)
 static long get_array_info(struct dbAddr *paddr, long *no_elements, long *offset)
 {
    struct dxpRecord *pdxp=(struct dxpRecord *)paddr->precord;
-   MODULE_INFO *minfo = &moduleInfo[pdxp->mtyp];
+   MODULE_INFO *minfo;
 
+   if (pdxp->mtyp < 0) return(-1);
+   minfo = &moduleInfo[pdxp->mtyp];
    if (paddr->pfield == pdxp->bptr) {
       *no_elements = minfo->nbase_histogram;
       *offset = 0;
@@ -587,23 +601,34 @@ static long monitor(struct dxpRecord *pdxp)
    dxpReadbacks *pdxpReadbacks = pdxp->rbptr;
    DXP_TASK_PARAM *task_param;
    DXP_SCA *sca;
-   MODULE_INFO *minfo = &moduleInfo[pdxp->mtyp];
    int blCutEnbl;
    int newBlCut;
-   int runtasks       = pdxp->pptr[minfo->offsets.runtasks];
-   int blmin          = (short)pdxp->pptr[minfo->offsets.blmin];
-   int blmax          = (short)pdxp->pptr[minfo->offsets.blmax];
-   int blcut          = pdxp->pptr[minfo->offsets.blcut];
-   int blfilter       = pdxp->pptr[minfo->offsets.blfilter];
-   int basethresh     = pdxp->pptr[minfo->offsets.basethresh];
-   int basethreshadj  = pdxp->pptr[minfo->offsets.basethreshadj];
-   int basebinning    = pdxp->pptr[minfo->offsets.basebinning];
-   int slowlen        = pdxp->pptr[minfo->offsets.slowlen];
+   int runtasks;
+   int blmin;
+   int blmax;
+   int blcut;
+   int blfilter;
+   int basethresh;
+   int basethreshadj;
+   int basebinning;
+   int slowlen;
    double eVPerADC;
    double eVPerBin;
    double emax;
+   MODULE_INFO *minfo;
 
-    if (dxpRecordDebug > 5) printf("dxpRecord(monitor): entry\n");
+   if (dxpRecordDebug > 5) printf("dxpRecord(monitor): entry\n");
+   if (pdxp->mtyp < 0) return(-1);
+   minfo = &moduleInfo[pdxp->mtyp];
+   runtasks       = pdxp->pptr[minfo->offsets.runtasks];
+   blmin          = (short)pdxp->pptr[minfo->offsets.blmin];
+   blmax          = (short)pdxp->pptr[minfo->offsets.blmax];
+   blcut          = pdxp->pptr[minfo->offsets.blcut];
+   blfilter       = pdxp->pptr[minfo->offsets.blfilter];
+   basethresh     = pdxp->pptr[minfo->offsets.basethresh];
+   basethreshadj  = pdxp->pptr[minfo->offsets.basethreshadj];
+   basebinning    = pdxp->pptr[minfo->offsets.basebinning];
+   slowlen        = pdxp->pptr[minfo->offsets.slowlen];
    /* Get the value of each parameter, post monitor if it is different
     * from current value */
    /* Address of first short parameter */
@@ -641,13 +666,13 @@ static long monitor(struct dxpRecord *pdxp)
    /* Address of first SCA */
    sca = (DXP_SCA *)&pdxp->sca0_lo;
    for (i=0; i<NUM_DXP_SCAS; i++) {
-      if (pdxpReadbacks->sca_lo[i] != sca[i].lo) {
-         sca[i].lo = pdxpReadbacks->sca_lo[i];
-         db_post_events(pdxp, &sca[i].lo, monitor_mask);   
+      if (pdxpReadbacks->sca_lo_rbv[i] != sca[i].lo_rbv) {
+         sca[i].lo_rbv = pdxpReadbacks->sca_lo_rbv[i];
+         db_post_events(pdxp, &sca[i].lo_rbv, monitor_mask);   
       }
-      if (pdxpReadbacks->sca_hi[i] != sca[i].hi) {
-         sca[i].hi = pdxpReadbacks->sca_hi[i];
-         db_post_events(pdxp, &sca[i].hi, monitor_mask);   
+      if (pdxpReadbacks->sca_hi_rbv[i] != sca[i].hi_rbv) {
+         sca[i].hi_rbv = pdxpReadbacks->sca_hi_rbv[i];
+         db_post_events(pdxp, &sca[i].hi_rbv, monitor_mask);   
       }
       if (pdxpReadbacks->sca_counts[i] != sca[i].counts) {
          sca[i].counts = pdxpReadbacks->sca_counts[i];
@@ -844,7 +869,10 @@ static long special(struct dbAddr *paddr, int after)
     DXP_TASK_PARAM *task_param;
     int nparams;
     DXP_SCA *sca;
-    MODULE_INFO *minfo = &moduleInfo[pdxp->mtyp];
+    MODULE_INFO *minfo;
+
+    if (pdxp->mtyp < 0) return(-1);
+    minfo = &moduleInfo[pdxp->mtyp];
 
     if (!after) return(0);  /* Don't do anything if field not yet changed */
 
@@ -960,11 +988,14 @@ found_param:
 static void setDxpTasks(struct dxpRecord *pdxp)
 {
    struct devDxpDset *pdset = (struct devDxpDset *)(pdxp->dset);
-   MODULE_INFO *minfo = &moduleInfo[pdxp->mtyp];
    DXP_TASK_PARAM *task_param;
    unsigned short runtasks;
    int i;
    int status;
+   MODULE_INFO *minfo;
+
+   if (pdxp->mtyp < 0) return;
+   minfo = &moduleInfo[pdxp->mtyp];
 
    if (dxpRecordDebug > 5) printf("dxpRecord(setDxpTasks): entry\n");
    task_param = (DXP_TASK_PARAM *)&pdxp->t01v;
@@ -990,6 +1021,7 @@ static int setSCAs(struct dxpRecord *pdxp)
     int i;
     DXP_SCA *sca = (DXP_SCA *)&pdxp->sca0_lo;
     dxpReadbacks *pdxpReadbacks = pdxp->rbptr;
+    unsigned short monitor_mask = DBE_VALUE | DBE_LOG;
     struct devDxpDset *pdset = (struct devDxpDset *)(pdxp->dset);
     int status;
 
@@ -998,8 +1030,18 @@ static int setSCAs(struct dxpRecord *pdxp)
         /* We would like to only program actual SCAs, but Handel has bug,
          * must set them all. */
         /* if ((sca[i].lo < 0) || (sca[i].hi < 0)) break; */
-        if (sca[i].lo < 0) sca[i].lo = 0;
-        if (sca[i].hi < 0) sca[i].hi = 0;
+        if (sca[i].lo < 0) {
+            sca[i].lo = 0;
+            db_post_events(pdxp,&sca[i].lo,monitor_mask);
+        }
+        if (sca[i].hi < 0) {
+            sca[i].hi = 0;
+            db_post_events(pdxp,&sca[i].hi,monitor_mask);
+        }
+        if (sca[i].hi < sca[i].lo) { 
+            sca[i].hi = sca[i].lo;
+            db_post_events(pdxp,&sca[i].hi,monitor_mask);
+        }
         pdxpReadbacks->sca_lo[i] = sca[i].lo;
         pdxpReadbacks->sca_hi[i] = sca[i].hi;
         pdxp->num_scas++;
@@ -1053,11 +1095,14 @@ static long get_precision(struct dbAddr *paddr, long *precision)
 static long get_graphic_double(struct dbAddr *paddr, struct dbr_grDouble *pgd)
 {
    struct dxpRecord   *pdxp=(struct dxpRecord *)paddr->precord;
-   MODULE_INFO *minfo = &moduleInfo[pdxp->mtyp];
    int fieldIndex = dbGetFieldIndex(paddr);
    int offset, i;
    DXP_SHORT_PARAM *short_param;
    DXP_LONG_PARAM *long_param;
+   MODULE_INFO *minfo;
+
+   if (pdxp->mtyp < 0) return(-1);
+   minfo = &moduleInfo[pdxp->mtyp];
 
    if (fieldIndex == dxpRecordPGAIN) {
       pgd->upper_disp_limit = 50.;
@@ -1103,9 +1148,12 @@ static long get_control_double(struct dbAddr *paddr, struct dbr_ctrlDouble *pcd)
    struct dxpRecord   *pdxp=(struct dxpRecord *)paddr->precord;
    int fieldIndex = dbGetFieldIndex(paddr);
    int offset, i;
-   MODULE_INFO *minfo = &moduleInfo[pdxp->mtyp];
    DXP_SHORT_PARAM *short_param;
    DXP_LONG_PARAM *long_param;
+   MODULE_INFO *minfo;
+
+   if (pdxp->mtyp < 0) return(-1);
+   minfo = &moduleInfo[pdxp->mtyp];
 
    if (fieldIndex == dxpRecordPGAIN) {
       pcd->upper_ctrl_limit = 50.;
