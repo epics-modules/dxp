@@ -6,7 +6,7 @@ include "dxpRecord.dbd"
 ################
 # DEVICE SUPPORT
 ################
-device(dxp,VME_IO,devDxpMpf,"MPF DXP")
+device(dxp,VME_IO,devDxpAsyn,"asyn DXP")
 
 ################
 # DRIVER SUPPORT
@@ -17,7 +17,5 @@ device(dxp,VME_IO,devDxpMpf,"MPF DXP")
 ################
 registrar(dxpRegister)
 
-variable("mcaDXPServerDebug", int)
 variable("dxpRecordDebug", int)
-variable("devDxpMpfDebug", int)
  
