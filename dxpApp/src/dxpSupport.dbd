@@ -11,3 +11,8 @@ device(dxp,VME_IO,devDxpMpf,"MPF DXP")
 ################
 # DRIVER SUPPORT
 ################
+
+################
+# REGISTRATION
+################
+registrar(dxpRegister)
