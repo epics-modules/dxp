@@ -344,6 +344,9 @@ static long init_record(struct dxpRecord *pdxp, int pass)
     /* Download the high-level parameters if PINI is true and PKTIM is non-zero
      * which is a sanity check that save_restore worked */
     if (pdxp->pini && (pdxp->pktim != 0.)) {
+        /* Set default SCAs.  Must do this first, else get errors because other
+         * calls will try to read SCAs, which Handel will complain it cannot find */
+        setSCAs(pdxp);
         status = (*pdset->send_dxp_msg)
                    (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
                    pdxp->slow_trig, &pdxp->slow_trig);
@@ -368,7 +371,6 @@ static long init_record(struct dxpRecord *pdxp, int pass)
         status = (*pdset->send_dxp_msg)
                    (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
                    pdxp->adc_rule, &pdxp->adc_rule);
-        setSCAs(pdxp);
     }
 
     /* Initialize the tasks */
@@ -383,8 +385,7 @@ static long init_record(struct dxpRecord *pdxp, int pass)
 }
 
 
-static long cvt_dbaddr(paddr)
-struct dbAddr *paddr;
+static long cvt_dbaddr(struct dbAddr *paddr)
 {
    struct dxpRecord *pdxp=(struct dxpRecord *)paddr->precord;
    MODULE_INFO *minfo = &moduleInfo[pdxp->mtyp];
@@ -422,10 +423,7 @@ struct dbAddr *paddr;
 }
 
 
-static long get_array_info(paddr,no_elements,offset)
-struct dbAddr *paddr;
-long *no_elements;
-long *offset;
+static long get_array_info(struct dbAddr *paddr, long *no_elements, long *offset)
 {
    struct dxpRecord *pdxp=(struct dxpRecord *)paddr->precord;
    MODULE_INFO *minfo = &moduleInfo[pdxp->mtyp];
@@ -453,8 +451,7 @@ long *offset;
 }
 
 
-static long process(pdxp)
-        struct dxpRecord        *pdxp;
+static long process(struct dxpRecord *pdxp)
 {
     struct devDxpDset *pdset = (struct devDxpDset *)(pdxp->dset);
     int pact=pdxp->pact;
