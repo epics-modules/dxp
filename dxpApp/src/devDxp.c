@@ -209,7 +209,8 @@ void asynCallback(asynUser *pasynUser)
          xiaStopRun(detChan);
          /* Note that we use xiaSetAcquisitionValues rather than xiaSetParameter
           * so that the new value will be save with xiaSaveSystem */
-         xiaSetAcquisitionValues(detChan, pmsg->name, &pmsg->param);
+         dvalue = pmsg->param;
+         xiaSetAcquisitionValues(detChan, pmsg->name, &dvalue);
          readDxpParams(pasynUser);
          break;
      case MSG_DXP_SET_DOUBLE_PARAM:
@@ -276,6 +277,40 @@ void asynCallback(asynUser *pasynUser)
                  pmsg->dvalue);
              xiaSetAcquisitionValues(detChan, "trigger_gap_time", &pmsg->dvalue);
          }
+         else if (pfield == (void *)&pdxp->base_cut_pct) {
+             asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
+                 "devDxp::asynCallback, MSG_DXP_SET_DOUBLE_PARAM"
+                 " setting baseline cut=%f\n",
+                 pmsg->dvalue);
+             /* We will be able to use an acquisition value for this in the next release */
+             dvalue = pmsg->dvalue/100. * 32768 + 0.5;
+             xiaSetAcquisitionValues(detChan, "BLCUT", &dvalue);
+         }
+         else if (pfield == (void *)&pdxp->base_len) {
+             asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
+                 "devDxp::asynCallback, MSG_DXP_SET_DOUBLE_PARAM"
+                 " setting baseline filter length=%f\n",
+                 pmsg->dvalue);
+             /* We will be able to use an acquisition value for this in the next release */ 
+             dvalue = 32768./pmsg->dvalue + 0.5;
+             xiaSetAcquisitionValues(detChan, "BLFILTER", &dvalue);
+         }
+         else if (pfield == (void *)&pdxp->base_thresh) {
+             asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
+                 "devDxp::asynCallback, MSG_DXP_SET_DOUBLE_PARAM"
+                 " setting baseline threshold=%f\n",
+                 pmsg->dvalue);
+             /* We will be able to use an acquisition value for this in the next release */ 
+             xiaSetAcquisitionValues(detChan, "BASETHRESH", &pmsg->dvalue);
+         }
+         else if (pfield == (void *)&pdxp->base_threshadj) {
+             asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
+                 "devDxp::asynCallback, MSG_DXP_SET_DOUBLE_PARAM"
+                 " setting baseline threshold adjust=%f\n",
+                 pmsg->dvalue);
+             /* We will be able to use an acquisition value for this in the next release */ 
+             xiaSetAcquisitionValues(detChan, "BASTHRADJ", &pmsg->dvalue);
+         }
          else if (pfield == (void *)&pdxp->emax) {
              if (pdxpReadbacks->number_mca_channels <= 0.)
                  pdxpReadbacks->number_mca_channels = 2048.;
@@ -290,6 +325,8 @@ void asynCallback(asynUser *pasynUser)
          readDxpParams(pasynUser);
          break;
      case MSG_DXP_SET_SCAS:
+         /* Must stop run before setting SCAs.  We should restart if it was running */
+         xiaStopRun(detChan);
          xiaSetAcquisitionValues(detChan, "number_of_scas", &pmsg->dvalue);
          for (i=0; i<pmsg->dvalue; i++) {
              xiaSetAcquisitionValues(detChan, sca_lo[i], &pdxpReadbacks->sca_lo[i]);
