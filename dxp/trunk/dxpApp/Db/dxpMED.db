@@ -7,13 +7,18 @@ record(bo,"$(P)EraseAll") {
 }
 
 record(bo,"$(P)EraseStart") {
-        field(VAL, "1")
-        field(OUT,"$(P)AcquireBusy PP MS")
-        field(FLNK,"$(P)SetClientWait")
+        field(FLNK,"$(P)SetAcquireBusy")
 }
 
 record(bo,"$(P)StartAll") {
-        field(VAL, "1")
+        field(FLNK,"$(P)SetAcquireBusy")
+}
+
+grecord(bo,"$(P)SetAcquireBusy") {
+        field(DISV,"1")
+        field(SDIS,"$(P)AcquireBusy NPP NMS")
+        field(OMSL,"closed_loop")
+        field(DOL,"1")
         field(OUT,"$(P)AcquireBusy PP MS")
         field(FLNK,"$(P)SetClientWait")
 }
@@ -76,6 +81,15 @@ record(bo,"$(P)ReadDXPs") {
 }
 
 grecord(bo,"$(P)DoReadDXPs") {
+}
+
+record(bo,"$(P)ReadDXPBaselines") {
+        field(SCAN,"1 second")
+        field(VAL, "1")
+        field(OUT, "$(P)DoReadDXPBaselines PP MS")
+}
+
+grecord(bo,"$(P)DoReadDXPBaselines") {
 }
 
 record(bo,"$(P)CopyTRIG_PKTIM") {
