@@ -1,0 +1,27 @@
+#RELEASE Location of external products
+# Run "gnumake clean uninstall install" in the application
+# top directory each time this file is changed.
+
+TEMPLATE_TOP=$(EPICS_BASE)/templates/makeBaseApp/top
+
+# If you don't want to install into $(TOP) then
+# define INSTALL_LOCATION_APP here
+#INSTALL_LOCATION_APP=<fullpathname>
+
+#If using the sequencer, point SNCSEQ at its top directory:
+#SNCSEQ=/corvette/usr/local/epics/seq-2.0.4
+
+# EPICS_BASE usually appears last so other apps can override stuff:
+EPICS_BASE=/corvette/usr/local/epics/base-3.14.5
+
+MPF=/corvette/home/epics/3-14-devel/mpf/2-4-2
+MCA=/corvette/home/epics/3-14-devel/mca
+CALC=/corvette/home/epics/3-14-devel/calc
+SSCAN=/corvette/home/epics/3-14-devel/sscan
+AUTOSAVE=/corvette/home/epics/3-14-devel/autosave
+CAMAC=/corvette/home/epics/3-14-devel/camac
+DXP=/corvette/home/epics/3-14-devel/dxp
+
+#Capfast users may need the following definitions
+#CAPFAST_TEMPLATES=
+#SCH2EDIF_PATH=
