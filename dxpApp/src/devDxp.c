@@ -226,22 +226,22 @@ void asynCallback(asynUser *pasynUser)
     case dxpMessage:
         switch(pmsg->dxpCommand) {
         case MSG_DXP_SET_SHORT_PARAM:
-            pPvt->pasynDxp->setShortParam(pPvt->asynMcaPvt,
+            pPvt->pasynDxp->setShortParam(pPvt->asynDxpPvt,
                                           pPvt->pasynUser,
                                           pmsg->value1, pmsg->value2);
             break;
         case MSG_DXP_DOWNLOAD_FIPPI:
-            pPvt->pasynDxp->downloadFippi(pPvt->asynMcaPvt,
+            pPvt->pasynDxp->downloadFippi(pPvt->asynDxpPvt,
                                           pPvt->pasynUser,
                                           pmsg->value1);
             break;
         case MSG_DXP_CALIBRATE:
-            pPvt->pasynDxp->calibrate(pPvt->asynMcaPvt,
+            pPvt->pasynDxp->calibrate(pPvt->asynDxpPvt,
                                       pPvt->pasynUser,
                                       pmsg->value1);
             break;
         case MSG_DXP_READ_PARAMS:
-            pPvt->pasynDxp->readParams(pPvt->asynMcaPvt,
+            pPvt->pasynDxp->readParams(pPvt->asynDxpPvt,
                                        pPvt->pasynUser,
                                        pPvt->params, pPvt->baseline);
             dbScanLock((dbCommon *)pdxp);
