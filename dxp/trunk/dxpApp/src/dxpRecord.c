@@ -45,7 +45,8 @@
 #include        "dxpRecord.h"
 #undef GEN_SIZE_OFFSET
 #include        "mca.h"
-#include        "dxpServer.h"
+#include        "dxp.h"
+#include        "devDxpAsyn.h"
 #include        "xerxes_structures.h"
 #include        "xerxes.h"
 
@@ -98,16 +99,6 @@ struct rset dxpRSET={
         get_control_double,
         get_alarm_double };
 epicsExportAddress(rset, dxpRSET);
-
-struct dxpDSET { /* DXP DSET */
-    long            number;
-    DEVSUPFUN       dev_report;
-    DEVSUPFUN       init;
-    DEVSUPFUN       init_record; /*returns: (-1,0)=>(failure,success)*/
-    DEVSUPFUN       get_ioint_info;
-    DEVSUPFUN       send_msg; /*returns: (-1,0)=>(failure,success)*/
-    DEVSUPFUN       read_array; /*returns: (-1,0)=>(failure,success)*/
-};
 
 
 /* The dxp record contains many short integer parameters which control the
@@ -241,7 +232,7 @@ static MODULE_INFO moduleInfo[MAX_MODULE_TYPES];
 
 static long init_record(struct dxpRecord *pdxp, int pass)
 {
-    struct dxpDSET *pdset;
+    struct devDxpDset *pdset;
     DXP_SHORT_PARAM *short_param;
     DXP_LONG_PARAM *long_param;
     int i;
@@ -281,12 +272,12 @@ static long init_record(struct dxpRecord *pdxp, int pass)
     minfo = &moduleInfo[pdxp->mtyp];
 
     /* must have dset defined */
-    if (!(pdset = (struct dxpDSET *)(pdxp->dset))) {
+    if (!(pdset = (struct devDxpDset *)(pdxp->dset))) {
         recGblRecordError(S_dev_noDSET,(void *)pdxp,"mca: init_record1");
         return(S_dev_noDSET);
     }
     /* must have read_array function defined */
-    if ( (pdset->number < 6) || (pdset->read_array == NULL) ) {
+    if ( (pdset->number < 7) || (pdset->read_array == NULL) ) {
         recGblRecordError(S_dev_missingSup,(void *)pdxp,"dxp: init_record2");
         printf("%ld %p\n",pdset->number, pdset->read_array);
         return(S_dev_missingSup);
@@ -327,7 +318,7 @@ static long init_record(struct dxpRecord *pdxp, int pass)
           offset=-1;
        else {
           dxp_get_symbol_index(&module, short_param[i].label, &offset);
-          if (download) status = (*pdset->send_msg)
+          if (download) status = (*pdset->send_dxp_msg)
                    (pdxp,  MSG_DXP_SET_SHORT_PARAM, offset, short_param[i].val);
        }
        short_param[i].offset = offset;
@@ -453,7 +444,7 @@ long *offset;
 static long process(pdxp)
         struct dxpRecord        *pdxp;
 {
-    struct dxpDSET *pdset = (struct dxpDSET *)(pdxp->dset);
+    struct devDxpDset *pdset = (struct devDxpDset *)(pdxp->dset);
     int pact=pdxp->pact;
     int status;
 
@@ -631,7 +622,7 @@ static long special(struct dbAddr *paddr, int after)
 /* Called whenever a field is changed */
 {
     struct dxpRecord *pdxp=(struct dxpRecord *)paddr->precord;
-    struct dxpDSET *pdset = (struct dxpDSET *)(pdxp->dset);
+    struct devDxpDset *pdset = (struct devDxpDset *)(pdxp->dset);
     short offset;
     int i;
     int status;
@@ -651,7 +642,7 @@ static long special(struct dbAddr *paddr, int after)
           offset = short_param[i].offset;
           if (offset == -1) continue;
           nparams = 1;
-          status = (*pdset->send_msg)
+          status = (*pdset->send_dxp_msg)
                    (pdxp,  MSG_DXP_SET_SHORT_PARAM, offset, short_param[i].val);
           Debug(5,
          "dxpRecord: special found new value of short parameter %s, value=%d\n",
@@ -663,16 +654,16 @@ static long special(struct dbAddr *paddr, int after)
     /* The field was not a simple parameter */
      if (paddr->pfield == (void *) &pdxp->strt) {
         if (pdxp->strt != 0) {
-            status = (*pdset->send_msg)
-                     (pdxp, MSG_ACQUIRE, NULL, NULL);
+            status = (*pdset->send_mca_msg)
+                     (pdxp, MSG_ACQUIRE);
             pdxp->strt=0;
         }
         goto found_param;
      }
      if (paddr->pfield == (void *) &pdxp->stop) {
         if (pdxp->stop != 0) {
-            status = (*pdset->send_msg)
-                     (pdxp, MSG_STOP_ACQUISITION, NULL, NULL);
+            status = (*pdset->send_mca_msg)
+                     (pdxp, MSG_STOP_ACQUISITION);
             pdxp->stop=0;
         }
         goto found_param;
@@ -680,8 +671,8 @@ static long special(struct dbAddr *paddr, int after)
 
      if (paddr->pfield == (void *) &pdxp->eras) {
         if (pdxp->eras != 0) {
-            status = (*pdset->send_msg)
-                     (pdxp, MSG_ERASE, NULL, NULL);
+            status = (*pdset->send_mca_msg)
+                     (pdxp, MSG_ERASE);
             pdxp->eras=0;
         }
         goto found_param;
@@ -741,7 +732,7 @@ found_param:
 
 static void setDxpTasks(struct dxpRecord *pdxp)
 {
-   struct dxpDSET *pdset = (struct dxpDSET *)(pdxp->dset);
+   struct devDxpDset *pdset = (struct devDxpDset *)(pdxp->dset);
    MODULE_INFO *minfo = &moduleInfo[pdxp->mtyp];
    DXP_TASK_PARAM *task_param;
    int cal;
@@ -753,7 +744,7 @@ static void setDxpTasks(struct dxpRecord *pdxp)
    if (pdxp->rcal) {
       if (pdxp->calr == dxpCAL_TRACKRST) cal=2; else cal=1;
       Debug(5, "dxpRecord(setDxpTasks): running calibration=%d\n", cal);
-      status = (*pdset->send_msg) (pdxp, MSG_DXP_CALIBRATE, cal, NULL);
+      status = (*pdset->send_dxp_msg) (pdxp, MSG_DXP_CALIBRATE, cal, 0);
    } else {
       task_param = (DXP_TASK_PARAM *)&pdxp->t01v;
       runtasks = 0;
@@ -766,7 +757,7 @@ static void setDxpTasks(struct dxpRecord *pdxp)
    /* Copy new value to parameter array in case other routines need it
     * before record processes again */
    pdxp->pptr[minfo->offsets.runtasks] = runtasks;
-      status = (*pdset->send_msg)
+      status = (*pdset->send_dxp_msg)
          (pdxp,  MSG_DXP_SET_SHORT_PARAM, minfo->offsets.runtasks, runtasks);
    }
    Debug(5, "dxpRecord(setDxpTasks): exit\n");
@@ -805,7 +796,7 @@ static void setPeakingTimeRangeStrings(struct dxpRecord *pdxp)
 
 static void setPeakingTime(struct dxpRecord *pdxp)
 {
-   struct dxpDSET *pdset = (struct dxpDSET *)(pdxp->dset);
+   struct devDxpDset *pdset = (struct devDxpDset *)(pdxp->dset);
    MODULE_INFO *minfo = &moduleInfo[pdxp->mtyp];
 
    /* New value of peaking time.  
@@ -841,18 +832,18 @@ static void setPeakingTime(struct dxpRecord *pdxp)
    pdxp->pptr[minfo->offsets.slowlen] = slowlen;
    pdxp->pptr[minfo->offsets.peaksamp] = peaksamp;
    pdxp->pptr[minfo->offsets.peakint] = peakint;
-   (*pdset->send_msg)
+   (*pdset->send_dxp_msg)
             (pdxp,  MSG_DXP_SET_SHORT_PARAM, minfo->offsets.slowlen, slowlen);
-   (*pdset->send_msg)
+   (*pdset->send_dxp_msg)
             (pdxp,  MSG_DXP_SET_SHORT_PARAM, minfo->offsets.peaksamp, peaksamp);
-   (*pdset->send_msg)
+   (*pdset->send_dxp_msg)
             (pdxp,  MSG_DXP_SET_SHORT_PARAM, minfo->offsets.peakint, peakint);
 }
 
 
 static void setGain(struct dxpRecord *pdxp)
 {
-   struct dxpDSET *pdset = (struct dxpDSET *)(pdxp->dset);
+   struct devDxpDset *pdset = (struct devDxpDset *)(pdxp->dset);
    MODULE_INFO *minfo = &moduleInfo[pdxp->mtyp];
    unsigned short gaindac;
 
@@ -873,7 +864,7 @@ static void setGain(struct dxpRecord *pdxp)
          /* Copy new value to parameter array in case other routines need it
           * before record processes again */
          pdxp->pptr[minfo->offsets.gaindac] = gaindac;
-         (*pdset->send_msg)
+         (*pdset->send_dxp_msg)
             (pdxp,  MSG_DXP_SET_SHORT_PARAM, minfo->offsets.gaindac, gaindac);
          break;
       case MODEL_DXP4C:
@@ -885,7 +876,7 @@ static void setGain(struct dxpRecord *pdxp)
 
 static void setBinWidth(struct dxpRecord *pdxp)
 {
-   struct dxpDSET *pdset = (struct dxpDSET *)(pdxp->dset);
+   struct devDxpDset *pdset = (struct devDxpDset *)(pdxp->dset);
    MODULE_INFO *minfo = &moduleInfo[pdxp->mtyp];
    unsigned short binfact1;
    unsigned short slowlen;
@@ -905,7 +896,7 @@ static void setBinWidth(struct dxpRecord *pdxp)
          /* Copy new value to parameter array in case other routines need it
           * before record processes again */
          pdxp->pptr[minfo->offsets.binfact] = binfact1;
-         (*pdset->send_msg)
+         (*pdset->send_dxp_msg)
             (pdxp,  MSG_DXP_SET_SHORT_PARAM, minfo->offsets.binfact, binfact1);
          break;
       case MODEL_DXP4C:
@@ -916,8 +907,8 @@ static void setBinWidth(struct dxpRecord *pdxp)
 
 static void setFippi(struct dxpRecord *pdxp)
 {
-   struct dxpDSET *pdset = (struct dxpDSET *)(pdxp->dset);
-   (*pdset->send_msg) (pdxp, MSG_DXP_DOWNLOAD_FIPPI, pdxp->fippi, NULL);
+   struct devDxpDset *pdset = (struct devDxpDset *)(pdxp->dset);
+   (*pdset->send_dxp_msg) (pdxp, MSG_DXP_DOWNLOAD_FIPPI, pdxp->fippi, 0);
 }
 
 static long get_precision(struct dbAddr *paddr, long *precision)

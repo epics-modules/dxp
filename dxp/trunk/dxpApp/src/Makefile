@@ -25,14 +25,13 @@ USR_CFLAGS += -DEXCLUDE_UDXPS
 
 # The following are compiled and added to the Support library
 dxp_SRCS += dxpRecord.c
-dxp_SRCS += mcaDXPServer.cc
-dxp_SRCS += devDXP.cc
-dxp_SRCS += dxpRegister.c
+dxp_SRCS += drvDxpAsyn.cc
+dxp_SRCS += devDxpAsyn.c
 
 dxp_LIBS += xerxes
 dxp_LIBS += mca 
 dxp_LIBS += calc sscan autosave
-dxp_LIBS += mpf 
+dxp_LIBS += asyn
 dxp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #=============================
@@ -53,7 +52,7 @@ dxpApp_LIBS += dxp xerxes
 dxpApp_LIBS += mca
 dxpApp_LIBS += calc sscan autosave
 dxpApp_LIBS_vxWorks += camac
-dxpApp_LIBS += mpf 
+dxpApp_LIBS += asyn
 dxpApp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #===========================
