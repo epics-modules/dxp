@@ -1,0 +1,31 @@
+*
+* Configuration file for modules in the system
+* "board_type" type		- this type must match a definition in XIA_CONFIG
+* "module" SCSI_Crate_slot channel0 channel1 channel2 channel3
+* "default_dsp" filename
+* "dsp" channel filename
+* "default_fippi" filename
+* "fippi" channel filename
+* "default_param" filename
+* "param" channel filename
+*
+* All dsp, fippi and param definitions must follow the module definition 
+* that they apply to.
+*
+* the board_type must be defined prior to defining the module information
+* it will apply to all future module definitions until the tag is reused.
+*
+* the iolibrary name must be defined before the interface library is defined
+* if a new interface is defined, the iolibrary must be named before in all 
+* cases.
+*
+board_type   dxp4c2x
+iolibrary    camacdll.dll
+interface    CAMAC
+module  0003 0 1 2 3 
+default_fippi  FIPPI_DEFAULT
+default_dsp    d2xr0106.hex
+default_param  dxp2x.cfg
+module  0004 4 5 6 7 
+module  0005 8 9 10 11
+module  0006 12 13 14 15 

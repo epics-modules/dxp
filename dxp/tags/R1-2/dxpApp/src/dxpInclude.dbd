@@ -1,0 +1,7 @@
+include "base.dbd"
+include "mcaSupport.dbd"
+include "calcSupport.dbd"
+include "sscanSupport.dbd"
+include "asSupport.dbd"
+include "mpf.dbd"
+include "dxpSupport.dbd"
