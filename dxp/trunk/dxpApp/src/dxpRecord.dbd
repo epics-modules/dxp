@@ -136,72 +136,97 @@ recordtype(dxp) {
         asl(ASL0)
         special(SPC_DBADDR)
     }
-    field(RBPTR,DBF_NOACCESS) {
-        prompt("Readback Pointer")
+    field(MIPTR,DBF_NOACCESS) {
+        prompt("Module info pointer")
         special(SPC_NOMOD)
         interest(4)
         size(4)
-        extra("void *rbptr")
+        extra("void *miptr")
     }
+    field(SPFPTR,DBF_NOACCESS) {
+        prompt("Special flag pointer")
+        special(SPC_NOMOD)
+        interest(4)
+        size(4)
+        extra("void *spfptr")
+    }
+
 
 # Fields to start and stop data acquisition
     field(STRT,DBF_LONG) {
           prompt("Start acquiring")
           asl(ASL0)
           special(SPC_MOD)
+          pp(TRUE)
     }
     field(STOP,DBF_LONG) {
           prompt("Stop acquiring")
           asl(ASL0)
           special(SPC_MOD)
+          pp(TRUE)
     }
     field(ERAS,DBF_LONG) {
           prompt("Erase")
           asl(ASL0)
           special(SPC_MOD)
+          pp(TRUE)
     }
     field(ACQG,DBF_LONG) {
           prompt("Acquiring")
           asl(ASL0)
-          special(SPC_NOMOD)
+          special(SPC_MOD)
+          pp(TRUE)
     }
 
 # Special tasks
+    field(READ_PARAMS,DBF_LONG) {
+        prompt("Read parameters")
+        interest(1)
+        special(SPC_MOD)
+        pp(TRUE)
+    }
+
     field(READ_HISTOGRAM,DBF_LONG) {
         prompt("Read baseline histogram")
         interest(1)
         special(SPC_MOD)
+        pp(TRUE)
     }
 
     field(READ_TRACE,DBF_LONG) {
         prompt("Read ADC trace")
         interest(1)
         special(SPC_MOD)
+        pp(TRUE)
     }
 
     field(READ_HISTORY,DBF_LONG) {
         prompt("Read baseline history")
         interest(1)
         special(SPC_MOD)
+        pp(TRUE)
     }
 
     field(OPEN_RELAY,DBF_LONG) {
         prompt("Open input relay")
         interest(1)
         special(SPC_MOD)
+        pp(TRUE)
     }
 
     field(CLOSE_RELAY,DBF_LONG) {
         prompt("Close input relay")
         interest(1)
         special(SPC_MOD)
+        pp(TRUE)
     }
 
-# Higher level control parameters - all double
+# Higher level control parameters - all double, 22 total
     field(PKTIM,DBF_DOUBLE) {
         prompt("Peaking time")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(4.)
     }
     field(PKTIM_RBV,DBF_DOUBLE) {
@@ -213,6 +238,7 @@ recordtype(dxp) {
         prompt("ADC rule at .5 EMAX")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(5.)
     }
     field(ADC_RULE_RBV,DBF_DOUBLE) {
@@ -224,12 +250,14 @@ recordtype(dxp) {
         prompt("Preamp Gain (mv/keV)")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(4.)
     }
     field(EMAX,DBF_DOUBLE) {
         prompt("Maximum energy (keV)")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(20.)
     }
     field(EMAX_RBV,DBF_DOUBLE) {
@@ -241,6 +269,7 @@ recordtype(dxp) {
         prompt("Fast trigger threshold (keV)")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(1.0)
     }
     field(FAST_TRIG_RBV,DBF_DOUBLE) {
@@ -252,6 +281,7 @@ recordtype(dxp) {
         prompt("Trigger peaking time")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(.15)
     }
     field(TRIG_PKTIM_RBV,DBF_DOUBLE) {
@@ -263,6 +293,7 @@ recordtype(dxp) {
         prompt("Trigger gap time")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(0.)
     }
     field(TRIG_GAPTIM_RBV,DBF_DOUBLE) {
@@ -274,6 +305,7 @@ recordtype(dxp) {
         prompt("Slow trigger threshold (eV)")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(0.)
     }
     field(SLOW_TRIG_RBV,DBF_DOUBLE) {
@@ -285,6 +317,7 @@ recordtype(dxp) {
         prompt("Gap time")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(0.5)
     }
     field(GAPTIM_RBV,DBF_DOUBLE) {
@@ -295,28 +328,33 @@ recordtype(dxp) {
     field(TRACE_WAIT,DBF_DOUBLE) {
         prompt("Trace wait (usec)")
         special(SPC_MOD)
+        pp(TRUE)
         asl(ASL0)
         initial(0.1)
     }
     field(BASE_CUT_PCT,DBF_DOUBLE) {
         prompt("Baseline cut (%)")
         special(SPC_MOD)
+        pp(TRUE)
         asl(ASL0)
         initial(5.0)
     }
     field(BASE_LEN,DBF_DOUBLE) {
         prompt("Baseline filter length")
         special(SPC_MOD)
+        pp(TRUE)
         asl(ASL0)
     }
     field(BASE_THRESH,DBF_DOUBLE) {
         prompt("Baseline threshold")
         special(SPC_MOD)
+        pp(TRUE)
         asl(ASL0)
     }
     field(BASE_THRESHADJ,DBF_DOUBLE) {
         prompt("Baseline threshold adjust")
         special(SPC_MOD)
+        pp(TRUE)
         asl(ASL0)
     }
 
@@ -347,11 +385,13 @@ recordtype(dxp) {
         prompt("Number of SCAs")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(SCA0_LO,DBF_LONG) {
         prompt("SCA0 low channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA0_LO_RBV,DBF_LONG) {
@@ -363,6 +403,7 @@ recordtype(dxp) {
         prompt("SCA0 high channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA0_HI_RBV,DBF_LONG) {
@@ -380,6 +421,7 @@ recordtype(dxp) {
         prompt("SCA1 low channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA1_LO_RBV,DBF_LONG) {
@@ -391,6 +433,7 @@ recordtype(dxp) {
         prompt("SCA1 high channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA1_HI_RBV,DBF_LONG) {
@@ -408,6 +451,7 @@ recordtype(dxp) {
         prompt("SCA2 low channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA2_LO_RBV,DBF_LONG) {
@@ -419,6 +463,7 @@ recordtype(dxp) {
         prompt("SCA2 high channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA2_HI_RBV,DBF_LONG) {
@@ -436,6 +481,7 @@ recordtype(dxp) {
         prompt("SCA3 low channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA3_LO_RBV,DBF_LONG) {
@@ -447,6 +493,7 @@ recordtype(dxp) {
         prompt("SCA3 high channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA3_HI_RBV,DBF_LONG) {
@@ -464,6 +511,7 @@ recordtype(dxp) {
         prompt("SCA4 low channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA4_LO_RBV,DBF_LONG) {
@@ -475,6 +523,7 @@ recordtype(dxp) {
         prompt("SCA4 high channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA4_HI_RBV,DBF_LONG) {
@@ -492,6 +541,7 @@ recordtype(dxp) {
         prompt("SCA5 low channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA5_LO_RBV,DBF_LONG) {
@@ -503,6 +553,7 @@ recordtype(dxp) {
         prompt("SCA5 high channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA5_HI_RBV,DBF_LONG) {
@@ -520,6 +571,7 @@ recordtype(dxp) {
         prompt("SCA6 low channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA6_LO_RBV,DBF_LONG) {
@@ -531,6 +583,7 @@ recordtype(dxp) {
         prompt("SCA6 high channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA6_HI_RBV,DBF_LONG) {
@@ -548,6 +601,7 @@ recordtype(dxp) {
         prompt("SCA7 low channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA7_LO_RBV,DBF_LONG) {
@@ -559,6 +613,7 @@ recordtype(dxp) {
         prompt("SCA7 high channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA7_HI_RBV,DBF_LONG) {
@@ -576,6 +631,7 @@ recordtype(dxp) {
         prompt("SCA8 low channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA8_LO_RBV,DBF_LONG) {
@@ -587,6 +643,7 @@ recordtype(dxp) {
         prompt("SCA8 high channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA8_HI_RBV,DBF_LONG) {
@@ -604,6 +661,7 @@ recordtype(dxp) {
         prompt("SCA9 low channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA9_LO_RBV,DBF_LONG) {
@@ -615,6 +673,7 @@ recordtype(dxp) {
         prompt("SCA9 high channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA9_HI_RBV,DBF_LONG) {
@@ -632,6 +691,7 @@ recordtype(dxp) {
         prompt("SCA10 low channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA10_LO_RBV,DBF_LONG) {
@@ -643,6 +703,7 @@ recordtype(dxp) {
         prompt("SCA10 high channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA10_HI_RBV,DBF_LONG) {
@@ -660,6 +721,7 @@ recordtype(dxp) {
         prompt("SCA11 low channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA11_LO_RBV,DBF_LONG) {
@@ -671,6 +733,7 @@ recordtype(dxp) {
         prompt("SCA11 high channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA11_HI_RBV,DBF_LONG) {
@@ -688,6 +751,7 @@ recordtype(dxp) {
         prompt("SCA12 low channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA12_LO_RBV,DBF_LONG) {
@@ -699,6 +763,7 @@ recordtype(dxp) {
         prompt("SCA12 high channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA12_HI_RBV,DBF_LONG) {
@@ -716,6 +781,7 @@ recordtype(dxp) {
         prompt("SCA13 low channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA13_LO_RBV,DBF_LONG) {
@@ -727,6 +793,7 @@ recordtype(dxp) {
         prompt("SCA13 high channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA13_HI_RBV,DBF_LONG) {
@@ -744,6 +811,7 @@ recordtype(dxp) {
         prompt("SCA14 low channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA14_LO_RBV,DBF_LONG) {
@@ -755,6 +823,7 @@ recordtype(dxp) {
         prompt("SCA14 high channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA14_HI_RBV,DBF_LONG) {
@@ -772,6 +841,7 @@ recordtype(dxp) {
         prompt("SCA15 low channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA15_LO_RBV,DBF_LONG) {
@@ -783,6 +853,7 @@ recordtype(dxp) {
         prompt("SCA15 high channel")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
         initial(-1)
     }
     field(SCA15_HI_RBV,DBF_LONG) {
@@ -802,6 +873,7 @@ recordtype(dxp) {
         prompt("A01V")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(A01L,DBF_STRING) {
         prompt("A01V label")
@@ -819,6 +891,7 @@ recordtype(dxp) {
         prompt("A02V")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(A02L,DBF_STRING) {
         prompt("A02V label")
@@ -836,6 +909,7 @@ recordtype(dxp) {
         prompt("A03V")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(A03L,DBF_STRING) {
         prompt("A02V label")
@@ -853,6 +927,7 @@ recordtype(dxp) {
         prompt("A04V")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(A04L,DBF_STRING) {
         prompt("A04V label")
@@ -870,6 +945,7 @@ recordtype(dxp) {
         prompt("A05V")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(A05L,DBF_STRING) {
         prompt("A05V label")
@@ -887,6 +963,7 @@ recordtype(dxp) {
         prompt("A06V")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(A06L,DBF_STRING) {
         prompt("A06V label")
@@ -904,6 +981,7 @@ recordtype(dxp) {
         prompt("A07V")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(A07L,DBF_STRING) {
         prompt("A07V label")
@@ -921,6 +999,7 @@ recordtype(dxp) {
         prompt("A08V")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(A08L,DBF_STRING) {
         prompt("A08V label")
@@ -938,6 +1017,7 @@ recordtype(dxp) {
         prompt("A09V")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(A09L,DBF_STRING) {
         prompt("A09V label")
@@ -956,6 +1036,7 @@ recordtype(dxp) {
         prompt("F01V")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(F01L,DBF_STRING) {
         prompt("F01V label")
@@ -973,6 +1054,7 @@ recordtype(dxp) {
         prompt("F02V")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(F02L,DBF_STRING) {
         prompt("F02V label")
@@ -990,6 +1072,7 @@ recordtype(dxp) {
         prompt("F03V")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(F03L,DBF_STRING) {
         prompt("F03V label")
@@ -1007,6 +1090,7 @@ recordtype(dxp) {
         prompt("F04V")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(F04L,DBF_STRING) {
         prompt("")
@@ -1024,6 +1108,7 @@ recordtype(dxp) {
         prompt("")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(F05L,DBF_STRING) {
         prompt("")
@@ -1041,6 +1126,7 @@ recordtype(dxp) {
         prompt("")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(F06L,DBF_STRING) {
         prompt("")
@@ -1058,6 +1144,7 @@ recordtype(dxp) {
         prompt("")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(F07L,DBF_STRING) {
         prompt("")
@@ -1075,6 +1162,7 @@ recordtype(dxp) {
         prompt("")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(F08L,DBF_STRING) {
         prompt("")
@@ -1092,6 +1180,7 @@ recordtype(dxp) {
         prompt("")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(F09L,DBF_STRING) {
         prompt("")
@@ -1109,6 +1198,7 @@ recordtype(dxp) {
         prompt("")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(F10L,DBF_STRING) {
         prompt("")
@@ -1127,6 +1217,7 @@ recordtype(dxp) {
         prompt("")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(D01L,DBF_STRING) {
         prompt("")
@@ -1144,6 +1235,7 @@ recordtype(dxp) {
         prompt("")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(D02L,DBF_STRING) {
         prompt("")
@@ -1161,6 +1253,7 @@ recordtype(dxp) {
         prompt("")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(D03L,DBF_STRING) {
         prompt("")
@@ -1178,6 +1271,7 @@ recordtype(dxp) {
         prompt("")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(D04L,DBF_STRING) {
         prompt("")
@@ -1195,6 +1289,7 @@ recordtype(dxp) {
         prompt("")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(D05L,DBF_STRING) {
         prompt("")
@@ -1212,6 +1307,7 @@ recordtype(dxp) {
         prompt("")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(D06L,DBF_STRING) {
         prompt("")
@@ -1229,6 +1325,7 @@ recordtype(dxp) {
         prompt("")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(D07L,DBF_STRING) {
         prompt("")
@@ -1246,6 +1343,7 @@ recordtype(dxp) {
         prompt("")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(D08L,DBF_STRING) {
         prompt("")
@@ -1263,6 +1361,7 @@ recordtype(dxp) {
         prompt("")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(D09L,DBF_STRING) {
         prompt("")
@@ -1280,6 +1379,7 @@ recordtype(dxp) {
         prompt("")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(D10L,DBF_STRING) {
         prompt("")
@@ -1298,6 +1398,7 @@ recordtype(dxp) {
         prompt("")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(B01L,DBF_STRING) {
         prompt("")
@@ -1315,6 +1416,7 @@ recordtype(dxp) {
         prompt("")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(B02L,DBF_STRING) {
         prompt("")
@@ -1332,6 +1434,7 @@ recordtype(dxp) {
         prompt("")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(B03L,DBF_STRING) {
         prompt("")
@@ -1349,6 +1452,7 @@ recordtype(dxp) {
         prompt("")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(B04L,DBF_STRING) {
         prompt("")
@@ -1366,6 +1470,7 @@ recordtype(dxp) {
         prompt("")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(B05L,DBF_STRING) {
         prompt("")
@@ -1383,6 +1488,7 @@ recordtype(dxp) {
         prompt("")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(B06L,DBF_STRING) {
         prompt("")
@@ -1399,6 +1505,7 @@ recordtype(dxp) {
         prompt("")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(B07L,DBF_STRING) {
         prompt("")
@@ -1415,6 +1522,7 @@ recordtype(dxp) {
         prompt("")
         asl(ASL0)
         special(SPC_MOD)
+        pp(TRUE)
     }
     field(B08L,DBF_STRING) {
         prompt("")
@@ -1947,6 +2055,7 @@ recordtype(dxp) {
         promptgroup(GUI_COMMON)
         interest(1)
         special(SPC_MOD)
+        pp(TRUE)
         menu(dxpYN)
     }
     field(T01L,DBF_STRING) {
@@ -1961,6 +2070,7 @@ recordtype(dxp) {
         promptgroup(GUI_COMMON)
         interest(1)
         special(SPC_MOD)
+        pp(TRUE)
         menu(dxpYN)
     }
     field(T02L,DBF_STRING) {
@@ -1975,6 +2085,7 @@ recordtype(dxp) {
         promptgroup(GUI_COMMON)
         interest(1)
         special(SPC_MOD)
+        pp(TRUE)
         menu(dxpYN)
     }
     field(T03L,DBF_STRING) {
@@ -1989,6 +2100,7 @@ recordtype(dxp) {
         promptgroup(GUI_COMMON)
         interest(1)
         special(SPC_MOD)
+        pp(TRUE)
         menu(dxpYN)
     }
     field(T04L,DBF_STRING) {
@@ -2003,6 +2115,7 @@ recordtype(dxp) {
         promptgroup(GUI_COMMON)
         interest(1)
         special(SPC_MOD)
+        pp(TRUE)
         menu(dxpYN)
     }
     field(T05L,DBF_STRING) {
@@ -2017,6 +2130,7 @@ recordtype(dxp) {
         promptgroup(GUI_COMMON)
         interest(1)
         special(SPC_MOD)
+        pp(TRUE)
         menu(dxpYN)
     }
     field(T06L,DBF_STRING) {
@@ -2031,6 +2145,7 @@ recordtype(dxp) {
         promptgroup(GUI_COMMON)
         interest(1)
         special(SPC_MOD)
+        pp(TRUE)
         menu(dxpYN)
     }
     field(T07L,DBF_STRING) {
@@ -2045,6 +2160,7 @@ recordtype(dxp) {
         promptgroup(GUI_COMMON)
         interest(1)
         special(SPC_MOD)
+        pp(TRUE)
         menu(dxpYN)
     }
     field(T08L,DBF_STRING) {
@@ -2059,6 +2175,7 @@ recordtype(dxp) {
         promptgroup(GUI_COMMON)
         interest(1)
         special(SPC_MOD)
+        pp(TRUE)
         menu(dxpYN)
     }
     field(T09L,DBF_STRING) {
@@ -2073,6 +2190,7 @@ recordtype(dxp) {
         promptgroup(GUI_COMMON)
         interest(1)
         special(SPC_MOD)
+        pp(TRUE)
         menu(dxpYN)
     }
     field(T10L,DBF_STRING) {
@@ -2087,6 +2205,7 @@ recordtype(dxp) {
         promptgroup(GUI_COMMON)
         interest(1)
         special(SPC_MOD)
+        pp(TRUE)
         menu(dxpYN)
     }
     field(T11L,DBF_STRING) {
@@ -2101,6 +2220,7 @@ recordtype(dxp) {
         promptgroup(GUI_COMMON)
         interest(1)
         special(SPC_MOD)
+        pp(TRUE)
         menu(dxpYN)
     }
     field(T12L,DBF_STRING) {
@@ -2115,6 +2235,7 @@ recordtype(dxp) {
         promptgroup(GUI_COMMON)
         interest(1)
         special(SPC_MOD)
+        pp(TRUE)
         menu(dxpYN)
     }
     field(T13L,DBF_STRING) {
@@ -2129,6 +2250,7 @@ recordtype(dxp) {
         promptgroup(GUI_COMMON)
         interest(1)
         special(SPC_MOD)
+        pp(TRUE)
         menu(dxpYN)
     }
     field(T14L,DBF_STRING) {
@@ -2143,6 +2265,7 @@ recordtype(dxp) {
         promptgroup(GUI_COMMON)
         interest(1)
         special(SPC_MOD)
+        pp(TRUE)
         menu(dxpYN)
     }
     field(T15L,DBF_STRING) {
@@ -2157,6 +2280,7 @@ recordtype(dxp) {
         promptgroup(GUI_COMMON)
         interest(1)
         special(SPC_MOD)
+        pp(TRUE)
         menu(dxpYN)
     }
     field(T16L,DBF_STRING) {
