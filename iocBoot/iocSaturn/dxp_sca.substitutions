@@ -1,4 +1,4 @@
-file "$(DXP)/dxpApp/Db/dxp_sca.db"
+file "../../dxpApp/Db/dxp_sca.db"
 {
 pattern
 {P,          M,    D,   N}
