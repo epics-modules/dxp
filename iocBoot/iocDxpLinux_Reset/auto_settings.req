@@ -1,2 +1,0 @@
-file "mca_settings.req",                P=dxpLinux:, M=mca1
-file "dxp_settings.req",                P=dxpLinux:, R=dxp1
