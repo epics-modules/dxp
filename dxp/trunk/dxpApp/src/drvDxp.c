@@ -51,10 +51,13 @@
 #endif
 
 #include "mca.h"
+#include "drvMca.h"
 #include "dxp.h"
 #include "asynDriver.h"
+#include "asynInt32.h"
+#include "asynFloat64.h"
 #include "asynInt32Array.h"
-#include "asynMca.h"
+#include "asynDrvUser.h"
 #include "asynDxp.h"
 #include "xerxes_structures.h"
 #include "xerxes.h"
@@ -113,8 +116,10 @@ typedef struct {
     unsigned int nchans;
     char *portName;
     asynInterface common;
-    asynInterface mca;
+    asynInterface int32;
+    asynInterface float64;
     asynInterface int32Array;
+    asynInterface drvUser;
     asynInterface dxp;
 } drvDxpPvt;
 
@@ -131,21 +136,30 @@ static void setPreset(                 drvDxpPvt *pPvt, asynUser *pasynUser,
                                        dxpChannel_t *dxpChan, int mode, 
                                        double time);
 static void getAcquisitionStatus(      drvDxpPvt *pPvt, asynUser *pasynUser,
-                                       dxpChannel_t *dxpChan, 
-                                       mcaAsynAcquireStatus *pstat);
+                                       dxpChannel_t *dxpChan);
 static double getCurrentTime(          drvDxpPvt *pPvt, asynUser *pasynUser);
 static void dxpInterlock(              drvDxpPvt *pPvt, asynUser *pasynUser, 
                                        int state);
+static asynStatus drvDxpWrite(         void *drvPvt, asynUser *pasynUser,
+                                       epicsInt32 ivalue, epicsFloat64 dvalue);
+static asynStatus drvDxpRead(          void *drvPvt, asynUser *pasynUser,
+                                       epicsInt32 *pivalue, epicsFloat64 *pfvalue);
+
 /* These functions are public, exported in interfaces */
-static asynStatus mcaDoCommand(        void *drvPvt, asynUser *pasynUser,
-                                       mcaCommand command,
-                                       int ivalue, double dvalue);
-static asynStatus mcaReadStatus(       void *drvPvt, asynUser *pasynUser,
-                                       mcaAsynAcquireStatus *pstat);
-static asynStatus mcaReadData(         void *drvPvt, asynUser *pasynUser, 
+static asynStatus int32Write(          void *drvPvt, asynUser *pasynUser,
+                                       epicsInt32 value);
+static asynStatus int32Read(           void *drvPvt, asynUser *pasynUser,
+                                       epicsInt32 *value);
+static asynStatus getBounds(           void *drvPvt, asynUser *pasynUser,
+                                       epicsInt32 *low, epicsInt32 *high);
+static asynStatus float64Write(        void *drvPvt, asynUser *pasynUser,
+                                       epicsFloat64 value);
+static asynStatus float64Read(         void *drvPvt, asynUser *pasynUser,
+                                       epicsFloat64 *value);
+static asynStatus int32ArrayRead(      void *drvPvt, asynUser *pasynUser,
                                        epicsInt32 *data, size_t maxChans,
                                        size_t *nactual);
-static asynStatus mcaWriteData(        void *drvPvt, asynUser *pasynUser, 
+static asynStatus int32ArrayWrite(     void *drvPvt, asynUser *pasynUser,
                                        epicsInt32 *data, size_t maxChans);
 static asynStatus dxpSetShortParam(    void *drvPvt, asynUser *pasynUser, 
                                        unsigned short offset, 
@@ -157,6 +171,12 @@ static asynStatus dxpReadParams(       void *drvPvt, asynUser *pasynUser,
                                        short *baseline);
 static asynStatus dxpDownloadFippi(    void *drvPvt, asynUser *pasynUser, 
                                        int fippiIndex);
+static asynStatus drvUserCreate(       void *drvPvt, asynUser *pasynUser,
+                                       const char *drvInfo,
+                                       const char **pptypeName, size_t *psize);
+static asynStatus drvUserGetType(      void *drvPvt, asynUser *pasynUser,
+                                       const char **pptypeName, size_t *psize);
+static asynStatus drvUserDestroy(      void *drvPvt, asynUser *pasynUser);
 static void report(                    void *drvPvt, FILE *fp, int details);
 static asynStatus connect(             void *drvPvt, asynUser *pasynUser);
 static asynStatus disconnect(          void *drvPvt, asynUser *pasynUser);
@@ -169,16 +189,29 @@ static const struct asynCommon drvDxpCommon = {
     disconnect
 };
 
-/* mca methods */
-static const asynMca drvDxpMca = {
-    mcaDoCommand,
-    mcaReadStatus
+/* asynInt32 methods */
+static const asynInt32 drvDxpInt32 = {
+    int32Write,
+    int32Read,
+    getBounds
 };
 
-/* int32Array methods */
+/* asynFloat64 methods */
+static const asynFloat64 drvDxpFloat64 = {
+    float64Write,
+    float64Read
+};
+
+/* asynInt32Array methods */
 static const asynInt32Array drvDxpInt32Array = {
-    mcaWriteData,
-    mcaReadData
+    int32ArrayWrite,
+    int32ArrayRead
+};
+
+static const asynDrvUser drvDxpDrvUser = {
+    drvUserCreate,
+    drvUserGetType,
+    drvUserDestroy
 };
 
 /* dxp methods */
@@ -309,12 +342,18 @@ int DXPConfig(const char *portName, int chan1, int chan2,
     pPvt->common.interfaceType = asynCommonType;
     pPvt->common.pinterface  = (void *)&drvDxpCommon;
     pPvt->common.drvPvt = pPvt;
-    pPvt->mca.interfaceType = asynMcaType;
-    pPvt->mca.pinterface  = (void *)&drvDxpMca;
-    pPvt->mca.drvPvt = pPvt;
+    pPvt->int32.interfaceType = asynInt32Type;
+    pPvt->int32.pinterface  = (void *)&drvDxpInt32;
+    pPvt->int32.drvPvt = pPvt;
+    pPvt->float64.interfaceType = asynFloat64Type;
+    pPvt->float64.pinterface  = (void *)&drvDxpFloat64;
+    pPvt->float64.drvPvt = pPvt;
     pPvt->int32Array.interfaceType = asynInt32ArrayType;
     pPvt->int32Array.pinterface  = (void *)&drvDxpInt32Array;
     pPvt->int32Array.drvPvt = pPvt;
+    pPvt->drvUser.interfaceType = asynDrvUserType;
+    pPvt->drvUser.pinterface  = (void *)&drvDxpDrvUser;
+    pPvt->drvUser.drvPvt = pPvt;
     pPvt->dxp.interfaceType = asynDxpType;
     pPvt->dxp.pinterface  = (void *)&drvDxpDxp;
     pPvt->dxp.drvPvt = pPvt;
@@ -332,14 +371,24 @@ int DXPConfig(const char *portName, int chan1, int chan2,
         errlogPrintf("dxpConfig: Can't register common.\n");
         return(-1);
     }
-    status = pasynManager->registerInterface(portName,&pPvt->mca);
+    status = pasynManager->registerInterface(portName,&pPvt->int32);
     if (status != asynSuccess) {
-        errlogPrintf("dxpConfig: Can't register mca.\n");
+        errlogPrintf("dxpConfig: Can't register int32.\n");
+        return(-1);
+    }
+    status = pasynManager->registerInterface(portName,&pPvt->float64);
+    if (status != asynSuccess) {
+        errlogPrintf("dxpConfig: Can't register float64.\n");
         return(-1);
     }
     status = pasynManager->registerInterface(portName,&pPvt->int32Array);
     if (status != asynSuccess) {
         errlogPrintf("dxpConfig: Can't register int32Array.\n");
+        return(-1);
+    }
+    status = pasynManager->registerInterface(portName,&pPvt->drvUser);
+    if (status != asynSuccess) {
+        errlogPrintf("dxpConfig: Can't register drvUser.\n");
         return(-1);
     }
     status = pasynManager->registerInterface(portName,&pPvt->dxp);
@@ -373,10 +422,23 @@ static dxpChannel_t *findChannel(drvDxpPvt *pPvt, asynUser *pasynUser,
 }
 
 
-static asynStatus mcaDoCommand(void *drvPvt, asynUser *pasynUser,
-                               mcaCommand command, int ivalue, double dvalue)
+static asynStatus int32Write(void *drvPvt, asynUser *pasynUser,
+                             epicsInt32 value)
+{
+    return(drvDxpWrite(drvPvt, pasynUser, value, 0.));
+}
+
+static asynStatus float64Write(void *drvPvt, asynUser *pasynUser,
+                               epicsFloat64 value)
+{
+    return(drvDxpWrite(drvPvt, pasynUser, 0, value));
+}
+
+static asynStatus drvDxpWrite(void *drvPvt, asynUser *pasynUser,
+                              epicsInt32 ivalue, epicsFloat64 dvalue)
 {
     drvDxpPvt *pPvt = (drvDxpPvt *)drvPvt;
+    mcaCommand command, *pcommand=pasynUser->drvUser;
     asynStatus status=asynSuccess;
     unsigned short resume;
     int s;
@@ -386,17 +448,24 @@ static asynStatus mcaDoCommand(void *drvPvt, asynUser *pasynUser,
     int signal;
     dxpChannel_t *dxpChan;
 
+
+    if (!pcommand) {
+        asynPrint(pasynUser, ASYN_TRACE_ERROR,
+                  "drvDxp::drvDxpRead:: null command pointer\n");
+        return(asynError);
+    }
+    command = *pcommand;
     pasynManager->getAddr(pasynUser, &signal);
     dxpChan = findChannel(pPvt, pasynUser, signal);
 
     pPvt->detChan = signal;
     asynPrint(pasynUser, ASYN_TRACE_FLOW,
-              "(mcaDoCommand %s detChan=%d, command=%d, value=%f\n",
+              "(drvDxpRead %s detChan=%d, command=%d, value=%f\n",
               pPvt->portName, pPvt->detChan, command, dvalue);
     if (dxpChan == NULL) return(asynError);
 
     switch (command) {
-        case MSG_ACQUIRE:
+        case mcaStartAcquire:
             /* Start acquisition. 
              * Don't do anything if already acquiring */
             if (!pPvt->acquiring) {
@@ -415,68 +484,7 @@ static asynStatus mcaDoCommand(void *drvPvt, asynUser *pasynUser,
                           pPvt->portName, pPvt->detChan, s);
             }
             break;
-        case MSG_SET_CHAS_INT:
-            /* set channel advance source to internal (timed) */
-            /* This is a NOOP for DXP */
-            break;
-        case MSG_SET_CHAS_EXT:
-            /* set channel advance source to external */
-            /* This is a NOOP for DXP */
-            break;
-        case MSG_SET_NCHAN:
-            /* set number of channels
-            * On DXP4C nothing to do, always 1024 channels.
-            * On DXP2X set MCALIMHI */
-            if (pPvt->moduleType == MODEL_DXP2X || 
-                pPvt->moduleType == MODEL_DXPX10P) {
-                nparams = 1;
-               	pPvt->nchans = ivalue;
-               	short_value = pPvt->nchans;
-      		dxp_download_one_params(&pPvt->detChan, &nparams, 
-      		     	                &pPvt->mcalimhi_index, &short_value);
-            }
-            break;
-        case MSG_SET_DWELL:
-            /* set dwell time */
-            /* This is a NOOP for DXP */
-            break;
-        case MSG_SET_REAL_TIME:
-            /* set preset real time. */
-            setPreset(pPvt, pasynUser, dxpChan, MSG_SET_REAL_TIME, dvalue);
-            break;
-        case MSG_SET_LIVE_TIME:
-            /* set preset live time. */
-            setPreset(pPvt, pasynUser, dxpChan, MSG_SET_LIVE_TIME, dvalue);
-            break;
-        case MSG_SET_COUNTS:
-            /* set preset counts */
-            dxpChan->ptotal = ivalue;
-            break;
-        case MSG_SET_LO_CHAN:
-            /* set lower side of region integrated for preset counts */
-            dxpChan->ptschan = ivalue;
-            break;
-        case MSG_SET_HI_CHAN:
-            /* set high side of region integrated for preset counts */
-            dxpChan->ptechan = ivalue;
-            break;
-        case MSG_SET_NSWEEPS:
-            /* set number of sweeps (for MCS mode) */
-            /* This is a NOOP for DXP */
-            break;
-        case MSG_SET_MODE_PHA:
-            /* set mode to Pulse Height Analysis */
-            /* This is a NOOP for DXP */
-            break;
-        case MSG_SET_MODE_MCS:
-            /* set mode to MultiChannel Scaler */
-            /* This is a NOOP for DXP */
-            break;
-        case MSG_SET_MODE_LIST:
-            /* set mode to LIST (record each incoming event) */
-            /* This is a NOOP for DXP */
-            break;
-        case MSG_STOP_ACQUISITION:
+        case mcaStopAcquire:
             /* stop data acquisition */
             stopRun(pPvt, pasynUser);
             if (pPvt->acquiring) {
@@ -486,7 +494,7 @@ static asynStatus mcaDoCommand(void *drvPvt, asynUser *pasynUser,
                 pPvt->acquiring = 0;
             }
             break;
-        case MSG_ERASE:
+        case mcaErase:
             pPvt->ereal = 0.;
             dxpChan->elive = 0.;
             dxpChan->etotal = 0.;
@@ -500,41 +508,155 @@ static asynStatus mcaDoCommand(void *drvPvt, asynUser *pasynUser,
                 pPvt->erased = 1;
             }
             break;
-        case MSG_SET_SEQ:
+        case mcaReadStatus:
+            getAcquisitionStatus(pPvt, pasynUser, dxpChan);
+            break;
+        case mcaChannelAdvanceInternal:
+            /* set channel advance source to internal (timed) */
+            /* This is a NOOP for DXP */
+            break;
+        case mcaChannelAdvanceExternal:
+            /* set channel advance source to external */
+            /* This is a NOOP for DXP */
+            break;
+        case mcaNumChannels:
+            /* set number of channels
+            * On DXP4C nothing to do, always 1024 channels.
+            * On DXP2X set MCALIMHI */
+            if (pPvt->moduleType == MODEL_DXP2X || 
+                pPvt->moduleType == MODEL_DXPX10P) {
+                nparams = 1;
+               	pPvt->nchans = ivalue;
+               	short_value = pPvt->nchans;
+      		dxp_download_one_params(&pPvt->detChan, &nparams, 
+      		     	                &pPvt->mcalimhi_index, &short_value);
+            }
+            break;
+        case mcaModePHA:
+            /* set mode to Pulse Height Analysis */
+            /* This is a NOOP for DXP */
+            break;
+        case mcaModeMCS:
+            /* set mode to MultiChannel Scaler */
+            /* This is a NOOP for DXP */
+            break;
+        case mcaModeList:
+            /* set mode to LIST (record each incoming event) */
+            /* This is a NOOP for DXP */
+            break;
+        case mcaSequence:
             /* set sequence number */
             /* This is a NOOP for DXP */
             break;
-        case MSG_SET_PSCL:
+        case mcaPrescale:
             /* This is a NOOP for DXP */
+            break;
+        case mcaPresetSweeps:
+            /* set number of sweeps (for MCS mode) */
+            /* This is a NOOP for DXP */
+            break;
+        case mcaPresetLowChannel:
+            /* set lower side of region integrated for preset counts */
+            dxpChan->ptschan = ivalue;
+            break;
+        case mcaPresetHighChannel:
+            /* set high side of region integrated for preset counts */
+            dxpChan->ptechan = ivalue;
+            break;
+        case mcaDwellTime:
+            /* set dwell time */
+            /* This is a NOOP for DXP */
+            break;
+        case mcaPresetRealTime:
+            /* set preset real time. */
+            setPreset(pPvt, pasynUser, dxpChan, mcaPresetRealTime, dvalue);
+            break;
+        case mcaPresetLiveTime:
+            /* set preset live time. */
+            setPreset(pPvt, pasynUser, dxpChan, mcaPresetLiveTime, dvalue);
+            break;
+        case mcaPresetCounts:
+            /* set preset counts */
+            dxpChan->ptotal = ivalue;
             break;
         default:
             asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                      "mcaDoCommand, invalid command=%d\n");
+                      "drvDXPWrite, invalid command=%d\n", command);
             status = asynError;
             break;
     }
     return(status);
 }
 
-
-static asynStatus mcaReadStatus(void *drvPvt, asynUser *pasynUser,
-                         mcaAsynAcquireStatus *pstat)
+static asynStatus int32Read(void *drvPvt, asynUser *pasynUser,
+                            epicsInt32 *value)
+{
+    return(drvDxpRead(drvPvt, pasynUser, value, NULL));
+}
+
+static asynStatus float64Read(void *drvPvt, asynUser *pasynUser,
+                              epicsFloat64 *value)
+{
+    return(drvDxpRead(drvPvt, pasynUser, NULL, value));
+}
+
+static asynStatus drvDxpRead(void *drvPvt, asynUser *pasynUser,
+                             epicsInt32 *pivalue, epicsFloat64 *pfvalue)
 {
     drvDxpPvt *pPvt = (drvDxpPvt *)drvPvt;
+    mcaCommand command, *pcommand=pasynUser->drvUser;
+    asynStatus status=asynSuccess;
     int signal;
     dxpChannel_t *dxpChan;
 
+    if (!pcommand) {
+        asynPrint(pasynUser, ASYN_TRACE_ERROR,
+                  "drvDxp::drvDxpRead:: null command pointer\n");
+        return(asynError);
+    }
+    command = *pcommand;
     pasynManager->getAddr(pasynUser, &signal);
     dxpChan = findChannel(pPvt, pasynUser, signal);
     pPvt->detChan = signal;
     if (dxpChan == NULL) return(asynError);
-    getAcquisitionStatus(pPvt, pasynUser, dxpChan, pstat);
+
+    switch (command) {
+        case mcaAcquiring:
+            *pivalue = pPvt->acquiring;
+            break;
+        case mcaDwellTime:
+            *pfvalue = 0.;
+            break;
+        case mcaElapsedLiveTime:
+            *pfvalue = pPvt->dxpChannel->elive;
+            break;
+        case mcaElapsedRealTime:
+            *pfvalue = pPvt->dxpChannel->ereal;
+            break;
+        case mcaElapsedCounts:
+            *pfvalue = dxpChan->etotal;
+            break;
+        default:
+            asynPrint(pasynUser, ASYN_TRACE_ERROR,
+                      "drvDxp::drvDxpRead got illegal command %d\n",
+                      command);
+            status = asynError;
+            break;
+    }
+    return(status);
+}
+
+static asynStatus getBounds(void *drvPvt, asynUser *pasynUser,
+                            epicsInt32 *low, epicsInt32 *high)
+{
+    *low = 0;
+    *high = 0;
     return(asynSuccess);
 }
 
-static asynStatus mcaReadData(void *drvPvt, asynUser *pasynUser, 
-                              epicsInt32 *data, size_t maxChans, 
-                              size_t *nactual)
+static asynStatus int32ArrayRead(void *drvPvt, asynUser *pasynUser, 
+                                 epicsInt32 *data, size_t maxChans, 
+                                 size_t *nactual)
 {
     drvDxpPvt *pPvt = (drvDxpPvt *)drvPvt;
     int signal;
@@ -554,7 +676,7 @@ static asynStatus mcaReadData(void *drvPvt, asynUser *pasynUser,
     return(asynSuccess);
 }
 
-static asynStatus mcaWriteData(void *drvPvt, asynUser *pasynUser,
+static asynStatus int32ArrayWrite(void *drvPvt, asynUser *pasynUser,
                                epicsInt32 *data, size_t maxChans)
 {
     asynPrint(pasynUser, ASYN_TRACE_ERROR,
@@ -726,8 +848,7 @@ static double getCurrentTime(drvDxpPvt *pPvt, asynUser *pasynUser)
 
 
 static void getAcquisitionStatus(drvDxpPvt *pPvt, asynUser *pasynUser, 
-                                 dxpChannel_t *dxpChan, 
-                                 mcaAsynAcquireStatus *pstat)
+                                 dxpChannel_t *dxpChan) 
 {
    int i;
    double time_now;
@@ -811,11 +932,6 @@ static void getAcquisitionStatus(drvDxpPvt *pPvt, asynUser *pasynUser,
          break;
       }
    }
-   pstat->realTime = pPvt->dxpChannel->ereal;
-   pstat->liveTime = pPvt->dxpChannel->elive;
-   pstat->dwellTime = 0.;
-   pstat->acquiring = pPvt->acquiring;
-   pstat->totalCounts = dxpChan->etotal;
    asynPrint(pasynUser, ASYN_TRACE_FLOW, 
              "(getAcquisitionStatus [%s detChan=%d]): acquiring=%d\n",
              pPvt->portName, pPvt->detChan, pPvt->acquiring);
@@ -833,10 +949,10 @@ static void setPreset(drvDxpPvt *pPvt, asynUser *pasynUser,
    unsigned short time_mode=0;
    
    switch (mode) {
-      case MSG_SET_REAL_TIME:
+      case mcaPresetRealTime:
          dxpChan->preal = time;
          break;
-      case MSG_SET_LIVE_TIME:
+      case mcaPresetLiveTime:
          dxpChan->plive = time;
          break;
    }
@@ -862,6 +978,51 @@ static void setPreset(drvDxpPvt *pPvt, asynUser *pasynUser,
       offsets[2] = pPvt->preset_mode_index;
       dxp_download_one_params(&pPvt->detChan, &nparams, offsets, values);
    }
+}
+
+
+/* asynDrvUser routines */
+static asynStatus drvUserCreate(void *drvPvt, asynUser *pasynUser,
+                                const char *drvInfo,
+                                const char **pptypeName, size_t *psize)
+{
+    int i;
+    char *pstring;
+
+    for (i=0; i<MAX_MCA_COMMANDS; i++) {
+        pstring = mcaCommands[i].commandString;
+        if (epicsStrCaseCmp(drvInfo, pstring) == 0) {
+            pasynUser->drvUser = &mcaCommands[i].command;
+            if (pptypeName) *pptypeName = epicsStrDup(pstring);
+            if (psize) *psize = sizeof(mcaCommands[i].command);
+            asynPrint(pasynUser, ASYN_TRACE_FLOW,
+              "drvDxp::drvUserCreate, command=%s\n", pstring);
+            return(asynSuccess);
+        }
+    }
+    asynPrint(pasynUser, ASYN_TRACE_ERROR,
+              "drvDxp::drvUserCreate, unknown command=%s\n", drvInfo);
+    return(asynError);
+}
+
+static asynStatus drvUserGetType(void *drvPvt, asynUser *pasynUser,
+                                 const char **pptypeName, size_t *psize)
+{
+    mcaCommand *pcommand = pasynUser->drvUser;
+
+    *pptypeName = NULL;
+    *psize = 0;
+    if (pcommand) {
+        if (pptypeName)
+            *pptypeName = epicsStrDup(mcaCommands[*pcommand].commandString);
+        if (psize) *psize = sizeof(*pcommand);
+    }
+    return(asynSuccess);
+}
+
+static asynStatus drvUserDestroy(void *drvPvt, asynUser *pasynUser)
+{
+    return(asynSuccess);
 }
 
 
