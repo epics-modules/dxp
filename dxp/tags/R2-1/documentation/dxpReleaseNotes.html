@@ -1,0 +1,95 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<title>DXP ReleaseNotes</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1 align="center">dxp Release Notes</h1>
+
+<h2 align="center">Release 2-1<br>
+                   23-Mar-2005</h2>
+
+<p>Major re-write of the software.  Previously the DXP device support for the MCA and
+DXP records was using the Xerxes library from XIA.  This is a low-level library, and
+required that the EPICS software know what XIA model was being used (Saturn, DXP2X, etc.)
+This releases uses the XIA Handel library, which is a higher-level library.  The EPICS
+software no longer needs to know what hardware it is talking to, and no longer needs
+to implement the algorithms to convert high level concepts (e.g. peaking time) to
+low-level device parameters.</p>
+
+<p>Added significant new features to the software, including the ability to acquire and
+plot the baseline history and ADC trace data.  This greatly improves the diagnostics
+available to the user.  The EPICS software now has most of the features of the XIA
+Kepler and MESA software.</p>
+
+<p>Most high-level parameters are now in physical units (e.g. microseconds, keV) rather
+than integer DXP device units.<p>
+
+<p>Added support for running the EPICS IOC on Windows to control the Saturn. This
+means that a Saturn or Vortex detector can now be run by a Windows laptop, which
+is attractive for portable applications.</p>
+
+<p>Improved Linux support by not requiring the user to have root priviledge to run the
+IOC.</p>
+
+<p>Changed from using the EPICS MPF module to using the new ASYN module.  This
+improves debugging support.</p>
+
+<p>Improved multi-element detector support.  There is now a single database 
+for multi-element detectors, and all of the logic to synchronize acquisition and 
+copy parameters 
+from detector 1 to all detectors is done by a State Notation Language Program.
+This greatly simplifies adding support for a new detector with a different number
+of elements, since only the MEDM screens now need to be changed, not the databases.</p>
+
+<p>The commands required in the st.cmd startup file, and the files required to configure
+the hardware have changed significantly.  This is because Handel and Xerxes do things
+quite differently.  Users will need to look at the example iocBoot directories to
+convert existing IOCs.</p>
+
+<h2 align="center">Release 1-2<br>
+                   June 2004</h2>
+
+<p align="left">Added 1element_dxp.db, 1element_dxp.adl, dxpTop.adl,
+single_dxp_top.adl.</p>
+<p>Dependencies now include calc, sscan, and autosave modules.  No longer depend
+on std module.</p>
+
+<p>Fixed clock on X10P (Saturn) model, was 400nsec, actually 800nsec</p>
+
+
+
+<h2 align="center">Release 1-1<br>
+                   January 2004</h2>
+
+<p align="left">This is the first release of the synApps dxp module.&nbsp; Prior 
+to this the support for the XIA DXP models was provided in the synApps CAMAC 
+module.&nbsp; This version runs only on EPICS 3.14.</p>
+
+<ul>
+  <li>
+
+<p align="left">Moved software from camac to dxp synApps module</li>
+<li>
+
+<p align="left">Added support for Saturn model</li>
+<li>
+
+<p align="left">Added documentation directory</li>
+</ul>
+
+<p align="left">&nbsp;</p>
+
+<address>
+    Suggestions and Comments to: <br>
+    <a href="mailto:rivers@cars.uchicago.edu">Mark Rivers </a>:
+    (rivers@cars.uchicago.edu) <br>
+    Last modified: March 23, 2005 
+</address>
+</body>
+</html>

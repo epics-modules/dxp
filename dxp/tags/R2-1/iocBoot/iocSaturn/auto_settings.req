@@ -1,0 +1,2 @@
+file "mca_settings.req",                P=dxpSaturn:, M=mca1
+file "dxp_settings.req",                P=dxpSaturn:, R=dxp1
