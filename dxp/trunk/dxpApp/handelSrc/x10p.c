@@ -3188,7 +3188,15 @@ static int dxp_control_task_params(int* ioChan, int* modChan, short *type,
 	  } else if (*type==CT_DXPX10P_PROGRAM_FIPPI) {
 	  } else if (*type==CT_DXPX10P_SET_POLARITY) {
 	  } else if (*type==CT_DXPX10P_CLOSE_INPUT_RELAY) {
+		/* Recommend waiting 0ms, baseline history is available immediately */
+		info[1] = 1;
+		/* Recomment 0ms polling, baseline history is available immediately */
+		info[2] = 1;
 	  } else if (*type==CT_DXPX10P_OPEN_INPUT_RELAY) {
+		/* Recommend waiting 0ms, baseline history is available immediately */
+		info[1] = 1;
+		/* Recomment 0ms polling, baseline history is available immediately */
+		info[2] = 1;
 	  } else if (*type==CT_DXPX10P_RC_BASELINE) {
 	  } else if (*type==CT_DXPX10P_RC_EVENT) {
 	  } else if (*type==CT_DXPX10P_BASELINE_HIST) {
