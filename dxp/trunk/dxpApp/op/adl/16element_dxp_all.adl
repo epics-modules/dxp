@@ -1,19 +1,19 @@
 
 file {
-	name="j:\epics\devel\camac\camacApp\op\adl\16element_dxp_all.adl"
+	name="C:\Program Files\EPICS\adls\16element_dxp_all.adl"
 	version=020306
 }
 display {
 	object {
-		x=186
-		y=228
-		width=875
+		x=129
+		y=231
+		width=1000
 		height=585
 	}
 	clr=14
 	bclr=4
 	cmap=""
-	gridSpacing=5
+	gridSpacing=10
 	gridOn=0
 	snapToGrid=0
 }
@@ -109,567 +109,6 @@ text {
 		clr=0
 	}
 	textix="16 Element DXPs"
-}
-composite {
-	object {
-		x=42
-		y=40
-		width=140
-		height=534
-	}
-	"composite name"=""
-	children {
-		"message button" {
-			object {
-				x=52
-				y=554
-				width=120
-				height=20
-			}
-			control {
-				chan="$(P)CopyGain.PROC"
-				clr=14
-				bclr=4
-			}
-			label="Copy #1 to All"
-			press_msg="1"
-		}
-		text {
-			object {
-				x=87
-				y=40
-				width=51
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="ASC Gain (0.5-50)"
-			align="horiz. centered"
-		}
-		"text entry" {
-			object {
-				x=42
-				y=77
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)1.GAIN"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=42
-				y=107
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)2.GAIN"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=42
-				y=137
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)3.GAIN"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=42
-				y=167
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)4.GAIN"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=42
-				y=197
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)5.GAIN"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=42
-				y=227
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)6.GAIN"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=42
-				y=257
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)7.GAIN"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=42
-				y=287
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)8.GAIN"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=42
-				y=317
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)9.GAIN"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=42
-				y=347
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)10.GAIN"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=42
-				y=377
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)11.GAIN"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=42
-				y=407
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)12.GAIN"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=42
-				y=437
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)13.GAIN"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=42
-				y=467
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)14.GAIN"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=42
-				y=497
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)15.GAIN"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=42
-				y=527
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)16.GAIN"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=122
-				y=80
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)1.GAINRBV"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=122
-				y=110
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)2.GAINRBV"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=122
-				y=140
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)3.GAINRBV"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=122
-				y=170
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)4.GAINRBV"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=122
-				y=200
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)5.GAINRBV"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=122
-				y=230
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)6.GAINRBV"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=122
-				y=260
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)7.GAINRBV"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=122
-				y=290
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)8.GAINRBV"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=122
-				y=320
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)9.GAINRBV"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=122
-				y=350
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)10.GAINRBV"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=122
-				y=380
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)11.GAINRBV"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=122
-				y=410
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)12.GAINRBV"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=122
-				y=440
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)13.GAINRBV"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=122
-				y=470
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)14.GAINRBV"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=122
-				y=500
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)15.GAINRBV"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=122
-				y=530
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)16.GAINRBV"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		text {
-			object {
-				x=66
-				y=57
-				width=28
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Desired"
-			align="horiz. centered"
-		}
-		text {
-			object {
-				x=138
-				y=57
-				width=28
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Actual"
-			align="horiz. centered"
-		}
-	}
 }
 composite {
 	object {
@@ -922,7 +361,7 @@ composite {
 }
 composite {
 	object {
-		x=411
+		x=673
 		y=40
 		width=60
 		height=504
@@ -931,7 +370,7 @@ composite {
 	children {
 		text {
 			object {
-				x=427
+				x=689
 				y=57
 				width=28
 				height=14
@@ -944,13 +383,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=411
+				x=673
 				y=80
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)1.S04V"
+				chan="$(P)1.FAST_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -960,13 +399,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=411
+				x=673
 				y=110
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)2.S04V"
+				chan="$(P)2.FAST_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -976,13 +415,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=411
+				x=673
 				y=140
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)3.S04V"
+				chan="$(P)3.FAST_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -992,13 +431,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=411
+				x=673
 				y=170
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)4.S04V"
+				chan="$(P)4.FAST_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1008,13 +447,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=411
+				x=673
 				y=200
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)5.S04V"
+				chan="$(P)5.FAST_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1024,13 +463,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=411
+				x=673
 				y=230
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)6.S04V"
+				chan="$(P)6.FAST_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1040,13 +479,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=411
+				x=673
 				y=260
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)7.S04V"
+				chan="$(P)7.FAST_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1056,13 +495,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=411
+				x=673
 				y=290
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)8.S04V"
+				chan="$(P)8.FAST_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1072,13 +511,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=411
+				x=673
 				y=320
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)9.S04V"
+				chan="$(P)9.FAST_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1088,13 +527,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=411
+				x=673
 				y=350
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)10.S04V"
+				chan="$(P)10.FAST_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1104,13 +543,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=411
+				x=673
 				y=380
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)11.S04V"
+				chan="$(P)11.FAST_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1120,13 +559,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=411
+				x=673
 				y=410
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)12.S04V"
+				chan="$(P)12.FAST_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1136,13 +575,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=411
+				x=673
 				y=440
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)13.S04V"
+				chan="$(P)13.FAST_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1152,13 +591,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=411
+				x=673
 				y=470
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)14.S04V"
+				chan="$(P)14.FAST_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1168,13 +607,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=411
+				x=673
 				y=500
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)15.S04V"
+				chan="$(P)15.FAST_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1184,13 +623,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=411
+				x=673
 				y=530
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)16.S04V"
+				chan="$(P)16.FAST_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1200,7 +639,7 @@ composite {
 		}
 		text {
 			object {
-				x=427
+				x=689
 				y=40
 				width=28
 				height=14
@@ -1215,7 +654,7 @@ composite {
 }
 composite {
 	object {
-		x=476
+		x=738
 		y=40
 		width=60
 		height=504
@@ -1224,7 +663,7 @@ composite {
 	children {
 		text {
 			object {
-				x=506
+				x=768
 				y=40
 				width=1
 				height=14
@@ -1236,7 +675,7 @@ composite {
 		}
 		text {
 			object {
-				x=485
+				x=747
 				y=57
 				width=42
 				height=14
@@ -1249,13 +688,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=476
+				x=738
 				y=80
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)1.S01V"
+				chan="$(P)1.SLOW_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1265,13 +704,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=476
+				x=738
 				y=110
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)2.S01V"
+				chan="$(P)2.SLOW_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1281,13 +720,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=476
+				x=738
 				y=140
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)3.S01V"
+				chan="$(P)3.SLOW_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1297,13 +736,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=476
+				x=738
 				y=170
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)4.S01V"
+				chan="$(P)4.SLOW_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1313,13 +752,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=476
+				x=738
 				y=200
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)5.S01V"
+				chan="$(P)5.SLOW_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1329,13 +768,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=476
+				x=738
 				y=230
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)6.S01V"
+				chan="$(P)6.SLOW_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1345,13 +784,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=476
+				x=738
 				y=260
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)7.S01V"
+				chan="$(P)7.SLOW_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1361,13 +800,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=476
+				x=738
 				y=290
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)8.S01V"
+				chan="$(P)8.SLOW_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1377,13 +816,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=476
+				x=738
 				y=320
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)9.S01V"
+				chan="$(P)9.SLOW_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1393,13 +832,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=476
+				x=738
 				y=350
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)10.S01V"
+				chan="$(P)10.SLOW_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1409,13 +848,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=476
+				x=738
 				y=380
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)11.S01V"
+				chan="$(P)11.SLOW_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1425,13 +864,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=476
+				x=738
 				y=410
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)12.S01V"
+				chan="$(P)12.SLOW_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1441,13 +880,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=476
+				x=738
 				y=440
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)13.S01V"
+				chan="$(P)13.SLOW_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1457,13 +896,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=476
+				x=738
 				y=470
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)14.S01V"
+				chan="$(P)14.SLOW_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1473,13 +912,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=476
+				x=738
 				y=500
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)15.S01V"
+				chan="$(P)15.SLOW_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1489,13 +928,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=476
+				x=738
 				y=530
 				width=60
 				height=14
 			}
 			monitor {
-				chan="$(P)16.S01V"
+				chan="$(P)16.SLOW_PEAKS"
 				clr=14
 				bclr=2
 			}
@@ -1505,7 +944,7 @@ composite {
 		}
 		text {
 			object {
-				x=492
+				x=754
 				y=40
 				width=28
 				height=14
@@ -1520,1071 +959,7 @@ composite {
 }
 composite {
 	object {
-		x=541
-		y=57
-		width=60
-		height=487
-	}
-	"composite name"=""
-	children {
-		text {
-			object {
-				x=557
-				y=57
-				width=28
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Resets"
-			align="horiz. centered"
-		}
-		"text update" {
-			object {
-				x=541
-				y=80
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)1.S10V"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=541
-				y=110
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)2.S10V"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=541
-				y=140
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)3.S10V"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=541
-				y=170
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)4.S10V"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=541
-				y=200
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)5.S10V"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=541
-				y=230
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)6.S10V"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=541
-				y=260
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)7.S10V"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=541
-				y=290
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)8.S10V"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=541
-				y=320
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)9.S10V"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=541
-				y=350
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)10.S10V"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=541
-				y=380
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)11.S10V"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=541
-				y=410
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)12.S10V"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=541
-				y=440
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)13.S10V"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=541
-				y=470
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)14.S10V"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=541
-				y=500
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)15.S10V"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=541
-				y=530
-				width=60
-				height=14
-			}
-			monitor {
-				chan="$(P)16.S10V"
-				clr=14
-				bclr=2
-			}
-			align="horiz. centered"
-			limits {
-			}
-		}
-	}
-}
-composite {
-	object {
-		x=606
-		y=40
-		width=110
-		height=534
-	}
-	"composite name"=""
-	children {
-		"message button" {
-			object {
-				x=606
-				y=554
-				width=110
-				height=20
-			}
-			control {
-				chan="$(P)CopyFippi.PROC"
-				clr=14
-				bclr=4
-			}
-			label="Copy #1 to All"
-			press_msg="1"
-		}
-		text {
-			object {
-				x=636
-				y=40
-				width=49
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Peaking"
-			align="horiz. centered"
-		}
-		text {
-			object {
-				x=626
-				y=57
-				width=70
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Time Range"
-			align="horiz. centered"
-		}
-		menu {
-			object {
-				x=606
-				y=77
-				width=110
-				height=20
-			}
-			control {
-				chan="$(P)1.FIPPI"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=606
-				y=107
-				width=110
-				height=20
-			}
-			control {
-				chan="$(P)2.FIPPI"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=606
-				y=137
-				width=110
-				height=20
-			}
-			control {
-				chan="$(P)3.FIPPI"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=606
-				y=167
-				width=110
-				height=20
-			}
-			control {
-				chan="$(P)4.FIPPI"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=606
-				y=197
-				width=110
-				height=20
-			}
-			control {
-				chan="$(P)5.FIPPI"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=606
-				y=227
-				width=110
-				height=20
-			}
-			control {
-				chan="$(P)6.FIPPI"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=606
-				y=257
-				width=110
-				height=20
-			}
-			control {
-				chan="$(P)7.FIPPI"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=606
-				y=287
-				width=110
-				height=20
-			}
-			control {
-				chan="$(P)8.FIPPI"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=606
-				y=317
-				width=110
-				height=20
-			}
-			control {
-				chan="$(P)9.FIPPI"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=606
-				y=347
-				width=110
-				height=20
-			}
-			control {
-				chan="$(P)10.FIPPI"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=606
-				y=377
-				width=110
-				height=20
-			}
-			control {
-				chan="$(P)11.FIPPI"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=606
-				y=407
-				width=110
-				height=20
-			}
-			control {
-				chan="$(P)12.FIPPI"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=606
-				y=437
-				width=110
-				height=20
-			}
-			control {
-				chan="$(P)13.FIPPI"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=606
-				y=467
-				width=110
-				height=20
-			}
-			control {
-				chan="$(P)14.FIPPI"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=606
-				y=497
-				width=110
-				height=20
-			}
-			control {
-				chan="$(P)15.FIPPI"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=606
-				y=527
-				width=110
-				height=20
-			}
-			control {
-				chan="$(P)16.FIPPI"
-				clr=14
-				bclr=51
-			}
-		}
-	}
-}
-composite {
-	object {
-		x=721
-		y=40
-		width=105
-		height=534
-	}
-	"composite name"=""
-	children {
-		text {
-			object {
-				x=735
-				y=40
-				width=49
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Peaking"
-			align="horiz. centered"
-		}
-		text {
-			object {
-				x=734
-				y=57
-				width=56
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Time"
-			align="horiz. centered"
-		}
-		menu {
-			object {
-				x=721
-				y=77
-				width=90
-				height=20
-			}
-			control {
-				chan="$(P)1.PKTM"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=721
-				y=107
-				width=90
-				height=20
-			}
-			control {
-				chan="$(P)2.PKTM"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=721
-				y=137
-				width=90
-				height=20
-			}
-			control {
-				chan="$(P)3.PKTM"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=721
-				y=167
-				width=90
-				height=20
-			}
-			control {
-				chan="$(P)4.PKTM"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=721
-				y=197
-				width=90
-				height=20
-			}
-			control {
-				chan="$(P)5.PKTM"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=721
-				y=227
-				width=90
-				height=20
-			}
-			control {
-				chan="$(P)6.PKTM"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=721
-				y=257
-				width=90
-				height=20
-			}
-			control {
-				chan="$(P)7.PKTM"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=721
-				y=287
-				width=90
-				height=20
-			}
-			control {
-				chan="$(P)8.PKTM"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=721
-				y=317
-				width=90
-				height=20
-			}
-			control {
-				chan="$(P)9.PKTM"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=721
-				y=347
-				width=90
-				height=20
-			}
-			control {
-				chan="$(P)10.PKTM"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=721
-				y=377
-				width=90
-				height=20
-			}
-			control {
-				chan="$(P)11.PKTM"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=721
-				y=407
-				width=90
-				height=20
-			}
-			control {
-				chan="$(P)12.PKTM"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=721
-				y=437
-				width=90
-				height=20
-			}
-			control {
-				chan="$(P)13.PKTM"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=721
-				y=467
-				width=90
-				height=20
-			}
-			control {
-				chan="$(P)14.PKTM"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=721
-				y=497
-				width=90
-				height=20
-			}
-			control {
-				chan="$(P)15.PKTM"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=721
-				y=527
-				width=90
-				height=20
-			}
-			control {
-				chan="$(P)16.PKTM"
-				clr=14
-				bclr=51
-			}
-		}
-		"message button" {
-			object {
-				x=721
-				y=554
-				width=105
-				height=20
-			}
-			control {
-				chan="$(P)CopyPktm.PROC"
-				clr=14
-				bclr=4
-			}
-			label="Copy #1 to All"
-			press_msg="1"
-		}
-	}
-}
-composite {
-	object {
-		x=332
-		y=57
-		width=74
-		height=490
-	}
-	"composite name"=""
-	children {
-		"text entry" {
-			object {
-				x=332
-				y=77
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)1.F09V"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=332
-				y=107
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)2.F09V"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=332
-				y=137
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)3.F09V"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=332
-				y=167
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)4.F09V"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=332
-				y=197
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)5.F09V"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=332
-				y=227
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)6.F09V"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=332
-				y=257
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)7.F09V"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=332
-				y=287
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)8.F09V"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=332
-				y=317
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)9.F09V"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=332
-				y=347
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)10.F09V"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=332
-				y=377
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)11.F09V"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=332
-				y=407
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)12.F09V"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=332
-				y=437
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)13.F09V"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=332
-				y=467
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)14.F09V"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=332
-				y=497
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)15.F09V"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=332
-				y=527
-				width=74
-				height=20
-			}
-			control {
-				chan="$(P)16.F09V"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		text {
-			object {
-				x=338
-				y=57
-				width=63
-				height=14
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Threshold"
-			align="horiz. centered"
-		}
-	}
-}
-composite {
-	object {
-		x=187
+		x=526
 		y=40
 		width=140
 		height=534
@@ -2593,7 +968,7 @@ composite {
 	children {
 		text {
 			object {
-				x=236
+				x=575
 				y=40
 				width=51
 				height=14
@@ -2606,7 +981,7 @@ composite {
 		}
 		composite {
 			object {
-				x=267
+				x=606
 				y=80
 				width=60
 				height=464
@@ -2615,13 +990,13 @@ composite {
 			children {
 				"text update" {
 					object {
-						x=267
+						x=606
 						y=80
 						width=60
 						height=14
 					}
 					monitor {
-						chan="$(P)1.EMAXRBV"
+						chan="$(P)1.EMAX_RBV"
 						clr=14
 						bclr=2
 					}
@@ -2631,13 +1006,13 @@ composite {
 				}
 				"text update" {
 					object {
-						x=267
+						x=606
 						y=110
 						width=60
 						height=14
 					}
 					monitor {
-						chan="$(P)2.EMAXRBV"
+						chan="$(P)2.EMAX_RBV"
 						clr=14
 						bclr=2
 					}
@@ -2647,13 +1022,13 @@ composite {
 				}
 				"text update" {
 					object {
-						x=267
+						x=606
 						y=140
 						width=60
 						height=14
 					}
 					monitor {
-						chan="$(P)3.EMAXRBV"
+						chan="$(P)3.EMAX_RBV"
 						clr=14
 						bclr=2
 					}
@@ -2663,13 +1038,13 @@ composite {
 				}
 				"text update" {
 					object {
-						x=267
+						x=606
 						y=170
 						width=60
 						height=14
 					}
 					monitor {
-						chan="$(P)4.EMAXRBV"
+						chan="$(P)4.EMAX_RBV"
 						clr=14
 						bclr=2
 					}
@@ -2679,13 +1054,13 @@ composite {
 				}
 				"text update" {
 					object {
-						x=267
+						x=606
 						y=200
 						width=60
 						height=14
 					}
 					monitor {
-						chan="$(P)5.EMAXRBV"
+						chan="$(P)5.EMAX_RBV"
 						clr=14
 						bclr=2
 					}
@@ -2695,13 +1070,13 @@ composite {
 				}
 				"text update" {
 					object {
-						x=267
+						x=606
 						y=230
 						width=60
 						height=14
 					}
 					monitor {
-						chan="$(P)6.EMAXRBV"
+						chan="$(P)6.EMAX_RBV"
 						clr=14
 						bclr=2
 					}
@@ -2711,13 +1086,13 @@ composite {
 				}
 				"text update" {
 					object {
-						x=267
+						x=606
 						y=260
 						width=60
 						height=14
 					}
 					monitor {
-						chan="$(P)7.EMAXRBV"
+						chan="$(P)7.EMAX_RBV"
 						clr=14
 						bclr=2
 					}
@@ -2727,13 +1102,13 @@ composite {
 				}
 				"text update" {
 					object {
-						x=267
+						x=606
 						y=290
 						width=60
 						height=14
 					}
 					monitor {
-						chan="$(P)8.EMAXRBV"
+						chan="$(P)8.EMAX_RBV"
 						clr=14
 						bclr=2
 					}
@@ -2743,13 +1118,13 @@ composite {
 				}
 				"text update" {
 					object {
-						x=267
+						x=606
 						y=320
 						width=60
 						height=14
 					}
 					monitor {
-						chan="$(P)9.EMAXRBV"
+						chan="$(P)9.EMAX_RBV"
 						clr=14
 						bclr=2
 					}
@@ -2759,13 +1134,13 @@ composite {
 				}
 				"text update" {
 					object {
-						x=267
+						x=606
 						y=350
 						width=60
 						height=14
 					}
 					monitor {
-						chan="$(P)10.EMAXRBV"
+						chan="$(P)10.EMAX_RBV"
 						clr=14
 						bclr=2
 					}
@@ -2775,13 +1150,13 @@ composite {
 				}
 				"text update" {
 					object {
-						x=267
+						x=606
 						y=380
 						width=60
 						height=14
 					}
 					monitor {
-						chan="$(P)11.EMAXRBV"
+						chan="$(P)11.EMAX_RBV"
 						clr=14
 						bclr=2
 					}
@@ -2791,13 +1166,13 @@ composite {
 				}
 				"text update" {
 					object {
-						x=267
+						x=606
 						y=410
 						width=60
 						height=14
 					}
 					monitor {
-						chan="$(P)12.EMAXRBV"
+						chan="$(P)12.EMAX_RBV"
 						clr=14
 						bclr=2
 					}
@@ -2807,13 +1182,13 @@ composite {
 				}
 				"text update" {
 					object {
-						x=267
+						x=606
 						y=440
 						width=60
 						height=14
 					}
 					monitor {
-						chan="$(P)13.EMAXRBV"
+						chan="$(P)13.EMAX_RBV"
 						clr=14
 						bclr=2
 					}
@@ -2823,13 +1198,13 @@ composite {
 				}
 				"text update" {
 					object {
-						x=267
+						x=606
 						y=470
 						width=60
 						height=14
 					}
 					monitor {
-						chan="$(P)14.EMAXRBV"
+						chan="$(P)14.EMAX_RBV"
 						clr=14
 						bclr=2
 					}
@@ -2839,13 +1214,13 @@ composite {
 				}
 				"text update" {
 					object {
-						x=267
+						x=606
 						y=500
 						width=60
 						height=14
 					}
 					monitor {
-						chan="$(P)15.EMAXRBV"
+						chan="$(P)15.EMAX_RBV"
 						clr=14
 						bclr=2
 					}
@@ -2855,13 +1230,13 @@ composite {
 				}
 				"text update" {
 					object {
-						x=267
+						x=606
 						y=530
 						width=60
 						height=14
 					}
 					monitor {
-						chan="$(P)16.EMAXRBV"
+						chan="$(P)16.EMAX_RBV"
 						clr=14
 						bclr=2
 					}
@@ -2873,7 +1248,7 @@ composite {
 		}
 		text {
 			object {
-				x=284
+				x=623
 				y=57
 				width=28
 				height=14
@@ -2886,7 +1261,7 @@ composite {
 		}
 		"message button" {
 			object {
-				x=197
+				x=536
 				y=554
 				width=120
 				height=20
@@ -2901,7 +1276,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=187
+				x=526
 				y=77
 				width=74
 				height=20
@@ -2916,7 +1291,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=187
+				x=526
 				y=107
 				width=74
 				height=20
@@ -2931,7 +1306,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=187
+				x=526
 				y=137
 				width=74
 				height=20
@@ -2946,7 +1321,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=187
+				x=526
 				y=167
 				width=74
 				height=20
@@ -2961,7 +1336,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=187
+				x=526
 				y=197
 				width=74
 				height=20
@@ -2976,7 +1351,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=187
+				x=526
 				y=227
 				width=74
 				height=20
@@ -2991,7 +1366,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=187
+				x=526
 				y=257
 				width=74
 				height=20
@@ -3006,7 +1381,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=187
+				x=526
 				y=287
 				width=74
 				height=20
@@ -3021,7 +1396,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=187
+				x=526
 				y=317
 				width=74
 				height=20
@@ -3036,7 +1411,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=187
+				x=526
 				y=347
 				width=74
 				height=20
@@ -3051,7 +1426,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=187
+				x=526
 				y=377
 				width=74
 				height=20
@@ -3066,7 +1441,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=187
+				x=526
 				y=407
 				width=74
 				height=20
@@ -3081,7 +1456,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=187
+				x=526
 				y=437
 				width=74
 				height=20
@@ -3096,7 +1471,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=187
+				x=526
 				y=467
 				width=74
 				height=20
@@ -3111,7 +1486,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=187
+				x=526
 				y=497
 				width=74
 				height=20
@@ -3126,7 +1501,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=187
+				x=526
 				y=527
 				width=74
 				height=20
@@ -3141,7 +1516,7 @@ composite {
 		}
 		text {
 			object {
-				x=208
+				x=547
 				y=57
 				width=28
 				height=14
@@ -3154,9 +1529,599 @@ composite {
 		}
 	}
 }
-composite {
+"related display" {
 	object {
 		x=816
+		y=3177
+		width=50
+		height=20
+	}
+	display[0] {
+		label="All DXP parameters"
+		name="dxp.adl"
+		args="P=$(P), R=14"
+	}
+	display[1] {
+		label="Baseline histogram"
+		name="dxp_baseline.adl"
+		args="P=$(P), R=14"
+	}
+	display[2] {
+		label="ADC Trace"
+		name="dxp_trace.adl"
+		args="P=$(P), R=14"
+	}
+	display[3] {
+		label="Baseline history"
+		name="dxp_baseline_history.adl"
+		args="P=$(P), R=14"
+	}
+	clr=14
+	bclr=4
+}
+composite {
+	object {
+		x=806
+		y=57
+		width=60
+		height=487
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=822
+				y=57
+				width=28
+				height=14
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="ICR"
+			align="horiz. centered"
+		}
+		"text update" {
+			object {
+				x=806
+				y=80
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)1.ICR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=806
+				y=110
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)2.ICR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=806
+				y=140
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)3.ICR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=806
+				y=170
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)4.ICR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=806
+				y=200
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)5.ICR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=806
+				y=230
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)6.ICR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=806
+				y=260
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)7.ICR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=806
+				y=290
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)8.ICR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=806
+				y=320
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)9.ICR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=806
+				y=350
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)10.ICR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=806
+				y=380
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)11.ICR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=806
+				y=410
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)12.ICR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=806
+				y=440
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)13.ICR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=806
+				y=470
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)14.ICR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=806
+				y=500
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)15.ICR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=806
+				y=530
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)16.ICR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+	}
+}
+composite {
+	object {
+		x=876
+		y=57
+		width=60
+		height=487
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=892
+				y=57
+				width=28
+				height=14
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="OCR"
+			align="horiz. centered"
+		}
+		"text update" {
+			object {
+				x=876
+				y=80
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)1.OCR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=876
+				y=110
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)2.OCR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=876
+				y=140
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)3.OCR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=876
+				y=170
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)4.OCR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=876
+				y=200
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)5.OCR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=876
+				y=230
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)6.OCR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=876
+				y=260
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)7.OCR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=876
+				y=290
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)8.OCR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=876
+				y=320
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)9.OCR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=876
+				y=350
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)10.OCR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=876
+				y=380
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)11.OCR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=876
+				y=410
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)12.OCR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=876
+				y=440
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)13.OCR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=876
+				y=470
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)14.OCR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=876
+				y=500
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)15.OCR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=876
+				y=530
+				width=60
+				height=14
+			}
+			monitor {
+				chan="$(P)16.OCR"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			limits {
+			}
+		}
+	}
+}
+composite {
+	object {
+		x=950
 		y=57
 		width=50
 		height=490
@@ -3165,7 +2130,7 @@ composite {
 	children {
 		text {
 			object {
-				x=823
+				x=961
 				y=57
 				width=28
 				height=14
@@ -3178,8 +2143,8 @@ composite {
 		}
 		"related display" {
 			object {
-				x=816
-				y=77
+				x=950
+				y=78
 				width=50
 				height=20
 			}
@@ -3189,8 +2154,18 @@ composite {
 				args="P=$(P), R=1"
 			}
 			display[1] {
-				label="Baseline historgram"
+				label="Baseline histogram"
 				name="dxp_baseline.adl"
+				args="P=$(P), R=1"
+			}
+			display[2] {
+				label="ADC Trace"
+				name="dxp_trace.adl"
+				args="P=$(P), R=1"
+			}
+			display[3] {
+				label="Baseline history"
+				name="dxp_baseline_history.adl"
 				args="P=$(P), R=1"
 			}
 			clr=14
@@ -3198,8 +2173,8 @@ composite {
 		}
 		"related display" {
 			object {
-				x=816
-				y=107
+				x=950
+				y=109
 				width=50
 				height=20
 			}
@@ -3209,8 +2184,18 @@ composite {
 				args="P=$(P), R=2"
 			}
 			display[1] {
-				label="Baseline historgram"
+				label="Baseline histogram"
 				name="dxp_baseline.adl"
+				args="P=$(P), R=2"
+			}
+			display[2] {
+				label="ADC Trace"
+				name="dxp_trace.adl"
+				args="P=$(P), R=2"
+			}
+			display[3] {
+				label="Baseline history"
+				name="dxp_baseline_history.adl"
 				args="P=$(P), R=2"
 			}
 			clr=14
@@ -3218,8 +2203,8 @@ composite {
 		}
 		"related display" {
 			object {
-				x=816
-				y=137
+				x=950
+				y=139
 				width=50
 				height=20
 			}
@@ -3229,8 +2214,18 @@ composite {
 				args="P=$(P), R=3"
 			}
 			display[1] {
-				label="Baseline historgram"
+				label="Baseline histogram"
 				name="dxp_baseline.adl"
+				args="P=$(P), R=3"
+			}
+			display[2] {
+				label="ADC Trace"
+				name="dxp_trace.adl"
+				args="P=$(P), R=3"
+			}
+			display[3] {
+				label="Baseline history"
+				name="dxp_baseline_history.adl"
 				args="P=$(P), R=3"
 			}
 			clr=14
@@ -3238,8 +2233,8 @@ composite {
 		}
 		"related display" {
 			object {
-				x=816
-				y=167
+				x=950
+				y=164
 				width=50
 				height=20
 			}
@@ -3249,8 +2244,18 @@ composite {
 				args="P=$(P), R=4"
 			}
 			display[1] {
-				label="Baseline historgram"
+				label="Baseline histogram"
 				name="dxp_baseline.adl"
+				args="P=$(P), R=4"
+			}
+			display[2] {
+				label="ADC Trace"
+				name="dxp_trace.adl"
+				args="P=$(P), R=4"
+			}
+			display[3] {
+				label="Baseline history"
+				name="dxp_baseline_history.adl"
 				args="P=$(P), R=4"
 			}
 			clr=14
@@ -3258,8 +2263,8 @@ composite {
 		}
 		"related display" {
 			object {
-				x=816
-				y=197
+				x=950
+				y=195
 				width=50
 				height=20
 			}
@@ -3269,8 +2274,18 @@ composite {
 				args="P=$(P), R=5"
 			}
 			display[1] {
-				label="Baseline historgram"
+				label="Baseline histogram"
 				name="dxp_baseline.adl"
+				args="P=$(P), R=5"
+			}
+			display[2] {
+				label="ADC Trace"
+				name="dxp_trace.adl"
+				args="P=$(P), R=5"
+			}
+			display[3] {
+				label="Baseline history"
+				name="dxp_baseline_history.adl"
 				args="P=$(P), R=5"
 			}
 			clr=14
@@ -3278,8 +2293,8 @@ composite {
 		}
 		"related display" {
 			object {
-				x=816
-				y=227
+				x=950
+				y=228
 				width=50
 				height=20
 			}
@@ -3289,8 +2304,18 @@ composite {
 				args="P=$(P), R=6"
 			}
 			display[1] {
-				label="Baseline historgram"
+				label="Baseline histogram"
 				name="dxp_baseline.adl"
+				args="P=$(P), R=6"
+			}
+			display[2] {
+				label="ADC Trace"
+				name="dxp_trace.adl"
+				args="P=$(P), R=6"
+			}
+			display[3] {
+				label="Baseline history"
+				name="dxp_baseline_history.adl"
 				args="P=$(P), R=6"
 			}
 			clr=14
@@ -3298,28 +2323,8 @@ composite {
 		}
 		"related display" {
 			object {
-				x=816
-				y=257
-				width=50
-				height=20
-			}
-			display[0] {
-				label="All DXP parameters"
-				name="dxp.adl"
-				args="P=$(P), R=7"
-			}
-			display[1] {
-				label="Baseline historgram"
-				name="dxp_baseline.adl"
-				args="P=$(P), R=7"
-			}
-			clr=14
-			bclr=4
-		}
-		"related display" {
-			object {
-				x=816
-				y=287
+				x=950
+				y=286
 				width=50
 				height=20
 			}
@@ -3329,8 +2334,18 @@ composite {
 				args="P=$(P), R=8"
 			}
 			display[1] {
-				label="Baseline historgram"
+				label="Baseline histogram"
 				name="dxp_baseline.adl"
+				args="P=$(P), R=8"
+			}
+			display[2] {
+				label="ADC Trace"
+				name="dxp_trace.adl"
+				args="P=$(P), R=8"
+			}
+			display[3] {
+				label="Baseline history"
+				name="dxp_baseline_history.adl"
 				args="P=$(P), R=8"
 			}
 			clr=14
@@ -3338,8 +2353,8 @@ composite {
 		}
 		"related display" {
 			object {
-				x=816
-				y=317
+				x=950
+				y=320
 				width=50
 				height=20
 			}
@@ -3349,8 +2364,18 @@ composite {
 				args="P=$(P), R=9"
 			}
 			display[1] {
-				label="Baseline historgram"
+				label="Baseline histogram"
 				name="dxp_baseline.adl"
+				args="P=$(P), R=9"
+			}
+			display[2] {
+				label="ADC Trace"
+				name="dxp_trace.adl"
+				args="P=$(P), R=9"
+			}
+			display[3] {
+				label="Baseline history"
+				name="dxp_baseline_history.adl"
 				args="P=$(P), R=9"
 			}
 			clr=14
@@ -3358,8 +2383,8 @@ composite {
 		}
 		"related display" {
 			object {
-				x=816
-				y=347
+				x=950
+				y=350
 				width=50
 				height=20
 			}
@@ -3369,8 +2394,18 @@ composite {
 				args="P=$(P), R=10"
 			}
 			display[1] {
-				label="Baseline historgram"
+				label="Baseline histogram"
 				name="dxp_baseline.adl"
+				args="P=$(P), R=10"
+			}
+			display[2] {
+				label="ADC Trace"
+				name="dxp_trace.adl"
+				args="P=$(P), R=10"
+			}
+			display[3] {
+				label="Baseline history"
+				name="dxp_baseline_history.adl"
 				args="P=$(P), R=10"
 			}
 			clr=14
@@ -3378,8 +2413,8 @@ composite {
 		}
 		"related display" {
 			object {
-				x=816
-				y=377
+				x=950
+				y=376
 				width=50
 				height=20
 			}
@@ -3389,8 +2424,18 @@ composite {
 				args="P=$(P), R=11"
 			}
 			display[1] {
-				label="Baseline historgram"
+				label="Baseline histogram"
 				name="dxp_baseline.adl"
+				args="P=$(P), R=11"
+			}
+			display[2] {
+				label="ADC Trace"
+				name="dxp_trace.adl"
+				args="P=$(P), R=11"
+			}
+			display[3] {
+				label="Baseline history"
+				name="dxp_baseline_history.adl"
 				args="P=$(P), R=11"
 			}
 			clr=14
@@ -3398,8 +2443,8 @@ composite {
 		}
 		"related display" {
 			object {
-				x=816
-				y=407
+				x=950
+				y=406
 				width=50
 				height=20
 			}
@@ -3409,8 +2454,18 @@ composite {
 				args="P=$(P), R=12"
 			}
 			display[1] {
-				label="Baseline historgram"
+				label="Baseline histogram"
 				name="dxp_baseline.adl"
+				args="P=$(P), R=12"
+			}
+			display[2] {
+				label="ADC Trace"
+				name="dxp_trace.adl"
+				args="P=$(P), R=12"
+			}
+			display[3] {
+				label="Baseline history"
+				name="dxp_baseline_history.adl"
 				args="P=$(P), R=12"
 			}
 			clr=14
@@ -3418,8 +2473,8 @@ composite {
 		}
 		"related display" {
 			object {
-				x=816
-				y=437
+				x=950
+				y=438
 				width=50
 				height=20
 			}
@@ -3429,8 +2484,18 @@ composite {
 				args="P=$(P), R=13"
 			}
 			display[1] {
-				label="Baseline historgram"
+				label="Baseline histogram"
 				name="dxp_baseline.adl"
+				args="P=$(P), R=13"
+			}
+			display[2] {
+				label="ADC Trace"
+				name="dxp_trace.adl"
+				args="P=$(P), R=13"
+			}
+			display[3] {
+				label="Baseline history"
+				name="dxp_baseline_history.adl"
 				args="P=$(P), R=13"
 			}
 			clr=14
@@ -3438,8 +2503,8 @@ composite {
 		}
 		"related display" {
 			object {
-				x=816
-				y=467
+				x=950
+				y=466
 				width=50
 				height=20
 			}
@@ -3449,8 +2514,18 @@ composite {
 				args="P=$(P), R=14"
 			}
 			display[1] {
-				label="Baseline historgram"
+				label="Baseline histogram"
 				name="dxp_baseline.adl"
+				args="P=$(P), R=14"
+			}
+			display[2] {
+				label="ADC Trace"
+				name="dxp_trace.adl"
+				args="P=$(P), R=14"
+			}
+			display[3] {
+				label="Baseline history"
+				name="dxp_baseline_history.adl"
 				args="P=$(P), R=14"
 			}
 			clr=14
@@ -3458,7 +2533,7 @@ composite {
 		}
 		"related display" {
 			object {
-				x=816
+				x=950
 				y=497
 				width=50
 				height=20
@@ -3469,8 +2544,18 @@ composite {
 				args="P=$(P), R=15"
 			}
 			display[1] {
-				label="Baseline historgram"
+				label="Baseline histogram"
 				name="dxp_baseline.adl"
+				args="P=$(P), R=15"
+			}
+			display[2] {
+				label="ADC Trace"
+				name="dxp_trace.adl"
+				args="P=$(P), R=15"
+			}
+			display[3] {
+				label="Baseline history"
+				name="dxp_baseline_history.adl"
 				args="P=$(P), R=15"
 			}
 			clr=14
@@ -3478,9 +2563,9 @@ composite {
 		}
 		"related display" {
 			object {
-				x=816
+				x=951
 				y=527
-				width=50
+				width=48
 				height=20
 			}
 			display[0] {
@@ -3489,12 +2574,1663 @@ composite {
 				args="P=$(P), R=16"
 			}
 			display[1] {
-				label="Baseline historgram"
+				label="Baseline histogram"
 				name="dxp_baseline.adl"
+				args="P=$(P), R=16"
+			}
+			display[2] {
+				label="ADC Trace"
+				name="dxp_trace.adl"
+				args="P=$(P), R=16"
+			}
+			display[3] {
+				label="Baseline history"
+				name="dxp_baseline_history.adl"
 				args="P=$(P), R=16"
 			}
 			clr=14
 			bclr=4
+		}
+	}
+}
+composite {
+	object {
+		x=140
+		y=49
+		width=85
+		height=523
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=160
+				y=49
+				width=51
+				height=14
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Slow Gap Time"
+			align="horiz. centered"
+		}
+		"message button" {
+			object {
+				x=140
+				y=554
+				width=85
+				height=18
+			}
+			control {
+				chan="$(P)CopyGAPTIM.PROC"
+				clr=14
+				bclr=4
+			}
+			label="Copy 1 to All"
+			press_msg="1"
+		}
+		composite {
+			object {
+				x=184
+				y=80
+				width=40
+				height=464
+			}
+			"composite name"=""
+			children {
+				"text update" {
+					object {
+						x=184
+						y=80
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)1.GAPTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=184
+						y=110
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)2.GAPTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=184
+						y=140
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)3.GAPTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=184
+						y=170
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)4.GAPTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=184
+						y=200
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)5.GAPTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=184
+						y=230
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)6.GAPTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=184
+						y=260
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)7.GAPTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=184
+						y=290
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)8.GAPTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=184
+						y=320
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)9.GAPTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=184
+						y=350
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)10.GAPTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=184
+						y=380
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)11.GAPTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=184
+						y=410
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)12.GAPTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=184
+						y=440
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)13.GAPTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=184
+						y=470
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)14.GAPTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=184
+						y=500
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)15.GAPTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=184
+						y=530
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)16.PKTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+			}
+		}
+		composite {
+			object {
+				x=141
+				y=77
+				width=40
+				height=470
+			}
+			"composite name"=""
+			children {
+				"text entry" {
+					object {
+						x=141
+						y=77
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)1.GAPTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=141
+						y=107
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)2.GAPTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=141
+						y=137
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)3.GAPTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=141
+						y=167
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)4.GAPTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=141
+						y=197
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)5.GAPTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=141
+						y=227
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)6.GAPTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=141
+						y=257
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)7.GAPTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=141
+						y=287
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)8.GAPTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=141
+						y=317
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)9.GAPTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=141
+						y=347
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)10.GAPTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=141
+						y=377
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)11.GAPTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=141
+						y=407
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)12.GAPTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=141
+						y=437
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)13.GAPTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=141
+						y=467
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)14.GAPTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=141
+						y=497
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)15.GAPTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=141
+						y=527
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)16.GAPTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+			}
+		}
+	}
+}
+composite {
+	object {
+		x=40
+		y=49
+		width=90
+		height=501
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=59
+				y=49
+				width=51
+				height=14
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Peaking Time"
+			align="horiz. centered"
+		}
+		composite {
+			object {
+				x=90
+				y=83
+				width=40
+				height=464
+			}
+			"composite name"=""
+			children {
+				"text update" {
+					object {
+						x=90
+						y=83
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)1.PKTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=90
+						y=113
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)2.PKTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=90
+						y=143
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)3.PKTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=90
+						y=173
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)4.PKTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=90
+						y=203
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)5.PKTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=90
+						y=233
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)6.PKTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=90
+						y=263
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)7.PKTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=90
+						y=293
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)8.PKTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=90
+						y=323
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)9.PKTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=90
+						y=353
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)10.PKTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=90
+						y=383
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)11.PKTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=90
+						y=413
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)12.PKTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=90
+						y=443
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)13.PKTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=90
+						y=473
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)14.PKTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=90
+						y=503
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)15.PKTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=90
+						y=533
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)16.PKTIM_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+			}
+		}
+		composite {
+			object {
+				x=40
+				y=80
+				width=40
+				height=470
+			}
+			"composite name"=""
+			children {
+				"text entry" {
+					object {
+						x=40
+						y=80
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)1.PKTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=40
+						y=110
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)2.PKTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=40
+						y=140
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)3.PKTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=40
+						y=170
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)4.PKTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=40
+						y=200
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)5.PKTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=40
+						y=230
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)6.PKTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=40
+						y=260
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)7.PKTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=40
+						y=290
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)8.PKTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=40
+						y=320
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)9.PKTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=40
+						y=350
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)10.PKTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=40
+						y=380
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)11.PKTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=40
+						y=410
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)12.PKTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=40
+						y=440
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)13.PKTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=40
+						y=470
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)14.PKTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=40
+						y=500
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)15.PKTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=40
+						y=530
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)16.PKTIM"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+			}
+		}
+	}
+}
+composite {
+	object {
+		x=240
+		y=49
+		width=85
+		height=503
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=259
+				y=49
+				width=51
+				height=14
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Slow trig. (eV)"
+			align="horiz. centered"
+		}
+		composite {
+			object {
+				x=285
+				y=85
+				width=40
+				height=464
+			}
+			"composite name"=""
+			children {
+				"text update" {
+					object {
+						x=285
+						y=85
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)1.SLOW_TRIG_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=285
+						y=115
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)2.SLOW_TRIG_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=285
+						y=145
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)3.SLOW_TRIG_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=285
+						y=175
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)4.SLOW_TRIG_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=285
+						y=205
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)5.SLOW_TRIG_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=285
+						y=235
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)6.SLOW_TRIG_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=285
+						y=265
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)7.SLOW_TRIG_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=285
+						y=295
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)8.SLOW_TRIG_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=285
+						y=325
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)9.SLOW_TRIG_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=285
+						y=355
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)10.SLOW_TRIG_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=285
+						y=385
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)11.SLOW_TRIG_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=285
+						y=415
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)12.SLOW_TRIG_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=285
+						y=445
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)13.SLOW_TRIG_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=285
+						y=475
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)14.SLOW_TRIG_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=285
+						y=505
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)15.SLOW_TRIG_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=285
+						y=535
+						width=40
+						height=14
+					}
+					monitor {
+						chan="$(P)16.SLOW_TRIG_RBV"
+						clr=14
+						bclr=2
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+			}
+		}
+		composite {
+			object {
+				x=240
+				y=82
+				width=40
+				height=470
+			}
+			"composite name"=""
+			children {
+				"text entry" {
+					object {
+						x=240
+						y=82
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)1.SLOW_TRIG"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=240
+						y=112
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)2.SLOW_TRIG"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=240
+						y=142
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)3.SLOW_TRIG"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=240
+						y=172
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)4.SLOW_TRIG"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=240
+						y=202
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)5.SLOW_TRIG"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=240
+						y=232
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)6.SLOW_TRIG"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=240
+						y=262
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)7.SLOW_TRIG"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=240
+						y=292
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)8.SLOW_TRIG"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=240
+						y=322
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)9.SLOW_TRIG"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=240
+						y=352
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)10.SLOW_TRIG"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=240
+						y=382
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)11.SLOW_TRIG"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=240
+						y=412
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)12.SLOW_TRIG"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=240
+						y=442
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)13.SLOW_TRIG"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=240
+						y=472
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)14.SLOW_TRIG"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=240
+						y=502
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)15.SLOW_TRIG"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=240
+						y=532
+						width=40
+						height=20
+					}
+					control {
+						chan="$(P)16.SLOW_TRIG"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+			}
 		}
 	}
 }
