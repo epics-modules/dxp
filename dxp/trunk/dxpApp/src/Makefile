@@ -19,6 +19,8 @@ DBD += dxpSupport.dbd
 DBD += dxp.dbd
 DBD += dxpVX.dbd
 
+INC += asynDxp.h
+
 USR_CFLAGS += -DXIA_SPECIAL_MEM
 USR_CFLAGS += -DEXCLUDE_DGFG200
 USR_CFLAGS += -DEXCLUDE_UDXPS
