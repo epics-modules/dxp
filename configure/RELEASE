@@ -12,15 +12,15 @@ TEMPLATE_TOP=$(EPICS_BASE)/templates/makeBaseApp/top
 #SNCSEQ=/corvette/usr/local/epics/seq-2.0.4
 
 # EPICS_BASE usually appears last so other apps can override stuff:
-EPICS_BASE=/corvette/usr/local/epics/base-3.14.5
+EPICS_BASE=/corvette/usr/local/epics/base-3.14.6
 
-MPF=/corvette/home/epics/3-14-devel/mpf/2-4-2
-MCA=/corvette/home/epics/3-14-devel/mca
-CALC=/corvette/home/epics/3-14-devel/calc
-SSCAN=/corvette/home/epics/3-14-devel/sscan
-AUTOSAVE=/corvette/home/epics/3-14-devel/autosave
-CAMAC=/corvette/home/epics/3-14-devel/camac
-DXP=/corvette/home/epics/3-14-devel/dxp
+ASYN=/corvette/home/epics/synApps5-1beta/asyn/3-3beta
+MCA=/corvette/home/epics/synApps5-1beta/mca
+CALC=/corvette/home/epics/synApps5-1beta/calc
+SSCAN=/corvette/home/epics/synApps5-1beta/sscan
+AUTOSAVE=/corvette/home/epics/synApps5-1beta/autosave/
+CAMAC=/corvette/home/epics/synApps5-1beta/camac
+DXP=/corvette/home/epics/synApps5-1beta/dxp
 
 #Capfast users may need the following definitions
 #CAPFAST_TEMPLATES=
