@@ -1,6 +1,6 @@
 
 file {
-	name="/home/epics/3-14-devel/dxp/dxpApp/op/adl/testTop.adl"
+	name="/home/epics/synApps5-1/dxp/dxpApp/op/adl/dxpTop.adl"
 	version=030000
 }
 display {
@@ -109,7 +109,7 @@ text {
 	display[0] {
 		label="Single DXP"
 		name="single_dxp_top.adl"
-		args="P=dxpLinux:, M=dxp_adc1, D=dxp1"
+		args="P=dxpLinux:, M=mca1, D=dxp1"
 	}
 	display[1] {
 		label="1 element MED"
