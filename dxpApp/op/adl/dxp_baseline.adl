@@ -1,7 +1,7 @@
 
 file {
-	name="C:\epics\adl\dxp_baseline.adl"
-	version=020306
+	name="i:\epics\synApps5-1beta2\dxp\dxpApp\op\adl\dxp_baseline.adl"
+	version=030003
 }
 display {
 	object {
@@ -96,18 +96,30 @@ display {
 	}
 	plotcom {
 		title="$(P)$(R) Baseline Histogram"
-		xlabel="Bin #"
+		xlabel="Energy (keV)"
 		ylabel="Counts"
 		clr=14
 		bclr=4
 	}
 	style="line"
 	trace[0] {
+		xdata="$(P)$(R).BASE_X"
 		ydata="$(P)$(R).BASE"
 		data_clr=54
 	}
+	trace[1] {
+		xdata="$(P)$(R).BASE_X"
+		ydata="$(P)$(R).BASE_CUT"
+		data_clr=20
+	}
+	x_axis {
+		rangeStyle="auto-scale"
+	}
 	y1_axis {
 		axisStyle="log10"
+		rangeStyle="auto-scale"
+	}
+	y2_axis {
 		rangeStyle="auto-scale"
 	}
 }
