@@ -35,11 +35,42 @@
 #include "devDxp.h"
 #include "handel.h"
 
+typedef struct dxpReadbacks {
+    long fast_peaks;
+    long slow_peaks;
+    double icr;
+    double ocr;
+    double slow_trig;
+    double pktim;
+    double gaptim;
+    double adc_rule;
+    double mca_bin_width;
+    double number_mca_channels;
+    double fast_trig;
+    double trig_pktim;
+    double trig_gaptim;
+    int newBaselineHistory;
+    int newBaselineHistogram;
+    int newAdcTrace;
+    int acquiring;
+    int blcut;
+    int blCutEnbl;
+    int blmin;
+    int blmax;
+    int blfilter;
+    double number_scas;
+    double sca_lo[NUM_DXP_SCAS];
+    double sca_hi[NUM_DXP_SCAS];
+    int sca_counts[NUM_DXP_SCAS];
+    double eVPerBin;
+} dxpReadbacks;
+
 typedef struct {
     dxpRecord *pdxp;
     asynUser *pasynUser;
     char *portName;
     int channel;
+    dxpReadbacks dxpReadbacks;
 } devDxpPvt;
 
 typedef struct {
@@ -57,6 +88,7 @@ static long send_dxp_msg(dxpRecord *pdxp, devDxpCommand command,
                          void *pointer);
 static void asynCallback(asynUser *pasynUser);
 static void readDxpParams(asynUser *pasynUser);
+static long monitor(struct dxpRecord *pdxp);
 
 static char *sca_lo[NUM_DXP_SCAS];
 static char *sca_hi[NUM_DXP_SCAS];
@@ -169,7 +201,7 @@ static long send_dxp_msg(dxpRecord *pdxp, devDxpCommand command,
                   pasynUser->errorMessage);
         return(-1);
     }
-    if (interruptAccept) pdxp->pact = 1;
+    if (interruptAccept && (command == MSG_DXP_FINISH)) pdxp->pact = 1;
     return(0);
 }
 
@@ -180,13 +212,14 @@ void asynCallback(asynUser *pasynUser)
     devDxpMessage *pmsg = pasynUser->userData;
     dxpRecord *pdxp = pPvt->pdxp;
     rset *prset = (rset *)pdxp->rset;
-    dxpReadbacks *pdxpReadbacks = pdxp->rbptr;
+    dxpReadbacks *pdxpReadbacks = &pPvt->dxpReadbacks;
     int status;
     int detChan;
     void *pfield;
     double info[2];
     double dvalue;
     int i;
+    DXP_SCA *sca;
 
     pasynManager->getAddr(pasynUser, &detChan);
     asynPrint(pasynUser, ASYN_TRACE_FLOW,
@@ -342,9 +375,12 @@ void asynCallback(asynUser *pasynUser)
          /* Must stop run before setting SCAs.  We should restart if it was running */
          xiaStopRun(detChan);
          xiaSetAcquisitionValues(detChan, "number_of_scas", &pmsg->dvalue);
+         sca = (DXP_SCA *)&pdxp->sca0_lo;
          for (i=0; i<pmsg->dvalue; i++) {
-             xiaSetAcquisitionValues(detChan, sca_lo[i], &pdxpReadbacks->sca_lo[i]);
-             xiaSetAcquisitionValues(detChan, sca_hi[i], &pdxpReadbacks->sca_hi[i]);
+             dvalue = sca[i].lo;
+             xiaSetAcquisitionValues(detChan, sca_lo[i], &dvalue);
+             dvalue = sca[i].hi;
+             xiaSetAcquisitionValues(detChan, sca_hi[i], &dvalue);
          }
          readDxpParams(pasynUser);
          break;
@@ -382,30 +418,34 @@ void asynCallback(asynUser *pasynUser)
      case MSG_DXP_READ_PARAMS:
          readDxpParams(pasynUser);
          break;
+     case MSG_DXP_FINISH:
+         if (pdxp->udf==1) pdxp->udf=0;
+         if (!interruptAccept) break;
+         dbScanLock((dbCommon *)pdxp);
+         monitor(pdxp);
+         (*prset->process)(pdxp);
+         dbScanUnlock((dbCommon *)pdxp);
+         break;
      default:
          asynPrint(pasynUser, ASYN_TRACE_ERROR, 
                    "devDxp::asynCallback, invalid command=%d\n",
                    pmsg->dxpCommand);
          break;
      }
-    pasynManager->memFree(pmsg, sizeof(*pmsg));
-    status = pasynManager->freeAsynUser(pasynUser);
-    if (status != asynSuccess) {
-        asynPrint(pasynUser, ASYN_TRACE_ERROR,
+     pasynManager->memFree(pmsg, sizeof(*pmsg));
+     status = pasynManager->freeAsynUser(pasynUser);
+     if (status != asynSuccess) {
+         asynPrint(pasynUser, ASYN_TRACE_ERROR,
                   "devMcaAsyn::asynCallback: error in freeAsynUser\n");
-    }
-    if (pdxp->udf==1) pdxp->udf=0;
-    if (!interruptAccept) return;
-    dbScanLock((dbCommon *)pdxp);
-    (*prset->process)(pdxp);
-    dbScanUnlock((dbCommon *)pdxp);
+     }
 }
 
+
 static void readDxpParams(asynUser *pasynUser)
 {
     devDxpPvt *pPvt = (devDxpPvt *)pasynUser->userPvt;
     dxpRecord *pdxp = pPvt->pdxp;
-    dxpReadbacks *pdxpReadbacks = pdxp->rbptr;
+    dxpReadbacks *pdxpReadbacks = &pPvt->dxpReadbacks;
     int i;
     double number_mca_channels;
     double dvalue;
@@ -474,8 +514,8 @@ static void readDxpParams(asynUser *pasynUser)
          *                      &pdxpReadbacks->number_scas); */
         pdxpReadbacks->number_scas = 16;
         for (i=0; i<pdxpReadbacks->number_scas; i++) {
-            xiaGetAcquisitionValues(detChan, sca_lo[i], &pdxpReadbacks->sca_lo_rbv[i]);
-            xiaGetAcquisitionValues(detChan, sca_hi[i], &pdxpReadbacks->sca_hi_rbv[i]);
+            xiaGetAcquisitionValues(detChan, sca_lo[i], &pdxpReadbacks->sca_lo[i]);
+            xiaGetAcquisitionValues(detChan, sca_hi[i], &pdxpReadbacks->sca_hi[i]);
         }
         xiaGetRunData(detChan, "sca", pdxpReadbacks->sca_counts);
     }
@@ -503,4 +543,193 @@ static void readDxpParams(asynUser *pasynUser)
         pdxpReadbacks->trig_gaptim,
         pdxpReadbacks->adc_rule, pdxpReadbacks->mca_bin_width,
         pdxpReadbacks->number_mca_channels);
+}
+
+
+static long monitor(struct dxpRecord *pdxp)
+{
+   devDxpPvt *pPvt = pdxp->dpvt;
+   dxpReadbacks *pdxpReadbacks = &pPvt->dxpReadbacks;
+   unsigned short monitor_mask = recGblResetAlarms(pdxp) | DBE_VALUE | DBE_LOG;
+   DXP_SCA *sca;
+   int i;
+   int blCutEnbl;
+   int newBlCut;
+   double eVPerADC;
+   double eVPerBin;
+   double emax;
+   int blmin;
+   int blmax;
+   int blcut;
+   int blfilter;
+   int basethresh;
+   int basethreshadj;
+   int basebinning;
+   int slowlen;
+   int runtasks;
+   MODULE_INFO *minfo = (MODULE_INFO *)pdxp->miptr;
+
+   if (minfo == NULL) return(-1);
+   runtasks       = pdxp->pptr[minfo->offsets.runtasks];
+   blmin          = (short)pdxp->pptr[minfo->offsets.blmin];
+   blmax          = (short)pdxp->pptr[minfo->offsets.blmax];
+   blcut          = pdxp->pptr[minfo->offsets.blcut];
+   blfilter       = pdxp->pptr[minfo->offsets.blfilter];
+   basethresh     = pdxp->pptr[minfo->offsets.basethresh];
+   basethreshadj  = pdxp->pptr[minfo->offsets.basethreshadj];
+   basebinning    = pdxp->pptr[minfo->offsets.basebinning];
+   slowlen        = pdxp->pptr[minfo->offsets.slowlen];
+
+   /* See if readbacks have changed  */ 
+   if (pdxp->slow_trig_rbv != pdxpReadbacks->slow_trig) {
+      pdxp->slow_trig_rbv = pdxpReadbacks->slow_trig;
+      db_post_events(pdxp, &pdxp->slow_trig_rbv, monitor_mask);
+   }
+   if (pdxp->pktim_rbv != pdxpReadbacks->pktim) {
+      pdxp->pktim_rbv = pdxpReadbacks->pktim;
+      db_post_events(pdxp, &pdxp->pktim_rbv, monitor_mask);
+   };
+   if (pdxp->gaptim_rbv != pdxpReadbacks->gaptim) {
+      pdxp->gaptim_rbv = pdxpReadbacks->gaptim;
+      db_post_events(pdxp, &pdxp->gaptim_rbv, monitor_mask);
+   }
+   if (pdxp->fast_trig_rbv != pdxpReadbacks->fast_trig) {
+      pdxp->fast_trig_rbv = pdxpReadbacks->fast_trig;
+      db_post_events(pdxp, &pdxp->fast_trig_rbv, monitor_mask);
+   }
+   if (pdxp->trig_pktim_rbv != pdxpReadbacks->trig_pktim) {
+      pdxp->trig_pktim_rbv = pdxpReadbacks->trig_pktim;
+      db_post_events(pdxp, &pdxp->trig_pktim_rbv, monitor_mask);
+   }
+   if (pdxp->trig_gaptim_rbv != pdxpReadbacks->trig_gaptim) {
+      pdxp->trig_gaptim_rbv = pdxpReadbacks->trig_gaptim;
+      db_post_events(pdxp, &pdxp->trig_gaptim_rbv, monitor_mask);
+   }
+   if (pdxp->adc_rule_rbv != pdxpReadbacks->adc_rule) {
+      pdxp->adc_rule_rbv = pdxpReadbacks->adc_rule;
+      db_post_events(pdxp, &pdxp->adc_rule_rbv, monitor_mask);
+   }
+   emax = pdxpReadbacks->mca_bin_width / 1000. * 
+                         pdxpReadbacks->number_mca_channels;
+   if (pdxp->emax_rbv != emax) {
+      pdxp->emax_rbv = emax;
+      db_post_events(pdxp, &pdxp->emax_rbv, monitor_mask);
+   }
+   if (pdxp->fast_peaks != pdxpReadbacks->fast_peaks) {
+      pdxp->fast_peaks = pdxpReadbacks->fast_peaks;
+      db_post_events(pdxp, &pdxp->fast_peaks, monitor_mask);
+   }
+   if (pdxp->slow_peaks != pdxpReadbacks->slow_peaks) {
+      pdxp->slow_peaks = pdxpReadbacks->slow_peaks;
+      db_post_events(pdxp, &pdxp->slow_peaks, monitor_mask);
+   }
+   if (pdxp->icr != pdxpReadbacks->icr) {
+      pdxp->icr = pdxpReadbacks->icr;
+      db_post_events(pdxp, &pdxp->icr, monitor_mask);
+   }
+   if (pdxp->ocr != pdxpReadbacks->ocr) {
+      pdxp->ocr = pdxpReadbacks->ocr;
+      db_post_events(pdxp, &pdxp->ocr, monitor_mask);
+   }
+   if (pdxp->num_scas != pdxpReadbacks->number_scas) {
+      pdxp->num_scas = pdxpReadbacks->number_scas;
+      db_post_events(pdxp, &pdxp->num_scas, monitor_mask);
+   }
+   if (pdxp->acqg != pdxpReadbacks->acquiring) {
+      pdxp->acqg = pdxpReadbacks->acquiring;
+      db_post_events(pdxp, &pdxp->acqg, monitor_mask);
+   }
+                                  
+   /* Post events on array fields if they have changed */
+   if (pdxpReadbacks->newBaselineHistogram) {
+      pdxpReadbacks->newBaselineHistogram = 0;
+      db_post_events(pdxp,pdxp->bptr,monitor_mask);
+      /* See if the x-axis has also changed */
+      eVPerADC = 1000.*pdxp->emax/2. / (pdxp->adc_rule/100. * 1024);
+      eVPerBin = ((1 << basebinning) / (slowlen * 4.0)) * eVPerADC;
+      if (eVPerBin != pdxpReadbacks->eVPerBin) {
+         pdxpReadbacks->eVPerBin = eVPerBin;
+         for (i=0; i<minfo->nbase_histogram; i++) {
+            pdxp->bxptr[i] = (i-512) * eVPerBin / 1000.;
+         }
+         db_post_events(pdxp,pdxp->bxptr,monitor_mask);
+      }
+   }
+   if (pdxpReadbacks->newBaselineHistory) {
+      pdxpReadbacks->newBaselineHistory = 0;
+      db_post_events(pdxp,pdxp->bhptr,monitor_mask);
+   }
+   if (pdxpReadbacks->newAdcTrace) {
+      pdxpReadbacks->newAdcTrace = 0;
+      db_post_events(pdxp,pdxp->tptr,monitor_mask);
+   }
+   /* If BLMIN, BLMAX, or RUNTASKS bit for baseline cut have changed then
+    * recompute the BASE_CUT array */
+   blCutEnbl = (runtasks & RUNTASKS_BLCUT) != 0;
+   newBlCut = 0;
+   if (blCutEnbl != pdxpReadbacks->blCutEnbl) {
+      newBlCut = 1;
+      pdxpReadbacks->blCutEnbl = blCutEnbl;
+   }
+   if (blmin != pdxpReadbacks->blmin) {
+      newBlCut = 1;
+      pdxpReadbacks->blmin = blmin;
+   }
+   if (blmax != pdxpReadbacks->blmax) {
+      newBlCut = 1;
+      pdxpReadbacks->blmax = blmax;
+   }
+   if (newBlCut) {
+      for (i=0; i<minfo->nbase_histogram; i++) pdxp->bcptr[i] = 1;
+      if (blCutEnbl) {
+         blmin = pdxpReadbacks->blmin / (1 << basebinning);
+         blmin += 512;
+         if (blmin < 0) blmin = 0;
+         blmax = pdxpReadbacks->blmax / (1 << basebinning);
+         blmax += 512;
+         if (blmax > minfo->nbase_histogram) blmax = minfo->nbase_histogram;
+         for (i=blmin; i<blmax; i++) {
+            pdxp->bcptr[i] = 65535;
+         }
+      }
+      db_post_events(pdxp,pdxp->bcptr,monitor_mask);
+   }
+   if (blcut != pdxpReadbacks->blcut) {
+      pdxpReadbacks->blcut = blcut;
+      pdxp->base_cut_pct = pdxpReadbacks->blcut / 32768. * 100.;
+      db_post_events(pdxp,&pdxp->base_cut_pct,monitor_mask);
+   }
+   if (blfilter != pdxpReadbacks->blfilter) {
+      pdxpReadbacks->blfilter = blfilter;
+      pdxp->base_len = 32768. / blfilter;
+      db_post_events(pdxp,&pdxp->base_len,monitor_mask);
+   }
+   if (basethresh != pdxp->base_thresh) {
+      /* Next release of Handel will have a baseline_threshold parameter */
+      pdxp->base_thresh = basethresh;
+      db_post_events(pdxp,&pdxp->base_thresh,monitor_mask);
+   }
+   if (basethreshadj != pdxp->base_threshadj) {
+      /* Next release of Handel will have a baseline_threshadj parameter */
+      pdxp->base_threshadj = basethreshadj;
+      db_post_events(pdxp,&pdxp->base_threshadj,monitor_mask);
+   }
+
+   /* Address of first SCA */
+   sca = (DXP_SCA *)&pdxp->sca0_lo;
+   for (i=0; i<NUM_DXP_SCAS; i++) {
+      if (pdxpReadbacks->sca_lo[i] != sca[i].lo_rbv) {
+         sca[i].lo_rbv = pdxpReadbacks->sca_lo[i];
+         db_post_events(pdxp, &sca[i].lo_rbv, monitor_mask);   
+      }
+      if (pdxpReadbacks->sca_hi[i] != sca[i].hi_rbv) {
+         sca[i].hi_rbv = pdxpReadbacks->sca_hi[i];
+         db_post_events(pdxp, &sca[i].hi_rbv, monitor_mask);   
+      }
+      if (pdxpReadbacks->sca_counts[i] != sca[i].counts) {
+         sca[i].counts = pdxpReadbacks->sca_counts[i];
+         db_post_events(pdxp, &sca[i].counts, monitor_mask);   
+      }
+   }
+   return(0);
 }
