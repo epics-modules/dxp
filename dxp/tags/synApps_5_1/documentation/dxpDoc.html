@@ -1,0 +1,399 @@
+<HTML>
+<HEAD>
+<TITLE>DXP - EPICS software for XIA Digital Signal Processing Systems</TITLE>
+</HEAD>
+<BODY>
+<H1>DXP - EPICS software for XIA Digital Signal Processing Systems</H1>
+
+<ADDRESS>Mark Rivers</ADDRESS>
+
+
+<HR>
+<H2>Contents</H2>
+<UL>
+  <LI><A HREF="#Overview">Overview</A>
+  <LI><A HREF="#Installing EPICS for the Saturn">
+                Installing EPICS for the Saturn</A>
+  <UL>
+    <LI><A HREF="#Installing the Saturn on Windows">
+                  Installing the Saturn on Windows</A>
+    <LI><A HREF="#Installing the Saturn on Linux">
+                  Installing the Saturn on Linux</A>
+    <LI><A HREF="#Running the Saturn">
+                  Running the Saturn</A>
+  </UL>
+  <LI><A HREF="#Using the DXP2X">
+                Using the DXP2X</A>
+  <UL>
+    <LI><A HREF="#vxWorks specific instructions">
+                  vxWorks specific instructions</A>
+  </UL>
+  <LI><A HREF="#Software Architecture">Software Architecture</A>
+</UL>
+
+<h2 align="center"><a name="Overview">
+                            Overview</a></h2>
+<P>
+The EPICS DXP module provides support for the 
+digital signal processor based multichannel analyzers from
+<a href="http://www.xia.com"target="_blank">X-ray Instrumentation Associates (XIA)</a>.
+
+<p>DXP currently supports the following hardware
+<ul>
+  <li>The Saturn, which is a standalone desktop unit that communicates over the PC
+      Enhanced Parallel Port (EPP) or USB port. It contains the equivalent 
+      electronics of the shaping amplifier, ADC and MCA of a
+      conventional pulse-height analysis system.  The Vortex detector from Radiant
+      is an OEM version of the Saturn, and it also works with this software.</li>
+  <li>The DXP2X, which is a single-width CAMAC module.  Each module contains 2 or 4
+      channels with the same pulse-processing electronics as the Saturn.</li>
+  <li>As soon as XIA releases the new PXI DXP-XMAP hardware, support
+      for that will be provided.</li>
+</ul>
+
+<p>DXP currently supports this hardware under the following operating systems and
+   interfaces:
+<ul>
+  <li>The Saturn with the EPICS IOC running on Windows, using the EPP parallel port.</li>
+  <li>The Saturn with the EPICS IOC running on Linux, using the EPP parallel port.</li>
+  <li>The DXP2X with the EPICS IOC running on vxWorks, using the Kinetic Systems 
+      2917/3922 VME to CAMAC interface.  Other CAMAC interfaces that have software
+      support for the ESONE standard CAMAC library calls should also work, 
+      but have not been tested.</li>
+</ul>
+
+<p>The features of the EPICS software, compared with software available from XIA are:
+<ul>
+  <li>Control and data acquisition are available over the network, from any application or language
+      that supports the EPICS channel access protocol (based on TCP/IP). 
+      This means that EPICS clients written 
+      in languages like IDL, LabView, Visual Basic, etc. can control the DXP modules and read the data.
+      These applications can be running on any computer on the Internet, they do not need to run on the
+      computer that is attached to the XIA hardware. This client/server model is very 
+      desirable in complex data acquisition environments, such as synchrotron
+      beamlines, because it allows the DXP control and data acquisition to be integrated with other
+      hardware and software.  For example, a control software program can move a motor, command the DXP to
+      acquire data, and write the data to disk.</li>
+  <li>A single software package supports the Saturn, the DXP2X, and soon the DXP-XMAP PCI hardware.</li>
+  <li>The Saturn can be run from Windows and Linux, while the XIA Kepler program only runs on Windows.</li>
+  <li>The DXP2X support uses the new XIA Handel library, while the XIA MESA package uses an old LabView
+      interface</li>
+</ul>
+
+<p>The software consists of the following components:
+<ul>
+  <li>An 
+      <a href="http://www.aps.anl.gov/epics/modules/soft/asyn/"target="_blank">asyn server</a>
+      that provides support for the
+      <a href="http://cars.uchicago.edu/software/epics/mcaRecord.html" target="_blank">EPICS MCA record</a>
+      via the asyn MCA device support. This permits each channel of the DXP to
+      be connected to an MCA record identically with other supported MCA hardware,
+      such as the Canberra AIM.  The MCA record is used to control data acquisition and to acquire 
+      spectra or regions of interest.</li>
+  <li>A
+      <a href="dxpRecord.html"target="_blank">EPICS DXP record</a>.
+      record that is used to set all of the many software
+      selectable parameters for the DXP, including peaking times, pileup rejection
+      criteria, etc.  The DXP record is also used to acquire diagnostic data, such as the baseline histogram
+      and ADC trace.</li>
+  <li>Databases for single-element and multi-element detector systems.</li>
+  <li>medm display screens for single-element and multi-element detector systems.</li>
+  <li>A State Notation Language program for synchronizing acquisition and DXP parameters
+      in multi-element detector systems.
+  <li>Example IOC boot directories for the Saturn on Windows and Linux, and for a 16 element detector
+      with the DXP2X on vxWorks.
+</ul>
+
+
+
+<h2 align="center"><a name="Installing EPICS for the Saturn">
+                            Installing EPICS for the Saturn</a></h2>
+<p>To install the EPICS DXP software with a Saturn on a Windows or Linux computer do the following:
+<ul>
+  <li>Configure the parallel port to be in EPP mode.  This requires entering the BIOS setup screen
+      on the computer before the operating system boots.  The menus will differ from one computer to
+      another, but it is necessary to set the parallel port to EPP mode.  Other modes will not work.</li>
+  <li>Decide whether you want to build the EPICS DXP software from source code, or install the pre-built
+      binaries.  
+      
+      <p>Most users will just download the pre-built binaries.  The Windows binaries
+      should run on almost any version of Windows. Windows XP and Windows 2000 have been tested.</p>
+      
+      <p>The Linux binaries are built with Redhat 3.2.2-5 (WS) and gcc version 3.2.2.  These binaries
+      should run on many recent versions of Linux, but this has not been extensively tested.
+
+      <p>Building from the source code requires downloading 
+      <a href="http://www.aps.anl.gov/epics/base/index.php" target="_blank">EPICS base</a>
+      and all of the required 
+      <a href="dxp.html" target="_blank">synApps components</a>.
+      In addition, to build from source code on
+      Windows requires the gcc, g++, perl and make packages from Cygwin.  It is beyond the scope of
+      this document to describe how to build the source code.  Consult other EPICS documentation
+      for this.      
+</ul>
+
+<h3 align="center"><a name="Installing the Saturn on Windows">
+                            Installing the Saturn on Windows</a></h3>
+<p>To use the EPICS DXP software with a Saturn on a Windows PC do the following:
+<ul>
+  <li>Install the basic 
+      <a href="http://www.cygwin.com" target="_blank">Cygwin package</a>.
+      Cygwin is a public domain package that provides Unix-like
+      programming libraries and commands on Windows.  The EPICS DXP software is built with the
+      Cygwin libraries, and Cygwin must be installed on the PC to run it.  Note that Cygwin claims
+      that it is only necessary to copy the cygwin1.dll file onto your PC, and have that in the
+      PATH.  We have tried to do this, and although the EPICS software "runs" without error, it
+      is flaky with file I/O in the multi-threaded application.  So for now at least, install 
+      Cygwin.  When using the Cygwin install program use all of the default settings, which will
+      install just the basic package into C:\Cywgin.</li>
+  <li>Install the
+      <a href="http://www.driverlinx.com" target="_blank">Windows Port IO Driver</a>
+      from Scientific Software Tools.  This is a software driver
+      that lets Windows applications communicate with I/O ports, including the Enhanced Parallel Port.</li>
+  <li>If you want to run the medm display program on the Windows PC, which is recommended in most cases,
+      you need to install 
+      <a href="http://www.hummingbird.com/products/nc/exceed/index.html?cks=y" target="_blank">Exceed</a>.
+      Exceed is a commercial X-Windows package from Hummingbird.  After
+      installing Exceed you need to install the 
+      <a href="http://www.aps.anl.gov/epics/download/distributions/index.php" target="_blank">
+              EPICS Win32 Extensions</a>,
+      which contain medm.  Note that medm may work with non-commercial versions of X windows servers for
+      Windows, but Exceed is the only package that is guaranteed to work.
+  <li>Download 
+      <a href="http://cars.uchicago.edu/software/pub/dxpStandalone.tar.gz">dxpStandalone.tar.gz</a>,
+      which is the latest release of the EPICS DXP software, containing binaries for Windows.</li>
+  <li>Unpack that distribution into a directory such as C:\EPICS or C:\Program Files\EPICS.  
+      The distribution file, dxpStandlone.tar.gz can be unpacked using WinZip, or with the gunzip and
+      tar utilities that come with Cygwin.  To use the Cygwin tools:
+      <pre>
+      $ cd /cygdrive/c/epics         # Or wherever you have chosen to put the EPICS software
+      $ gunzip dxpStandalone.tar.gz  # Convert dxpStandalone.tar.gz to dxpStandalone.tar
+      $ tar xvf dxpStandalone.tar    # Unpack the tar file.
+      </pre>
+  <li>Make sure that the .fdd and .ini files in dxp/iocBoot/iocSaturn/ have Unix-type line terminators.
+      This can be done by running the Cygwin bash shell and typing
+      <pre>
+      $ cd dxp/iocBoot/iocSaturn
+      $ dos2unix *.fdd *ini
+      </pre>
+      This is necessary because these files may have Windows line
+      terminators, depending on how they were unpacked from the distribution.</li>
+  <li>Make sure that the .bat files in dxp/iocBoot/iocSaturn/ have execute permission.
+      This can be done by running the Cygwin bash shell and typing
+      <pre>
+      $ cd dxp/iocBoot/iocSaturn
+      $ chmod +x *.bat
+      </pre>
+      This is necessary because these files may not have this permission, depending on how they 
+      were unpacked from the distribution.</li>
+  <li>If you look at those batch files, you will see a line that temporarily sets the environment variable
+      EPICS_DISPLAY_PATH using a relative path.  You may want to set this permanently to an absolute path:
+      <pre>
+      c:\epics\dxp\dxpApp\op\adl;c:\epics\mca\mcaApp\op\adl;c:\epics\autosave\asApp\op\adl
+      </pre>
+      To set the environment variable use the
+      Windows&nbsp;Control&nbsp;Panel/System/Advanced/Environment&nbsp;Variables.  Modify the definition
+      according to where you have installed the DXP application.</li>
+  <li>If you look at that batch file, you will see a line that temporarily sets the environment variable
+      PATH to C:\cygwin\bin.  You may want to add this directory permanently to your Windows path for
+      Windows shells.  Again,
+      use the Windows&nbsp;Control&nbsp;Panel/System/Advanced/Environment&nbsp;Variables.
+      Modify the definition according to where you have installed Cygwin. Note that the PATH will be
+      set to automatically include that directory when running the Cygwin bash shell.</li>
+</ul>
+
+<h3 align="center"><a name="Installing the Saturn on Linux">
+                            Installing the Saturn on Linux</a></h3>
+<p>To use the EPICS DXP software with a Saturn on a Linux computer do the following:
+<ul>
+  <li>Download 
+      <a href="http://cars.uchicago.edu/software/pub/dxpStandalone.tar.gz">dxpStandalone.tar.gz</a>,
+      which is the latest release of the EPICS DXP software, containing binaries for Linux.</li>
+  <li>Unpack that distribution into a directory such as /usr/local/epics.  
+      The distribution file, dxpStandlone.tar.gz can be unpacked using the Linux gunzip and tar utilities.
+  <li>Make sure that the .fdd and .ini files in dxp/iocBoot/iocSaturn/ have Unix-type line terminators.
+      This can be done by typing
+      <pre>
+      > cd dxp/iocBoot/iocSaturn
+      > dos2unix *.fdd *ini
+      </pre>
+      This is necessary because these files may have Windows line
+      terminators, depending on how they were unpacked from the distribution.</li>
+  <li> Access to the EPP I/O port on Linux requires root privilege.  
+       This can be done in any of following 3 ways:
+    <ol>
+      <li>Prefered method. The EPICS DXP software on Linux contains a program called startWithIopl3.
+          This program calls iopl(3) as root, and then reverts back to the non-root account 
+          to run dxpApp.  To use this method the application startWithIopl3 must be installed
+          as suid root.  Do this as follows:
+          <pre>
+          > cd dxp/bin/linux-x86
+          > su root
+          (password)
+          > chmod +s startWithIopl3
+          > exit
+          </pre>
+          The dxpApp application can then be run without root privilege as follows:
+          <pre>
+          > cd dxp/iocBoot/iocSaturn
+          > ../../bin/linux-x86/startWithIopl3 ../../bin/linux-x86/dxpApp st.cmd
+          </pre>
+          You can also copy startWithIopl3 to a directory like /usr/local/bin or ~/bin that is in
+          your PATH.  That way it can be run without having to specify the path.
+      </li>
+      <li>Not as good. Install the dxpApp application as suid root.  Do this as follows:
+          <pre>
+          > cd dxp/bin/linux-x86
+          > su root
+          (password)
+          > chmod +s /bin/linux-x86/dxpApp
+          > exit
+          </pre>
+          The dxpApp application can then be run without root priviledge as follows:
+          <pre>
+          > cd dxp/iocBoot/iocSaturn
+          > ../../bin/linux-x86/dxpApp st.cmd
+          </pre>
+      </li>
+      <li>Least desirable method.  Run dxpApp as root:
+          <pre>
+          > cd dxp/iocBoot/iocSaturn
+          > su root
+          (password)
+          > ../../bin/linux-x86/dxpApp st.cmd
+          </pre>
+      </li>
+    </ol>
+  <li>Make sure that the script files in dxp/iocBoot/iocSaturn/ have execute permission.
+      This can be done by running the Cygwin bash shell and typing
+      <pre>
+      $ cd dxp/iocBoot/iocSaturn
+      $ chmod +x START_IOC*
+      </pre>
+      This is necessary because these files may not have this permission, depending on how they 
+      were unpacked from the distribution.</li>
+  <li>If you look at the script files, you will see a line that temporarily sets the environment variable
+      EPICS_DISPLAY_PATH using a relative path.  You may want to set this permanently to an absolute path:
+      <pre>
+      /usr/local/epics/dxp/dxpApp/op/adl:/usr/local/epics/mca/mcaApp/op/adl:/usr/local/epics/autosave/asApp/op/adl
+      </pre>
+      Modify the definition according to where you have installed the DXP application.</li>
+</ul>
+
+<h3 align="center"><a name="Running the Saturn">
+                            Running the Saturn</a></h3>
+
+<p>There are several things that should be done to run Saturn system under the EPICS software.
+<ul>
+  <li>Determine whether you have a reset type pre-amp or an RC pre-amp.  If you have a reset pre-amp then
+      edit dxp/iocBoot/iocSaturn/st.cmd to make sure that the 2 lines that apply to reset pre-amps
+      are uncommented, and the lines that apply to RC pre-amps are commented out.  Conversely, if you
+      have an RC pre-amp make sure that the 2 lines that apply to reset pre-amps
+      are commented out, and the lines that apply to RC pre-amps are uncommented.  The file has comment
+      lines showing how to do this.
+  <li>Make sure that the switch inside the Saturn is set for the correct pre-amp type.
+      The switch is labeled "RAMP" for reset pre-amps and "OFFSET" for RC pre-amps.</li>
+  <li>Connect the parallel port cable from the Saturn to the 25-pin connector on the PC, and turn on
+      the Saturn.
+  <li>Under Windows, start the EPICS IOC and medm by running the batch file 
+      dxp/iocBoot/iocSaturn/START_IOC.bat.  This 
+      can be done by double clicking on the icon for this file.  You should see the EPICS IOC commands
+      in a Windows command shell, and you should hear clicking sounds from the Saturn.  If everything
+      works correctly, you can then begin to collect and display spectra.</li>
+  <li>Under Linux start the EPICS IOC and medm by running the script dxp/iocBoot/iocSaturn/START_IOC.  This 
+      can be done by typing:
+      <pre>
+      > cd dxp/iocBoot/iocSaturn
+      > ./START_IOC
+      </pre>
+      You may need to edit the START_IOC script depending on how you chose to solve the root priviledge
+      problem, and whether startWithIopl3 is in your path.  You should see the EPICS IOC commands, 
+      and you should hear clicking sounds from the Saturn.  If everything
+      works correctly, you can then begin to collect and display spectra.
+</ul>
+<p>After verifying that you can control the Saturn from medm there are some things you should do to
+customize your installation.  First, you should edit one of the supplied example .ini files, 
+vortex.ini file (for reset pre-amps) or ketek.ini (for RC pre-amps). You need to set the polarity, 
+the pre-amp gain, and the time after reset (for reset pre-amps) or the 
+RC time constant (for RC pre-amps). Consult the
+<a href="http://www.xia.com/Manuals/Kepler_Saturn_Manual_4.0.1.pdf" target="_blank">Saturn User's Manual</a>
+for information on how to determine and set these parameters.  
+<p>The .ini files will contain lines like the following:
+<ul>
+  <pre>
+  type_value = 10.
+  channel0_gain = 1.7
+  channel0_polarity = +
+  </pre>
+  <li>The type_value is the transient settling time after a reset in microseconds for reset pre-amps.  
+      It is the RC time constant in microseconds for RC pre-amps.  
+      10 microseconds is a reasonable value for both of these to start with.
+  <li>The gain is specified in mV/keV, and is used so that the energy units in the DXP software
+      are correct. Most pre-amps are in the 1-4 mV/keV range.  The best way to set this value is to
+      set the EMAX parameter (energy of last channel) in EPICS, and see how well it agrees with reality
+      when you calibrate the spectrum with a known source.  Then iteratively edit the .ini file and restart
+      EPICS until the actual EMAX matches the requested one.  Getting it to within a few
+      percent is fine, since you will do accurate calibration of the EPICS MCA spectra when you collect
+      data. 
+  <li>The polarity can be "+" or "-".  A positive polarity means that an x-ray pulse produces a voltage
+      step with a rising edge.
+</ul>
+<p>The example IOC directory, iocSaturn, creates EPICS process variables with names like 
+dxpSaturn:dxp1.PKTIM, where dxpSaturn is the "prefix" for the process variable names, dxp1
+is the DXP record name, and PKTIM is the field name.  This is fine
+for installations where there will be at most one Saturn on the subnet.  However, in many cases there
+will be the possibility of more than one Saturn running EPICS on the same subnet.  If this is the
+case then it is essential that each one use a different prefix, because EPICS process variable names
+must be unique on a subnet.  Here is how to give your Saturn a unique name, and still be able to upgrade
+the EPICS software easily.
+<ul>
+  <li>Make a copy of the iocSaturn directory.  Let's assume you will make your prefix be mySaturn:, so a
+      good name for the directory would be iocmySaturn/.
+  <li>Edit st.cmd, auto_settings.req, and START_IOC*, changing all occurances of 
+      dxpSaturn: to mySaturn:.
+  <li>If you have created any higher-level medm screens that load the medm screens in this package, you
+      will need to edit them to pass the new prefix, mySaturn:
+  <li>The next time you unpack a new version of the EPICS DXP software it will overwrite the iocSaturn 
+      directory.  However, if you have made your own new directory, mySaturn/, that will not be
+      modified.
+</ul>
+<p>The EPICS DXP application uses the EPICS save/restore facility.  This means that all of the important
+parameters that you might change when running the Saturn are saved in files in the subdirectory called
+autosave/ under your IOC directory.  These parameters include the peaking time, the update rates for
+displays and nearly 200 other parameters. The next time you start EPICS it will restore these values
+automatically from the file called autosave/auto_settings.sav.  It is a good idea to make copies of
+this file from time to time so that you can get back to old settings if the file is lost or corrupted.
+
+<h3 align="center"><a name="Software Architecture">
+                            Software Architecture</a></h3>
+<p> </p>
+<hr>
+<h3 align="center">EPICS DXP Software Architecture</h3>
+<p>The overall architecture of the EPICS DXP software is shown in the diagram below.  
+At the top level are EPICS Channel Access client applications, such a the IDL MCA Display program,
+the IDL Multi-Element Detector (MED) Display program, medm, spec, and others. At the next level is
+the dxpMED State Notation Language program, which is used to synchronize acquisition and settings 
+for multi-element detectors.  This program also uses EPICS Channel Access, but it typically runs
+in the same EPICS IOC that is controlling the XIA hardware.  Next are the DXP and MCA
+records, which communicate with device support.  In the case of the MCA record, this device support
+is devMcaAsyn, which is itself device-independent, and talks to drvDxp.  The device support for
+the dxpRecord is specific to the XIA hardware.  drvDxp and devDxp both communicate with 
+the XIA Handel library, which calls the XIA Xerxes library.  Xerxes calls the machine dependent 
+libraries, md_epics and md_win95, which call the operating system specific hardware 
+libraries to perform the actual low-level I/O.
+</p>
+<p align="center"><img border="0" src="dxpFlowchart.png"</p>
+
+
+
+<P>
+<HR>
+<ADDRESS>
+Suggestions and comments to: 
+<A HREF="mailto:rivers@cars.uchicago.edu">
+Mark Rivers </A> : (rivers@cars.uchicago.edu)
+<BR>
+Last modified: February 15, 2005</ADDRESS>
+
+</BODY>
+</HTML>
