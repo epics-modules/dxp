@@ -28,7 +28,6 @@ typedef struct dxpReadbacks {
     double adc_rule;
     double mca_bin_width;
     double number_mca_channels;
-    double emax;
     double fast_trig;
     double trig_pktim;
     double trig_gaptim;
