@@ -10,8 +10,8 @@ typedef struct {
     asynStatus (*setShortParam)(void *drvPvt, asynUser *pasynUser,
                                 unsigned short offset,
                                 unsigned short value);
-    asynStatus (*calibrate)(void *drvPvt, asynUser *pasynUser,
-                            int ivalue);
+    asynStatus (*controlTask)(void *drvPvt, asynUser *pasynUser,
+                              int task, int param);
     asynStatus (*readParams)(void *drvPvt, asynUser *pasynUser,
                              short *params,
                              short *baseline);

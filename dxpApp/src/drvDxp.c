@@ -164,8 +164,8 @@ static asynStatus int32ArrayWrite(     void *drvPvt, asynUser *pasynUser,
 static asynStatus dxpSetShortParam(    void *drvPvt, asynUser *pasynUser, 
                                        unsigned short offset, 
                                        unsigned short value);
-static asynStatus dxpCalibrate(        void *drvPvt, asynUser *pasynUser,
-                                       int ivalue);
+static asynStatus dxpControlTask(      void *drvPvt, asynUser *pasynUser,
+                                       int task, int param);
 static asynStatus dxpReadParams(       void *drvPvt, asynUser *pasynUser, 
                                        short *params, 
                                        short *baseline);
@@ -217,7 +217,7 @@ static const asynDrvUser drvDxpDrvUser = {
 /* dxp methods */
 static const asynDxp drvDxpDxp = {
     dxpSetShortParam,
-    dxpCalibrate,
+    dxpControlTask,
     dxpReadParams,
     dxpDownloadFippi
 };
@@ -702,14 +702,19 @@ static asynStatus dxpSetShortParam(void *drvPvt, asynUser *pasynUser,
     return(asynSuccess);
 }
 
-static asynStatus dxpCalibrate(void *drvPvt, asynUser *pasynUser,
-                                        int ivalue)
+static asynStatus dxpControlTask(void *drvPvt, asynUser *pasynUser,
+                                 int task, int param)
 {
-    /* Calibrate */
+    /* Control task */
     int signal;
+    short utask=task;
+    unsigned int len=2;
+    int info[2];
 
+    info[0] = 1;
+    info[1] = param;
     pasynManager->getAddr(pasynUser, &signal);
-    dxp_calibrate_one_channel(&signal, &ivalue);
+    dxp_start_control_task(&signal, &utask, &len, info);
     return(asynSuccess);
 }
 
