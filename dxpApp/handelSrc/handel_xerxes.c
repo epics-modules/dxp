@@ -801,7 +801,7 @@ HANDEL_STATIC int HANDEL_API xiaGetDSPName(Module *module, int channel, double p
 	  xiaLogDebug("xiaGetDSPName", "***** Dump of data sent to FDD *****");
 	  sprintf(info_string, "firmwareSet->filename = %s", firmwareSet->filename);
 	  xiaLogDebug("xiaGetDSPName", info_string);
-	  sprintf(info_string, "peakingTime = %lf", peakingTime);
+	  sprintf(info_string, "peakingTime = %f", peakingTime);
 	  xiaLogDebug("xiaGetDSPName", info_string);
 	  sprintf(info_string, "detectorType = %s", detectorType);
 	  xiaLogDebug("xiaGetDSPName", info_string);
@@ -856,7 +856,7 @@ HANDEL_STATIC int HANDEL_API xiaGetFippiName(Module *module, int channel, double
 	  xiaLogDebug("xiaGetFiPPIName", "***** Dump of data sent to FDD *****");
 	  sprintf(info_string, "firmwareSet->filename = %s", firmwareSet->filename);
 	  xiaLogDebug("xiaGetFiPPIName", info_string);
-	  sprintf(info_string, "peakingTime = %lf", peakingTime);
+	  sprintf(info_string, "peakingTime = %f", peakingTime);
 	  xiaLogDebug("xiaGetFiPPIName", info_string);
 	  sprintf(info_string, "detectorType = %s", detectorType);
 	  xiaLogDebug("xiaGetFiPPIName", info_string);

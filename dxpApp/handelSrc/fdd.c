@@ -798,7 +798,7 @@ FDD_EXPORT int FDD_API xiaFddGetNumFilter(const char *filename,
 	    cstatus = fgets(line, 132, fp);
 	    ptMax = strtod(line, NULL);
 		
-	    sprintf(info_string, "ptMin = %lf, ptMax = %lf", ptMin, ptMax);
+	    sprintf(info_string, "ptMin = %f, ptMax = %f", ptMin, ptMax);
 	    xiaFddLogDebug("xiaFddGetNumFilter", info_string);
 
 	    if ((peakingTime > ptMin) &&
@@ -976,7 +976,7 @@ FDD_EXPORT int FDD_API xiaFddGetFilterInfo(const char *filename, double peakingT
 	    cstatus = fgets(line, 132, fp);
 	    ptMax = strtod(line, NULL);
 		
-	    sprintf(info_string, "ptMin = %lf, ptMax = %lf", ptMin, ptMax);
+	    sprintf(info_string, "ptMin = %f, ptMax = %f", ptMin, ptMax);
 	    xiaFddLogDebug("xiaFddGetFilterInfo", info_string);
 
 	    if ((peakingTime > ptMin) &&
