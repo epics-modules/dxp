@@ -2931,6 +2931,8 @@ XERXES_STATIC int dxp_run_active(int* ioChan, int* modChan, int* active)
 
   /* Check the run active bit of the GSR */
   if ((data & (0x1<<*modChan))!=0) *active = 1;
+/* if ((*ioChan == 3) && (*modChan == 1)) printf("dxp4c2x::dxp_run_active, ioChan=%d, modChan=%d, GSR=0x%x, *active=%d\n",
+*ioChan, *modChan, data, *active); */
 
   return status;    
 

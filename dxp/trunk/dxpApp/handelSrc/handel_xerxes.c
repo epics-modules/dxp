@@ -583,6 +583,7 @@ HANDEL_SHARED int HANDEL_API xiaUserSetup(void)
 			  return status;
 			}
 
+/* printf("handel_xerxes:: Begin setting polarity for detector %d\n", current->detChan); */
 		  status = localFuncs.setPolarity((int)current->detChan, detector, detector_chan, defaults);
 
 		  if (status != XIA_SUCCESS)

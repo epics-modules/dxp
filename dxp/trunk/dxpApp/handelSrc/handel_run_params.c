@@ -527,6 +527,8 @@ HANDEL_EXPORT int HANDEL_API xiaUpdateUserParams(int detChan)
 		xiaLogDebug("xiaUpdateUserParams", info_string);
 
 		status = xiaSetParameter(detChan, entry->name, param);
+/* printf("handel_run_params::xiaUpdateUserParams, detChan=%d, name=%s, param=%u\n",
+detChan, entry->name, param); */
 
 		if (status != XIA_SUCCESS) {
 
