@@ -17,6 +17,7 @@ LIBRARY_IOC_vxWorks += dxp
 DBDINC += dxpRecord
 DBD += dxpSupport.dbd
 DBD += dxp.dbd
+DBD += dxpVX.dbd
 
 USR_CFLAGS += -DXIA_SPECIAL_MEM
 USR_CFLAGS += -DEXCLUDE_DGFG200
@@ -41,7 +42,8 @@ PROD_IOC_vxWorks += dxpApp
 PROD_IOC_Linux += dxpApp
 
 # <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
-dxpApp_SRCS += dxp_registerRecordDeviceDriver.cpp
+dxpApp_SRCS_Linux += dxp_registerRecordDeviceDriver.cpp
+dxpApp_SRCS_vxWorks += dxpVX_registerRecordDeviceDriver.cpp
 dxpApp_SRCS_Linux += dxpMain.cpp
 dxpApp_SRCS_vxWorks += -nil-
 #The following adds support from base/src/vxWorks
