@@ -1,13 +1,21 @@
 # FILE... dxp_settings.req
 # USAGE.. dxp2x.db or dxp4c.db fields autosave'd.
-$(P)$(R).SCAN
-$(P)$(R).PGAIN
-$(P)$(R).SLOW_TRIG
-$(P)$(R).PKTIM
-$(P)$(R).GAPTIM
-$(P)$(R).FAST_TRIG
 $(P)$(R).TRIG_PKTIM
 $(P)$(R).TRIG_GAPTIM
-$(P)$(R).ADC_RULE
+$(P)$(R).FAST_TRIG
+$(P)$(R).PKTIM
+$(P)$(R).GAPTIM
+$(P)$(R).SLOW_TRIG
+$(P)$(R).F05V
+$(P)$(R).BASE_CUT_PCT
+$(P)$(R).T11V
+$(P)$(R).BASE_THRESH
+$(P)$(R).T14V
+$(P)$(R).BASE_THRESHADJ
 $(P)$(R).EMAX
+$(P)$(R).ADC_RULE
 $(P)$(R).TRACE_WAIT
+$(P)$(R).SCAN
+$(P)$(R):ReadHistogram.SCAN
+$(P)$(R):ReadTrace.SCAN
+$(P)$(R):ReadHistory.SCAN
