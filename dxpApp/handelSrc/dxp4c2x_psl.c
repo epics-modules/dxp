@@ -3773,7 +3773,6 @@ PSL_STATIC int PSL_API pslDoParam(int detChan, char *name, void *value, XiaDefau
     }
 
     statusX = dxp_set_one_dspsymbol(&detChan, name, &val);
-printf("dxp4c2x_psl::pslDoParam, dTmp=%f, val=%d\n", dTmp, val);
 
     if (statusX != DXP_SUCCESS) {
 
