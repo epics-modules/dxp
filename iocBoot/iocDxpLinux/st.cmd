@@ -1,4 +1,5 @@
-< envPaths
+epicsEnvSet(MCA,"/home/dxp/mca")
+epicsEnvSet(DXP,"/home/dxp/dxp")
 # Tell EPICS all about the record types, device-support modules, drivers,
 # etc. in this build from dxpApp
 dbLoadDatabase("../../dbd/dxp.dbd")
@@ -37,7 +38,7 @@ dxp_initialize
 DXPConfig("DXP1",  0,  -1, -1, -1, 300)
 
 dbLoadRecords("$(DXP)/dxpApp/Db/dxp2x.db","P=dxpLinux:, R=dxp1, INP=#C0 S0  @DXP1")
-dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=dxpLinux:,M=dxp_mca1,DTYPE=MPF MCA,INP=#C0 S0 @DXP1,NCHAN= 2048")
+dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=dxpLinux:, M=mca1, DTYPE=MPF MCA,INP=#C0 S0 @DXP1,NCHAN= 2048")
 
 set_pass0_restoreFile(auto_settings.sav)
 set_pass1_restoreFile(auto_settings.sav)
@@ -49,7 +50,9 @@ iocInit
 # will be saved by the task we're starting here are going to be restored.
 #
 # Load the list of search directories for request files
-< ../requestFileCommands
+set_requestfile_path("./")
+set_requestfile_path("$(DXP)/dxpApp/Db")
+set_requestfile_path("$(MCA)/mcaApp/Db")
 
 # save positions every five seconds
 #create_monitor_set("auto_positions.req", 5)
