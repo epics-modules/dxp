@@ -188,9 +188,9 @@ typedef struct  {
 #define NUM_DXP_LONG_PARAMS 14 /* The number of long (32 bit) statistics 
                                 * parameters described above in the record. 
                                 * These are also read-only */
-#define NUM_TASK_PARAMS     10 /* The number of task parameters described above
+#define NUM_TASK_PARAMS     11 /* The number of task parameters described above
                                 *  in the record. */
-
+ 
 
 #define NUM_SHORT_WRITE_PARAMS \
    (NUM_ASC_PARAMS + NUM_FIPPI_PARAMS + NUM_DSP_PARAMS + NUM_BASELINE_PARAMS)
