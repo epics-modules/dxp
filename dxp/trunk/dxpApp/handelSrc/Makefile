@@ -32,6 +32,7 @@ endif
 
 #handel_SRCS_vxWorks += dxp4c.c
 handel_SRCS_vxWorks  += dxp4c2x.c dxp4c2x_psl.c
+handel_SRCS_vxWorks  += dxp4c.c
 handel_SRCS_Linux    += x10p.c x10p_psl.c
 handel_SRCS_cygwin32 += x10p.c x10p_psl.c
 handel_SRCS_WIN32    += x10p.c x10p_psl.c
