@@ -92,6 +92,24 @@ record(bo,"$(P)ReadDXPBaselines") {
 grecord(bo,"$(P)DoReadDXPBaselines") {
 }
 
+record(bo,"$(P)ReadDXPHistory") {
+        field(SCAN,"Passive")
+        field(VAL, "1")
+        field(OUT, "$(P)DoReadDXPHistory PP MS")
+}
+
+grecord(bo,"$(P)DoReadDXPHistory") {
+}
+
+record(bo,"$(P)ReadDXPTrace") {
+        field(SCAN,"Passive")
+        field(VAL, "1")
+        field(OUT, "$(P)DoReadDXPTrace PP MS")
+}
+
+grecord(bo,"$(P)DoReadDXPTrace") {
+}
+
 record(bo,"$(P)CopyTRIG_PKTIM") {
 }
 
