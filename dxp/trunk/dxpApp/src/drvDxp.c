@@ -51,6 +51,8 @@ typedef struct {
     int ptschan;
     int ptechan;
     double etotal;
+    int acquiring;
+    int erased;
 } dxpChannel_t;
 
 typedef struct {
@@ -58,8 +60,6 @@ typedef struct {
     dxpChannel_t *dxpChannel;
     int ndetectors;
     int nchans;
-    int acquiring;
-    int erased;
     char *portName;
     asynInterface common;
     asynInterface int32;
@@ -155,18 +155,17 @@ int DXPConfig(const char *portName, int ndetectors)
     /* Copy parameters to object private */
     pPvt->portName = epicsStrDup(portName);
 
-    pPvt->acquiring = 0;
-    pPvt->erased = 1;
     pPvt->ndetectors = ndetectors;
     pPvt->dxpChannel = (dxpChannel_t *)
                 calloc(ndetectors, sizeof(dxpChannel_t));
-    for (i=0; i<ndetectors; i++) pPvt->dxpChannel[i].exists = 0;
     /* Allocate memory arrays for each channel if it is valid */
     for (i=0; i<ndetectors; i++) {
        dxpChannel = &pPvt->dxpChannel[i];
        detChan = i;
        dxpChannel->detChan = detChan;
        dxpChannel->exists = 1;
+       dxpChannel->acquiring = 0;
+       dxpChannel->erased = 1;
     }
     /* Link with higher level routines */
     pPvt->common.interfaceType = asynCommonType;
@@ -237,7 +236,7 @@ static dxpChannel_t *findChannel(drvDxpPvt *pPvt, asynUser *pasynUser,
     }
     if (dxpChan == NULL) {
        asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                 "(drvDxp::findChannel [%s signal=%d]): not a valid channel\n",
+                 "drvDxp::findChannel [%s signal=%d]: not a valid channel\n",
                  pPvt->portName, signal);
     }
     return(dxpChan);
@@ -273,29 +272,29 @@ static asynStatus drvDxpWrite(void *drvPvt, asynUser *pasynUser,
 
     pPvt->detChan = signal;
     asynPrint(pasynUser, ASYN_TRACE_FLOW,
-              "(drvDxpRead %s detChan=%d, command=%d, value=%f\n",
-              pPvt->portName, pPvt->detChan, command, dvalue);
+              "drvDxpWrite %s detChan=%d, command=%d, ivalue=%d, dvalue=%f\n",
+              pPvt->portName, pPvt->detChan, command, ivalue, dvalue);
     if (dxpChan == NULL) return(asynError);
 
     switch (command) {
         case mcaStartAcquire:
             /* Start acquisition. 
              * Don't do anything if already acquiring */
-            if (!pPvt->acquiring) {
-                if (pPvt->erased) resume=0; else resume=1;
+            if (!dxpChan->acquiring) {
+                if (dxpChan->erased) resume=0; else resume=1;
                 s = xiaStartRun(pPvt->detChan, resume);
-                pPvt->acquiring = 1;
-                pPvt->erased = 0;
+                dxpChan->acquiring = 1;
+                dxpChan->erased = 0;
                 asynPrint(pasynUser, ASYN_TRACE_FLOW,
-                          "(drvDxpPvt [%s detChan=%d]): start acq. status=%d\n",
+                          "drvDxpPvt [%s detChan=%d]: start acq. status=%d\n",
                           pPvt->portName, pPvt->detChan, s);
             }
             break;
         case mcaStopAcquire:
             /* stop data acquisition */
             xiaStopRun(pPvt->detChan);
-            if (pPvt->acquiring) {
-                pPvt->acquiring = 0;
+            if (dxpChan->acquiring) {
+                dxpChan->acquiring = 0;
             }
             break;
         case mcaErase:
@@ -303,12 +302,12 @@ static asynStatus drvDxpWrite(void *drvPvt, asynUser *pasynUser,
             dxpChan->etotal = 0.;
             /* If DXP is acquiring, turn it off and back on and don't 
              * set the erased flag */
-            if (pPvt->acquiring) {
+            if (dxpChan->acquiring) {
                 xiaStopRun(pPvt->detChan);
                 resume = 0;
                 s = xiaStartRun(pPvt->detChan, resume);
             } else {
-                pPvt->erased = 1;
+                dxpChan->erased = 1;
             }
             break;
         case mcaReadStatus:
@@ -415,7 +414,7 @@ static asynStatus drvDxpRead(void *drvPvt, asynUser *pasynUser,
 
     switch (command) {
         case mcaAcquiring:
-            *pivalue = pPvt->acquiring;
+            *pivalue = dxpChan->acquiring;
             break;
         case mcaDwellTime:
             *pfvalue = 0.;
@@ -436,6 +435,12 @@ static asynStatus drvDxpRead(void *drvPvt, asynUser *pasynUser,
             status = asynError;
             break;
     }
+    if (pivalue) asynPrint(pasynUser, ASYN_TRACE_FLOW,
+              "drvDxpRead %s detChan=%d, command=%d, *pivalue=%d\n",
+              pPvt->portName, pPvt->detChan, command, *pivalue);
+    if (pfvalue) asynPrint(pasynUser, ASYN_TRACE_FLOW,
+              "drvDxpRead %s detChan=%d, command=%d, *pfvalue=%f\n",
+              pPvt->portName, pPvt->detChan, command, *pfvalue);
     return(status);
 }
 
@@ -460,7 +465,7 @@ static asynStatus int32ArrayRead(void *drvPvt, asynUser *pasynUser,
     dxpChan = findChannel(pPvt, pasynUser, signal);
     if (dxpChan == NULL) return(asynError);
 
-    if (pPvt->erased) {
+    if (dxpChan->erased) {
         memset(data, 0, pPvt->nchans*sizeof(int));
     } else {
         xiaGetRunData(dxpChan->detChan, "mca", data);
@@ -477,7 +482,7 @@ static asynStatus int32ArrayRead(void *drvPvt, asynUser *pasynUser,
      if ((dxpChan->ptotal != 0.0) && 
          (dxpChan->etotal > dxpChan->ptotal)) {
          xiaStopRun(pPvt->detChan);
-         pPvt->acquiring = 0;
+         dxpChan->acquiring = 0;
      }
     return(asynSuccess);
 }
@@ -496,7 +501,7 @@ static void getAcquisitionStatus(drvDxpPvt *pPvt, asynUser *pasynUser,
 {
    unsigned long run_active;
 
-   if (pPvt->erased) {
+   if (dxpChan->erased) {
       pPvt->dxpChannel->elive = 0.;
       pPvt->dxpChannel->ereal = 0.;
       dxpChan->etotal = 0.;
@@ -508,11 +513,11 @@ static void getAcquisitionStatus(drvDxpPvt *pPvt, asynUser *pasynUser,
       /* If Handel thinks the run is active, but the hardware does not, then
        * stop the run */
       if (run_active == XIA_RUN_HANDEL) xiaStopRun(pPvt->detChan);
-      pPvt->acquiring = (run_active != 0);
+      dxpChan->acquiring = (run_active != 0);
    }
    asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-             "(getAcquisitionStatus [%s detChan=%d]): acquiring=%d\n",
-             pPvt->portName, pPvt->detChan, pPvt->acquiring);
+             "getAcquisitionStatus [%s detChan=%d]): acquiring=%d\n",
+             pPvt->portName, pPvt->detChan, dxpChan->acquiring);
 }
 
 
