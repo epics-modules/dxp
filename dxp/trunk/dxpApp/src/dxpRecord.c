@@ -287,7 +287,7 @@ static long init_record(struct dxpRecord *pdxp, int pass)
         dxp_max_symbols(&module, &minfo->nsymbols);
         Debug(5, "(init_record): allocating memory, nsymbols=%d\n", minfo->nsymbols);
         dxp_nbase(&module, &minfo->nbase);
-        dxp_control_task_info(&module, &adc_trace, adc_trace_info);
+        /* dxp_control_task_info(&module, &adc_trace, adc_trace_info); */
         minfo->ntrace = adc_trace_info[0];
         minfo->access =
                (unsigned short *) malloc(minfo->nsymbols * 
