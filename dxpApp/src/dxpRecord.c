@@ -172,9 +172,9 @@ typedef struct  {
                                 * above in the record */
 #define NUM_DSP_PARAMS      10 /* The number of short DSP parameters described
                                 *  above in the record */
-#define NUM_BASELINE_PARAMS  6 /* The number of short BASELINE parameters 
+#define NUM_BASELINE_PARAMS  8 /* The number of short BASELINE parameters 
                                 * described above in the record */
-#define NUM_READONLY_PARAMS 15 /* The number of short READ-ONLY parameters 
+#define NUM_READONLY_PARAMS 16 /* The number of short READ-ONLY parameters 
                                 * described above in the record */
 #define NUM_DXP_LONG_PARAMS 14 /* The number of long (32 bit) statistics 
                                 * parameters described above in the record. 
@@ -223,6 +223,7 @@ typedef struct {
    double clock;
    double adc_gain;
    unsigned int nbase;
+   unsigned int ntrace;
    PARAM_OFFSETS offsets;
 } MODULE_INFO;
 
@@ -239,6 +240,8 @@ static long init_record(struct dxpRecord *pdxp, int pass)
     int module;
     MODULE_INFO *minfo;
     unsigned short offset;
+    short adc_trace = CT_DXP2X_ADC;
+    int adc_trace_info[3];
     int status;
     int download;
     char boardString[MAXBOARDNAME_LEN];
@@ -284,6 +287,8 @@ static long init_record(struct dxpRecord *pdxp, int pass)
         dxp_max_symbols(&module, &minfo->nsymbols);
         Debug(5, "(init_record): allocating memory, nsymbols=%d\n", minfo->nsymbols);
         dxp_nbase(&module, &minfo->nbase);
+        dxp_control_task_info(&module, &adc_trace, adc_trace_info);
+        minfo->ntrace = adc_trace_info[0];
         minfo->access =
                (unsigned short *) malloc(minfo->nsymbols * 
                                          sizeof(unsigned short));
@@ -353,6 +358,9 @@ static long init_record(struct dxpRecord *pdxp, int pass)
     pdxp->pptr = (unsigned short *)calloc(minfo->nsymbols, 
                                           sizeof(unsigned short));
 
+    /* Allocate the space for the trace array */
+    pdxp->tptr = (long *)calloc(minfo->ntrace, sizeof(long));
+
     /* Allocate space for the peaking time strings */
     pdxp->pkl = (char *)calloc(DXP_STRING_SIZE * MAX_PEAKING_TIMES, 
                                sizeof(char));
@@ -401,6 +409,13 @@ struct dbAddr *paddr;
          paddr->field_size = sizeof(short);
          paddr->dbr_field_type = DBF_USHORT;
          Debug(5, "(cvt_dbaddr): field=parm\n");
+   } else if (paddr->pfield == &(pdxp->trace)) {
+         paddr->pfield = (void *)(pdxp->tptr);
+         paddr->no_elements = minfo->ntrace;
+         paddr->field_type = DBF_LONG;
+         paddr->field_size = sizeof(long);
+         paddr->dbr_field_type = DBF_LONG;
+         Debug(5, "(cvt_dbaddr): field=parm\n");
    } else {
       Debug(1, "(cvt_dbaddr): field=unknown\n");
    }
@@ -424,6 +439,10 @@ long *offset;
       *no_elements =  minfo->nsymbols;
       *offset = 0;
       Debug(5, "(get_array_info): field=parm\n");
+   } else if (paddr->pfield == pdxp->tptr) {
+      *no_elements =  minfo->ntrace;
+      *offset = 0;
+      Debug(5, "(get_array_info): field=trace\n");
    } else {
      Debug(1, "(get_array_info):field=unknown,paddr->pfield=%p,pdxp->bptr=%p\n",
                paddr->pfield, pdxp->bptr);
@@ -553,10 +572,10 @@ static long monitor(struct dxpRecord *pdxp)
       }
    }
 
-   /* If rcal==1 then clear it, since the calibration is done */
-   if (pdxp->rcal) {
-      pdxp->rcal=0;
-      db_post_events(pdxp,&pdxp->rcal, monitor_mask);
+   /* If rctl==1 then clear it, since the control task is done */
+   if (pdxp->rctl) {
+      pdxp->rctl=0;
+      db_post_events(pdxp,&pdxp->rctl, monitor_mask);
    }
 
    /* If GAINDAC has changed then recompute GAIN */   
@@ -707,8 +726,8 @@ static long special(struct dbAddr *paddr, int after)
        }
     }
 
-    if ((paddr->pfield == (void *) &pdxp->rcal) ||
-        (paddr->pfield == (void *) &pdxp->calr)) {
+    if ((paddr->pfield == (void *) &pdxp->rctl) ||
+        (paddr->pfield == (void *) &pdxp->ctlr)) {
           setDxpTasks(pdxp);
           goto found_param;
      }
@@ -727,16 +746,59 @@ static void setDxpTasks(struct dxpRecord *pdxp)
    struct devDxpDset *pdset = (struct devDxpDset *)(pdxp->dset);
    MODULE_INFO *minfo = &moduleInfo[pdxp->mtyp];
    DXP_TASK_PARAM *task_param;
-   int cal;
+   int ctl = CT_DXP2X_ADC;
+   int ctl_param = 0;
    unsigned short runtasks;
    int i;
    int status;
 
    Debug(5, "dxpRecord(setDxpTasks): entry\n");
-   if (pdxp->rcal) {
-      if (pdxp->calr == dxpCAL_TRACKRST) cal=2; else cal=1;
-      Debug(5, "dxpRecord(setDxpTasks): running calibration=%d\n", cal);
-      status = (*pdset->send_dxp_msg) (pdxp, MSG_DXP_CALIBRATE, cal, 0);
+   if (pdxp->rctl) {
+      switch (pdxp->ctlr) {
+      case dxpCTL_ADC_TRACE: 
+         ctl = CT_DXP2X_ADC;
+         ctl_param = pdxp->trwt;
+         break;
+      case dxpCTL_BASELINE_HISTORY: 
+         ctl = CT_DXP2X_BASELINE_HIST;
+         break;
+      case dxpCTL_RC_BASELINE: 
+         ctl = CT_DXP2X_RC_BASELINE;
+         break;
+      case dxpCTL_RC_EVENT: 
+         ctl = CT_DXP2X_RC_EVENT;
+         break;
+      case dxpCTL_SET_ASCDAC: 
+         ctl = CT_DXP2X_SET_ASCDAC;
+         break;
+      case dxpCTL_TRKDAC: 
+         ctl = CT_DXP2X_TRKDAC;
+         break;
+      case dxpCTL_SLOPE_CALIB: 
+         ctl = CT_DXP2X_SLOPE_CALIB;
+         break;
+      case dxpCTL_SLEEP_DSP: 
+         ctl = CT_DXP2X_SLEEP_DSP;
+         break;
+      case dxpCTL_PROGRAM_FIPPI: 
+         ctl = CT_DXP2X_PROGRAM_FIPPI;
+         break;
+      case dxpCTL_SET_POLARITY: 
+         ctl = CT_DXP2X_SET_POLARITY;
+         break;
+      case dxpCTL_CLOSE_INPUT_RELAY: 
+         ctl = CT_DXP2X_CLOSE_INPUT_RELAY;
+         break;
+      case dxpCTL_OPEN_INPUT_RELAY: 
+         ctl = CT_DXP2X_OPEN_INPUT_RELAY;
+         break;
+      case dxpCTL_RESET: 
+         ctl = CT_DXP2X_RESET;
+         break;
+      }
+
+      Debug(5, "dxpRecord(setDxpTasks): running calibration=%d\n", ctl);
+      status = (*pdset->send_dxp_msg) (pdxp, MSG_DXP_CONTROL_TASK, ctl, 0);
    } else {
       task_param = (DXP_TASK_PARAM *)&pdxp->t01v;
       runtasks = 0;
