@@ -19,7 +19,7 @@ dxp_initialize
 DXPConfig("DXP1",  0,  1,  2,  3, 300)
 DXPConfig("DXP2",  4,  5,  6,  7, 300)
 
-dbLoadRecords("camacApp/Db/8element_dxp.db","P=13GE2:med:", camac)
+dbLoadRecords("$(DXP)/dxpApp/Db/8element_dxp.db","P=13GE2:med:")
 
 # Load all of the MCA and DXP records
 dbLoadTemplate("8element.template")
