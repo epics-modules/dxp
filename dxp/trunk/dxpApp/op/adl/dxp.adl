@@ -1,12 +1,12 @@
 
 file {
-	name="C:\epics\adl\dxp.adl"
+	name="C:\Documents and Settings\epics\Desktop\dxpApp\op\adl\dxp.adl"
 	version=020306
 }
 display {
 	object {
-		x=104
-		y=270
+		x=6
+		y=16
 		width=870
 		height=810
 	}
@@ -3248,5 +3248,73 @@ composite {
 				}
 			}
 		}
+	}
+}
+"message button" {
+	object {
+		x=791
+		y=625
+		width=50
+		height=20
+	}
+	control {
+		chan="$(P)$(R).CLOSE_RELAY"
+		clr=14
+		bclr=51
+	}
+	label="Close"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=791
+		y=650
+		width=50
+		height=20
+	}
+	control {
+		chan="$(P)$(R).OPEN_RELAY"
+		clr=14
+		bclr=51
+	}
+	label="Open"
+	press_msg="1"
+}
+text {
+	object {
+		x=791
+		y=584
+		width=50
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Input"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=791
+		y=602
+		width=50
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Relay"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=771
+		y=578
+		width=90
+		height=100
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
 	}
 }
