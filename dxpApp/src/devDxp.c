@@ -26,12 +26,13 @@
 #include <epicsString.h>
 
 #include <asynDriver.h>
+#include <asynInt32.h>
 #include <asynEpicsUtils.h>
 
 #include "dxpRecord.h"
 #include "devDxp.h"
 #include "asynDxp.h"
-#include "asynMca.h"
+#include "mca.h"
 #include "xerxes_structures.h"
 #include "xerxes.h"
 
@@ -40,8 +41,8 @@ typedef struct {
     asynUser *pasynUser;
     char *portName;
     int channel;
-    asynMca *pasynMca;
-    void *asynMcaPvt;
+    asynInt32 *pint32;
+    void *asynInt32Pvt;
     asynDxp *pasynDxp;
     void *asynDxpPvt;
     unsigned short nsymbols;
@@ -129,15 +130,15 @@ static long init_record(dxpRecord *pdxp)
     pPvt->pasynDxp = (asynDxp *)pasynInterface->pinterface;
     pPvt->asynDxpPvt = pasynInterface->drvPvt;
 
-    /* Get the asynMca interface */
-    pasynInterface = pasynManager->findInterface(pasynUser, asynMcaType, 1);
+    /* Get the asynInt32 interface */
+    pasynInterface = pasynManager->findInterface(pasynUser, asynInt32Type, 1);
     if (!pasynInterface) {
         asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                  "devDxp::init_record, find mca interface failed\n");
+                  "devDxp::init_record, find int32 interface failed\n");
         goto bad;
     }
-    pPvt->pasynMca = (asynMca *)pasynInterface->pinterface;
-    pPvt->asynMcaPvt = pasynInterface->drvPvt;
+    pPvt->pint32 = (asynInt32 *)pasynInterface->pinterface;
+    pPvt->asynInt32Pvt = pasynInterface->drvPvt;
 
     dxp_max_symbols(&pPvt->channel, &pPvt->nsymbols);
     dxp_nbase(&pPvt->channel, &pPvt->nbase);
@@ -218,9 +219,10 @@ void asynCallback(asynUser *pasynUser)
 
     switch (pmsg->type) {
     case mcaMessage:
-        pPvt->pasynMca->command(pPvt->asynMcaPvt,
-                                pPvt->pasynUser,
-                                pmsg->mcaCommand, 0, 0);
+        pPvt->pasynUser->drvUser = &pmsg->mcaCommand;
+        pPvt->pint32->write(pPvt->asynInt32Pvt,
+                            pPvt->pasynUser,
+                            0);
         break;
     case dxpMessage:
         switch(pmsg->dxpCommand) {
