@@ -29,11 +29,13 @@ USR_CFLAGS += -DEXCLUDE_UDXPS
 dxp_SRCS += dxpRecord.c
 dxp_SRCS += devDxp.c
 dxp_SRCS += drvDxp.c
+dxp_SRCS += dxpMED.st
 
 dxp_LIBS += handel
 dxp_LIBS += mca 
 dxp_LIBS += calc sscan autosave
 dxp_LIBS += asyn
+dxp_LIBS += seq pv
 dxp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #=============================
@@ -62,6 +64,7 @@ dxpApp_LIBS += calc sscan autosave
 dxpApp_LIBS_vxWorks += camac
 dxpApp_LIBS += asyn
 dxpApp_SYS_LIBS_cygwin32 += DLPORTIO
+dxpApp_LIBS += seq pv
 dxpApp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #===========================
