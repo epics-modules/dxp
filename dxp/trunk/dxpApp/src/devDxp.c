@@ -174,11 +174,15 @@ void asynCallback(asynUser *pasynUser)
              "devDxp::asynCallback, MSG_DXP_SET_SHORT_PARAM"
              " calling xiaSetAcquisitionValues name=%s value=%d\n",
              pmsg->name, pmsg->param);
+         /* Must stop run before setting parameters.  We should restart if it was running */
+         xiaStopRun(detChan);
          /* Note that we use xiaSetAcquisitionValues rather than xiaSetParameter
           * so that the new value will be save with xiaSaveSystem */
          xiaSetAcquisitionValues(detChan, pmsg->name, &pmsg->param);
          break;
      case MSG_DXP_SET_DOUBLE_PARAM:
+         /* Must stop run before setting parameters.  We should restart if it was running */
+         xiaStopRun(detChan);
          pfield = pmsg->pointer;
          if (pfield == (void *)&pdxp->slow_trig) {
              /* Convert from keV to eV */
@@ -253,6 +257,8 @@ void asynCallback(asynUser *pasynUser)
          }
          break;
      case MSG_DXP_CONTROL_TASK:
+         /* Must stop run before setting parameters.  We should restart if it was running */
+         xiaStopRun(detChan);
          info[0] = 1.;
          info[1] = pmsg->dvalue;
          asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
