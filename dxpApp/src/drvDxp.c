@@ -56,6 +56,7 @@ typedef struct {
 typedef struct {
     int detChan;
     dxpChannel_t *dxpChannel;
+    int ndetectors;
     int nchans;
     int acquiring;
     int erased;
@@ -141,7 +142,7 @@ static asynDrvUser drvDxpDrvUser = {
 };
 
 
-int DXPConfig(const char *portName, int nchans) 
+int DXPConfig(const char *portName, int ndetectors) 
 {
     int i;
     dxpChannel_t *dxpChannel;
@@ -156,12 +157,12 @@ int DXPConfig(const char *portName, int nchans)
 
     pPvt->acquiring = 0;
     pPvt->erased = 1;
-    pPvt->nchans = nchans;
+    pPvt->ndetectors = ndetectors;
     pPvt->dxpChannel = (dxpChannel_t *)
-                calloc(nchans, sizeof(dxpChannel_t));
-    for (i=0; i<nchans; i++) pPvt->dxpChannel[i].exists = 0;
+                calloc(ndetectors, sizeof(dxpChannel_t));
+    for (i=0; i<ndetectors; i++) pPvt->dxpChannel[i].exists = 0;
     /* Allocate memory arrays for each channel if it is valid */
-    for (i=0; i<nchans; i++) {
+    for (i=0; i<ndetectors; i++) {
        dxpChannel = &pPvt->dxpChannel[i];
        detChan = i;
        dxpChannel->detChan = detChan;
@@ -189,32 +190,32 @@ int DXPConfig(const char *portName, int nchans)
                                         0,  /* medium priority */
                                         0); /* default stack size */
     if (status != asynSuccess) {
-        errlogPrintf("dxpConfig: Can't register myself.\n");
+        errlogPrintf("DXPConfig: Can't register myself.\n");
         return(-1);
     }
     status = pasynManager->registerInterface(portName,&pPvt->common);
     if (status != asynSuccess) {
-        errlogPrintf("dxpConfig: Can't register common.\n");
+        errlogPrintf("DXPConfig: Can't register common.\n");
         return(-1);
     }
     status = pasynInt32Base->initialize(portName,&pPvt->int32);
     if (status != asynSuccess) {
-        errlogPrintf("dxpConfig: Can't register int32.\n");
+        errlogPrintf("DXPConfig: Can't register int32.\n");
         return(-1);
     }
     status = pasynFloat64Base->initialize(portName,&pPvt->float64);
     if (status != asynSuccess) {
-        errlogPrintf("dxpConfig: Can't register float64.\n");
+        errlogPrintf("DXPConfig: Can't register float64.\n");
         return(-1);
     }
     status = pasynInt32ArrayBase->initialize(portName,&pPvt->int32Array);
     if (status != asynSuccess) {
-        errlogPrintf("dxpConfig: Can't register int32Array.\n");
+        errlogPrintf("DXPConfig: Can't register int32Array.\n");
         return(-1);
     }
     status = pasynManager->registerInterface(portName,&pPvt->drvUser);
     if (status != asynSuccess) {
-        errlogPrintf("dxpConfig: Can't register drvUser.\n");
+        errlogPrintf("DXPConfig: Can't register drvUser.\n");
         return(-1);
     }
 
@@ -229,7 +230,7 @@ static dxpChannel_t *findChannel(drvDxpPvt *pPvt, asynUser *pasynUser,
     dxpChannel_t *dxpChan = NULL;
 
     /* Find which channel on this module this signal is */
-    for (i=0; i<pPvt->nchans; i++) {
+    for (i=0; i<pPvt->ndetectors; i++) {
         if (pPvt->dxpChannel[i].exists && pPvt->dxpChannel[i].detChan == signal) { 
             dxpChan = &pPvt->dxpChannel[i];
         }
@@ -325,6 +326,8 @@ static asynStatus drvDxpWrite(void *drvPvt, asynUser *pasynUser,
             /* set number of channels */
             pPvt->nchans = ivalue;
             double_value = ivalue;
+            /* Must stop run before setting parameters.  We should restart if it was running */
+            xiaStopRun(pPvt->detChan);
             xiaSetAcquisitionValues(pPvt->detChan, "number_mca_channels", 
                                     &double_value);
             break;
@@ -531,17 +534,23 @@ static void setPreset(drvDxpPvt *pPvt, asynUser *pasynUser,
    
    /* If preset live and real time are both zero set to count forever */
    if ((dxpChan->plive == 0.) && (dxpChan->preal == 0.)) {
+       /* Must stop run before setting parameters.  We should restart if it was running */
+       xiaStopRun(pPvt->detChan);
        xiaSetAcquisitionValues(pPvt->detChan, "preset_standard", &zero);
    }
    /* If preset live time is zero and real time is non-zero use real time */
    if ((dxpChan->plive == 0.) && (dxpChan->preal != 0.)) {
-      time = dxpChan->preal;
-      xiaSetAcquisitionValues(pPvt->detChan, "preset_runtime", &time);
+       time = dxpChan->preal;
+       /* Must stop run before setting parameters.  We should restart if it was running */
+       xiaStopRun(pPvt->detChan);
+       xiaSetAcquisitionValues(pPvt->detChan, "preset_runtime", &time);
    }
    /* If preset live time is non-zero use live time */
    if (dxpChan->plive != 0.) {
-      time = dxpChan->plive;
-      xiaSetAcquisitionValues(pPvt->detChan, "preset_livetime", &time);
+       time = dxpChan->plive;
+       /* Must stop run before setting parameters.  We should restart if it was running */
+       xiaStopRun(pPvt->detChan);
+       xiaSetAcquisitionValues(pPvt->detChan, "preset_livetime", &time);
    }
 }
 
@@ -623,7 +632,7 @@ asynStatus disconnect(void *drvPvt, asynUser *pasynUser)
 
 /* iocsh functions */
 static const iocshArg DXPConfigArg0 = { "server name",iocshArgString};
-static const iocshArg DXPConfigArg1 = { "number of channels",iocshArgInt};
+static const iocshArg DXPConfigArg1 = { "number of detectors",iocshArgInt};
 static const iocshArg * const DXPConfigArgs[2] = {&DXPConfigArg0,
                                                   &DXPConfigArg1}; 
 static const iocshFuncDef DXPConfigFuncDef = {"DXPConfig",2,DXPConfigArgs};
