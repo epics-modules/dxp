@@ -28,8 +28,8 @@ dbLoadRecords("../../dxpApp/Db/dxp2x_reset.db","P=dxpSaturn:, R=dxp1, INP=@asyn(
 # MCA record
 dbLoadRecords("../../../mca/mcaApp/Db/mca.db", "P=dxpSaturn:, M=mca1, DTYP=asynMCA,INP=@asyn(DXP1 0),NCHAN=2048")
 
-# Database to copy MCA ROIs to DXP SCAs
-dbLoadRecords("../../dxp/dxpApp/Db/roi_to_sca.db", "P=dxpSaturn:, M=mca1, D=dxp1")
+# Template to copy MCA ROIs to DXP SCAs
+dbLoadTemplate("roi_to_sca.substitutions")
 
 # Setup for save_restore
 < ../save_restore.cmd
