@@ -52,6 +52,30 @@ recordtype(dxp) {
         asl(ASL0)
         special(SPC_DBADDR)
     }
+    field(BCPTR,DBF_NOACCESS) {
+        prompt("Baseline cut buffer pointer")
+        special(SPC_NOMOD)
+        interest(4)
+        size(4)
+        extra("long *bcptr")
+    }
+    field(BASE_CUT,DBF_LONG) {
+        prompt("Baseline Cut")
+        asl(ASL0)
+        special(SPC_DBADDR)
+    }
+    field(BXPTR,DBF_NOACCESS) {
+        prompt("Baseline histogram X buffer pointer")
+        special(SPC_NOMOD)
+        interest(4)
+        size(4)
+        extra("float *bxptr")
+    }
+    field(BASE_X,DBF_FLOAT) {
+        prompt("Baseline Histogram X")
+        asl(ASL0)
+        special(SPC_DBADDR)
+    }
     field(BHPTR,DBF_NOACCESS) {
         prompt("Baseline history buffer pointer")
         special(SPC_NOMOD)
@@ -61,6 +85,18 @@ recordtype(dxp) {
     }
     field(BHIST,DBF_LONG) {
         prompt("Baseline History")
+        asl(ASL0)
+        special(SPC_DBADDR)
+    }
+    field(BHXPTR,DBF_NOACCESS) {
+        prompt("Baseline history X buffer pointer")
+        special(SPC_NOMOD)
+        interest(4)
+        size(4)
+        extra("float *bhxptr")
+    }
+    field(BHIST_X,DBF_FLOAT) {
+        prompt("Baseline History X")
         asl(ASL0)
         special(SPC_DBADDR)
     }
@@ -85,6 +121,18 @@ recordtype(dxp) {
     }
     field(TRACE,DBF_LONG) {
         prompt("ADC trace")
+        asl(ASL0)
+        special(SPC_DBADDR)
+    }
+    field(TXPTR,DBF_NOACCESS) {
+        prompt("Trace X Buffer Pointer")
+        special(SPC_NOMOD)
+        interest(4)
+        size(4)
+        extra("float *txptr")
+    }
+    field(TRACE_X,DBF_FLOAT) {
+        prompt("ADC trace X")
         asl(ASL0)
         special(SPC_DBADDR)
     }
@@ -149,11 +197,12 @@ recordtype(dxp) {
         special(SPC_MOD)
     }
 
-# Higher level control parameters
+# Higher level control parameters - all double
     field(PKTIM,DBF_DOUBLE) {
         prompt("Peaking time")
         asl(ASL0)
         special(SPC_MOD)
+        initial(4.)
     }
     field(PKTIM_RBV,DBF_DOUBLE) {
         prompt("Peaking time readback")
@@ -164,6 +213,7 @@ recordtype(dxp) {
         prompt("ADC rule at .5 EMAX")
         asl(ASL0)
         special(SPC_MOD)
+        initial(5.)
     }
     field(ADC_RULE_RBV,DBF_DOUBLE) {
         prompt("ADC rule readback")
@@ -191,6 +241,7 @@ recordtype(dxp) {
         prompt("Fast trigger threshold (eV)")
         asl(ASL0)
         special(SPC_MOD)
+        initial(1000.)
     }
     field(FAST_TRIG_RBV,DBF_DOUBLE) {
         prompt("Fast trigger readback")
@@ -201,6 +252,7 @@ recordtype(dxp) {
         prompt("Trigger peaking time")
         asl(ASL0)
         special(SPC_MOD)
+        initial(.15)
     }
     field(TRIG_PKTIM_RBV,DBF_DOUBLE) {
         prompt("Trigger peaking time readback")
@@ -211,6 +263,7 @@ recordtype(dxp) {
         prompt("Trigger gap time")
         asl(ASL0)
         special(SPC_MOD)
+        initial(0.)
     }
     field(TRIG_GAPTIM_RBV,DBF_DOUBLE) {
         prompt("Trigger gap time readback")
@@ -221,6 +274,7 @@ recordtype(dxp) {
         prompt("Slow trigger threshold (eV)")
         asl(ASL0)
         special(SPC_MOD)
+        initial(0.)
     }
     field(SLOW_TRIG_RBV,DBF_DOUBLE) {
         prompt("Slow trigger readback")
@@ -231,6 +285,7 @@ recordtype(dxp) {
         prompt("Gap time")
         asl(ASL0)
         special(SPC_MOD)
+        initial(0.5)
     }
     field(GAPTIM_RBV,DBF_DOUBLE) {
         prompt("Gap time readback")
@@ -239,7 +294,29 @@ recordtype(dxp) {
     }
     field(TRACE_WAIT,DBF_DOUBLE) {
         prompt("Trace wait (usec)")
+        special(SPC_MOD)
+        asl(ASL0)
         initial(0.1)
+    }
+    field(BASE_CUT_PCT,DBF_DOUBLE) {
+        prompt("Baseline cut (%)")
+        special(SPC_MOD)
+        asl(ASL0)
+        initial(5.0)
+    }
+    field(BASE_LEN,DBF_DOUBLE) {
+        prompt("Baseline filter length")
+        special(SPC_MOD)
+        asl(ASL0)
+    }
+    field(BASE_THRESH,DBF_DOUBLE) {
+        prompt("Baseline threshold")
+        special(SPC_MOD)
+        asl(ASL0)
+    }
+    field(BASE_THRESHADJ,DBF_DOUBLE) {
+        prompt("Baseline threshold adjust")
+        special(SPC_MOD)
         asl(ASL0)
     }
 
