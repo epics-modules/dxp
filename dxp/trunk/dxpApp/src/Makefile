@@ -16,8 +16,6 @@ LIBRARY_IOC_vxWorks += dxp
 LIBRARY_IOC_cygwin32 += dxp
 LIBRARY_IOC_WIN32 += dxp
 
-BIN_INSTALLS_cygwin32 += ../cygwin1.dll
-
 DBDINC += dxpRecord
 DBD += dxpSupport.dbd
 DBD += dxp.dbd
