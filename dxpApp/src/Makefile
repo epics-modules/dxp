@@ -30,7 +30,7 @@ dxp_SRCS += dxpRecord.c
 dxp_SRCS += devDxp.c
 dxp_SRCS += drvDxp.c
 
-dxp_LIBS += xerxes
+dxp_LIBS += handel
 dxp_LIBS += mca 
 dxp_LIBS += calc sscan autosave
 dxp_LIBS += asyn
@@ -50,7 +50,7 @@ dxpApp_SRCS_vxWorks += -nil-
 #The following adds support from base/src/vxWorks
 dxpApp_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary
 
-dxpApp_LIBS += dxp xerxes
+dxpApp_LIBS += dxp handel
 dxpApp_LIBS += mca
 dxpApp_LIBS += calc sscan autosave
 dxpApp_LIBS_vxWorks += camac
