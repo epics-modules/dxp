@@ -156,7 +156,6 @@ typedef struct {
     int close_relay;
     int start;
     int stop;
-    int trace_wait;
 } SPECIAL_FLAGS;
 
 volatile int dxpRecordDebug = 0;
@@ -753,12 +752,6 @@ static long special(struct dbAddr *paddr, int after)
          goto found_param;
     }
 
-    /* Trace wait, recompute X axis for ADC trace */
-    if (paddr->pfield == (void *) &pdxp->trace_wait) {
-             specialFlags->trace_wait = 1; 
-         goto found_param;
-    }
-
 found_param:
     specialFlags->anySet = 1;
     if (dxpRecordDebug > 5) printf("dxpRecord(special): exit\n");
@@ -773,7 +766,6 @@ static long process_special(dxpRecord *pdxp)
     short offset;
     int i;
     int status;
-    unsigned short monitor_mask = DBE_VALUE | DBE_LOG;
     DXP_SHORT_PARAM *short_param;
     DXP_TASK_PARAM *task_param;
     double *double_param;
@@ -865,18 +857,6 @@ static long process_special(dxpRecord *pdxp)
         specialFlags->stop = 0;
         status = (*pdset->send_dxp_msg) (pdxp, MSG_DXP_STOP_RUN, 
                   NULL, 0, 0., NULL);
-    }
-
-    /* Trace wait, recompute X axis for ADC trace */
-    if (specialFlags->trace_wait) {
-        specialFlags->trace_wait = 0;
-         /* Recompute the trace_x array, erase trace array */
-         for (i=0; i<minfo->ntrace; i++) {
-            pdxp->tptr[i] = 0;
-            pdxp->txptr[i] = pdxp->trace_wait * i;
-         }
-         db_post_events(pdxp,pdxp->tptr,monitor_mask);
-         db_post_events(pdxp,pdxp->txptr,monitor_mask);
     }
 
     specialFlags->anySet = 0;

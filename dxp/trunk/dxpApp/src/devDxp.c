@@ -52,6 +52,7 @@ typedef struct dxpReadbacks {
     int newBaselineHistory;
     int newBaselineHistogram;
     int newAdcTrace;
+    int newTraceWait;
     int acquiring;
     int blcut;
     int blCutEnbl;
@@ -368,7 +369,11 @@ void asynCallback(asynUser *pasynUser)
                  " setting emax=%f, mca_bin_width=%f\n",
                  pmsg->dvalue, dvalue);
              xiaSetAcquisitionValues(detChan, "mca_bin_width", &dvalue);
-          }
+         }
+         else if (pfield == (void *)&pdxp->trace_wait) {
+             /* New value of trace wait.  Just set flag, monitor() will post events */
+             pdxpReadbacks->newTraceWait = 1;
+         } 
          readDxpParams(pasynUser);
          break;
      case MSG_DXP_SET_SCAS:
@@ -663,6 +668,17 @@ static long monitor(struct dxpRecord *pdxp)
       pdxpReadbacks->newAdcTrace = 0;
       db_post_events(pdxp,pdxp->tptr,monitor_mask);
    }
+   if (pdxpReadbacks->newTraceWait) {
+      pdxpReadbacks->newTraceWait = 0;
+      /* Recompute the trace_x array, erase trace array */
+      for (i=0; i<minfo->ntrace; i++) {
+         pdxp->tptr[i] = 0;
+         pdxp->txptr[i] = pdxp->trace_wait * i;
+      }
+      db_post_events(pdxp,pdxp->tptr,monitor_mask);
+      db_post_events(pdxp,pdxp->txptr,monitor_mask);
+   }
+
    /* If BLMIN, BLMAX, or RUNTASKS bit for baseline cut have changed then
     * recompute the BASE_CUT array */
    blCutEnbl = (runtasks & RUNTASKS_BLCUT) != 0;
