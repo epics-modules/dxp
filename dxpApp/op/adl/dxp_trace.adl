@@ -1,7 +1,7 @@
 
 file {
-	name="C:\epics\adl\dxp_trace.adl"
-	version=020306
+	name="i:\epics\synApps5-1beta2\dxp\dxpApp\op\adl\dxp_trace.adl"
+	version=030003
 }
 display {
 	object {
@@ -96,13 +96,14 @@ display {
 	}
 	plotcom {
 		title="$(P)$(R) ADC Trace"
-		xlabel="Time Bin (time=bin*time per point)"
+		xlabel="Time (usec)"
 		ylabel="ADC units"
 		clr=14
 		bclr=4
 	}
 	style="line"
 	trace[0] {
+		xdata="$(P)$(R).TRACE_X"
 		ydata="$(P)$(R).TRACE"
 		data_clr=54
 	}
