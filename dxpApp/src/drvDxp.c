@@ -266,6 +266,7 @@ static asynStatus drvDxpWrite(void *drvPvt, asynUser *pasynUser,
     int signal;
     dxpChannel_t *dxpChan;
     double double_value;
+    int runActive=0;
 
     pasynManager->getAddr(pasynUser, &signal);
     dxpChan = findChannel(pPvt, pasynUser, signal);
@@ -325,7 +326,7 @@ static asynStatus drvDxpWrite(void *drvPvt, asynUser *pasynUser,
             /* set number of channels */
             pPvt->nchans = ivalue;
             double_value = ivalue;
-            /* Must stop run before setting parameters.  We should restart if it was running */
+            xiaGetRunData(pPvt->detChan, "run_active", &runActive);
             xiaStopRun(pPvt->detChan);
             xiaSetAcquisitionValues(pPvt->detChan, "number_mca_channels", 
                                     &double_value);
@@ -383,6 +384,7 @@ static asynStatus drvDxpWrite(void *drvPvt, asynUser *pasynUser,
             status = asynError;
             break;
     }
+    if (runActive) xiaStartRun(pPvt->detChan, 1);
     return(status);
 }
 
@@ -527,6 +529,7 @@ static void setPreset(drvDxpPvt *pPvt, asynUser *pasynUser,
                       int mode, double time)
 {
    double zero=0.;
+   int runActive=0;
 
    switch (mode) {
       case mcaPresetRealTime:
@@ -539,24 +542,25 @@ static void setPreset(drvDxpPvt *pPvt, asynUser *pasynUser,
    
    /* If preset live and real time are both zero set to count forever */
    if ((dxpChan->plive == 0.) && (dxpChan->preal == 0.)) {
-       /* Must stop run before setting parameters.  We should restart if it was running */
+       xiaGetRunData(pPvt->detChan, "run_active", &runActive);
        xiaStopRun(pPvt->detChan);
        xiaSetAcquisitionValues(pPvt->detChan, "preset_standard", &zero);
    }
    /* If preset live time is zero and real time is non-zero use real time */
    if ((dxpChan->plive == 0.) && (dxpChan->preal != 0.)) {
        time = dxpChan->preal;
-       /* Must stop run before setting parameters.  We should restart if it was running */
+       xiaGetRunData(pPvt->detChan, "run_active", &runActive);
        xiaStopRun(pPvt->detChan);
        xiaSetAcquisitionValues(pPvt->detChan, "preset_runtime", &time);
    }
    /* If preset live time is non-zero use live time */
    if (dxpChan->plive != 0.) {
        time = dxpChan->plive;
-       /* Must stop run before setting parameters.  We should restart if it was running */
+       xiaGetRunData(pPvt->detChan, "run_active", &runActive);
        xiaStopRun(pPvt->detChan);
        xiaSetAcquisitionValues(pPvt->detChan, "preset_livetime", &time);
    }
+   if (runActive) xiaStartRun(pPvt->detChan, 1);
 }
 
 
