@@ -50,6 +50,7 @@ extern "C"
 #endif
 volatile int devDxpMpfDebug = 0;
 }
+epicsExportAddress(int, devDxpMpfDebug);
 
 
 class DevDxpMpf : public DevMpf

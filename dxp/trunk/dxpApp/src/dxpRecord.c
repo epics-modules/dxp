@@ -210,6 +210,7 @@ static int allDecimations[MAX_DECIMATIONS] = {0,2,4,6};
                             printf(FMT,##V);}}
 #endif
 volatile int dxpRecordDebug = 0;
+epicsExportAddress(int, dxpRecordDebug);
 
 typedef struct {
    unsigned short runtasks;
