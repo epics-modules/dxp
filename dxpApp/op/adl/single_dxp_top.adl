@@ -1,14 +1,14 @@
 
 file {
-	name="i:\epics\synApps5-1beta2\dxp\dxpApp\op\adl\single_dxp_top.adl"
-	version=030003
+	name="C:\Documents and Settings\epics\Desktop\dxpApp\op\adl\single_dxp_top.adl"
+	version=020306
 }
 display {
 	object {
-		x=83
-		y=26
+		x=273
+		y=45
 		width=705
-		height=542
+		height=522
 	}
 	clr=14
 	bclr=4
@@ -92,7 +92,7 @@ rectangle {
 		x=4
 		y=37
 		width=310
-		height=500
+		height=480
 	}
 	"basic attribute" {
 		clr=54
@@ -356,7 +356,7 @@ rectangle {
 		x=320
 		y=37
 		width=380
-		height=500
+		height=480
 	}
 	"basic attribute" {
 		clr=54
@@ -908,70 +908,59 @@ text {
 	textix="Baseline"
 	align="horiz. centered"
 }
-composite {
+"text entry" {
 	object {
-		x=438
+		x=476
 		y=245
-		width=242
+		width=75
 		height=22
 	}
-	"composite name"=""
-	children {
-		"text entry" {
-			object {
-				x=476
-				y=245
-				width=75
-				height=22
-			}
-			control {
-				chan="$(P)$(D).BASE_CUT_PCT"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		text {
-			object {
-				x=438
-				y=246
-				width=30
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Cut"
-			align="horiz. centered"
-		}
-		menu {
-			object {
-				x=620
-				y=246
-				width=60
-				height=20
-			}
-			control {
-				chan="$(P)$(D).T11V"
-				clr=14
-				bclr=51
-			}
-		}
-		text {
-			object {
-				x=556
-				y=246
-				width=60
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Enable"
-			align="horiz. centered"
-		}
+	control {
+		chan="$(P)$(D).BASE_CUT_PCT"
+		clr=14
+		bclr=51
 	}
+	limits {
+	}
+}
+text {
+	object {
+		x=438
+		y=246
+		width=30
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Cut"
+	align="horiz. centered"
+}
+menu {
+	object {
+		x=620
+		y=246
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(D).T11V"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=556
+		y=246
+		width=60
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Enable"
+	align="horiz. centered"
 }
 composite {
 	object {
@@ -1337,60 +1326,6 @@ composite {
 		x=358
 		y=460
 		width=248
-		height=20
-	}
-	"composite name"=""
-	children {
-		"message button" {
-			object {
-				x=476
-				y=460
-				width=50
-				height=20
-			}
-			control {
-				chan="$(P)$(D).CLOSE_RELAY"
-				clr=14
-				bclr=51
-			}
-			label="Close"
-			press_msg="1"
-		}
-		"message button" {
-			object {
-				x=556
-				y=460
-				width=50
-				height=20
-			}
-			control {
-				chan="$(P)$(D).OPEN_RELAY"
-				clr=14
-				bclr=51
-			}
-			label="Open"
-			press_msg="1"
-		}
-		text {
-			object {
-				x=358
-				y=460
-				width=110
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Input Relay"
-			align="horiz. centered"
-		}
-	}
-}
-composite {
-	object {
-		x=358
-		y=485
-		width=248
 		height=22
 	}
 	"composite name"=""
@@ -1398,7 +1333,7 @@ composite {
 		"related display" {
 			object {
 				x=476
-				y=485
+				y=460
 				width=130
 				height=22
 			}
@@ -1419,7 +1354,7 @@ composite {
 		text {
 			object {
 				x=358
-				y=486
+				y=461
 				width=110
 				height=20
 			}
@@ -1433,7 +1368,7 @@ composite {
 composite {
 	object {
 		x=418
-		y=512
+		y=487
 		width=188
 		height=20
 	}
@@ -1442,7 +1377,7 @@ composite {
 		"related display" {
 			object {
 				x=476
-				y=512
+				y=487
 				width=130
 				height=20
 			}
@@ -1473,7 +1408,7 @@ composite {
 		text {
 			object {
 				x=418
-				y=512
+				y=487
 				width=50
 				height=20
 			}
