@@ -643,7 +643,7 @@ XIA_EXPORT void XIA_API DxpSetID(unsigned short id)
   }
 */
   /* Pause for delay time to let the signal settle */
-  /*  Sleep(delay);
+  /*  Sleep(delay); */
 
   /* 2) Toggle C2 twice */
   data = _inp(CPORT);
