@@ -13,6 +13,8 @@ include $(TOP)/configure/CONFIG
 
 LIBRARY_IOC_Linux   += dxp
 LIBRARY_IOC_vxWorks += dxp
+LIBRARY_IOC_cygwin32 += dxp
+LIBRARY_IOC_WIN32 += dxp
 
 DBDINC += dxpRecord
 DBD += dxpSupport.dbd
@@ -39,11 +41,17 @@ dxp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 PROD_IOC_vxWorks += dxpApp
 PROD_IOC_Linux += dxpApp
+PROD_IOC_cygwin32 += dxpApp
+PROD_IOC_WIN32 += dxpApp
 
 # <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
 dxpApp_SRCS_Linux += dxp_registerRecordDeviceDriver.cpp
+dxpApp_SRCS_cygwin32 += dxp_registerRecordDeviceDriver.cpp
+dxpApp_SRCS_WIN32 += dxp_registerRecordDeviceDriver.cpp
 dxpApp_SRCS_vxWorks += dxpVX_registerRecordDeviceDriver.cpp
 dxpApp_SRCS_Linux += dxpMain.cpp
+dxpApp_SRCS_cygwin32 += dxpMain.cpp
+dxpApp_SRCS_WIN32 += dxpMain.cpp
 dxpApp_SRCS_vxWorks += -nil-
 #The following adds support from base/src/vxWorks
 dxpApp_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary
@@ -53,6 +61,7 @@ dxpApp_LIBS += mca
 dxpApp_LIBS += calc sscan autosave
 dxpApp_LIBS_vxWorks += camac
 dxpApp_LIBS += asyn
+dxpApp_SYS_LIBS_cygwin32 += DLPORTIO
 dxpApp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #===========================
