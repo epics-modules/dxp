@@ -6,7 +6,7 @@ include "dxpRecord.dbd"
 ################
 # DEVICE SUPPORT
 ################
-device(dxp,VME_IO,devDxp,"asyn DXP")
+device(dxp,INST_IO,devDxp,"asyn DXP")
 
 ################
 # DRIVER SUPPORT
