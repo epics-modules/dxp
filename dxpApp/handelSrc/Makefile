@@ -53,16 +53,10 @@ handel_SRCS += dxp4c2x_psl.c
 handel_SRCS += x10p_psl.c
 handel_LIBS += $(EPICS_BASE_IOC_LIBS)
 
-INC += xerxes.h
-INC += xerxes_structures.h
-INC += xerxes_generic.h
-INC += xia_xerxes_structures.h
-INC += xerxesdef.h
 INC += xia_common.h
-INC += xia_md.h
-INC += xia_mddef.h
 INC += handel.h
 INC += handeldef.h
+INC += handel_generic.h
 
 #===========================
 
