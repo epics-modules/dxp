@@ -11,47 +11,56 @@
 # 25-Feb-2002  MLR Changed the BASE field from SHORT to USHORT 
 # 6-MAR-2002   MLR Added GAIN, PGAIN, EMAX fields
 # 10-MAR-2002  MLR Added FIPPI, EMAXRBV, GAINRBV fields
+# 07-DEC-2004  MLR Major re-write for Handel API
 
-menu(dxpPLRT) {
-    choice(dxpPLRT_Negative,"Negative")
-    choice(dxpPLRT_Positive,"Positive")
-}
 menu(dxpYN) {
     choice(dxpYN_No,"No")
     choice(dxpYN_Yes,"Yes")
 }
-menu(dxpCTL) {
-    choice(dxpCTL_ADC_TRACE,"Acquire ADC trace")
-    choice(dxpCTL_BASELINE_HISTORY,"Acquire baseline history")
-    choice(dxpCTL_RC_BASELINE,"Acquire RC baseline")
-    choice(dxpCTL_RC_EVENT,"Acquire RC event")
-    choice(dxpCTL_SET_ASCDAC,"Set ASC DAC")
-    choice(dxpCTL_TRKDAC,"Calibrate TrackDAC")
-    choice(dxpCTL_SLOPE_CALIB,"Calibrate slope")
-    choice(dxpCTL_SLEEP_DSP,"Put DSP to sleep")
-    choice(dxpCTL_PROGRAM_FIPPI,"Program FIPPI")
-    choice(dxpCTL_SET_POLARITY,"Set polarity")
-    choice(dxpCTL_CLOSE_INPUT_RELAY,"Close input relay")
-    choice(dxpCTL_OPEN_INPUT_RELAY,"Open input relay")
-    choice(dxpCTL_RESET,"Reset DSP")
-}
+
 recordtype(dxp) {
     include "dbCommon.dbd"
+# Input specification
+    field(INP,DBF_INLINK) {
+        prompt("Input specification")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(MTYP,DBF_LONG) {
+        prompt("Module type")
+        asl(ASL0)
+    }
+
+# VAL field, unused
     field(VAL,DBF_LONG) {
         prompt("Current value")
         asl(ASL0)
         special(SPC_NOMOD)
         pp(TRUE)
     }
+
+# Array fields
     field(BPTR,DBF_NOACCESS) {
         prompt("Baseline histogram buffer pointer")
         special(SPC_NOMOD)
         interest(4)
         size(4)
-        extra("unsigned short *bptr")
+        extra("long *bptr")
     }
-    field(BASE,DBF_USHORT) {
+    field(BASE,DBF_LONG) {
         prompt("Baseline Histogram")
+        asl(ASL0)
+        special(SPC_DBADDR)
+    }
+    field(BHPTR,DBF_NOACCESS) {
+        prompt("Baseline history buffer pointer")
+        special(SPC_NOMOD)
+        interest(4)
+        size(4)
+        extra("long *bhptr")
+    }
+    field(BHIST,DBF_LONG) {
+        prompt("Baseline History")
         asl(ASL0)
         special(SPC_DBADDR)
     }
@@ -62,7 +71,7 @@ recordtype(dxp) {
         size(4)
         extra("unsigned short *pptr")
     }
-    field(PARM,DBF_SHORT) {
+    field(PARM,DBF_USHORT) {
         prompt("DXP Parameters")
         asl(ASL0)
         special(SPC_DBADDR)
@@ -72,1186 +81,1307 @@ recordtype(dxp) {
         special(SPC_NOMOD)
         interest(4)
         size(4)
-        extra("unsigned long *tptr")
+        extra("long *tptr")
     }
     field(TRACE,DBF_LONG) {
-        prompt("ADC trace/baseline history")
+        prompt("ADC trace")
         asl(ASL0)
         special(SPC_DBADDR)
     }
-    field(TRWT,DBF_LONG) {
-        prompt("Trace wait")
+    field(RBPTR,DBF_NOACCESS) {
+        prompt("Readback Pointer")
+        special(SPC_NOMOD)
+        interest(4)
+        size(4)
+        extra("void *rbptr")
+    }
+
+# Special tasks
+    field(READ_TRACE,DBF_LONG) {
+        prompt("Read ADC trace")
+        interest(1)
+        special(SPC_MOD)
+    }
+
+    field(READ_HISTORY,DBF_LONG) {
+        prompt("Read baseline history")
+        interest(1)
+        special(SPC_MOD)
+    }
+
+    field(OPEN_RELAY,DBF_LONG) {
+        prompt("Open input relay")
+        interest(1)
+        special(SPC_MOD)
+    }
+
+    field(CLOSE_RELAY,DBF_LONG) {
+        prompt("Close input relay")
+        interest(1)
+        special(SPC_MOD)
+    }
+
+# Higher level control parameters
+    field(PKTIM,DBF_DOUBLE) {
+        prompt("Peaking time")
+        asl(ASL0)
+        special(SPC_MOD)
+    }
+    field(PKTIM_RBV,DBF_DOUBLE) {
+        prompt("Peaking time readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(ADC_RULE,DBF_DOUBLE) {
+        prompt("ADC rule at .5 EMAX")
+        asl(ASL0)
+        special(SPC_MOD)
+    }
+    field(ADC_RULE_RBV,DBF_DOUBLE) {
+        prompt("ADC rule readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(PGAIN,DBF_DOUBLE) {
+        prompt("Preamp Gain (mv/keV)")
+        asl(ASL0)
+        special(SPC_MOD)
+        initial(4.)
+    }
+    field(EMAX,DBF_DOUBLE) {
+        prompt("Maximum energy (keV)")
+        asl(ASL0)
+        special(SPC_MOD)
+        initial(20.)
+    }
+    field(EMAX_RBV,DBF_DOUBLE) {
+        prompt("Maximum energy readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(FAST_TRIG,DBF_DOUBLE) {
+        prompt("Fast trigger threshold (eV)")
+        asl(ASL0)
+        special(SPC_MOD)
+    }
+    field(FAST_TRIG_RBV,DBF_DOUBLE) {
+        prompt("Fast trigger readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(TRIG_PKTIM,DBF_DOUBLE) {
+        prompt("Trigger peaking time")
+        asl(ASL0)
+        special(SPC_MOD)
+    }
+    field(TRIG_PKTIM_RBV,DBF_DOUBLE) {
+        prompt("Trigger peaking time readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(TRIG_GAPTIM,DBF_DOUBLE) {
+        prompt("Trigger gap time")
+        asl(ASL0)
+        special(SPC_MOD)
+    }
+    field(TRIG_GAPTIM_RBV,DBF_DOUBLE) {
+        prompt("Trigger gap time readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(SLOW_TRIG,DBF_DOUBLE) {
+        prompt("Slow trigger threshold (eV)")
+        asl(ASL0)
+        special(SPC_MOD)
+    }
+    field(SLOW_TRIG_RBV,DBF_DOUBLE) {
+        prompt("Slow trigger readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(GAPTIM,DBF_DOUBLE) {
+        prompt("Gap time")
+        asl(ASL0)
+        special(SPC_MOD)
+    }
+    field(GAPTIM_RBV,DBF_DOUBLE) {
+        prompt("Gap time readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(TRACE_WAIT,DBF_DOUBLE) {
+        prompt("Trace wait (usec)")
+        inituak(1.)
         asl(ASL0)
     }
-    field(MTYP,DBF_LONG) {
-        prompt("Module type")
+
+# Run statistics
+    field(FAST_PEAKS,DBF_LONG) {
+        prompt("Fast peaks (triggers)")
         asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(SLOW_PEAKS,DBF_LONG) {
+        prompt("Slow peaks (counts)")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(ICR,DBF_DOUBLE) {
+        prompt("Input count rate")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(OCR,DBF_DOUBLE) {
+        prompt("Output count rate")
+        asl(ASL0)
+        special(SPC_NOMOD)
     }
 
 # ASC parameters - 9 total
     field(A01V,DBF_SHORT) {
-                prompt("A01V")
+        prompt("A01V")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(A01L,DBF_STRING) {
-                prompt("A01V label")
+        prompt("A01V label")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(A01O,DBF_SHORT) {
-                prompt("A01V offset")
+        prompt("A01V offset")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(A02V,DBF_SHORT) {
-                prompt("A02V")
+        prompt("A02V")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(A02L,DBF_STRING) {
-                prompt("A02V label")
+        prompt("A02V label")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(A02O,DBF_SHORT) {
-                prompt("A02V offset")
+        prompt("A02V offset")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(A03V,DBF_SHORT) {
-                prompt("A03V")
+        prompt("A03V")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(A03L,DBF_STRING) {
-                prompt("A02V label")
+        prompt("A02V label")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(A03O,DBF_SHORT) {
-                prompt("A02V offset")
+        prompt("A02V offset")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(A04V,DBF_SHORT) {
-                prompt("A04V")
+        prompt("A04V")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(A04L,DBF_STRING) {
-                prompt("A04V label")
+        prompt("A04V label")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(A04O,DBF_SHORT) {
-                prompt("A04V offset")
+        prompt("A04V offset")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(A05V,DBF_SHORT) {
-                prompt("A05V")
+        prompt("A05V")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(A05L,DBF_STRING) {
-                prompt("A05V label")
+        prompt("A05V label")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(A05O,DBF_SHORT) {
-                prompt("A05V offset")
+        prompt("A05V offset")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(A06V,DBF_SHORT) {
-                prompt("A06V")
+        prompt("A06V")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(A06L,DBF_STRING) {
-                prompt("A06V label")
+        prompt("A06V label")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(A06O,DBF_SHORT) {
-                prompt("A06V offset")
+        prompt("A06V offset")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(A07V,DBF_SHORT) {
-                prompt("A07V")
+        prompt("A07V")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(A07L,DBF_STRING) {
-                prompt("A07V label")
+        prompt("A07V label")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(A07O,DBF_SHORT) {
-                prompt("A07V offset")
+        prompt("A07V offset")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(A08V,DBF_SHORT) {
-                prompt("A08V")
+        prompt("A08V")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(A08L,DBF_STRING) {
-                prompt("A08V label")
+        prompt("A08V label")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(A08O,DBF_SHORT) {
-                prompt("A08V offset")
+        prompt("A08V offset")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(A09V,DBF_SHORT) {
-                prompt("A09V")
+        prompt("A09V")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(A09L,DBF_STRING) {
-                prompt("A09V label")
+        prompt("A09V label")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(A09O,DBF_SHORT) {
-                prompt("A09V offset")
+        prompt("A09V offset")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
 # FiPPI parameters - 10 total
     field(F01V,DBF_SHORT) {
-                prompt("F01V")
+        prompt("F01V")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(F01L,DBF_STRING) {
-                prompt("F01V label")
+        prompt("F01V label")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(F01O,DBF_SHORT) {
-                prompt("F01V offset")
+        prompt("F01V offset")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(F02V,DBF_SHORT) {
-                prompt("F02V")
+        prompt("F02V")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(F02L,DBF_STRING) {
-                prompt("F02V label")
+        prompt("F02V label")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(F02O,DBF_SHORT) {
-                prompt("F02V offset")
+        prompt("F02V offset")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(F03V,DBF_SHORT) {
-                prompt("F03V")
+        prompt("F03V")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(F03L,DBF_STRING) {
-                prompt("F03V label")
+        prompt("F03V label")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(F03O,DBF_SHORT) {
-                prompt("F03V offset")
+        prompt("F03V offset")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(F04V,DBF_SHORT) {
-                prompt("F04V")
+        prompt("F04V")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(F04L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(F04O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(F05V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(F05L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(F05O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(F06V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(F06L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(F06O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(F07V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(F07L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(F07O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(F08V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(F08L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(F08O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(F09V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(F09L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(F09O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(F10V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(F10L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(F10O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
 # DSP parameters - 10 total
     field(D01V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(D01L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(D01O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(D02V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(D02L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(D02O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(D03V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(D03L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(D03O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(D04V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(D04L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(D04O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(D05V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(D05L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(D05O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(D06V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(D06L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(D06O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(D07V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(D07L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(D07O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(D08V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(D08L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(D08O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(D09V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(D09L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(D09O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(D10V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(D10L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(D10O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
 # Baseline parameters - 8 total
     field(B01V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(B01L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(B01O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(B02V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(B02L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(B02O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(B03V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(B03L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(B03O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(B04V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(B04L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(B04O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(B05V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(B05L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(B05O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(B06V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_MOD)
     }
     field(B06L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(B06O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
-        field(B07V,DBF_SHORT) {
-                prompt("")
-                asl(ASL0)
-                special(SPC_MOD)
-        }
-        field(B07L,DBF_STRING) {
-                prompt("")
-                asl(ASL0)
-                size(16)
-                special(SPC_NOMOD)
-        }
-        field(B07O,DBF_SHORT) {
-                prompt("")
-                asl(ASL0)
-                special(SPC_NOMOD)
-        }
-        field(B08V,DBF_SHORT) {
-                prompt("")
-                asl(ASL0)
-                special(SPC_MOD)
-        }
-        field(B08L,DBF_STRING) {
-                prompt("")
-                asl(ASL0)
-                size(16)
-                special(SPC_NOMOD)
-        }
-        field(B08O,DBF_SHORT) {
-                prompt("")
-                asl(ASL0)
-                special(SPC_NOMOD)
-        }
+    field(B07V,DBF_SHORT) {
+        prompt("")
+        asl(ASL0)
+        special(SPC_MOD)
+    }
+    field(B07L,DBF_STRING) {
+        prompt("")
+        asl(ASL0)
+        size(16)
+        special(SPC_NOMOD)
+    }
+    field(B07O,DBF_SHORT) {
+        prompt("")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(B08V,DBF_SHORT) {
+        prompt("")
+        asl(ASL0)
+        special(SPC_MOD)
+    }
+    field(B08L,DBF_STRING) {
+        prompt("")
+        asl(ASL0)
+        size(16)
+        special(SPC_NOMOD)
+    }
+    field(B08O,DBF_SHORT) {
+        prompt("")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
 
 
 # Read-only parameters - 16 total
     field(R01V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(R01L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(R01O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(R02V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(R02L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(R02O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(R03V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(R03L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(R03O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(R04V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(R04L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(R04O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(R05V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(R05L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(R05O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(R06V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(R06L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(R06O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(R07V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(R07L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(R07O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(R08V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(R08L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(R08O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(R09V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(R09L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(R09O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(R10V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(R10L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(R10O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(R11V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(R11L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(R11O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(R12V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(R12L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(R12O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(R13V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(R13L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(R13O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(R14V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(R14L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(R14O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(R15V,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(R15L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(R15O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
-        field(R16V,DBF_SHORT) {
-                prompt("")
-                asl(ASL0)
-                special(SPC_NOMOD)
-        }
-        field(R16L,DBF_STRING) {
-                prompt("")
-                asl(ASL0)
-                size(16)
-                special(SPC_NOMOD)
-        }
-        field(R16O,DBF_SHORT) {
-                prompt("")
-                asl(ASL0)
-                special(SPC_NOMOD)
-        }
+    field(R16V,DBF_SHORT) {
+        prompt("")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(R16L,DBF_STRING) {
+        prompt("")
+        asl(ASL0)
+        size(16)
+        special(SPC_NOMOD)
+    }
+    field(R16O,DBF_SHORT) {
+        prompt("")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
 
 
 # Statistics parameters - 14 total
     field(S01V,DBF_LONG) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(S01L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(S01O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(S02V,DBF_LONG) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(S02L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(S02O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(S03V,DBF_LONG) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(S03L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(S03O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(S04V,DBF_LONG) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(S04L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(S04O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(S05V,DBF_LONG) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(S05L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(S05O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(S06V,DBF_LONG) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(S06L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(S06O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(S07V,DBF_LONG) {
-                prompt("")
+        prompt("")
         prompt("Livetime")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(S07L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(S07O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(S08V,DBF_LONG) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(S08L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(S08O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(S09V,DBF_LONG) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(S09L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(S09O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(S10V,DBF_LONG) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(S10L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(S10O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(S11V,DBF_LONG) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(S11L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(S11O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(S12V,DBF_LONG) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(S12L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(S12O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(S13V,DBF_LONG) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(S13L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(S13O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
     field(S14V,DBF_LONG) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
     field(S14L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(16)
         special(SPC_NOMOD)
     }
     field(S14O,DBF_SHORT) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
     }
 
-# Fields to start and stop data acquisition
-    field(STRT,DBF_LONG) {
-        prompt("Start acquiring")
-        asl(ASL0)
-        special(SPC_MOD)
-    }
-
-    field(STOP,DBF_LONG) {
-        prompt("Stop acquiring")
-        asl(ASL0)
-        special(SPC_MOD)
-    }
-
-    field(ERAS,DBF_LONG) {
-        prompt("Erase")
-        asl(ASL0)
-        special(SPC_MOD)
-    }
-
-# Run tasks choices
+# Run tasks choices - 16 total
     field(T01V,DBF_MENU) {
         prompt("")
         promptgroup(GUI_COMMON)
@@ -1260,7 +1390,7 @@ recordtype(dxp) {
         menu(dxpYN)
     }
     field(T01L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(25)
         special(SPC_NOMOD)
@@ -1274,7 +1404,7 @@ recordtype(dxp) {
         menu(dxpYN)
     }
     field(T02L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(25)
         special(SPC_NOMOD)
@@ -1288,7 +1418,7 @@ recordtype(dxp) {
         menu(dxpYN)
     }
     field(T03L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(25)
         special(SPC_NOMOD)
@@ -1302,7 +1432,7 @@ recordtype(dxp) {
         menu(dxpYN)
     }
     field(T04L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(25)
         special(SPC_NOMOD)
@@ -1316,7 +1446,7 @@ recordtype(dxp) {
         menu(dxpYN)
     }
     field(T05L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(25)
         special(SPC_NOMOD)
@@ -1330,7 +1460,7 @@ recordtype(dxp) {
         menu(dxpYN)
     }
     field(T06L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(25)
         special(SPC_NOMOD)
@@ -1344,7 +1474,7 @@ recordtype(dxp) {
         menu(dxpYN)
     }
     field(T07L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(25)
         special(SPC_NOMOD)
@@ -1358,7 +1488,7 @@ recordtype(dxp) {
         menu(dxpYN)
     }
     field(T08L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(25)
         special(SPC_NOMOD)
@@ -1372,7 +1502,7 @@ recordtype(dxp) {
         menu(dxpYN)
     }
     field(T09L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(25)
         special(SPC_NOMOD)
@@ -1386,7 +1516,7 @@ recordtype(dxp) {
         menu(dxpYN)
     }
     field(T10L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(25)
         special(SPC_NOMOD)
@@ -1400,88 +1530,80 @@ recordtype(dxp) {
         menu(dxpYN)
     }
     field(T11L,DBF_STRING) {
-                prompt("")
+        prompt("")
         asl(ASL0)
         size(25)
         special(SPC_NOMOD)
     }
 
-# Calibration fields
-    field(RCTL,DBF_MENU) {
-        prompt("Run control task")
+    field(T12V,DBF_MENU) {
+        prompt("")
         promptgroup(GUI_COMMON)
         interest(1)
         special(SPC_MOD)
         menu(dxpYN)
     }
+    field(T12L,DBF_STRING) {
+        prompt("")
+        asl(ASL0)
+        size(25)
+        special(SPC_NOMOD)
+    }
 
-    field(CTLR,DBF_MENU) {
-        prompt("Control task routine")
+    field(T13V,DBF_MENU) {
+        prompt("")
         promptgroup(GUI_COMMON)
         interest(1)
         special(SPC_MOD)
-        menu(dxpCTL)
+        menu(dxpYN)
     }
-
-# Higher level parameters
-        field(PKTM,DBF_ENUM) {
-                prompt("Peaking time")
-                asl(ASL0)
-                special(SPC_MOD)
-        }
-    field(PKL,DBF_NOACCESS) {
-        prompt("Peak label pointer")
-        special(SPC_NOMOD)
-        interest(4)
-        size(4)
-        extra("char *pkl")
-    }
-        field(FIPPI,DBF_ENUM) {
-                prompt("FiPPI")
-                asl(ASL0)
-                special(SPC_MOD)
-                initial(1)
-        }
-    field(PKRL,DBF_NOACCESS) {
-        prompt("Peak range pointer")
-        special(SPC_NOMOD)
-        interest(4)
-        size(4)
-        extra("char *pkrl")
-    }
-    field(GAIN,DBF_FLOAT) {
-                prompt("ASC Gain")
+    field(T13L,DBF_STRING) {
+        prompt("")
         asl(ASL0)
-        special(SPC_MOD)
-                initial(1.)
-    }
-    field(GAINRBV,DBF_FLOAT) {
-                prompt("ASC Gain Readback")
-        asl(ASL0)
-        special(SPC_NOMOD)
-    }
-    field(PGAIN,DBF_FLOAT) {
-                prompt("Preamp Gain (mv/keV)")
-        asl(ASL0)
-        special(SPC_MOD)
-                initial(4.)
-    }
-    field(EMAX,DBF_FLOAT) {
-                prompt("Maximum energy (keV)")
-        asl(ASL0)
-        special(SPC_MOD)
-                initial(20.)
-    }
-    field(EMAXRBV,DBF_FLOAT) {
-                prompt("Maximum energy readback")
-        asl(ASL0)
+        size(25)
         special(SPC_NOMOD)
     }
 
-# Input specification
-    field(INP,DBF_INLINK) {
-        prompt("Input specification")
+    field(T14V,DBF_MENU) {
+        prompt("")
+        promptgroup(GUI_COMMON)
+        interest(1)
+        special(SPC_MOD)
+        menu(dxpYN)
+    }
+    field(T14L,DBF_STRING) {
+        prompt("")
         asl(ASL0)
+        size(25)
         special(SPC_NOMOD)
     }
+
+    field(T15V,DBF_MENU) {
+        prompt("")
+        promptgroup(GUI_COMMON)
+        interest(1)
+        special(SPC_MOD)
+        menu(dxpYN)
+    }
+    field(T15L,DBF_STRING) {
+        prompt("")
+        asl(ASL0)
+        size(25)
+        special(SPC_NOMOD)
+    }
+
+    field(T16V,DBF_MENU) {
+        prompt("")
+        promptgroup(GUI_COMMON)
+        interest(1)
+        special(SPC_MOD)
+        menu(dxpYN)
+    }
+    field(T16L,DBF_STRING) {
+        prompt("")
+        asl(ASL0)
+        size(25)
+        special(SPC_NOMOD)
+    }
+
 }
