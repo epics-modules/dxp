@@ -6,11 +6,30 @@
 
 typedef enum {
     MSG_DXP_SET_SHORT_PARAM,
-    MSG_DXP_SET_LONG_PARAM,
+    MSG_DXP_SET_DOUBLE_PARAM,
     MSG_DXP_CONTROL_TASK,
-    MSG_DXP_READ_PARAMS,
-    MSG_DXP_DOWNLOAD_FIPPI
+    MSG_DXP_READ_PARAMS
 } devDxpCommand;
+
+typedef struct dxpReadbacks {
+    long fast_peaks;
+    long slow_peaks;
+    double icr;
+    double ocr;
+    double slow_trig;
+    double pktim;
+    double gaptim;
+    double adc_rule;
+    double mca_bin_width;
+    double number_mca_channels;
+    double emax;
+    double fast_trig;
+    double trig_pktim;
+    double trig_gaptim;
+    int newBaselineHistory;
+    int newBaselineHistogram;
+    int newAdcTrace;
+} dxpReadbacks;
 
 typedef struct devDxpDset {
         long            number;
@@ -18,8 +37,7 @@ typedef struct devDxpDset {
         DEVSUPFUN       init;
         DEVSUPFUN       init_record;
         DEVSUPFUN       get_ioint_info;
-        long            (*send_mca_msg)(dxpRecord *pdxp, mcaCommand);
         long            (*send_dxp_msg)(dxpRecord *pdxp, devDxpCommand,
-                                        int v1, int v2);
-        long            (*read_array)(dxpRecord *pdxp);
+                                        char *name, int param, double dvalue,
+                                        void *pointer);
 } devDXP_dset;
