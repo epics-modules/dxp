@@ -601,6 +601,7 @@ static long monitor(struct dxpRecord *pdxp)
    int slowlen        = pdxp->pptr[minfo->offsets.slowlen];
    double eVPerADC;
    double eVPerBin;
+   double emax;
 
     if (dxpRecordDebug > 5) printf("dxpRecord(monitor): entry\n");
    /* Get the value of each parameter, post monitor if it is different
@@ -720,10 +721,10 @@ static long monitor(struct dxpRecord *pdxp)
       pdxp->adc_rule_rbv = pdxpReadbacks->adc_rule;
       db_post_events(pdxp, &pdxp->adc_rule_rbv, monitor_mask);
    }
-   pdxpReadbacks->emax = pdxpReadbacks->mca_bin_width / 1000. * 
+   emax = pdxpReadbacks->mca_bin_width / 1000. * 
                          pdxpReadbacks->number_mca_channels;
-   if (pdxp->emax_rbv != pdxpReadbacks->emax) {
-      pdxp->emax_rbv = pdxpReadbacks->emax;
+   if (pdxp->emax_rbv != emax) {
+      pdxp->emax_rbv = emax;
       db_post_events(pdxp, &pdxp->emax_rbv, monitor_mask);
    }
    if (pdxp->fast_peaks != pdxpReadbacks->fast_peaks) {
