@@ -1043,7 +1043,7 @@ HANDEL_STATIC int HANDEL_API xiaMergeDefaults(char *output, char *input1, char *
 		  
 		  if (status != XIA_SUCCESS) 
 			{
-			  sprintf(info_string, "Error adding default %s (value = %lf) to alias %s", current->name, current->data, output);
+			  sprintf(info_string, "Error adding default %s (value = %f) to alias %s", current->name, current->data, output);
 			  xiaLogError("xiaMergeDefaults", info_string, status);
 			  return status;
 			}
@@ -1060,7 +1060,7 @@ HANDEL_STATIC int HANDEL_API xiaMergeDefaults(char *output, char *input1, char *
 	  
 	  if (status != XIA_SUCCESS) 
 		{
-		  sprintf(info_string, "Error adding default %s (value = %lf) to alias %s", current->name, current->data, output);
+		  sprintf(info_string, "Error adding default %s (value = %f) to alias %s", current->name, current->data, output);
 		  xiaLogError("xiaSetDefaults", info_string, status);
 		  return status;
 		}
@@ -2044,7 +2044,7 @@ HANDEL_STATIC int HANDEL_API xiaSetDefaults(Module *module)
 			  handel_md_free((void *)defNames);
 			  handel_md_free((void *)defValues);
 			  
-			  sprintf(info_string, "Error adding default %s (value = %lf) to alias %s", current->name, current->data, tempAlias);
+			  sprintf(info_string, "Error adding default %s (value = %f) to alias %s", current->name, current->data, tempAlias);
 			  xiaLogError("xiaSetDefaults", info_string, status);
 			  return status;
 			}
@@ -2068,7 +2068,7 @@ HANDEL_STATIC int HANDEL_API xiaSetDefaults(Module *module)
 			  handel_md_free((void *)defNames);
 			  handel_md_free((void *)defValues);
 			  
-			  sprintf(info_string, "Error adding default %s (value = %lf) to alias %s", defNames[j], defValues[j], alias);
+			  sprintf(info_string, "Error adding default %s (value = %f) to alias %s", defNames[j], defValues[j], alias);
 			  xiaLogError("xiaSetDefaults", info_string, status);
 			  return status;
 			}
@@ -2089,7 +2089,7 @@ HANDEL_STATIC int HANDEL_API xiaSetDefaults(Module *module)
 			  handel_md_free((void *)defNames);
 			  handel_md_free((void *)defValues);
 			  
-			  sprintf(info_string, "Error adding default %s (value = %lf) to alias %s", current->name, current->data, alias);
+			  sprintf(info_string, "Error adding default %s (value = %f) to alias %s", current->name, current->data, alias);
 			  xiaLogError("xiaSetDefaults", info_string, status);
 			  return status;
 			}
