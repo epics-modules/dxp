@@ -1,4 +1,7 @@
-/* drvDXPAsyn.h -- communication between device and driver using asyn */
+/* asynDxp.h -- communication between device and driver using asyn */
+
+#ifndef asynDxpH
+#define asynDxpH
 
 #include <asynDriver.h>
 
@@ -21,3 +24,5 @@ typedef struct {
     asynStatus (*downloadFippi)(void *drvPvt, asynUser *pasynUser,
                                 int fippiIndex);
 } asynDxp;
+
+#endif /* asynDxpH */
