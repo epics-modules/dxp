@@ -50,11 +50,15 @@ typedef struct {
     void *pointer;
 } devDxpMessage;
 
-static long init_record(dxpRecord *pdxp, int *module);
+static long init_record(dxpRecord *pdxp, int *detChan);
 static long send_dxp_msg(dxpRecord *pdxp, devDxpCommand command, 
                          char *name, int param, double dvalue,
                          void *pointer);
 static void asynCallback(asynUser *pasynUser);
+
+static char *sca_lo[NUM_DXP_SCAS];
+static char *sca_hi[NUM_DXP_SCAS];
+#define SCA_NAME_LEN 10
 
 static const struct devDxpDset devDxp = {
     5,
@@ -67,12 +71,13 @@ static const struct devDxpDset devDxp = {
 epicsExportAddress(dset, devDxp);
 
 
-static long init_record(dxpRecord *pdxp, int *module)
+static long init_record(dxpRecord *pdxp, int *detChan)
 {
     char *userParam;
     asynUser *pasynUser;
     asynStatus status;
     devDxpPvt *pPvt;
+    int i;
 
     /* Allocate asynDxpPvt private structure */
     pPvt = callocMustSucceed(1, sizeof(devDxpPvt), 
@@ -92,7 +97,7 @@ static long init_record(dxpRecord *pdxp, int *module)
                      pdxp->name, pasynUser->errorMessage);
     }
 
-    *module = pPvt->channel;
+    *detChan = pPvt->channel;
 
     /* Connect to device */
     status = pasynManager->connectDevice(pasynUser, pPvt->portName, 
@@ -101,6 +106,14 @@ static long init_record(dxpRecord *pdxp, int *module)
         asynPrint(pasynUser, ASYN_TRACE_ERROR,
                   "devDxp::init_record, connectDevice failed\n");
         goto bad;
+    }
+
+    /* Create SCA strings */
+    for (i=0; i<NUM_DXP_SCAS; i++) {
+        sca_lo[i] = calloc(i, SCA_NAME_LEN);
+        sprintf(sca_lo[i], "sca%d_lo", i);
+        sca_hi[i] = calloc(1, SCA_NAME_LEN);
+        sprintf(sca_hi[i], "sca%d_hi", i);
     }
 
     return(0);
@@ -162,6 +175,7 @@ void asynCallback(asynUser *pasynUser)
     void *pfield;
     double info[2];
     double dvalue;
+    int i;
 
     pasynManager->getAddr(pasynUser, &detChan);
     asynPrint(pasynUser, ASYN_TRACE_FLOW,
@@ -169,6 +183,12 @@ void asynCallback(asynUser *pasynUser)
               pmsg->dxpCommand);
 
      switch(pmsg->dxpCommand) {
+     case MSG_DXP_START_RUN:
+         xiaStartRun(detChan, 0);
+         break;
+     case MSG_DXP_STOP_RUN:
+         xiaStopRun(detChan);
+         break; 
      case MSG_DXP_SET_SHORT_PARAM:
          asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
              "devDxp::asynCallback, MSG_DXP_SET_SHORT_PARAM"
@@ -256,6 +276,17 @@ void asynCallback(asynUser *pasynUser)
              xiaSetAcquisitionValues(detChan, "mca_bin_width", &dvalue);
          }
          break;
+     case MSG_DXP_SET_SCAS:
+         xiaSetAcquisitionValues(detChan, "number_of_scas", &pmsg->dvalue);
+         for (i=0; i<pmsg->dvalue; i++) {
+             xiaSetAcquisitionValues(detChan, sca_lo[i], &pdxpReadbacks->sca_lo[i]);
+             xiaSetAcquisitionValues(detChan, sca_hi[i], &pdxpReadbacks->sca_hi[i]);
+         }
+         break;
+     case MSG_DXP_READ_BASELINE:
+         xiaGetRunData(detChan, "baseline", pdxp->bptr);
+         pdxpReadbacks->newBaselineHistogram = 1;
+         break;
      case MSG_DXP_CONTROL_TASK:
          /* Must stop run before setting parameters.  We should restart if it was running */
          xiaStopRun(detChan);
@@ -267,8 +298,6 @@ void asynCallback(asynUser *pasynUser)
              pmsg->name, info[0], info[1]);
          xiaDoSpecialRun(detChan, pmsg->name, info);
          if (strcmp(pmsg->name, "adc_trace") == 0) {
-            epicsThreadSleep(0.1);
-            xiaStopRun(detChan);
             asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
                  "devDxp::asynCallback, MSG_DXP_CONTROL_TASK"
                  " reading adc_trace\n",
@@ -277,8 +306,6 @@ void asynCallback(asynUser *pasynUser)
             pdxpReadbacks->newAdcTrace = 1;
          }
          else if (strcmp(pmsg->name, "baseline_history") == 0) {
-            epicsThreadSleep(0.1);
-            xiaStopRun(detChan);
             asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
                  "devDxp::asynCallback, MSG_DXP_CONTROL_TASK"
                  " reading baseline_history\n",
@@ -289,12 +316,13 @@ void asynCallback(asynUser *pasynUser)
          break;
      /* We should probably read all of the parameters after anything is written */
      case MSG_DXP_READ_PARAMS:
-         xiaGetRunData(detChan, "baseline", pdxp->bptr);
-         pdxpReadbacks->newBaselineHistogram = 1;
          xiaGetRunData(detChan, "input_count_rate", &pdxpReadbacks->icr);
          xiaGetRunData(detChan, "output_count_rate", &pdxpReadbacks->ocr);
          xiaGetRunData(detChan, "triggers", &pdxpReadbacks->fast_peaks);
          xiaGetRunData(detChan, "events_in_run", &pdxpReadbacks->slow_peaks);
+         xiaGetRunData(detChan, "run_active", &pdxpReadbacks->acquiring);
+         /* run_active returns multiple bits - convert to 0/1 */
+         if (pdxpReadbacks->acquiring != 0) pdxpReadbacks->acquiring = 1;
          xiaGetParamData(detChan, "values", pdxp->pptr);
          xiaGetAcquisitionValues(detChan, "energy_threshold", 
                                  &pdxpReadbacks->slow_trig);
@@ -314,6 +342,17 @@ void asynCallback(asynUser *pasynUser)
                                  &pdxpReadbacks->mca_bin_width);
          xiaGetAcquisitionValues(detChan, "number_mca_channels", 
                                  &pdxpReadbacks->number_mca_channels);
+         /* There seems to be a bug in Handel.  It gives error reading number_of_scas
+          * written to, and then it always reads backs as 16, no matter what was written
+          * Comment out reading it, just set to 16 for now
+          * xiaGetAcquisitionValues(detChan, "number_of_scas", 
+          *                      &pdxpReadbacks->number_scas); */
+         pdxpReadbacks->number_scas = 16;
+         for (i=0; i<pdxpReadbacks->number_scas; i++) {
+             xiaGetAcquisitionValues(detChan, sca_lo[i], &pdxpReadbacks->sca_lo[i]);
+             xiaGetAcquisitionValues(detChan, sca_hi[i], &pdxpReadbacks->sca_hi[i]);
+         }
+         xiaGetRunData(detChan, "sca", pdxpReadbacks->sca_counts);
          asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
              "devDxp::asynCallback, MSG_DXP_READ_PARAMS\n"
              "input_count_rate:     %f\n"
