@@ -1,6 +1,3 @@
-# Load the environment variables for the paths to applications
-< envPaths
-
 # Tell EPICS all about the record types, device-support modules, drivers,
 # etc. in this build from dxpApp
 dbLoadDatabase("../../dbd/dxp.dbd")
@@ -23,26 +20,24 @@ DXPConfig("DXP1",  1)
 # DXP record
 # Execute the following line if you have a Vortex detector or 
 # another detector with a reset pre-amplifier
-dbLoadRecords("$(DXP)/dxpApp/Db/dxp2x_reset.db","P=dxpSaturn:med:, R=dxp1, INP=@asyn(DXP1 0)")
+dbLoadRecords("../../dxpApp/Db/dxp2x_reset.db","P=dxpSaturn:med:, R=dxp1, INP=@asyn(DXP1 0)")
+dbLoadRecords("../../dxpApp/Db/dxpMED.db","P=dxpSaturn:med:")
 # Execute the following line if you have a Ketek detector or 
 # another detector with an RC pre-amplifier
-#dbLoadRecords("$(DXP)/dxpApp/Db/dxp2x_rc.db","P=dxpSaturn:med:, R=dxp1, INP=@asyn(DXP1 0)")
+#dbLoadRecords("../../dxpApp/Db/dxp2x_rc.db","P=dxpSaturn:med:, R=dxp1, INP=@asyn(DXP1 0)")
 
 # MCA record
-dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=dxpSaturn:med:, M=mca1, DTYP=asynMCA,INP=@asyn(DXP1 0),NCHAN=2048")
+dbLoadRecords("../../../mca/mcaApp/Db/mca.db", "P=dxpSaturn:med:, M=mca1, DTYP=asynMCA,INP=@asyn(DXP1 0),NCHAN=2048")
 
 # Database to copy MCA ROIs to DXP SCAs
-dbLoadTemplate("dxp_sca.substitutions")
+dbLoadTemplate("dxp_sca_med.substitutions")
 
 # Setup for save_restore
-set_savefile_path("autosave")
+< ../save_restore.cmd
 save_restoreSet_status_prefix("dxpSaturn:med:")
-dbLoadRecords("$(AUTOSAVE)/asApp/Db/save_restoreStatus.db", "dxpSaturn:med:")
-set_pass0_restoreFile(auto_settings.sav)
-set_pass1_restoreFile(auto_settings.sav)
-set_requestfile_path("./")
-set_requestfile_path("$(DXP)/dxpApp/Db")
-set_requestfile_path("$(MCA)/mcaApp/Db")
+dbLoadRecords("../../../autosave/asApp/Db/save_restoreStatus.db", "P=dxpSaturn:med:")
+set_pass0_restoreFile("auto_settings_med.sav")
+set_pass1_restoreFile("auto_settings_med.sav")
 
 # Debugging flags
 #asynSetTraceMask DXP1 0 255
@@ -56,3 +51,5 @@ iocInit
 # Save settings every thirty seconds
 create_monitor_set("auto_settings_med.req", 30)
 
+# Start the sequence program for multi-element detector
+seq &dxpMED, "P=dxpSaturn:med:, DXP=dxp, MCA=mca, N_DETECTORS=1"
