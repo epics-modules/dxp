@@ -50,11 +50,13 @@ typedef struct {
     void *pointer;
 } devDxpMessage;
 
+static long init(int after);
 static long init_record(dxpRecord *pdxp, int *detChan);
 static long send_dxp_msg(dxpRecord *pdxp, devDxpCommand command, 
                          char *name, int param, double dvalue,
                          void *pointer);
 static void asynCallback(asynUser *pasynUser);
+static void readDxpParams(asynUser *pasynUser);
 
 static char *sca_lo[NUM_DXP_SCAS];
 static char *sca_hi[NUM_DXP_SCAS];
@@ -63,7 +65,7 @@ static char *sca_hi[NUM_DXP_SCAS];
 static const struct devDxpDset devDxp = {
     5,
     NULL,
-    NULL,
+    init,
     init_record,
     NULL,
     send_dxp_msg,
@@ -71,13 +73,29 @@ static const struct devDxpDset devDxp = {
 epicsExportAddress(dset, devDxp);
 
 
+
+static long init(int after)
+{
+    int i;
+
+    if (after) return(0);
+    /* Create SCA strings */
+    for (i=0; i<NUM_DXP_SCAS; i++) {
+        sca_lo[i] = calloc(1, SCA_NAME_LEN);
+        sprintf(sca_lo[i], "sca%d_lo", i);
+        sca_hi[i] = calloc(1, SCA_NAME_LEN);
+        sprintf(sca_hi[i], "sca%d_hi", i);
+    }
+    return(0);
+}
+
+
 static long init_record(dxpRecord *pdxp, int *detChan)
 {
     char *userParam;
     asynUser *pasynUser;
     asynStatus status;
     devDxpPvt *pPvt;
-    int i;
 
     /* Allocate asynDxpPvt private structure */
     pPvt = callocMustSucceed(1, sizeof(devDxpPvt), 
@@ -108,14 +126,6 @@ static long init_record(dxpRecord *pdxp, int *detChan)
         goto bad;
     }
 
-    /* Create SCA strings */
-    for (i=0; i<NUM_DXP_SCAS; i++) {
-        sca_lo[i] = calloc(i, SCA_NAME_LEN);
-        sprintf(sca_lo[i], "sca%d_lo", i);
-        sca_hi[i] = calloc(1, SCA_NAME_LEN);
-        sprintf(sca_hi[i], "sca%d_hi", i);
-    }
-
     return(0);
     bad:
     pdxp->pact = 1;
@@ -130,23 +140,24 @@ static long send_dxp_msg(dxpRecord *pdxp, devDxpCommand command,
     devDxpPvt *pPvt = (devDxpPvt *)pdxp->dpvt;
     asynUser *pasynUser;
     int status;
-    devDxpMessage *pmsg = pasynManager->memMalloc(sizeof(*pmsg));
+    devDxpMessage *pmsg;
 
+    asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW,
+              "devDxp::send_dxp_msg: command=%d, pact=%d"
+              "name=%s, param=%d, dvalue=%f, pointer=%p\n",
+              command, pdxp->pact,
+              name, param, dvalue, pointer);
+
+    if (pdxp->pact) {
+       return(0);
+    }
+    pmsg = pasynManager->memMalloc(sizeof(*pmsg));
     pmsg->dxpCommand = command;
     pmsg->name = name;
     pmsg->param = param;
     pmsg->dvalue = dvalue;
     pmsg->pointer = pointer;
 
-    asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW,
-              "devDxp::send_dxp_msg: command=%d, pact=%d"
-              "name=%s, param=%d, dvalue=%f, pointer=%p\n",
-              pmsg->dxpCommand, pdxp->pact,
-              name, param, dvalue, pointer);
-
-    if (pdxp->pact) {
-       return(0);
-    }
     pasynUser = pasynManager->duplicateAsynUser(pPvt->pasynUser,
                                                 asynCallback, 0);
     pasynUser->userData = pmsg;
@@ -199,6 +210,7 @@ void asynCallback(asynUser *pasynUser)
          /* Note that we use xiaSetAcquisitionValues rather than xiaSetParameter
           * so that the new value will be save with xiaSaveSystem */
          xiaSetAcquisitionValues(detChan, pmsg->name, &pmsg->param);
+         readDxpParams(pasynUser);
          break;
      case MSG_DXP_SET_DOUBLE_PARAM:
          /* Must stop run before setting parameters.  We should restart if it was running */
@@ -275,6 +287,7 @@ void asynCallback(asynUser *pasynUser)
                  pmsg->dvalue);
              xiaSetAcquisitionValues(detChan, "mca_bin_width", &dvalue);
          }
+         readDxpParams(pasynUser);
          break;
      case MSG_DXP_SET_SCAS:
          xiaSetAcquisitionValues(detChan, "number_of_scas", &pmsg->dvalue);
@@ -282,6 +295,7 @@ void asynCallback(asynUser *pasynUser)
              xiaSetAcquisitionValues(detChan, sca_lo[i], &pdxpReadbacks->sca_lo[i]);
              xiaSetAcquisitionValues(detChan, sca_hi[i], &pdxpReadbacks->sca_hi[i]);
          }
+         readDxpParams(pasynUser);
          break;
      case MSG_DXP_READ_BASELINE:
          xiaGetRunData(detChan, "baseline", pdxp->bptr);
@@ -314,74 +328,8 @@ void asynCallback(asynUser *pasynUser)
             pdxpReadbacks->newBaselineHistory = 1;
          }   
          break;
-     /* We should probably read all of the parameters after anything is written */
      case MSG_DXP_READ_PARAMS:
-         xiaGetRunData(detChan, "input_count_rate", &pdxpReadbacks->icr);
-         xiaGetRunData(detChan, "output_count_rate", &pdxpReadbacks->ocr);
-         xiaGetRunData(detChan, "triggers", &pdxpReadbacks->fast_peaks);
-         xiaGetRunData(detChan, "events_in_run", &pdxpReadbacks->slow_peaks);
-         xiaGetRunData(detChan, "run_active", &pdxpReadbacks->acquiring);
-         /* run_active returns multiple bits - convert to 0/1 */
-         if (pdxpReadbacks->acquiring != 0) pdxpReadbacks->acquiring = 1;
-         xiaGetParamData(detChan, "values", pdxp->pptr);
-         xiaGetAcquisitionValues(detChan, "energy_threshold", 
-                                 &pdxpReadbacks->slow_trig);
-         xiaGetAcquisitionValues(detChan, "peaking_time", 
-                                 &pdxpReadbacks->pktim);
-         xiaGetAcquisitionValues(detChan, "gap_time", 
-                                 &pdxpReadbacks->gaptim);
-         xiaGetAcquisitionValues(detChan, "trigger_threshold", 
-                                 &pdxpReadbacks->fast_trig);
-         xiaGetAcquisitionValues(detChan, "trigger_peaking_time", 
-                                 &pdxpReadbacks->trig_pktim);
-         xiaGetAcquisitionValues(detChan, "trigger_gap_time", 
-                                 &pdxpReadbacks->trig_gaptim);
-         xiaGetAcquisitionValues(detChan, "adc_percent_rule", 
-                                 &pdxpReadbacks->adc_rule);
-         xiaGetAcquisitionValues(detChan, "mca_bin_width", 
-                                 &pdxpReadbacks->mca_bin_width);
-         xiaGetAcquisitionValues(detChan, "number_mca_channels", 
-                                 &pdxpReadbacks->number_mca_channels);
-         /* There seems to be a bug in Handel.  It gives error reading number_of_scas
-          * written to, and then it always reads backs as 16, no matter what was written
-          * Comment out reading it, just set to 16 for now
-          * xiaGetAcquisitionValues(detChan, "number_of_scas", 
-          *                      &pdxpReadbacks->number_scas); */
-         pdxpReadbacks->number_scas = 16;
-         for (i=0; i<pdxpReadbacks->number_scas; i++) {
-             xiaGetAcquisitionValues(detChan, sca_lo[i], &pdxpReadbacks->sca_lo[i]);
-             xiaGetAcquisitionValues(detChan, sca_hi[i], &pdxpReadbacks->sca_hi[i]);
-         }
-         xiaGetRunData(detChan, "sca", pdxpReadbacks->sca_counts);
-         asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
-             "devDxp::asynCallback, MSG_DXP_READ_PARAMS\n"
-             "input_count_rate:     %f\n"
-             "output_count_rate:    %f\n"
-             "triggers:             %d\n"
-             "events_in_run:        %d\n"
-             "energy_threshold:     %f\n"
-             "peaking_time:         %f\n"
-             "gap_time:             %f\n"
-             "trigger_threshold:    %f\n"
-             "trigger_peaking_time: %f\n"
-             "trigger_gap_time:     %f\n"
-             "adc_percent_rule:     %f\n"
-             "mca_bin_width:        %f\n"
-             "number_mca_channels:  %f\n",
-             pdxpReadbacks->icr, pdxpReadbacks->ocr, 
-             pdxpReadbacks->fast_peaks, pdxpReadbacks->slow_peaks,
-             pdxpReadbacks->slow_trig, pdxpReadbacks->pktim, 
-             pdxpReadbacks->gaptim,
-             pdxpReadbacks->fast_trig, pdxpReadbacks->trig_pktim, 
-             pdxpReadbacks->trig_gaptim,
-             pdxpReadbacks->adc_rule, pdxpReadbacks->mca_bin_width,
-             pdxpReadbacks->number_mca_channels);
-         /* Convert count rates from kHz to Hz */
-         pdxpReadbacks->icr *= 1000.;
-         pdxpReadbacks->ocr *= 1000.;
-         /* Convert energy thresholds from eV to keV */
-         pdxpReadbacks->fast_trig /= 1000.;
-         pdxpReadbacks->slow_trig /= 1000.;
+         readDxpParams(pasynUser);
          break;
      default:
          asynPrint(pasynUser, ASYN_TRACE_ERROR, 
@@ -400,4 +348,87 @@ void asynCallback(asynUser *pasynUser)
     dbScanLock((dbCommon *)pdxp);
     (*prset->process)(pdxp);
     dbScanUnlock((dbCommon *)pdxp);
+}
+
+static void readDxpParams(asynUser *pasynUser)
+{
+    devDxpPvt *pPvt = (devDxpPvt *)pasynUser->userPvt;
+    dxpRecord *pdxp = pPvt->pdxp;
+    dxpReadbacks *pdxpReadbacks = pdxp->rbptr;
+    int i;
+    int detChan;
+
+    pasynManager->getAddr(pasynUser, &detChan);
+    xiaGetRunData(detChan, "input_count_rate", &pdxpReadbacks->icr);
+    xiaGetRunData(detChan, "output_count_rate", &pdxpReadbacks->ocr);
+    /* Convert count rates from kHz to Hz */
+    pdxpReadbacks->icr *= 1000.;
+    pdxpReadbacks->ocr *= 1000.;
+    xiaGetRunData(detChan, "triggers", &pdxpReadbacks->fast_peaks);
+    xiaGetRunData(detChan, "events_in_run", &pdxpReadbacks->slow_peaks);
+    xiaGetRunData(detChan, "run_active", &pdxpReadbacks->acquiring);
+    /* run_active returns multiple bits - convert to 0/1 */
+    if (pdxpReadbacks->acquiring != 0) pdxpReadbacks->acquiring = 1;
+    xiaGetParamData(detChan, "values", pdxp->pptr);
+    /* Only read the following if the channel is not acquiring. They
+     * have already been read when they were last changed, and we want
+     * to be as efficient as possible */
+    if (pdxpReadbacks->acquiring == 0) {
+        xiaGetAcquisitionValues(detChan, "energy_threshold",
+                                &pdxpReadbacks->slow_trig);
+        /* Convert energy thresholds from eV to keV */
+        pdxpReadbacks->slow_trig /= 1000.;
+        xiaGetAcquisitionValues(detChan, "peaking_time",
+                                &pdxpReadbacks->pktim);
+        xiaGetAcquisitionValues(detChan, "gap_time",
+                                &pdxpReadbacks->gaptim);
+        xiaGetAcquisitionValues(detChan, "trigger_threshold",
+                                &pdxpReadbacks->fast_trig);
+        /* Convert energy thresholds from eV to keV */
+        pdxpReadbacks->fast_trig /= 1000.;
+        xiaGetAcquisitionValues(detChan, "trigger_peaking_time",
+                                &pdxpReadbacks->trig_pktim);
+        xiaGetAcquisitionValues(detChan, "trigger_gap_time",
+                                &pdxpReadbacks->trig_gaptim);
+        xiaGetAcquisitionValues(detChan, "adc_percent_rule",
+                                &pdxpReadbacks->adc_rule);
+        xiaGetAcquisitionValues(detChan, "mca_bin_width",
+                                &pdxpReadbacks->mca_bin_width);
+        xiaGetAcquisitionValues(detChan, "number_mca_channels",
+                                &pdxpReadbacks->number_mca_channels);
+        /* There seems to be a bug in Handel.  It gives error reading number_of_scas
+         * written to, and then it always reads backs as 16, no matter what was written
+         * Comment out reading it, just set to 16 for now
+         * xiaGetAcquisitionValues(detChan, "number_of_scas",
+         *                      &pdxpReadbacks->number_scas); */
+        pdxpReadbacks->number_scas = 16;
+        for (i=0; i<pdxpReadbacks->number_scas; i++) {
+            xiaGetAcquisitionValues(detChan, sca_lo[i], &pdxpReadbacks->sca_lo[i]);
+            xiaGetAcquisitionValues(detChan, sca_hi[i], &pdxpReadbacks->sca_hi[i]);
+        }
+        xiaGetRunData(detChan, "sca", pdxpReadbacks->sca_counts);
+    }
+    asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
+        "devDxp::asynCallback, MSG_DXP_READ_PARAMS\n"
+        "input_count_rate:     %f\n"
+        "output_count_rate:    %f\n"
+        "triggers:             %d\n"
+        "events_in_run:        %d\n"
+        "energy_threshold:     %f\n"
+        "peaking_time:         %f\n"
+        "gap_time:             %f\n"
+        "trigger_threshold:    %f\n"
+        "trigger_peaking_time: %f\n"
+        "trigger_gap_time:     %f\n"
+        "adc_percent_rule:     %f\n"
+        "mca_bin_width:        %f\n"
+        "number_mca_channels:  %f\n",
+        pdxpReadbacks->icr, pdxpReadbacks->ocr,
+        pdxpReadbacks->fast_peaks, pdxpReadbacks->slow_peaks,
+        pdxpReadbacks->slow_trig, pdxpReadbacks->pktim,
+        pdxpReadbacks->gaptim,
+        pdxpReadbacks->fast_trig, pdxpReadbacks->trig_pktim,
+        pdxpReadbacks->trig_gaptim,
+        pdxpReadbacks->adc_rule, pdxpReadbacks->mca_bin_width,
+        pdxpReadbacks->number_mca_channels);
 }
