@@ -1750,7 +1750,11 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_set_maxblk(unsigned int* blksiz)
 XIA_MD_STATIC int XIA_MD_API dxp_md_wait(float* time)
 /* float *time;							Input: Time to wait in seconds	*/
 {
-    epicsThreadSleep(*time);
+    double dtime = *time;
+
+    /* We seem to be having timing problems, lets make minimum sleep time for now */
+    /* if (dtime < 0.1) dtime = 0.1; */
+    epicsThreadSleep(dtime);
 
     return DXP_SUCCESS;
 }
