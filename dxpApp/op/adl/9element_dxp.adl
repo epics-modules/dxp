@@ -271,7 +271,7 @@ rectangle {
 	display[0] {
 		label="All DXPs"
 		name="9element_dxp_all.adl"
-		args="P=$(P)dxp"
+		args="P=$(P)"
 	}
 	clr=14
 	bclr=4
