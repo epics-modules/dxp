@@ -1,0 +1,13 @@
+################
+# RECORD SUPPORT
+################
+include "dxpRecord.dbd"
+
+################
+# DEVICE SUPPORT
+################
+device(dxp,VME_IO,devDxpMpf,"MPF DXP")
+
+################
+# DRIVER SUPPORT
+################
