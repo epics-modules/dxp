@@ -1,14 +1,14 @@
 
 file {
-	name="/home/epics/synApps5-1/dxp/dxpApp/op/adl/dxpTop.adl"
+	name="/home/epics/synApps5-1beta2/dxp/dxpApp/op/adl/dxpTop.adl"
 	version=030000
 }
 display {
 	object {
-		x=59
-		y=32
+		x=77
+		y=43
 		width=159
-		height=51
+		height=41
 	}
 	clr=14
 	bclr=4
@@ -114,7 +114,12 @@ text {
 	display[1] {
 		label="1 element MED"
 		name="1element_dxp.adl"
-		args="P=dxpSaturn:med:"
+		args="P=dxpSaturn:med:, M=mca1, D=dxp1"
+	}
+	display[2] {
+		label="16 element MED"
+		name="16element_dxp.adl"
+		args="P=dxp2X:med:, M=mca, D=dxp"
 	}
 	clr=14
 	bclr=4
