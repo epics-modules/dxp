@@ -29,9 +29,9 @@
 #include <asynDriver.h>
 
 #include "dxpRecord.h"
-#include "drvMcaAsyn.h"
 #include "devDxpAsyn.h"
-#include "drvDxpAsyn.h"
+#include "asynDxp.h"
+#include "asynMca.h"
 #include "xerxes_structures.h"
 #include "xerxes.h"
 
@@ -91,7 +91,6 @@ static long init_record(dxpRecord *pdxp)
 {
     struct vmeio *pvmeio;
     asynUser *pasynUser;
-    int addr=0;
     asynStatus status;
     asynInterface *pasynInterface;
     devDxpAsynPvt *pPvt;
@@ -114,7 +113,7 @@ static long init_record(dxpRecord *pdxp)
     pPvt->portName = epicsStrDup(pvmeio->parm);
 
     /* Connect to device */
-    status = pasynManager->connectDevice(pasynUser, pPvt->portName, addr);
+    status = pasynManager->connectDevice(pasynUser, pPvt->portName, pPvt->channel);
     if (status != asynSuccess) {
         asynPrint(pasynUser, ASYN_TRACE_ERROR,
                   "devDxpAsyn::init_record, connectDevice failed\n");
@@ -226,29 +225,29 @@ void asynCallback(asynUser *pasynUser)
     switch (msg.type) {
     case mcaMessage:
         pPvt->pasynMcaInterface->command(pPvt->asynMcaInterfacePvt,
-                                         pPvt->pasynUser, pPvt->channel,
+                                         pPvt->pasynUser,
                                          msg.mcaCommand, 0, 0);
         break;
     case dxpMessage:
         switch(msg.dxpCommand) {
         case MSG_DXP_SET_SHORT_PARAM:
             pPvt->pasynDxpInterface->setShortParam(pPvt->asynMcaInterfacePvt,
-                                                   pPvt->pasynUser, pPvt->channel,
+                                                   pPvt->pasynUser,
                                                    msg.value1, msg.value2);
             break;
         case MSG_DXP_DOWNLOAD_FIPPI:
             pPvt->pasynDxpInterface->downloadFippi(pPvt->asynMcaInterfacePvt,
-                                                   pPvt->pasynUser, pPvt->channel,
+                                                   pPvt->pasynUser,
                                                    msg.value1);
             break;
         case MSG_DXP_CALIBRATE:
             pPvt->pasynDxpInterface->calibrate(pPvt->asynMcaInterfacePvt,
-                                               pPvt->pasynUser, pPvt->channel,
+                                               pPvt->pasynUser,
                                                msg.value1);
             break;
         case MSG_DXP_READ_PARAMS:
             pPvt->pasynDxpInterface->readParams(pPvt->asynMcaInterfacePvt,
-                                                pPvt->pasynUser, pPvt->channel,
+                                                pPvt->pasynUser,
                                                 pPvt->params, pPvt->baseline);
             dbScanLock((dbCommon *)pdxp);
             (*prset->process)(pdxp);

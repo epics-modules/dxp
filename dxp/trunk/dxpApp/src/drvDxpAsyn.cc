@@ -51,8 +51,8 @@
 
 #include "mca.h"
 #include "dxp.h"
-#include "drvMcaAsyn.h"
-#include "drvDxpAsyn.h"
+#include "asynMca.h"
+#include "asynDxp.h"
 #include "xerxes_structures.h"
 #include "xerxes.h"
 #include <xia_md.h>
@@ -99,26 +99,26 @@ public:
     double getCurrentTime();
     void dxpInterlock(int state);
     static asynStatus asynMcaCommand(void *drvPvt, asynUser *pasynUser,
-                                     int signal, mcaCommand command,
+                                     mcaCommand command,
                                      int ivalue, double dvalue);
     asynStatus asynMcaCommandInt(asynUser *pasynUser,
-                                 int signal, mcaCommand command,
+                                 mcaCommand command,
                                  int ivalue, double dvalue);
     static asynStatus asynMcaReadStatus(void *drvPvt, asynUser *pasynUser,
-                                        int signal, mcaAsynAcquireStatus *pstat);
+                                        mcaAsynAcquireStatus *pstat);
     static asynStatus asynMcaReadData(void *drvPvt, asynUser *pasynUser, 
-                                      int signal, int maxChans, int *nactual, 
+                                      int maxChans, int *nactual, 
                                       int *data);
     static asynStatus asynDxpSetShortParam(void *drvPvt, asynUser *pasynUser, 
-                                           int signal, unsigned short offset, 
+                                           unsigned short offset, 
                                            unsigned short value);
     static asynStatus asynDxpCalibrate(void *drvPvt, asynUser *pasynUser,
-                                       int signal, int ivalue);
+                                       int ivalue);
     static asynStatus asynDxpReadParams(void *drvPvt, asynUser *pasynUser, 
-                                        int signal, short *params, 
+                                        short *params, 
                                         short *baseline);
     static asynStatus asynDxpDownloadFippi(void *drvPvt, asynUser *pasynUser, 
-                                           int signal, int fippiIndex);
+                                           int fippiIndex);
     static void asynCommonReport(void *drvPvt, FILE *fp, int details);
     static asynStatus asynCommonConnect(void *drvPvt, asynUser *pasynUser);
     static asynStatus asynCommonDisconnect(void *drvPvt, asynUser *pasynUser);
@@ -349,24 +349,27 @@ dxpChannel_t *drvDxpAsyn::findChannel(int signal, asynUser *pasynUser)
 
 
 asynStatus drvDxpAsyn::asynMcaCommand(void *drvPvt, asynUser *pasynUser,
-                                         int signal, mcaCommand command,
-                                         int ivalue, double dvalue)
+                                      mcaCommand command,
+                                      int ivalue, double dvalue)
 {
     drvDxpAsyn *p = (drvDxpAsyn *)drvPvt;
-    return(p->asynMcaCommandInt(pasynUser, signal, command, ivalue, dvalue));
+    return(p->asynMcaCommandInt(pasynUser, command, ivalue, dvalue));
 }
 
 asynStatus drvDxpAsyn::asynMcaCommandInt(asynUser *pasynUser,
-                                         int signal, mcaCommand command,
+                                         mcaCommand command,
                                          int ivalue, double dvalue)
 {
     asynStatus status=asynSuccess;
-    dxpChannel_t *dxpChan = findChannel(signal, pasynUser);
     unsigned short resume;
     int s;
     double time_now;
     int nparams;
     unsigned short short_value;
+    int signal;
+
+    pasynManager->getAddr(pasynUser, &signal);
+    dxpChannel_t *dxpChan = findChannel(signal, pasynUser);
 
     detChan = signal;
     asynPrint(pasynUser, ASYN_TRACE_FLOW,
@@ -496,9 +499,11 @@ asynStatus drvDxpAsyn::asynMcaCommandInt(asynUser *pasynUser,
 
 
 asynStatus drvDxpAsyn::asynMcaReadStatus(void *drvPvt, asynUser *pasynUser,
-                                         int signal, mcaAsynAcquireStatus *pstat)
+                                         mcaAsynAcquireStatus *pstat)
 {
     drvDxpAsyn *p = (drvDxpAsyn *)drvPvt;
+    int signal;
+    pasynManager->getAddr(pasynUser, &signal);
     dxpChannel_t *dxpChan = p->findChannel(signal, pasynUser);
 
     p->detChan = signal;
@@ -508,11 +513,13 @@ asynStatus drvDxpAsyn::asynMcaReadStatus(void *drvPvt, asynUser *pasynUser,
 }
 
 asynStatus drvDxpAsyn::asynMcaReadData(void *drvPvt, asynUser *pasynUser, 
-                                       int detChan, int maxChans, int *nactual, 
+                                       int maxChans, int *nactual, 
                                        int *data)
 {
     drvDxpAsyn *p = (drvDxpAsyn *)drvPvt;
-    dxpChannel_t *dxpChan = p->findChannel(detChan, pasynUser);
+    int signal;
+    pasynManager->getAddr(pasynUser, &signal);
+    dxpChannel_t *dxpChan = p->findChannel(signal, pasynUser);
 
     if (dxpChan == NULL) return(asynError);
 
@@ -528,10 +535,12 @@ asynStatus drvDxpAsyn::asynMcaReadData(void *drvPvt, asynUser *pasynUser,
 
 
 asynStatus drvDxpAsyn::asynDxpReadParams(void *drvPvt, asynUser *pasynUser, 
-                                         int signal, short *params, 
+                                         short *params, 
                                          short *baseline)
 {
     drvDxpAsyn *p = (drvDxpAsyn *)drvPvt;
+    int signal;
+    pasynManager->getAddr(pasynUser, &signal);
     dxpChannel_t *dxpChan = p->findChannel(signal, pasynUser);
 
     if (dxpChan == NULL) return(asynError);
@@ -544,10 +553,12 @@ asynStatus drvDxpAsyn::asynDxpReadParams(void *drvPvt, asynUser *pasynUser,
 }
 
 asynStatus drvDxpAsyn::asynDxpSetShortParam(void *drvPvt, asynUser *pasynUser, 
-                                int signal, unsigned short offset, 
-                                unsigned short value)
+                                            unsigned short offset, 
+                                            unsigned short value)
 {
     drvDxpAsyn *p = (drvDxpAsyn *)drvPvt;
+    int signal;
+    pasynManager->getAddr(pasynUser, &signal);
     int nparams;
 
     p->detChan = signal;
@@ -561,17 +572,21 @@ asynStatus drvDxpAsyn::asynDxpSetShortParam(void *drvPvt, asynUser *pasynUser,
 }
 
 asynStatus drvDxpAsyn::asynDxpCalibrate(void *drvPvt, asynUser *pasynUser,
-                                        int signal, int ivalue)
+                                        int ivalue)
 {
     /* Calibrate */
+    int signal;
+    pasynManager->getAddr(pasynUser, &signal);
     dxp_calibrate_one_channel(&signal, &ivalue);
     return(asynSuccess);
 }
 
 asynStatus drvDxpAsyn::asynDxpDownloadFippi(void *drvPvt, asynUser *pasynUser, 
-                                     int signal, int fippiIndex)
+                                            int fippiIndex)
 {
     drvDxpAsyn *p = (drvDxpAsyn *)drvPvt;
+    int signal;
+    pasynManager->getAddr(pasynUser, &signal);
 
     p->detChan = signal;
     /* Download new FiPPI file */
