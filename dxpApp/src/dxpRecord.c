@@ -1,28 +1,9 @@
 /* dxpRecord.c - Record Support Routines for DXP record
  *
- * This record works with both the DXP4C and the DXP2X modules.
+ * This record works with any XIA module supported by Handel
  *
  *      Author:         Mark Rivers
- *      Date:           1/24/97
- *
- * Modification Log:
- * -----------------
- * 06/27/98     mlr    Minor fixes for compiler warnings
- * 06/01/01     mlr    Complete rewrite for Xerxes version of XIA software and
- *                     to use MPF server
- * 02/09/02     mlr    Download all parameters in init_record, now that MPF
- *                     allows sending messages at that time. Only do this if
- *                     the PINI field is YES, so that it is possible to turn
- *                     off downloading parameters at boot time, since sending
- *                     bad parameters can cause crashes.
- * 02/13/02     mlr    Update run task menus based on readback of RUNTASKS.
- *                     Moved building peaking time strings to separate function.
- *                     Added debugging statements.
- * 10-Mar-02    mlr    Added support for FIPPI, EMAXRBC, GAINRBV fields.
- * 12-Mar-02    mlr    Changed init_record to restore .GAIN, .EMAX, .FIPPI.
- * 04-Apr-02    mlr    Moved some initialization from init_record to process, since
- *                     it cannot be done until the device parameters have been read
- *                     once
+ *      Created:        1/24/97
  */
 
 #include        <string.h>
@@ -53,53 +34,25 @@
 /* Create RSET - Record Support Entry Table*/
 #define report NULL
 #define initialize NULL
-static long init_record();
-static long process();
-static long special();
+static long init_record(struct dxpRecord *pdxp, int pass);
+static long process(struct dxpRecord *pdxp);
+static long special(struct dbAddr *paddr, int after);
+static long process_special(struct dxpRecord *pdxp);
 #define get_value NULL
-static long cvt_dbaddr();
-static long get_array_info();
+static long cvt_dbaddr(struct dbAddr *paddr);
+static long get_array_info(struct dbAddr *paddr, long *no_elements, long *offset);
 #define put_array_info NULL
 #define get_units NULL
-static long get_precision();
+static long get_precision(struct dbAddr *paddr, long *precision);
 #define get_enum_str NULL
 #define get_enum_strs NULL
 #define put_enum_str NULL
-static long get_graphic_double();
-static long get_control_double();
+static long get_graphic_double(struct dbAddr *paddr, struct dbr_grDouble *pgd);
+static long get_control_double(struct dbAddr *paddr, struct dbr_ctrlDouble *pcd);
 #define get_alarm_double NULL
 
 /* This is the maximum value of HDWRVAR - need to get from XIA, keep updated */
 #define MAX_MODULE_TYPES 6
-
-/* This is the bit position in RUNTASKS for enable baseline cut */
-#define RUNTASKS_BLCUT 0x400
-
-typedef struct {
-   unsigned short runtasks;
-   unsigned short gaindac;
-   unsigned short blmin;
-   unsigned short blmax;
-   unsigned short blcut;
-   unsigned short blfilter;
-   unsigned short basethresh;
-   unsigned short basethreshadj;
-   unsigned short basebinning;
-   unsigned short slowlen;
-} PARAM_OFFSETS;
-
-typedef struct {
-   char **names;
-   unsigned short *access;
-   unsigned short *lbound;
-   unsigned short *ubound;
-   unsigned short nparams;
-   unsigned int nbase_histogram;
-   unsigned int nbase_history;
-   unsigned int ntrace;
-   PARAM_OFFSETS offsets;
-} MODULE_INFO;
-
 
 
 /* The dxp record contains many short integer parameters which control the
@@ -167,14 +120,6 @@ typedef struct  {
     char    label[DXP_TASK_STRING_SIZE];
 } DXP_TASK_PARAM;
 
-typedef struct  {
-    long lo;
-    long lo_rbv;
-    long hi;
-    long hi_rbv;
-    long counts;
-} DXP_SCA;
-
 #define NUM_ASC_PARAMS       9 /* The number of short ASC parameters described 
                                 * above in the record */
 #define NUM_FIPPI_PARAMS    10 /* The number of short FIPPI parameters described
@@ -190,11 +135,29 @@ typedef struct  {
                                 * These are also read-only */
 #define NUM_TASK_PARAMS     16 /* The number of task parameters described above
                                 *  in the record. */
+#define NUM_DOUBLE_PARAMS   22 /* The number of double parameters in the record 
+                                * Must start with PKTIME */
  
-
 #define NUM_SHORT_WRITE_PARAMS \
    (NUM_ASC_PARAMS + NUM_FIPPI_PARAMS + NUM_DSP_PARAMS + NUM_BASELINE_PARAMS)
 #define NUM_SHORT_READ_PARAMS (NUM_SHORT_WRITE_PARAMS +  NUM_READONLY_PARAMS)
+
+typedef struct {
+    int anySet;
+    int short_param[NUM_SHORT_READ_PARAMS];
+    int double_param[NUM_DOUBLE_PARAMS];
+    int task_param[NUM_TASK_PARAMS];
+    int scas;
+    int read_params;
+    int read_histogram;
+    int read_trace;
+    int read_history;
+    int open_relay;
+    int close_relay;
+    int start;
+    int stop;
+    int trace_wait;
+} SPECIAL_FLAGS;
 
 volatile int dxpRecordDebug = 0;
 epicsExportAddress(int, dxpRecordDebug);
@@ -243,8 +206,8 @@ static long init_record(struct dxpRecord *pdxp, int pass)
     if (pass != 0) return(0);
     if (dxpRecordDebug > 5) printf("(init_record): entry\n");
 
-    /* Initialize mtyp field to -1, indicates not initialized */
-    pdxp->mtyp = -1;
+    /* Initialize miptr field to NULL, indicates not initialized */
+    pdxp->miptr = NULL;
 
     /* must have dset defined */
     if (!(pdset = (struct devDxpDset *)(pdxp->dset))) {
@@ -274,7 +237,7 @@ static long init_record(struct dxpRecord *pdxp, int pass)
     }
         
     pdxp->mtyp = hdwrvar;
-    minfo = &moduleInfo[pdxp->mtyp];
+    pdxp->miptr = minfo = &moduleInfo[pdxp->mtyp];
 
     /* If minfo->nparams=0 then this is the first DXP record of this 
      * module type, allocate global (not record instance) structures */
@@ -405,8 +368,8 @@ static long init_record(struct dxpRecord *pdxp, int pass)
         pdxp->txptr[i] = pdxp->trace_wait * i;
     }
 
-    /* Allocate the space for the readback structure */
-    pdxp->rbptr = (void *)calloc(1, sizeof(dxpReadbacks));
+    /* Allocate the space for the special flags structure */
+    pdxp->spfptr = (SPECIAL_FLAGS *)calloc(1, sizeof(SPECIAL_FLAGS));
 
     /* Some higher-level initialization can be done here, i.e. things which don't
      * require information on the current device parameters.  Things which do
@@ -462,10 +425,9 @@ static long init_record(struct dxpRecord *pdxp, int pass)
 static long cvt_dbaddr(struct dbAddr *paddr)
 {
    struct dxpRecord *pdxp=(struct dxpRecord *)paddr->precord;
-   MODULE_INFO *minfo;
+   MODULE_INFO *minfo = (MODULE_INFO *)pdxp->miptr;
 
-   if (pdxp->mtyp < 0) return(-1);
-   minfo = &moduleInfo[pdxp->mtyp];
+   if (minfo == NULL) return(-1);
    if (paddr->pfield == &(pdxp->base)) {
       paddr->pfield = (void *)(pdxp->bptr);
       paddr->no_elements = minfo->nbase_histogram;
@@ -526,10 +488,9 @@ static long cvt_dbaddr(struct dbAddr *paddr)
 static long get_array_info(struct dbAddr *paddr, long *no_elements, long *offset)
 {
    struct dxpRecord *pdxp=(struct dxpRecord *)paddr->precord;
-   MODULE_INFO *minfo;
+   MODULE_INFO *minfo = (MODULE_INFO *)pdxp->miptr;
 
-   if (pdxp->mtyp < 0) return(-1);
-   minfo = &moduleInfo[pdxp->mtyp];
+   if (minfo == NULL) return(-1);
    if (paddr->pfield == pdxp->bptr) {
       *no_elements = minfo->nbase_histogram;
       *offset = 0;
@@ -570,12 +531,18 @@ static long process(struct dxpRecord *pdxp)
     struct devDxpDset *pdset = (struct devDxpDset *)(pdxp->dset);
     int pact=pdxp->pact;
     int status;
+    SPECIAL_FLAGS *specialFlags = (SPECIAL_FLAGS *)pdxp->spfptr;
 
     if (dxpRecordDebug > 5) printf("dxpRecord(process): entry\n");
 
-    /* Read the parameter information from the DXP */
+    if (!pact) {
+        /* See if special has been called.  If so call process_special, which will send messages
+         * to device support */
+        if (specialFlags->anySet) process_special(pdxp);
+    }
+    /* Send message indicating no more messages */
     status = (*pdset->send_dxp_msg)
-             (pdxp,  MSG_DXP_READ_PARAMS, NULL, 0, 0., NULL);
+             (pdxp,  MSG_DXP_FINISH, NULL, 0, 0., NULL);
     /* See if device support set pact=true, meaning it will call us back */
     if (!pact && pdxp->pact) return(0);
     pdxp->pact = TRUE;
@@ -598,37 +565,13 @@ static long monitor(struct dxpRecord *pdxp)
    long long_val;
    unsigned short short_val;
    unsigned short monitor_mask = recGblResetAlarms(pdxp) | DBE_VALUE | DBE_LOG;
-   dxpReadbacks *pdxpReadbacks = pdxp->rbptr;
    DXP_TASK_PARAM *task_param;
-   DXP_SCA *sca;
-   int blCutEnbl;
-   int newBlCut;
    int runtasks;
-   int blmin;
-   int blmax;
-   int blcut;
-   int blfilter;
-   int basethresh;
-   int basethreshadj;
-   int basebinning;
-   int slowlen;
-   double eVPerADC;
-   double eVPerBin;
-   double emax;
-   MODULE_INFO *minfo;
+   MODULE_INFO *minfo = (MODULE_INFO *)pdxp->miptr;
 
    if (dxpRecordDebug > 5) printf("dxpRecord(monitor): entry\n");
-   if (pdxp->mtyp < 0) return(-1);
-   minfo = &moduleInfo[pdxp->mtyp];
+   if (minfo == NULL) return(-1);
    runtasks       = pdxp->pptr[minfo->offsets.runtasks];
-   blmin          = (short)pdxp->pptr[minfo->offsets.blmin];
-   blmax          = (short)pdxp->pptr[minfo->offsets.blmax];
-   blcut          = pdxp->pptr[minfo->offsets.blcut];
-   blfilter       = pdxp->pptr[minfo->offsets.blfilter];
-   basethresh     = pdxp->pptr[minfo->offsets.basethresh];
-   basethreshadj  = pdxp->pptr[minfo->offsets.basethreshadj];
-   basebinning    = pdxp->pptr[minfo->offsets.basebinning];
-   slowlen        = pdxp->pptr[minfo->offsets.slowlen];
    /* Get the value of each parameter, post monitor if it is different
     * from current value */
    /* Address of first short parameter */
@@ -663,23 +606,6 @@ static long monitor(struct dxpRecord *pdxp)
       }
    }
 
-   /* Address of first SCA */
-   sca = (DXP_SCA *)&pdxp->sca0_lo;
-   for (i=0; i<NUM_DXP_SCAS; i++) {
-      if (pdxpReadbacks->sca_lo_rbv[i] != sca[i].lo_rbv) {
-         sca[i].lo_rbv = pdxpReadbacks->sca_lo_rbv[i];
-         db_post_events(pdxp, &sca[i].lo_rbv, monitor_mask);   
-      }
-      if (pdxpReadbacks->sca_hi_rbv[i] != sca[i].hi_rbv) {
-         sca[i].hi_rbv = pdxpReadbacks->sca_hi_rbv[i];
-         db_post_events(pdxp, &sca[i].hi_rbv, monitor_mask);   
-      }
-      if (pdxpReadbacks->sca_counts[i] != sca[i].counts) {
-         sca[i].counts = pdxpReadbacks->sca_counts[i];
-         db_post_events(pdxp, &sca[i].counts, monitor_mask);   
-      }
-   }
-
    /* Set the task menus based on the value of runtasks readback */
    task_param = (DXP_TASK_PARAM *)&pdxp->t01v;
    for (i=0; i<NUM_TASK_PARAMS; i++) {
@@ -696,6 +622,10 @@ static long monitor(struct dxpRecord *pdxp)
    }
 
    /* Clear special run flags, they are done */
+   if (pdxp->read_params) {
+      pdxp->read_params=0;
+      db_post_events(pdxp,&pdxp->read_params, monitor_mask);
+   }
    if (pdxp->read_histogram) {
       pdxp->read_histogram=0;
       db_post_events(pdxp,&pdxp->read_histogram, monitor_mask);
@@ -717,181 +647,46 @@ static long monitor(struct dxpRecord *pdxp)
       db_post_events(pdxp,&pdxp->close_relay, monitor_mask);
    }
 
-   /* See if readbacks have changed  */ 
-   if (pdxp->slow_trig_rbv != pdxpReadbacks->slow_trig) {
-      pdxp->slow_trig_rbv = pdxpReadbacks->slow_trig;
-      db_post_events(pdxp, &pdxp->slow_trig_rbv, monitor_mask);
-   }
-   if (pdxp->pktim_rbv != pdxpReadbacks->pktim) {
-      pdxp->pktim_rbv = pdxpReadbacks->pktim;
-      db_post_events(pdxp, &pdxp->pktim_rbv, monitor_mask);
-   };
-   if (pdxp->gaptim_rbv != pdxpReadbacks->gaptim) {
-      pdxp->gaptim_rbv = pdxpReadbacks->gaptim;
-      db_post_events(pdxp, &pdxp->gaptim_rbv, monitor_mask);
-   }
-   if (pdxp->fast_trig_rbv != pdxpReadbacks->fast_trig) {
-      pdxp->fast_trig_rbv = pdxpReadbacks->fast_trig;
-      db_post_events(pdxp, &pdxp->fast_trig_rbv, monitor_mask);
-   }
-   if (pdxp->trig_pktim_rbv != pdxpReadbacks->trig_pktim) {
-      pdxp->trig_pktim_rbv = pdxpReadbacks->trig_pktim;
-      db_post_events(pdxp, &pdxp->trig_pktim_rbv, monitor_mask);
-   }
-   if (pdxp->trig_gaptim_rbv != pdxpReadbacks->trig_gaptim) {
-      pdxp->trig_gaptim_rbv = pdxpReadbacks->trig_gaptim;
-      db_post_events(pdxp, &pdxp->trig_gaptim_rbv, monitor_mask);
-   }
-   if (pdxp->adc_rule_rbv != pdxpReadbacks->adc_rule) {
-      pdxp->adc_rule_rbv = pdxpReadbacks->adc_rule;
-      db_post_events(pdxp, &pdxp->adc_rule_rbv, monitor_mask);
-   }
-   emax = pdxpReadbacks->mca_bin_width / 1000. * 
-                         pdxpReadbacks->number_mca_channels;
-   if (pdxp->emax_rbv != emax) {
-      pdxp->emax_rbv = emax;
-      db_post_events(pdxp, &pdxp->emax_rbv, monitor_mask);
-   }
-   if (pdxp->fast_peaks != pdxpReadbacks->fast_peaks) {
-      pdxp->fast_peaks = pdxpReadbacks->fast_peaks;
-      db_post_events(pdxp, &pdxp->fast_peaks, monitor_mask);
-   }
-   if (pdxp->slow_peaks != pdxpReadbacks->slow_peaks) {
-      pdxp->slow_peaks = pdxpReadbacks->slow_peaks;
-      db_post_events(pdxp, &pdxp->slow_peaks, monitor_mask);
-   }
-   if (pdxp->icr != pdxpReadbacks->icr) {
-      pdxp->icr = pdxpReadbacks->icr;
-      db_post_events(pdxp, &pdxp->icr, monitor_mask);
-   }
-   if (pdxp->ocr != pdxpReadbacks->ocr) {
-      pdxp->ocr = pdxpReadbacks->ocr;
-      db_post_events(pdxp, &pdxp->ocr, monitor_mask);
-   }
-   if (pdxp->num_scas != pdxpReadbacks->number_scas) {
-      pdxp->num_scas = pdxpReadbacks->number_scas;
-      db_post_events(pdxp, &pdxp->num_scas, monitor_mask);
-   }
-   if (pdxp->acqg != pdxpReadbacks->acquiring) {
-      pdxp->acqg = pdxpReadbacks->acquiring;
-      db_post_events(pdxp, &pdxp->acqg, monitor_mask);
-   }
-                                  
-   /* Post events on array fields if they have changed */
-   if (pdxpReadbacks->newBaselineHistogram) {
-      pdxpReadbacks->newBaselineHistogram = 0;
-      db_post_events(pdxp,pdxp->bptr,monitor_mask);
-      /* See if the x-axis has also changed */
-      eVPerADC = 1000.*pdxp->emax/2. / (pdxp->adc_rule/100. * 1024);
-      eVPerBin = ((1 << basebinning) / (slowlen * 4.0)) * eVPerADC;
-      if (eVPerBin != pdxpReadbacks->eVPerBin) {
-         pdxpReadbacks->eVPerBin = eVPerBin;
-         for (i=0; i<minfo->nbase_histogram; i++) {
-            pdxp->bxptr[i] = (i-512) * eVPerBin / 1000.;
-         }
-         db_post_events(pdxp,pdxp->bxptr,monitor_mask);
-      }
-   }
-   if (pdxpReadbacks->newBaselineHistory) {
-      pdxpReadbacks->newBaselineHistory = 0;
-      db_post_events(pdxp,pdxp->bhptr,monitor_mask);
-   }
-   if (pdxpReadbacks->newAdcTrace) {
-      pdxpReadbacks->newAdcTrace = 0;
-      db_post_events(pdxp,pdxp->tptr,monitor_mask);
-   }
-   /* If BLMIN, BLMAX, or RUNTASKS bit for baseline cut have changed then
-    * recompute the BASE_CUT array */
-   blCutEnbl = (runtasks & RUNTASKS_BLCUT) != 0;
-   newBlCut = 0;
-   if (blCutEnbl != pdxpReadbacks->blCutEnbl) {
-      newBlCut = 1;
-      pdxpReadbacks->blCutEnbl = blCutEnbl;
-   }
-   if (blmin != pdxpReadbacks->blmin) {
-      newBlCut = 1;
-      pdxpReadbacks->blmin = blmin;
-   }
-   if (blmax != pdxpReadbacks->blmax) {
-      newBlCut = 1;
-      pdxpReadbacks->blmax = blmax;
-   }
-   if (newBlCut) {
-      for (i=0; i<minfo->nbase_histogram; i++) pdxp->bcptr[i] = 1;
-      if (blCutEnbl) {
-         blmin = pdxpReadbacks->blmin / (1 << basebinning);
-         blmin += 512;
-         if (blmin < 0) blmin = 0;
-         blmax = pdxpReadbacks->blmax / (1 << basebinning);
-         blmax += 512;
-         if (blmax > minfo->nbase_histogram) blmax = minfo->nbase_histogram;
-         for (i=blmin; i<blmax; i++) {
-            pdxp->bcptr[i] = 65535;
-         }
-      }
-      db_post_events(pdxp,pdxp->bcptr,monitor_mask);
-   }
-   if (blcut != pdxpReadbacks->blcut) {
-      pdxpReadbacks->blcut = blcut;
-      pdxp->base_cut_pct = pdxpReadbacks->blcut / 32768. * 100.;
-      db_post_events(pdxp,&pdxp->base_cut_pct,monitor_mask);
-   }
-   if (blfilter != pdxpReadbacks->blfilter) {
-      pdxpReadbacks->blfilter = blfilter;
-      pdxp->base_len = 32768. / blfilter;
-      db_post_events(pdxp,&pdxp->base_len,monitor_mask);
-   }
-   if (basethresh != pdxp->base_thresh) {
-      /* Next release of Handel will have a baseline_threshold parameter */
-      pdxp->base_thresh = basethresh;
-      db_post_events(pdxp,&pdxp->base_thresh,monitor_mask);
-   }
-   if (basethreshadj != pdxp->base_threshadj) {
-      /* Next release of Handel will have a baseline_threshadj parameter */
-      pdxp->base_threshadj = basethreshadj;
-      db_post_events(pdxp,&pdxp->base_threshadj,monitor_mask);
-   }
-
    if (dxpRecordDebug > 5) printf("dxpRecord(monitor): exit\n");
    return(0);
 }
 
 static long special(struct dbAddr *paddr, int after)
-/* Called whenever a field is changed */
+/* Called whenever a field is changed 
+ * This routine just sets a flag indicating that a field has changed.
+ * All fields that are SPC_MOD are also PP, so process() will be called
+ * process() calls process_special, which sends messages to device support 
+ */
 {
     struct dxpRecord *pdxp=(struct dxpRecord *)paddr->precord;
-    struct devDxpDset *pdset = (struct devDxpDset *)(pdxp->dset);
-    short offset;
     int i;
-    int status;
-    unsigned short monitor_mask = DBE_VALUE | DBE_LOG;
     DXP_SHORT_PARAM *short_param;
     DXP_TASK_PARAM *task_param;
-    int nparams;
+    double *double_param;
     DXP_SCA *sca;
-    MODULE_INFO *minfo;
+    MODULE_INFO *minfo = (MODULE_INFO *)pdxp->miptr;
+    SPECIAL_FLAGS *specialFlags = (SPECIAL_FLAGS *)pdxp->spfptr;
 
-    if (pdxp->mtyp < 0) return(-1);
-    minfo = &moduleInfo[pdxp->mtyp];
-
+    if (minfo == NULL) return(-1);
     if (!after) return(0);  /* Don't do anything if field not yet changed */
 
     if (dxpRecordDebug > 5) printf("dxpRecord(special): entry\n");
 
-    /* Loop through seeing which field was changed.  Write the new value.*/
+    /* Loop through seeing which field was changed.  Set the flag */
     /* Address of first short parameter */
     short_param = (DXP_SHORT_PARAM *)&pdxp->a01v;
     for (i=0; i<NUM_SHORT_READ_PARAMS; i++) {
        if (paddr->pfield == (void *) &short_param[i].val) {
-          offset = short_param[i].offset;
-          if (offset == -1) continue;
-          nparams = 1;
-          status = (*pdset->send_dxp_msg)
-                    (pdxp,  MSG_DXP_SET_SHORT_PARAM, short_param[i].label, 
-                    short_param[i].val, 0., NULL);
-          if (dxpRecordDebug > 5)
-             printf("dxpRecord: special found new value of short parameter %s, value=%d\n",
-                     short_param[i].label, short_param[i].val);
+          specialFlags->short_param[i] = 1;
+          goto found_param;
+       }
+    }
+
+    /* Address of first double parameter */
+    double_param = &pdxp->pktim;
+    for (i=0; i<NUM_DOUBLE_PARAMS; i++) {
+       if (paddr->pfield == (void *) &double_param[i]) {
+          specialFlags->double_param[i] = 1;
           goto found_param;
        }
     }
@@ -900,8 +695,7 @@ static long special(struct dbAddr *paddr, int after)
     task_param = (DXP_TASK_PARAM *)&pdxp->t01v;
     for (i=0; i<NUM_TASK_PARAMS; i++) {
        if (paddr->pfield == (void *) &task_param[i].val) {
-          if (strcmp(task_param[i].label, "Unused") == 0) continue;
-          setDxpTasks(pdxp);
+          specialFlags->task_param[i] = 1;
           goto found_param;
        }
     }
@@ -912,57 +706,170 @@ static long special(struct dbAddr *paddr, int after)
        if ((paddr->pfield == (void *) &sca[i].lo) ||
            (paddr->pfield == (void *) &sca[i].hi) ||
            (paddr->pfield == (void *) &pdxp->num_scas)) {
-          setSCAs(pdxp);
+          specialFlags->scas = 1;
           goto found_param;
        }
     }
 
     /* Special runs */
+    if (paddr->pfield == (void *) &pdxp->read_params) {
+         if (pdxp->read_params)
+             specialFlags->read_params = 1; 
+         goto found_param;
+    }
     if (paddr->pfield == (void *) &pdxp->read_histogram) {
-         if (pdxp->read_histogram) 
-             status = (*pdset->send_dxp_msg) (pdxp, MSG_DXP_READ_BASELINE, 
-                       NULL, 0, 0., NULL);
+         if (pdxp->read_histogram)
+             specialFlags->read_histogram = 1; 
          goto found_param;
     }
     if (paddr->pfield == (void *) &pdxp->read_trace) {
          if (pdxp->read_trace) 
-             status = (*pdset->send_dxp_msg) (pdxp, MSG_DXP_CONTROL_TASK, 
-                       "adc_trace", 0, pdxp->trace_wait*1000., NULL);
+             specialFlags->read_trace = 1; 
          goto found_param;
     }
     if (paddr->pfield == (void *) &pdxp->read_history) {
          if (pdxp->read_history) 
-             status = (*pdset->send_dxp_msg) (pdxp, MSG_DXP_CONTROL_TASK, 
-                       "baseline_history", 0, 0., NULL);
+             specialFlags->read_history = 1; 
          goto found_param;
     }
     if (paddr->pfield == (void *) &pdxp->open_relay) {
          if (pdxp->open_relay) 
-             status = (*pdset->send_dxp_msg) (pdxp, MSG_DXP_CONTROL_TASK, 
-                       "open_input_relay", 0, 0., NULL);
+             specialFlags->open_relay = 1; 
          goto found_param;
     }
     if (paddr->pfield == (void *) &pdxp->close_relay) {
          if (pdxp->close_relay) 
-             status = (*pdset->send_dxp_msg) (pdxp, MSG_DXP_CONTROL_TASK, 
-                       "close_input_relay", 0, 0., NULL);
+             specialFlags->close_relay = 1; 
          goto found_param;
     }
     if (paddr->pfield == (void *) &pdxp->strt) {
          if (pdxp->strt) 
-             status = (*pdset->send_dxp_msg) (pdxp, MSG_DXP_START_RUN, 
-                       NULL, 0, 0., NULL);
+             specialFlags->start = 1; 
          goto found_param;
     }
     if (paddr->pfield == (void *) &pdxp->stop) {
          if (pdxp->stop) 
-             status = (*pdset->send_dxp_msg) (pdxp, MSG_DXP_STOP_RUN, 
-                       NULL, 0, 0., NULL);
+             specialFlags->stop = 1; 
          goto found_param;
     }
 
     /* Trace wait, recompute X axis for ADC trace */
     if (paddr->pfield == (void *) &pdxp->trace_wait) {
+             specialFlags->trace_wait = 1; 
+         goto found_param;
+    }
+
+found_param:
+    specialFlags->anySet = 1;
+    if (dxpRecordDebug > 5) printf("dxpRecord(special): exit\n");
+    return(0);
+}
+
+
+static long process_special(dxpRecord *pdxp)
+/* Called whenever a field is changed */
+{
+    struct devDxpDset *pdset = (struct devDxpDset *)(pdxp->dset);
+    short offset;
+    int i;
+    int status;
+    unsigned short monitor_mask = DBE_VALUE | DBE_LOG;
+    DXP_SHORT_PARAM *short_param;
+    DXP_TASK_PARAM *task_param;
+    double *double_param;
+    MODULE_INFO *minfo = (MODULE_INFO *)pdxp->miptr;
+    SPECIAL_FLAGS *specialFlags = (SPECIAL_FLAGS *)pdxp->spfptr;
+
+    if (minfo == NULL) return(-1);
+
+    if (dxpRecordDebug > 5) printf("dxpRecord(process_special): entry\n");
+
+    /* Loop through seeing which field was changed.  Write the new value.*/
+    /* Address of first short parameter */
+    short_param = (DXP_SHORT_PARAM *)&pdxp->a01v;
+    for (i=0; i<NUM_SHORT_READ_PARAMS; i++) {
+       if (specialFlags->short_param[i]) {
+          specialFlags->short_param[i] = 0;
+          offset = short_param[i].offset;
+          if (offset == -1) continue;
+          status = (*pdset->send_dxp_msg)
+                    (pdxp,  MSG_DXP_SET_SHORT_PARAM, short_param[i].label, 
+                    short_param[i].val, 0., NULL);
+       }
+    }
+
+    /* Address of first double parameter */
+    double_param = &pdxp->pktim;
+    for (i=0; i<NUM_DOUBLE_PARAMS; i++) {
+       if (specialFlags->double_param[i]) {
+          specialFlags->double_param[i] = 0;
+          status = (*pdset->send_dxp_msg)
+                    (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0, 
+                    *(&double_param[i]), &double_param[i]);
+       }
+    }
+
+    /* Check if the tasks have changed */
+    task_param = (DXP_TASK_PARAM *)&pdxp->t01v;
+    for (i=0; i<NUM_TASK_PARAMS; i++) {
+       if (specialFlags->task_param[i]) {
+          specialFlags->task_param[i] = 0;
+          if (strcmp(task_param[i].label, "Unused") == 0) continue;
+          setDxpTasks(pdxp);
+       }
+    }
+
+    /* Check if the SCAS have changed */
+    if (specialFlags->scas) {
+       specialFlags->scas = 0;
+       setSCAs(pdxp);
+    }
+
+    /* Special runs */
+    if (specialFlags->read_params) {
+        specialFlags->read_params = 0;
+        status = (*pdset->send_dxp_msg) (pdxp, MSG_DXP_READ_PARAMS, 
+                   NULL, 0, 0., NULL);
+    }
+    if (specialFlags->read_histogram) {
+        specialFlags->read_histogram = 0;
+        status = (*pdset->send_dxp_msg) (pdxp, MSG_DXP_READ_BASELINE, 
+                   NULL, 0, 0., NULL);
+    }
+    if (specialFlags->read_trace) {
+        specialFlags->read_trace = 0;
+        status = (*pdset->send_dxp_msg) (pdxp, MSG_DXP_CONTROL_TASK, 
+                  "adc_trace", 0, pdxp->trace_wait*1000., NULL);
+    }
+    if (specialFlags->read_history) {
+        specialFlags->read_history = 0;
+             status = (*pdset->send_dxp_msg) (pdxp, MSG_DXP_CONTROL_TASK, 
+                       "baseline_history", 0, 0., NULL);
+    }
+    if (specialFlags->open_relay) {
+        specialFlags->open_relay = 0;
+        status = (*pdset->send_dxp_msg) (pdxp, MSG_DXP_CONTROL_TASK, 
+                  "open_input_relay", 0, 0., NULL);
+    }
+    if (specialFlags->close_relay) {
+        specialFlags->close_relay = 0;
+        status = (*pdset->send_dxp_msg) (pdxp, MSG_DXP_CONTROL_TASK, 
+                  "close_input_relay", 0, 0., NULL);
+    }
+    if (specialFlags->start) {
+        specialFlags->start = 0;
+        status = (*pdset->send_dxp_msg) (pdxp, MSG_DXP_START_RUN, 
+                  NULL, 0, 0., NULL);
+    }
+    if (specialFlags->stop) {
+        specialFlags->stop = 0;
+        status = (*pdset->send_dxp_msg) (pdxp, MSG_DXP_STOP_RUN, 
+                  NULL, 0, 0., NULL);
+    }
+
+    /* Trace wait, recompute X axis for ADC trace */
+    if (specialFlags->trace_wait) {
+        specialFlags->trace_wait = 0;
          /* Recompute the trace_x array, erase trace array */
          for (i=0; i<minfo->ntrace; i++) {
             pdxp->tptr[i] = 0;
@@ -970,17 +877,10 @@ static long special(struct dbAddr *paddr, int after)
          }
          db_post_events(pdxp,pdxp->tptr,monitor_mask);
          db_post_events(pdxp,pdxp->txptr,monitor_mask);
-         goto found_param;
     }
-  
 
-    /* This must be a DBF_DOUBLE parameter */
-    status = (*pdset->send_dxp_msg)
-                   (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0, 
-                   *(double *)paddr->pfield, paddr->pfield);
-
-found_param:
-    if (dxpRecordDebug > 5) printf("dxpRecord(special): exit\n");
+    specialFlags->anySet = 0;
+    if (dxpRecordDebug > 5) printf("dxpRecord(process_special): exit\n");
     return(0);
 }
 
@@ -992,11 +892,9 @@ static void setDxpTasks(struct dxpRecord *pdxp)
    unsigned short runtasks;
    int i;
    int status;
-   MODULE_INFO *minfo;
+   MODULE_INFO *minfo = (MODULE_INFO *)pdxp->miptr;
 
-   if (pdxp->mtyp < 0) return;
-   minfo = &moduleInfo[pdxp->mtyp];
-
+   if (minfo == NULL) return;
    if (dxpRecordDebug > 5) printf("dxpRecord(setDxpTasks): entry\n");
    task_param = (DXP_TASK_PARAM *)&pdxp->t01v;
    runtasks = 0;
@@ -1020,7 +918,6 @@ static int setSCAs(struct dxpRecord *pdxp)
 {
     int i;
     DXP_SCA *sca = (DXP_SCA *)&pdxp->sca0_lo;
-    dxpReadbacks *pdxpReadbacks = pdxp->rbptr;
     unsigned short monitor_mask = DBE_VALUE | DBE_LOG;
     struct devDxpDset *pdset = (struct devDxpDset *)(pdxp->dset);
     int status;
@@ -1042,8 +939,6 @@ static int setSCAs(struct dxpRecord *pdxp)
             sca[i].hi = sca[i].lo;
             db_post_events(pdxp,&sca[i].hi,monitor_mask);
         }
-        pdxpReadbacks->sca_lo[i] = sca[i].lo;
-        pdxpReadbacks->sca_hi[i] = sca[i].hi;
         pdxp->num_scas++;
     }
     status = (*pdset->send_dxp_msg)
@@ -1099,11 +994,9 @@ static long get_graphic_double(struct dbAddr *paddr, struct dbr_grDouble *pgd)
    int offset, i;
    DXP_SHORT_PARAM *short_param;
    DXP_LONG_PARAM *long_param;
-   MODULE_INFO *minfo;
+   MODULE_INFO *minfo = (MODULE_INFO *)pdxp->miptr;
 
-   if (pdxp->mtyp < 0) return(-1);
-   minfo = &moduleInfo[pdxp->mtyp];
-
+   if (minfo == NULL) return(-1);
    if (fieldIndex == dxpRecordPGAIN) {
       pgd->upper_disp_limit = 50.;
       pgd->lower_disp_limit = 0;
@@ -1150,11 +1043,9 @@ static long get_control_double(struct dbAddr *paddr, struct dbr_ctrlDouble *pcd)
    int offset, i;
    DXP_SHORT_PARAM *short_param;
    DXP_LONG_PARAM *long_param;
-   MODULE_INFO *minfo;
+   MODULE_INFO *minfo = (MODULE_INFO *)pdxp->miptr;
 
-   if (pdxp->mtyp < 0) return(-1);
-   minfo = &moduleInfo[pdxp->mtyp];
-
+   if (minfo == NULL) return(-1);
    if (fieldIndex == dxpRecordPGAIN) {
       pcd->upper_ctrl_limit = 50.;
       pcd->lower_ctrl_limit = 0;
@@ -1193,6 +1084,7 @@ static long get_control_double(struct dbAddr *paddr, struct dbr_ctrlDouble *pcd)
    return(0);
 }
 
+
 static int getParamOffset(MODULE_INFO *minfo, char *label, short *offset)
 {
     int i;
