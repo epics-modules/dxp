@@ -213,7 +213,7 @@ ss dxp_control {
                pvAssign(mcaErase[i], temp);
                sprintf(temp, "%s%s%d.ERST", prefix, mca, det);
                pvAssign(mcaEraseStart[i], temp);
-               sprintf(temp, "%s%s%d.PROC", prefix, dxp, det);
+               sprintf(temp, "%s%s%d:ReadParams.PROC", prefix, dxp, det);
                pvAssign(readDXP[i], temp);
                sprintf(temp, "%s%s%d:ReadHistogram.PROC", prefix, dxp, det);
                pvAssign(readDXPBaseline[i], temp);
