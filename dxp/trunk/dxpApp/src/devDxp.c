@@ -238,10 +238,11 @@ void asynCallback(asynUser *pasynUser)
                                           pPvt->pasynUser,
                                           pmsg->value1);
             break;
-        case MSG_DXP_CALIBRATE:
-            pPvt->pasynDxp->calibrate(pPvt->asynDxpPvt,
-                                      pPvt->pasynUser,
-                                      pmsg->value1);
+        case MSG_DXP_CONTROL_TASK:
+            pPvt->pasynDxp->controlTask(pPvt->asynDxpPvt,
+                                        pPvt->pasynUser,
+                                        pmsg->value1, pmsg->value2);
+            /* If this is a command that returns data, read it */
             break;
         case MSG_DXP_READ_PARAMS:
             pPvt->pasynDxp->readParams(pPvt->asynDxpPvt,
