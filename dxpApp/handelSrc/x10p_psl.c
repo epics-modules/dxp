@@ -5401,7 +5401,7 @@ PSL_STATIC int PSL_API _pslDoSCA(int detChan, char *name, void *value, Module *m
   ASSERT(STRNEQ(name, "sca"));
 
   
-  sscanf(name, "sca%u_%s", &scaNum, bound);
+  sscanf(name, "sca%hu_%s", &scaNum, bound);
   
   if ((!STRNEQ(bound, "lo")) &&
 	  (!STRNEQ(bound, "hi")))
