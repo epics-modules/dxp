@@ -4728,6 +4728,7 @@ PSL_STATIC int PSL_API _pslGetSCAData(int detChan, XiaDefaults *defaults, void *
   statusX = dxp_readout_sca(&detChan, sca);
 
   if (statusX != DXP_SUCCESS) {
+	utils->funcs->dxp_md_free(sca);
 	sprintf(info_string, "Error reading SCA data buffer for detChan '%d'",
 			detChan);
 	pslLogError("_pslGetSCAData", info_string, XIA_XERXES);
@@ -4738,6 +4739,7 @@ PSL_STATIC int PSL_API _pslGetSCAData(int detChan, XiaDefaults *defaults, void *
   status = pslGetDefault("number_of_scas", (void *)&nSCA, defaults);
 
   if (status != XIA_SUCCESS) {
+	utils->funcs->dxp_md_free(sca);
 	sprintf(info_string, "Error finding 'number_of_scas' for detChan '%d'", detChan);
 	pslLogError("_pslGetSCAData", info_string, status);
 	return status;
@@ -4747,6 +4749,7 @@ PSL_STATIC int PSL_API _pslGetSCAData(int detChan, XiaDefaults *defaults, void *
 	userSCA[i] = sca[i];
   }
 
+  utils->funcs->dxp_md_free(sca);
   return XIA_SUCCESS;
 }
 
