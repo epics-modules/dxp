@@ -64,6 +64,7 @@ dxpApp_LIBS += calc sscan autosave
 dxpApp_LIBS_vxWorks += camac
 dxpApp_LIBS += asyn
 dxpApp_SYS_LIBS_cygwin32 += DLPORTIO
+dxpApp_SYS_LIBS_cygwin32 += rpc
 dxpApp_LIBS += seq pv
 dxpApp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
