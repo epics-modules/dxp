@@ -20,8 +20,6 @@
 
 #include <errlog.h>
 #include <cantProceed.h>
-#include <epicsMutex.h>
-#include <epicsThread.h>
 #include <epicsExport.h>
 #include <epicsTime.h>
 #include <epicsString.h>
@@ -41,10 +39,6 @@
 #include "handel.h"
 
 
-#define MAX_CHANS_PER_DXP 4
-
-static epicsMutexId dxpMutexId=NULL;
-
 typedef struct {
     int exists;
     int detChan;
@@ -146,13 +140,8 @@ static const asynDrvUser drvDxpDrvUser = {
 };
 
 
-int DXPConfig(const char *portName, int chan1, int chan2, 
-                         int chan3, int chan4)
+int DXPConfig(const char *portName, int nchans) 
 {
-    /* chan1 - chan4 are the Xerxes channel numbers for the 4 inputs of this
-     * module.  If an input is unused or does not exists set chanN=-1
-     * moduleType is 0 for DXP4C, 1 for DXP2X, 2 for DXPX10P */
-    int allChans[MAX_CHANS_PER_DXP];
     int i;
     dxpChannel_t *dxpChannel;
     int detChan;
@@ -163,24 +152,19 @@ int DXPConfig(const char *portName, int chan1, int chan2,
 
     /* Copy parameters to object private */
     pPvt->portName = epicsStrDup(portName);
-    allChans[0] = chan1;
-    allChans[1] = chan2;
-    allChans[2] = chan3;
-    allChans[3] = chan4;
 
     pPvt->acquiring = 0;
     pPvt->erased = 1;
+    pPvt->nchans = nchans;
     pPvt->dxpChannel = (dxpChannel_t *)
-                calloc(MAX_CHANS_PER_DXP, sizeof(dxpChannel_t));
-    for (i=0; i<MAX_CHANS_PER_DXP; i++) pPvt->dxpChannel[i].exists = 0;
+                calloc(nchans, sizeof(dxpChannel_t));
+    for (i=0; i<nchans; i++) pPvt->dxpChannel[i].exists = 0;
     /* Allocate memory arrays for each channel if it is valid */
-    for (i=0; i<MAX_CHANS_PER_DXP; i++) {
+    for (i=0; i<nchans; i++) {
        dxpChannel = &pPvt->dxpChannel[i];
-       if (allChans[i] >= 0) {
-          detChan = allChans[i];
-          dxpChannel->detChan = detChan;
-          dxpChannel->exists = 1;
-       }
+       detChan = i;
+       dxpChannel->detChan = detChan;
+       dxpChannel->exists = 1;
     }
     /* Link with higher level routines */
     pPvt->common.interfaceType = asynCommonType;
@@ -244,7 +228,7 @@ static dxpChannel_t *findChannel(drvDxpPvt *pPvt, asynUser *pasynUser,
     dxpChannel_t *dxpChan = NULL;
 
     /* Find which channel on this module this signal is */
-    for (i=0; i<MAX_CHANS_PER_DXP; i++) {
+    for (i=0; i<pPvt->nchans; i++) {
         if (pPvt->dxpChannel[i].exists && pPvt->dxpChannel[i].detChan == signal) { 
             dxpChan = &pPvt->dxpChannel[i];
         }
@@ -637,24 +621,14 @@ asynStatus disconnect(void *drvPvt, asynUser *pasynUser)
 
 
 /* iocsh functions */
-int DXPConfig(const char *serverName, int chan1, int chan2,
-                         int chan3, int chan4);
-
 static const iocshArg DXPConfigArg0 = { "server name",iocshArgString};
-static const iocshArg DXPConfigArg1 = { "channel 1",iocshArgInt};
-static const iocshArg DXPConfigArg2 = { "channel 2",iocshArgInt};
-static const iocshArg DXPConfigArg3 = { "channel 3",iocshArgInt};
-static const iocshArg DXPConfigArg4 = { "channel 4",iocshArgInt};
-static const iocshArg * const DXPConfigArgs[5] = {&DXPConfigArg0,
-                                                  &DXPConfigArg1, 
-                                                  &DXPConfigArg2, 
-                                                  &DXPConfigArg3, 
-                                                  &DXPConfigArg4}; 
-static const iocshFuncDef DXPConfigFuncDef = {"DXPConfig",5,DXPConfigArgs};
+static const iocshArg DXPConfigArg1 = { "number of channels",iocshArgInt};
+static const iocshArg * const DXPConfigArgs[2] = {&DXPConfigArg0,
+                                                  &DXPConfigArg1}; 
+static const iocshFuncDef DXPConfigFuncDef = {"DXPConfig",2,DXPConfigArgs};
 static void DXPConfigCallFunc(const iocshArgBuf *args)
 {
-    DXPConfig(args[0].sval, args[1].ival, args[2].ival, args[3].ival, 
-              args[4].ival);
+    DXPConfig(args[0].sval, args[1].ival);
 }
 
 static const iocshArg xiaLogArg0 = { "logging level",iocshArgInt};
