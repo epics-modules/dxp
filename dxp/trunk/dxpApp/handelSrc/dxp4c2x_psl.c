@@ -736,7 +736,7 @@ PSL_STATIC int PSL_API pslDoPeakingTime(int detChan, void *value, FirmwareSet *f
 
     } else {
 	/* filename is actually defined in this case */
-	sprintf(info_string, "peakingTime = %lf", peakingTime);
+	sprintf(info_string, "peakingTime = %f", peakingTime);
 	pslLogDebug("pslDoPeakingTime", info_string);
 
 	status = xiaFddGetFirmware(firmwareSet->filename, "fippi", 
@@ -747,7 +747,7 @@ PSL_STATIC int PSL_API pslDoPeakingTime(int detChan, void *value, FirmwareSet *f
 
 	if (status != XIA_SUCCESS) {
 	  
-	    sprintf(info_string, "Error getting FiPPI file from %s at peaking time = %lf", 
+	    sprintf(info_string, "Error getting FiPPI file from %s at peaking time = %f", 
 		    firmwareSet->filename, peakingTime);
 	    pslLogError("pslDoPeakingTime", info_string, status);
 	    return status;
@@ -799,7 +799,7 @@ PSL_STATIC int PSL_API pslDoPeakingTime(int detChan, void *value, FirmwareSet *f
     peakingTime = (((double)SLOWLEN) * (1 / CLOCK_SPEED) * pow(2, (double)newDecimation));
     *((double *)value) = peakingTime;
 
-    sprintf(info_string, "New peaking time = %lf", peakingTime);
+    sprintf(info_string, "New peaking time = %f", peakingTime);
     pslLogDebug("pslDoPeakingTime", info_string);
   
     status = pslSetDefault("peaking_time", (void *)&peakingTime, defaults);
@@ -1017,7 +1017,7 @@ PSL_STATIC int PSL_API pslDoNumMCAChannels(int detChan, void *value, XiaDefaults
 	(numMCAChans > 8192)) {
 
 	status = XIA_BINS_OOR;
-	sprintf(info_string, "Too many bins specified: %lf", numMCAChans);
+	sprintf(info_string, "Too many bins specified: %f", numMCAChans);
 	pslLogError("pslDoNumMCAChannels", info_string, status);
 	return status;
     }
@@ -1182,7 +1182,7 @@ PSL_STATIC int PSL_API pslDoMCABinWidth(int detChan, void *value, XiaDefaults *d
 
     eVPerBin = *((double *)value);
 
-    sprintf(info_string, "eVperBin = %lf", eVPerBin);
+    sprintf(info_string, "eVperBin = %f", eVPerBin);
     pslLogDebug("pslDoMCABinWidth", info_string);
 
     statusX = dxp_get_one_dspsymbol(&detChan, "SLOWLEN", &SLOWLEN);
@@ -1765,17 +1765,17 @@ PSL_STATIC int PSL_API pslCalculateGain(double adcPercentRule, double calibEV,
 
     gSystem = pslCalculateSysGain();
 
-    sprintf(info_string, "gSystem = %lf", gSystem);
+    sprintf(info_string, "gSystem = %f", gSystem);
     pslLogDebug("pslCalculateGain", info_string);
 
     gSystem *= gainScale;
 
-    sprintf(info_string, "gSystem (after scale) = %lf", gSystem);
+    sprintf(info_string, "gSystem (after scale) = %f", gSystem);
     pslLogDebug("pslCalculateGain", info_string);  
 
     gTotal = ((adcPercentRule / 100.0) * inputRange) / ((calibEV / 1000.0) * preampGain);
 
-    sprintf(info_string, "gTotal = %lf", gTotal);
+    sprintf(info_string, "gTotal = %f", gTotal);
     pslLogDebug("pslCalculateGain", info_string);
 
     /* Scale gTotal as a BINFACT1 correction */
@@ -1787,25 +1787,25 @@ PSL_STATIC int PSL_API pslCalculateGain(double adcPercentRule, double calibEV,
 
     gTotal *= binScale;
 
-    sprintf(info_string, "gTotal (after binScale) = %lf", gTotal);
+    sprintf(info_string, "gTotal (after binScale) = %f", gTotal);
     pslLogDebug("pslCalculateGain", info_string);
 
     gVar = gTotal / (gSystem * gBase);
 
-    sprintf(info_string, "gVar = %lf", gVar);
+    sprintf(info_string, "gVar = %f", gVar);
     pslLogDebug("pslCalculateGain", info_string);
 
     /* Now we can start converting to GAINDAC */
     gDB = (20.0 * log10(gVar));
 
-    sprintf(info_string, "gDB = %lf", gDB);
+    sprintf(info_string, "gDB = %f", gDB);
     pslLogDebug("pslCalculateGain", info_string);
 	
     if ((gDB < -6.0) ||
 	(gDB > 30.0)) {
 
 	status = XIA_GAIN_OOR;
-	sprintf(info_string, "Gain value %lf (in dB) is out-of-range", gDB);
+	sprintf(info_string, "Gain value %f (in dB) is out-of-range", gDB);
 	pslLogError("pslCalculateGain", info_string, status);
 	return status;
     }
@@ -2315,7 +2315,7 @@ PSL_STATIC int PSL_API pslGetRuntime(int detChan, void *value)
 
     *((double *)value) = dREALTIME * tickTime;
 
-    sprintf(info_string, "REALTIME (32-bits) = %lf, realtime = %lf",
+    sprintf(info_string, "REALTIME (32-bits) = %f, realtime = %f",
 	    dREALTIME, *((double *)value));
     pslLogDebug("pslGetLivetime", info_string);
 
@@ -2659,8 +2659,8 @@ PSL_STATIC int PSL_API pslDoADCTrace(int detChan, void *info)
 
 	tracewait = minTracewait;
 
-	sprintf(info_string, "tracewait of %lf is less then min. tracewait."
-		"Setting tracewait to %lf.", tracewait, minTracewait);
+	sprintf(info_string, "tracewait of %f is less then min. tracewait."
+		"Setting tracewait to %f.", tracewait, minTracewait);
 	pslLogWarning("pslDoADCTrace", info_string);
     }
 
@@ -3199,7 +3199,7 @@ PSL_STATIC int PSL_API pslGetDefaultAlias(char *alias, char **names, double *val
     len = sizeof(defValues) / sizeof(defValues[0]);
     for (i = 0; i < len; i++) {
 
-	sprintf(info_string, "defNames[%d] = %s, defValues[%d] = %3.3lf", i, defNames[i], i, defValues[i]);
+	sprintf(info_string, "defNames[%d] = %s, defValues[%d] = %3.3f", i, defNames[i], i, defValues[i]);
 	pslLogDebug("pslGetDefaultAlias", info_string);
 
 	strcpy(names[i], defNames[i]);
@@ -3534,7 +3534,7 @@ PSL_STATIC int PSL_API pslUpdateFilter(int detChan, double peakingTime, XiaDefau
     }
 
     /* Calculate SLOWLEN from board parameters */
-	sprintf(info_string, "CLOCK_SPEED = %lf, peakingTime = %lf, newDecimation = %u",
+	sprintf(info_string, "CLOCK_SPEED = %f, peakingTime = %f, newDecimation = %u",
 			CLOCK_SPEED, peakingTime, newDecimation);
 	pslLogDebug("pslUpdateFilter", info_string);
 
@@ -3557,7 +3557,7 @@ PSL_STATIC int PSL_API pslUpdateFilter(int detChan, double peakingTime, XiaDefau
     /* Calculate SLOWGAP from gap_time and do sanity check */
     status = pslGetDefault("gap_time", (void *)&gapTime, defaults);
   
-    sprintf(info_string, "gap_time for detChan %d = %lf", detChan, gapTime);
+    sprintf(info_string, "gap_time for detChan %d = %f", detChan, gapTime);
     pslLogDebug("pslUpdateFilter", info_string);
 
     if (status != XIA_SUCCESS) {
@@ -3748,11 +3748,11 @@ PSL_STATIC int PSL_API pslDoParam(int detChan, char *name, void *value, XiaDefau
 {
     int status;
     int statusX;
-  
+    unsigned short val = 0x0000;
     double dTmp = 0.0;
 
-
-    dTmp = (double)(*((parameter_t *)value));
+    dTmp = *(double *)value;
+    val  = (unsigned short)dTmp;
 
     status = pslSetDefault(name, (void *)&dTmp, defaults);
 
@@ -3763,12 +3763,13 @@ PSL_STATIC int PSL_API pslDoParam(int detChan, char *name, void *value, XiaDefau
 	return status;
     }
 
-    statusX = dxp_set_one_dspsymbol(&detChan, name, (unsigned short *)value);
+    statusX = dxp_set_one_dspsymbol(&detChan, name, &val);
+printf("dxp4c2x_psl::pslDoParam, dTmp=%f, val=%d\n", dTmp, val);
 
     if (statusX != DXP_SUCCESS) {
 
 	status = XIA_XERXES;
-	sprintf(info_string, "Xerxes reported an error trying to set %s to %u", name, *((unsigned short *)value));
+	sprintf(info_string, "Xerxes reported an error trying to set %s to %u", name, val);
 	pslLogError("pslDoParam", info_string, status);
 	return status;
     }
@@ -3844,7 +3845,7 @@ PSL_STATIC int PSL_API pslDoGapTime(int detChan, void *value,
 	return status;
     }
   
-    sprintf(info_string, "gap_time = %lf", *((double *)value));
+    sprintf(info_string, "gap_time = %f", *((double *)value));
     pslLogDebug("pslDoGapTime", info_string);
 
     status = pslSetDefault("gap_time", value, defaults);
@@ -3899,7 +3900,7 @@ PSL_STATIC int PSL_API pslDoGapTime(int detChan, void *value,
     *((double *)value) = (double)((double)SLOWGAP * (1 / CLOCK_SPEED) * 
 				  pow(2, (double)newDecimation));
 
-    sprintf(info_string, "New (actual) gap_time for detChan %d is %lf microseconds", 
+    sprintf(info_string, "New (actual) gap_time for detChan %d is %f microseconds", 
 	    detChan, *((double *)value));
     pslLogDebug("pslDoGapTime", info_string);
  
@@ -4552,7 +4553,7 @@ PSL_STATIC int PSL_API _pslDoSCA(int detChan, char *name, void *value, Module *m
   ASSERT(STRNEQ(name, "sca"));
 
   
-  sscanf(name, "sca%u_%s", &scaNum, bound);
+  sscanf(name, "sca%hu_%s", &scaNum, bound);
   
   if ((!STRNEQ(bound, "lo")) &&
 	  (!STRNEQ(bound, "hi")))
@@ -4631,7 +4632,7 @@ PSL_STATIC int PSL_API _pslDoSCA(int detChan, char *name, void *value, Module *m
   status = pslSetDefault(name, value, defaults);
 
   if (status != XIA_SUCCESS) {
-	sprintf(info_string, "Error setting default for '%s' to '%lf'", name, *((double *)value));
+	sprintf(info_string, "Error setting default for '%s' to '%f'", name, *((double *)value));
 	pslLogError("_pslDoSCA", info_string, status);
 	return status;
   }
