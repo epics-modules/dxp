@@ -1,0 +1,31 @@
+Readme file for the Source Distribution of the XIA XerXes
+control software.  This file is not meant as a manual, it is 
+meant to be an inventory of the contents of this directory.
+
+File or Folders
+---------------
+xerxes.c - Source code for the library used to control all
+	supported XIA products.  See the Host Software manual 
+	for details.
+
+dxp4c.c - Source code for the DXP-4C low level drivers.
+
+dxp4c2x.c - Source code for the DXP-4C2X low level drivers.
+
+machine_dependent_win95.c - Source code for the machine
+	dependent layer of code.  This layer is the interface 
+	between the DXP-4C(2X) low level drivers and the CAMAC 
+	controller drivers.  If you want to control XIA 
+	hardware under unix or with a CAMAC controller other 
+	than the Jorway 73a, this interface layer will probably 
+	have to be modified.  Use this code as a template for 
+	changes.
+
+md_linux.c - Source code for the machine dependent layer for 
+	communicating with a Jorway 73a under linux.  This code
+	requires the Fermilab Jorway SCSI controller library
+	for Linux as well, see 
+	http://www.fnal.gov/fermitools/abstracts/camac/abstract.html.  
+
+-------------------------------------------------------------
+Each directory has its own individual README file.

@@ -1,0 +1,30 @@
+# Makefile.Vx
+TOP = ../../..
+include $(TOP)/config/CONFIG_APP
+#----------------------------------------
+#  ADD MACRO DEFINITIONS AFTER THIS LINE
+
+LIBNAME = dxpCamacLib
+USR_CFLAGS += -DEXCLUDE_DXPX10P
+USR_CFLAGS += -DXIA_SPECIAL_MEM
+#MN May 30-2002
+USR_CFLAGS += -DEXCLUDE_DGFG200
+USR_CFLAGS += -DEXCLUDE_UDXPS
+
+SRCS.c += ../dxp4c.c ../dxp4c2x.c ../xerxes.c ../xerxes_log.c
+SRCS.c += ../md_epics.c ../md_log_epics.c
+SRCS.c += ../dxpRecord.c
+SRCS.cc += ../mcaDXPServer.cc
+SRCS.cc += ../devDXP.cc
+
+LIBOBJS += dxp4c.o dxp4c2x.o xerxes.o xerxes_log.o
+LIBOBJS += md_epics.o md_log_epics.o
+LIBOBJS += dxpRecord.o
+LIBOBJS += mcaDXPServer.o
+LIBOBJS += devDXP.o
+
+
+include $(TOP)/config/RULES.Vx
+#----------------------------------------
+#  ADD RULES AFTER THIS LINE
+inc:: $(INSTALL_INCREC)
