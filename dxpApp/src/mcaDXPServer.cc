@@ -41,6 +41,10 @@
 #include <epicsThread.h>
 #include <epicsTime.h>
 
+#ifdef linux
+#include <sys/io.h>
+#endif
+
 #include "Message.h"
 #include "Int32Message.h"
 #include "Float64Message.h"
@@ -69,6 +73,7 @@ volatile int mcaDXPServerDebug = 0;
                           // before reading
 #define DXP4C_CACHE_TIME .2     // Maximum time to use cached values
 #define DXP2X_CACHE_TIME .1
+#define DXPX10P_CACHE_TIME .1
 
 static int numDXP4C=0;
 static epicsMutexId dxpMutexId=NULL;
@@ -134,7 +139,7 @@ extern "C" int DXPConfig(const char *serverName, int chan1, int chan2,
 {
     /* chan1 - chan4 are the Xerxes channel numbers for the 4 inputs of this
      * module.  If an input is unused or does not exists set chanN=-1
-     * moduleType is 0 for DXP4C and 1 for DXP2X. */
+     * moduleType is 0 for DXP4C, 1 for DXP2X, 2 for DXPX10P */
     int allChans[MAX_CHANS_PER_DXP];
     char boardString[MAXBOARDNAME_LEN];
     int i;
@@ -149,12 +154,14 @@ extern "C" int DXPConfig(const char *serverName, int chan1, int chan2,
     allChans[1] = chan2;
     allChans[2] = chan3;
     allChans[3] = chan4;
+    DEBUG(5, "dxpConfig: allChans=%d %d %d %d\n", allChans[0], allChans[1], allChans[2], allChans[3]);
     for (i=0; i<MAX_CHANS_PER_DXP; i++) {
        if (allChans[i] >= 0) {
           dxp_get_board_type(&allChans[i], boardString);
           if (strcmp(boardString, "dxp4c") == 0) p->moduleType = MODEL_DXP4C;
           else if (strcmp(boardString, "dxp4c2x") == 0) p->moduleType = MODEL_DXP2X;
-          else DEBUG(1, "dxpConfig: unknown board type\n");
+          else if (strcmp(boardString, "dxpx10p") == 0) p->moduleType = MODEL_DXPX10P;
+          else DEBUG(1, "dxpConfig: unknown board type=%s\n", boardString);
           break;
        }
     }
@@ -177,6 +184,12 @@ extern "C" int DXPConfig(const char *serverName, int chan1, int chan2,
     	p->clockRate = 1./ 400.e-9;
     	/* Maximum time to use old data before a new query is sent. */
     	p->maxStatusTime = DXP2X_CACHE_TIME;
+    }
+    else if (p->moduleType == MODEL_DXPX10P) {
+    	/* DXPX10P is 400ns clock period */
+    	p->clockRate = 1./ 400.e-9;
+    	/* Maximum time to use old data before a new query is sent. */
+    	p->maxStatusTime = DXPX10P_CACHE_TIME;
     }
     p->stopDelay = STOP_DELAY;
     p->acquiring = 0;
@@ -212,7 +225,7 @@ extern "C" int DXPConfig(const char *serverName, int chan1, int chan2,
              return(-1);
           }
           dxp_get_symbol_index(&detChan, "LIVETIME0", &p->livetime_index);
-          if (p->moduleType == MODEL_DXP2X) {
+          if (p->moduleType == MODEL_DXP2X || p->moduleType == MODEL_DXPX10P) {
              dxp_get_symbol_index(&detChan, "REALTIME0", &p->realtime_index);
              dxp_get_symbol_index(&detChan, "PRESETLEN0", &p->preset_index);
              dxp_get_symbol_index(&detChan, "PRESET", &p->preset_mode_index);
@@ -251,6 +264,11 @@ void mcaDXPServer::mcaDXPServerTask(mcaDXPServer *pmcaDXPServer)
 
 void mcaDXPServer::processMessages()
 {
+#ifdef linux
+    /* The following should only be done on Linux, and is ugly. Hopefully we can get rid of it*/
+    if (moduleType == MODEL_DXPX10P) iopl(3);
+#endif
+
     while(true) {
         pMessageServer->waitForMessage();
         Message *inmsg;
@@ -337,7 +355,7 @@ void mcaDXPServer::processMessages()
                   /* set number of channels
                    * On DXP4C nothing to do, always 1024 channels.
                    * On DXP2X set MCALIMHI */
-               	  if (moduleType == MODEL_DXP2X) {
+               	  if (moduleType == MODEL_DXP2X || moduleType == MODEL_DXPX10P) {
                	     nparams = 1;
                	     nchans = (unsigned int)pim->value;
                	     short_value = nchans;
@@ -495,7 +513,7 @@ void mcaDXPServer::pauseRun()
     * DXP4C to finish processing */
    /* Don't do anything on DXP-2X, since this function is only needed
     * to read out module when acquiring, which is not a problem on DXP2X. */
-   if (moduleType == MODEL_DXP2X) return;
+   if (moduleType == MODEL_DXP2X || moduleType == MODEL_DXPX10P) return;
    if (acquiring) dxp_stop_one_run(&detChan);
    epicsThreadSleep(stopDelay);
 }
@@ -515,7 +533,7 @@ void mcaDXPServer::resumeRun(unsigned short resume)
    /* Resume the run.  resume=0 to erase, 1 to not erase. */
    /* Don't do anything on DXP-2X, since this function is only needed to resume
     * a run after pauseRun, used to read out module when acquiring */
-   if (moduleType == MODEL_DXP2X) return;
+   if (moduleType == MODEL_DXP2X || moduleType == MODEL_DXPX10P) return;
    if (acquiring) dxp_start_one_run(&detChan, &gate, &resume);
 }
 
@@ -606,6 +624,7 @@ void mcaDXPServer::getAcquisitionStatus(DXP_CHANNEL *dxpChan,
                clockRate;
             break;
          case MODEL_DXP2X:
+         case MODEL_DXPX10P:
             /* Compute livetime from the parameter array. The DXP2X
              * uses 3 words to store it.*/
             dxpChannel->elive = 
@@ -646,6 +665,7 @@ void mcaDXPServer::getAcquisitionStatus(DXP_CHANNEL *dxpChan,
          }
          break;
       case MODEL_DXP2X:
+      case MODEL_DXPX10P:
          if ((dxpChan->params[busy_index] == 0) || 
              (dxpChan->params[busy_index] == 99)) {
             acquiring = 0;
@@ -688,7 +708,7 @@ void mcaDXPServer::setPreset(DXP_CHANNEL *dxpChan,
          break;
    }
    
-   if (moduleType == MODEL_DXP2X) {
+   if (moduleType == MODEL_DXP2X || moduleType == MODEL_DXPX10P) {
       /* If preset live and real time are both zero set to count forever */
       if ((dxpChan->plive == 0.) && (dxpChan->preal == 0.)) time_mode = 0;
       /* If preset live time is zero and real time is non-zero use real time */
