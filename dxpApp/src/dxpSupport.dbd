@@ -16,6 +16,7 @@ device(dxp,INST_IO,devDxp,"asyn DXP")
 # REGISTRATION
 ################
 registrar(dxpRegister)
+registrar(dxpMEDRegistrar)
 
 variable("dxpRecordDebug", int)
  
