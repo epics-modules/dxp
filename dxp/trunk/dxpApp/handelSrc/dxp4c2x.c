@@ -3438,14 +3438,11 @@ static int dxp_control_task_data(int* ioChan, int* modChan, short *type,
 
 		offset = (unsigned short)(circular - hststart);
 
-		/* Reassemble the circular buffer data */
-		for (i = offset; i < lenh; i++) {
-		  ltemp[i-offset] = (long) stemp[i];
-		}
-
-		for (i = 0; i < offset; i++) {
-		  ltemp[i+(lenh-offset)] = (long) stemp[i];
-		}
+                /* Do a short cast of the unsigned short to force the compiler to do the
+                 * sign-extension properly.  If you try to cast directly into a long,
+                 * the compiler will NOT sign extend the unsigned short array */
+                for (i = offset; i < lenh; i++) ltemp[i-offset] = (long) ((short) stemp[i]);
+                for (i = 0; i < offset; i++) ltemp[i+(lenh-offset)] = (long) ((short) stemp[i]);
 	  }
 
 	  /* Free memory */
