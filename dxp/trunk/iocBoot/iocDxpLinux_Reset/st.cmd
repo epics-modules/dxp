@@ -8,7 +8,7 @@ dxp_registerRecordDeviceDriver(pdbbase)
 # DXP and mca records for the Vortex detector
 
 # Set logging level (1=ERROR, 2=WARNING, 3=XXX, 4=DEBUG)
-xiaSetLogLevel(3)
+xiaSetLogLevel(2)
 xiaInit("vortex.ini")
 xiaStartSystem
 
@@ -17,7 +17,7 @@ DXPConfig("DXP1",  1)
 
 dbLoadRecords("$(DXP)/dxpApp/Db/dxp2x_reset.db","P=dxpLinux:, R=dxp1, INP=@asyn(DXP1 0)")
 dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=dxpLinux:, M=mca1, DTYP=asynMCA,INP=@asyn(DXP1 0),NCHAN=2048")
-dbLoadRecords("$(DXP)/dxpApp/Db/dxp_sca.db","P=dxpLinux:, D=dxp1, M=mca1, INP=@asyn(DXP1 0)")
+dbLoadTemplate("dxp_sca.substitutions")
 
 set_savefile_path("autosave")
 set_pass0_restoreFile(auto_settings.sav)
