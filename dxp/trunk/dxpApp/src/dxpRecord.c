@@ -46,7 +46,7 @@
 #undef GEN_SIZE_OFFSET
 #include        "mca.h"
 #include        "dxp.h"
-#include        "devDxpAsyn.h"
+#include        "devDxp.h"
 #include        "xerxes_structures.h"
 #include        "xerxes.h"
 
