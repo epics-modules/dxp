@@ -127,7 +127,7 @@ grecord(calc,"$(P)$(R):icrocr") {
     field(INPD,"$(P)$(R).S08V CP NMS")
     field(CALC,"B*C/((A+.1)*(D+.1))")
     field(DESC,"icr*livetime/ocr*realtime")
-    field(PREC,3)
+    field(PREC,"3")
 }
 
 # These records are used to read the parameters, baseline histogram,
