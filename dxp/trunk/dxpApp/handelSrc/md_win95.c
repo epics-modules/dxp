@@ -53,6 +53,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
+#include <ctype.h>
 
 /* XIA include files */
 #include "xerxes_errors.h"
@@ -60,7 +61,9 @@
 #include "md_win95.h"
 #include "md_generic.h"
 #include "xia_md.h"
+#ifndef EXCLUDE_SERIAL
 #include "seriallib.h"
+#endif
 #include "xia_common.h"
 #include "xia_assert.h"
 
