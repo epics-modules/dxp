@@ -31,6 +31,7 @@
                       to prevent conflicts with global structures in Xerxes.
     27-Jun-2004  MLR  Converted from MPF to asyn
     20-Jul-2004  MLR  C++ to C
+    05-Dec-2004  MLR  Converted from Xerxes to Handel
 */
 
 #include <stdlib.h>
@@ -61,7 +62,8 @@
 #include "asynDxp.h"
 #include "xerxes_structures.h"
 #include "xerxes.h"
-#include <xia_md.h>
+#include "xia_md.h"
+#include "handel.h"
 
 
 #define MAX_CHANS_PER_DXP 4
@@ -1070,20 +1072,45 @@ static const iocshArg * const dxp_logArgs[1] = {&dxp_logArg0};
 static const iocshFuncDef dxp_logFuncDef = {"dxp_md_set_log_level",1,dxp_logArgs};
 static void dxp_logCallFunc(const iocshArgBuf *args)
 {
-    dxp_md_set_log_level(args[0].ival);
+  dxp_md_set_log_level(args[0].ival);
 }
-
-
+ 
+ 
 static const iocshFuncDef dxp_initializeFuncDef = {"dxp_initialize",0,0};
 static void dxp_initializeCallFunc(const iocshArgBuf *args)
 {
     dxp_initialize();
 }
+ 
+static const iocshArg xiaLogArg0 = { "logging level",iocshArgInt};
+static const iocshArg * const xiaLogArgs[1] = {&xiaLogArg0};
+static const iocshFuncDef xiaLogFuncDef = {"xiaSetLogLevel",1,xiaLogArgs};
+static void xiaLogCallFunc(const iocshArgBuf *args)
+{
+    xiaSetLogLevel(args[0].ival);
+}
+
+static const iocshArg xiaInitArg0 = { "ini file",iocshArgString};
+static const iocshArg * const xiaInitArgs[1] = {&xiaInitArg0};
+static const iocshFuncDef xiaInitFuncDef = {"xiaInit",0,0};
+static void xiaInitCallFunc(const iocshArgBuf *args)
+{
+    xiaInit(args[0].sval);
+}
+
+static const iocshFuncDef xiaStartSystemFuncDef = {"xiaStartSystem",0,0};
+static void xiaStartSystemCallFunc(const iocshArgBuf *args)
+{
+    xiaStartSystem();
+}
+
 
 void dxpRegister(void)
 {
     iocshRegister(&dxp_initializeFuncDef,dxp_initializeCallFunc);
     iocshRegister(&dxp_logFuncDef,dxp_logCallFunc);
+    iocshRegister(&xiaInitFuncDef,xiaInitCallFunc);
+    iocshRegister(&xiaLogFuncDef,xiaLogCallFunc);
     iocshRegister(&DXPConfigFuncDef,DXPConfigCallFunc);
 }
 
