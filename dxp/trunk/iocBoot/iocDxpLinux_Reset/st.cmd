@@ -14,8 +14,8 @@ xiaSetLogLevel(3)
 xiaInit("vortex.ini")
 xiaStartSystem
 
-# DXPConfig(serverName, detChan1, detChan2, detChan3, detChan4, queueSize)
-DXPConfig("DXP1",  0,  -1, -1, -1, 300)
+# DXPConfig(serverName, nchans)
+DXPConfig("DXP1",  1)
 
 dbLoadRecords("$(DXP)/dxpApp/Db/dxp2x_reset.db","P=dxpLinux:, R=dxp1, INP=@asyn(DXP1 0)")
 dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=dxpLinux:, M=mca1, DTYP=asynMCA,INP=@asyn(DXP1 0),NCHAN=2048")
@@ -40,4 +40,4 @@ set_requestfile_path("$(MCA)/mcaApp/Db")
 # save other things every thirty seconds
 create_monitor_set("auto_settings.req", 30)
 
-#asynSetTraceMask DXP1 0 255
+#asynSetTraceMask DXP1 0 3
