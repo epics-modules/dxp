@@ -1,5 +1,3 @@
-/*<Thu May 23 11:38:03 2002--ALPHA_FRINK--0.0.6--Do not remove--XIA>*/
-
 /*
  *  dxp4c2x.h
  *
@@ -54,8 +52,6 @@
 #include <xerxes_generic.h>
 #endif
 
-#define CODE_VERSION					   0
-#define CODE_REVISION		  			   1
 #define LATEST_BOARD_TYPE		  "DXP-X10P"
 #define LATEST_BOARD_VERSION		     "D"
 /*
@@ -68,7 +64,6 @@
 #define MAXDSP_LEN       0x8000
 #define MAXFIP_LEN   0x00020000
 #define MAX_FIPPI			  5
-#define LIVECLOCK_TICK_TIME 8.e-7f
 /*
  * ASC parameters:
  */
@@ -172,4 +167,3 @@
 #define DXP_FIPPI_ADDRESS		0x8003
 
 #endif						/* Endif for X10P_H */
-

@@ -1,5 +1,3 @@
-/*<Thu May 23 11:38:03 2002--ALPHA_FRINK--0.0.6--Do not remove--XIA>*/
-
 /*
  *  xerxes_generic.h
  *
@@ -130,4 +128,3 @@
 #define CT_ADC             5000		/* Special run for ADC trace readout	*/
 
 #endif						/* Endif for XERXES_GENERIC_H */
-

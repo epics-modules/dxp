@@ -1,5 +1,3 @@
-/*<Thu May 23 11:38:03 2002--ALPHA_FRINK--0.0.6--Do not remove--XIA>*/
-
 /*
  *  xerxesdef.h
  *
@@ -155,4 +153,3 @@
 #endif               /* end of _XERXES_SWITCH_*/
 
 #endif				 /* Endif for XERXESDEF_H */
-

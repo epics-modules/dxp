@@ -1,5 +1,3 @@
-/*<Thu May 23 11:38:03 2002--ALPHA_FRINK--0.0.6--Do not remove--XIA>*/
-
 /*
  *  xerxes.h
  *
@@ -88,13 +86,13 @@ XERXES_IMPORT int XERXES_API dxp_reset_channel(int *detChan);
 XERXES_IMPORT int XERXES_API dxp_reset_dspconfig(int *detChan);
 XERXES_IMPORT int XERXES_API dxp_reset_fpgaconfig(int *detChan, char *name);
 XERXES_IMPORT int XERXES_API dxp_del_board(char *type, char *iolib, char *ifacelib, 
-								   char *iostring);
+					   char *iostring);
 XERXES_IMPORT int XERXES_API dxp_del_btype(char *name);
 XERXES_IMPORT int XERXES_API dxp_del_dsp(char *filename);
 XERXES_IMPORT int XERXES_API dxp_del_fippi(char *filename);
 XERXES_IMPORT int XERXES_API dxp_del_defaults(char *filename);
 XERXES_IMPORT int XERXES_API dxp_add_board(char *type, char *iolib, char *ifacelib,
-								   char *iostring, unsigned short *nchan, int *detChan);
+					   char *iostring, unsigned short *nchan, int *detChan);
 XERXES_IMPORT int XERXES_API dxp_add_btype(char *name, char *pointer, char *dllname);
 XERXES_IMPORT int XERXES_API dxp_get_board_type(int *detChan, char *name);
 XERXES_IMPORT int XERXES_API dxp_enable_LAM(int *detChan);
@@ -104,18 +102,18 @@ XERXES_IMPORT int XERXES_API dxp_start_run(unsigned short *gate, unsigned short 
 XERXES_IMPORT int XERXES_API dxp_resume_run(void);
 XERXES_IMPORT int XERXES_API dxp_stop_run(void);
 XERXES_IMPORT int XERXES_API dxp_start_one_run(int *detChan, unsigned short *gate, 
-											   unsigned short *resume);
+					       unsigned short *resume);
 XERXES_IMPORT int XERXES_API dxp_resume_one_run(int *detChan);
 XERXES_IMPORT int XERXES_API dxp_stop_one_run(int *detChan);
 XERXES_IMPORT int XERXES_API dxp_isrunning(int *detChan, int *active);
 XERXES_IMPORT int XERXES_API dxp_isrunning_any(int *detChan, int *active);
 XERXES_IMPORT int XERXES_API dxp_start_control_task(int *detChan, short *type, 
-													unsigned int *length, int *info);
+						    unsigned int *length, int *info);
 XERXES_IMPORT int XERXES_API dxp_stop_control_task(int *detChan);
 XERXES_IMPORT int XERXES_API dxp_control_task_info(int *detChan, short *type, int *info);
 XERXES_IMPORT int XERXES_API dxp_get_control_task_data(int *detChan, short *type, void *data);
 XERXES_IMPORT int XERXES_API dxp_readout_detector_run(int *detChan, unsigned short params[], 
-													  unsigned short [], unsigned long []);
+						      unsigned short [], unsigned long []);
 XERXES_IMPORT int XERXES_API dxp_write_spectra(int *,int *);
 XERXES_IMPORT int XERXES_API dxp_dspdefaults(int *);
 XERXES_IMPORT int XERXES_API dxp_dspconfig(void);
@@ -133,9 +131,9 @@ XERXES_IMPORT int XERXES_API dxp_get_one_dspsymbol(int *,char *, unsigned short 
 XERXES_IMPORT int XERXES_API dxp_get_dspsymbol(int *,char *, unsigned long *);
 XERXES_IMPORT int XERXES_API dxp_download_params(int *, unsigned short [], unsigned short []);
 XERXES_IMPORT int XERXES_API dxp_download_one_params(int *, int *,unsigned short [], 
-													 unsigned short []);
+						     unsigned short []);
 XERXES_IMPORT int XERXES_API dxp_upload_channel(int *, unsigned short *,unsigned short *, 
-												unsigned long *);
+						unsigned long *);
 XERXES_IMPORT int XERXES_API dxp_nspec(int *, unsigned int *);
 XERXES_IMPORT int XERXES_API dxp_nbase(int *, unsigned int *);
 XERXES_IMPORT int XERXES_API dxp_nevent(int *, unsigned int *);
@@ -145,7 +143,7 @@ XERXES_IMPORT int XERXES_API dxp_max_symbols(int *, unsigned short *);
 XERXES_IMPORT int XERXES_API dxp_symbolname_list(int *, char **);
 XERXES_IMPORT int XERXES_API dxp_symbolname_by_index(int *, unsigned short *, char *);
 XERXES_IMPORT int XERXES_API dxp_symbolname_limits(int *, unsigned short *, unsigned short *, 
-												   unsigned short *);
+						   unsigned short *);
 XERXES_IMPORT int XERXES_API dxp_check_decimation(unsigned short *,unsigned short *);
 XERXES_IMPORT int XERXES_API dxp_calibrate(int *calibtask);
 XERXES_IMPORT int XERXES_API dxp_calibrate_one_channel(int *detChan, int *calibtask);
@@ -174,11 +172,22 @@ XERXES_IMPORT int XERXES_API dxp_suppress_log(void);
 XERXES_IMPORT int XERXES_API dxp_set_log_level(int *level);
 XERXES_IMPORT int XERXES_API dxp_set_log_output(char *filename);
 
-  XERXES_IMPORT int XERXES_API dxp_setup_command(int *detChan, char *name, unsigned int *lenS,
-												 byte_t *send, unsigned int *lenR,
-												 byte_t *receive);
+XERXES_IMPORT int XERXES_API dxp_setup_command(int *detChan, char *name, unsigned int *lenS,
+					       byte_t *send, unsigned int *lenR,
+					       byte_t *receive, byte_t *ioFlags);
 
-  /* Deprecated functions */
+XERXES_IMPORT int XERXES_API dxp_readout_memory(int *detChan, char *name, unsigned long *data);
+XERXES_IMPORT int XERXES_API dxp_memory_length(int *detChan, char *name, unsigned long *length);
+
+XERXES_IMPORT int XERXES_API dxp_write_register(int *detChan, char *name, unsigned short *data);
+XERXES_IMPORT int XERXES_API dxp_read_register(int *detChan, char *name, unsigned short *data);
+
+XERXES_IMPORT int XERXES_API dxp_cmd(int *detChan, byte_t *cmd, unsigned int *lenS, byte_t *send,
+				     unsigned int *lenR, byte_t *receive, byte_t *ioFlags);
+
+XERXES_IMPORT int XERXES_API dxp_exit(int *detChan);
+
+/* Deprecated functions */
 XERXES_IMPORT int XERXES_API dxp_replace_fipconfig(int *detChan, char *filename);
 XERXES_IMPORT int XERXES_API dxp_reset_fipconfig(int *detChan);
 #else									/* Begin old style C prototypes */
@@ -277,7 +286,19 @@ XERXES_IMPORT int XERXES_API dxp_suppress_log();
 XERXES_IMPORT int XERXES_API dxp_set_log_level();
 XERXES_IMPORT int XERXES_API dxp_set_log_output();
 
-  /* Deprecated functions */
+XERXES_IMPORT int XERXES_API dxp_setup_command(); 
+
+XERXES_IMPORT int XERXES_API dxp_readout_memory();
+XERXES_IMPORT int XERXES_API dxp_memory_length();
+
+XERXES_IMPORT int XERXES_API dxp_write_register();
+XERXES_IMPORT int XERXES_API dxp_read_register();
+
+XERXES_IMPORT int XERXES_API dxp_cmd();
+
+XERXES_IMPORT int XERXES_API dxp_exit();
+
+/* Deprecated functions */
 XERXES_IMPORT int XERXES_API dxp_replace_fipconfig();
 XERXES_IMPORT int XERXES_API dxp_reset_fipconfig();
 #endif                                  /*   end if _XERXES_PROTO_ */
@@ -291,4 +312,3 @@ XERXES_IMPORT Utils *utils;
 
 
 #endif						/* Endif for XERXES_H */
-
