@@ -2830,6 +2830,15 @@ PSL_STATIC int PSL_API pslGetADCTrace(int detChan, void *value)
 	return status;
     }
 
+    statusX = dxp_stop_control_task(&detChan);
+
+    if (statusX != DXP_SUCCESS) {
+
+        status = XIA_XERXES;
+        sprintf(info_string, "Error stopping control task on detChan %d", detChan);
+        pslLogError("pslGetADCTrace", info_string, status);
+        return status;
+    }
 
 
     return XIA_SUCCESS;
