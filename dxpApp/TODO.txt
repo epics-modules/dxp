@@ -2,9 +2,6 @@ Things to do on dxpApp
 
                                     Bugs
 
-- dxpRecord/devDxp need to be rewritten.  Messages being sent when
-  pact=1 are ignorred, which means baseline histogram can't process at same
-  rate as record, etc.
 - Get error when loading 1element_reset.ini
 - Get error when loading 16element_reset.ini
 - When using 1 microsecond peaking time it looks like we run out
@@ -17,7 +14,6 @@ Things to do on dxpApp
 
                                Enhancements
 
-- Rename iocBoot directories
 - Once single-threading works on DXP-2X implement multiple threads with
   locks around Handel calls
 - Fit simple Gaussian to baseline histogram, give FWHM in ev
