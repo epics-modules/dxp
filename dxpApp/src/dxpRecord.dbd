@@ -174,8 +174,7 @@ recordtype(dxp) {
     field(ACQG,DBF_LONG) {
           prompt("Acquiring")
           asl(ASL0)
-          special(SPC_MOD)
-          pp(TRUE)
+          special(SPC_NOMOD)
     }
 
 # Special tasks
