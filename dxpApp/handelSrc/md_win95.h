@@ -53,7 +53,9 @@
 #include "xia_mddef.h"
 #include "xia_common.h"
 
+#ifndef EXCLUDE_SERIAL
 #include "seriallib.h"
+#endif
 
 /* Remove this when the uDXP is ready to go live */
 /*#define EXCLUDE_UDXP    0xDEAD*/
