@@ -86,8 +86,8 @@ grecord(dxp,"$(P)$(R)")
     field(S14L,"NUMZIGZAG0")
 
 # Run tasks labels - 16 total
-    field(T01L,"Unused")
-    field(T01V,"No")
+    field(T01L,"Histogram baseline")
+    field(T01V,"Yes")
     field(T02L,"Update slope")
     field(T02V,"Yes")
     field(T03L,"Use FIR filter")
