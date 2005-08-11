@@ -135,7 +135,7 @@ typedef struct  {
                                 * These are also read-only */
 #define NUM_TASK_PARAMS     16 /* The number of task parameters described above
                                 *  in the record. */
-#define NUM_DOUBLE_PARAMS   22 /* The number of double parameters in the record 
+#define NUM_DOUBLE_PARAMS   28 /* The number of double parameters in the record 
                                 * Must start with PKTIME */
  
 #define NUM_SHORT_WRITE_PARAMS \
@@ -382,6 +382,15 @@ static long init_record(struct dxpRecord *pdxp, int pass)
     /* Download the high-level parameters if PINI is true and PKTIM is non-zero
      * which is a sanity check that save_restore worked */
     if (pdxp->pini && (pdxp->pktim != 0.)) {
+        /* Initialize the tasks */
+        setDxpTasks(pdxp);
+        /* Wait 4 seconds before setting BASETHRESH, otherwise it gets overwritten? */
+        epicsThreadSleep(4.0);
+        /* Set first parameter we send is BASETHRESH.  If it is sent later
+         * there is a problem because calibration runs may overwrite it? */
+        status = (*pdset->send_dxp_msg)
+                   (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
+                   pdxp->base_thresh, &pdxp->base_thresh);
         status = (*pdset->send_dxp_msg)
                    (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
                    pdxp->slow_trig, &pdxp->slow_trig);
@@ -402,15 +411,23 @@ static long init_record(struct dxpRecord *pdxp, int pass)
                    pdxp->trig_gaptim, &pdxp->trig_gaptim);
         status = (*pdset->send_dxp_msg)
                    (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
+                   pdxp->ecal, &pdxp->ecal);
+        status = (*pdset->send_dxp_msg)
+                   (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
                    pdxp->adc_rule, &pdxp->adc_rule);
-        /* Must do this at the end */
+        status = (*pdset->send_dxp_msg)
+                   (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
+                   pdxp->base_len, &pdxp->base_len);
+        status = (*pdset->send_dxp_msg)
+                   (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
+                   pdxp->base_threshadj, &pdxp->base_threshadj);
+        status = (*pdset->send_dxp_msg)
+                   (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
+                   pdxp->base_cut_pct, &pdxp->base_cut_pct);
         status = (*pdset->send_dxp_msg)
                    (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
                    pdxp->emax, &pdxp->emax);
     }
-
-    /* Initialize the tasks */
-    /* setDxpTasks(pdxp); */
 
     if (dxpRecordDebug > 5) printf("(init_record): exit\n");
     return(0);
@@ -953,6 +970,7 @@ static long get_precision(struct dbAddr *paddr, long *precision)
         case dxpRecordGAPTIM:
         case dxpRecordGAPTIM_RBV:
         case dxpRecordBASE_CUT_PCT:
+        case dxpRecordBASE_CUT_PCT_RBV:
             *precision = 2;
             break;
         case dxpRecordPGAIN:
