@@ -11,6 +11,26 @@ content="text/html; charset=iso-8859-1">
 
 <h1 align="center">dxp Release Notes</h1>
 
+See <a href="dxpKnownProblems.html">known problems</a> for information
+on problems each release.
+
+<h2 align="center">Release 2-3 (11-August-2005) </h2>
+<ul>
+  <li>Added several readback fields to dxpRecord (BASETHRESH_RBV, etc.)
+  <li>Use value of RUNTASKS from save/restore, so that auto baseline threshold adjust and other
+      bits are restored.
+  <li>Fixed bugs in setting SCAs from MCA ROIs which were causing error messages.
+  <li>Fixed init_record in dxpRecord so that BASETHRESH from save/restore is set correctly
+      if automatic baseline threshold adjust is disabled.
+  <li>Fixed definition of bit 0 in RUNTASKS in dxp2x_rc.db and dxp2x_reset.db.  
+      This bug was causing baseline histogramming to stop if any other bits were
+      modified in RUNTASKS.
+  <li>Added 40MHz firmware files for the Saturn.
+  <li>Fixed bug that was causing bit 0 of RUNTASKS to be reset, turning off baseline histogramming
+      whenever RUNTASKS was modified.
+  <li>Added new ECAL field.  ADC_RULE is now at energy=ECAL, not at energy=EMAX/2.
+</ul>
+
 <h2 align="center">Release 2-2 (29-Mar-2005) </h2>
 <ul>
   <li>Added rpc library for standalone applications on cygwin, needed by saveData</li>
