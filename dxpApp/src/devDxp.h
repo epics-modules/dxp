@@ -43,7 +43,7 @@ typedef enum {
     MSG_DXP_CONTROL_TASK,
     MSG_DXP_READ_BASELINE,
     MSG_DXP_READ_PARAMS,
-    MSG_DXP_FINISH,
+    MSG_DXP_FINISH
 } devDxpCommand;
 
 /* This structure must match the order of the SCA fields in the record */
