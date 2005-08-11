@@ -224,7 +224,7 @@ recordtype(dxp) {
         pp(TRUE)
     }
 
-# Higher level control parameters - all double, 22 total
+# Higher level control parameters - all double, 28 total
     field(PKTIM,DBF_DOUBLE) {
         prompt("Peaking time")
         asl(ASL0)
@@ -238,7 +238,7 @@ recordtype(dxp) {
         special(SPC_NOMOD)
     }
     field(ADC_RULE,DBF_DOUBLE) {
-        prompt("ADC rule at .5 EMAX")
+        prompt("ADC rule at ECAL")
         asl(ASL0)
         special(SPC_MOD)
         pp(TRUE)
@@ -246,6 +246,18 @@ recordtype(dxp) {
     }
     field(ADC_RULE_RBV,DBF_DOUBLE) {
         prompt("ADC rule readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(ECAL,DBF_DOUBLE) {
+        prompt("Calibration energy")
+        asl(ASL0)
+        special(SPC_MOD)
+        pp(TRUE)
+        initial(10.)
+    }
+    field(ECAL_RBV,DBF_DOUBLE) {
+        prompt("Calibration energy readback")
         asl(ASL0)
         special(SPC_NOMOD)
     }
@@ -342,11 +354,21 @@ recordtype(dxp) {
         asl(ASL0)
         initial(5.0)
     }
+    field(BASE_CUT_PCT_RBV,DBF_DOUBLE) {
+        prompt("Baseline cut % readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
     field(BASE_LEN,DBF_DOUBLE) {
         prompt("Baseline filter length")
         special(SPC_MOD)
         pp(TRUE)
         asl(ASL0)
+    }
+    field(BASE_LEN_RBV,DBF_DOUBLE) {
+        prompt("Baseline filter length readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
     }
     field(BASE_THRESH,DBF_DOUBLE) {
         prompt("Baseline threshold")
@@ -354,11 +376,21 @@ recordtype(dxp) {
         pp(TRUE)
         asl(ASL0)
     }
+    field(BASE_THRESH_RBV,DBF_DOUBLE) {
+        prompt("Baseline threshold readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
     field(BASE_THRESHADJ,DBF_DOUBLE) {
         prompt("Baseline threshold adjust")
         special(SPC_MOD)
         pp(TRUE)
         asl(ASL0)
+    }
+    field(BASE_THRESHADJ_RBV,DBF_DOUBLE) {
+        prompt("Baseline threshold adjust readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
     }
 
 # Run statistics
