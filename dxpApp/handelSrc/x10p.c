@@ -3598,7 +3598,7 @@ static int dxp_get_runstats(unsigned short array[], Dsp_Info* dsp,
     /* Temporary values from the DSP code */
     double real = 0.;
     unsigned long nEvents = 0;
-    double liveclock_tick = 0;
+    double clock_tick = 0;
 
     /* Use unsigned long temp variables since we will be bit shifting 
      * by more than an unsigned short or int in the routine */
@@ -3613,9 +3613,9 @@ static int dxp_get_runstats(unsigned short array[], Dsp_Info* dsp,
      */
     if (status == DXP_SUCCESS) 
       {
-	liveclock_tick = 16.e-6 / ((double) array[addr[0]]);
+	clock_tick = 16.e-6 / ((double) array[addr[0]]);
       } else {
-	liveclock_tick = 16.e-6 / 20.;
+	clock_tick = 16.e-6 / 20.;
       }
 
     /* Events in the run */
@@ -3660,7 +3660,7 @@ static int dxp_get_runstats(unsigned short array[], Dsp_Info* dsp,
     temp0 = (unsigned long) array[addr[1]];
     temp1 = (unsigned long) array[addr[0]];
     temp2 = (unsigned long) array[addr[2]];
-    *live = ((double) (temp0 + temp1*65536. + temp2*65536.*65536.)) * liveclock_tick;
+    *live = ((double) (temp0 + temp1*65536. + temp2*65536.*65536.)) * clock_tick;
     
     /* Realtime for the run */
     status += dxp_loc("REALTIME0", dsp, &addr[0]);
@@ -3669,12 +3669,7 @@ static int dxp_get_runstats(unsigned short array[], Dsp_Info* dsp,
     temp0 = (unsigned long) array[addr[1]];
     temp1 = (unsigned long) array[addr[0]];
     temp2 = (unsigned long) array[addr[2]];
-	/* Realtime clock tick is always 800ns for the Saturn boards since it 
-	 * is based on the DSP clock speed, which for all current Saturns is 
-	 * 40 MHz.  Thus it is NOT like the livetime which depends on the 
-	 * digitization speed, which is represented by SYSMICROSEC 
-	 */
-    real = ((double) (temp0 + temp1*65536. + temp2*65536.*65536.)) * REALTIME_CLOCK_TICK;
+    real = ((double) (temp0 + temp1*65536. + temp2*65536.*65536.)) * clock_tick;
     
     /* Calculate the number of events in the run */
     
