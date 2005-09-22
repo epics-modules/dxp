@@ -58,6 +58,7 @@ typedef struct {
     int newBaselineHistogram;
     int newAdcTrace;
     int newTraceWait;
+    int newBHistTime;
     int acquiring;
     int blmin;
     int blmax;
@@ -430,6 +431,10 @@ void asynCallback(asynUser *pasynUser)
          else if (pfield == &pdxp->trace_wait) {
              /* New value of trace wait.  Just set flag, monitor() will post events */
              pdxpReadbacks->newTraceWait = 1;
+         } 
+         else if (pfield == &pdxp->bhist_time) {
+             /* New value of baseline history time.  Just set flag, monitor() will post events */
+             pdxpReadbacks->newBHistTime = 1;
          } 
          readDxpParams(pasynUser);
          break;
@@ -821,6 +826,17 @@ static long monitor(struct dxpRecord *pdxp)
       db_post_events(pdxp,pdxp->tptr,monitor_mask);
       db_post_events(pdxp,pdxp->txptr,monitor_mask);
    }
+   if (pdxpReadbacks->newBHistTime) {
+      pdxpReadbacks->newBHistTime = 0;
+      /* Recompute the bhist_x array, erase baseline history array */
+      for (i=0; i<minfo->nbase_history; i++) {
+         pdxp->bhptr[i] = 0;
+         pdxp->bhxptr[i] = pdxp->bhist_time * i;
+      }
+      db_post_events(pdxp,pdxp->bhptr,monitor_mask);
+      db_post_events(pdxp,pdxp->bhxptr,monitor_mask);
+   }
+
 
    /* If BLMIN, BLMAX, or enable_baseline_cut have changed then
     * recompute the BASE_CUT array */
