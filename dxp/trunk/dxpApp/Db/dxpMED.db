@@ -92,22 +92,32 @@ record(bo,"$(P)ReadDXPBaselines") {
 grecord(bo,"$(P)DoReadDXPBaselines") {
 }
 
-record(bo,"$(P)ReadDXPHistory") {
+record(bo,"$(P)ReadDXPBaselineHistories") {
         field(SCAN,"Passive")
         field(VAL, "1")
-        field(OUT, "$(P)DoReadDXPHistory PP MS")
+        field(OUT, "$(P)DoReadDXPBaselineHistories PP MS")
 }
 
-grecord(bo,"$(P)DoReadDXPHistory") {
+grecord(bo,"$(P)DoReadDXPBaselineHistories") {
 }
 
-record(bo,"$(P)ReadDXPTrace") {
+grecord(ai,"$(P)BaselineHistoryTimes") {
+        field(VAL,"1.0")
+        field(PREC,"1")
+}
+
+record(bo,"$(P)ReadDXPTraces") {
         field(SCAN,"Passive")
         field(VAL, "1")
-        field(OUT, "$(P)DoReadDXPTrace PP MS")
+        field(OUT, "$(P)DoReadDXPTraces PP MS")
 }
 
-grecord(bo,"$(P)DoReadDXPTrace") {
+grecord(bo,"$(P)DoReadDXPTraces") {
+}
+
+grecord(ai,"$(P)TraceWaits") {
+        field(VAL,"0.1")
+        field(PREC,"1")
 }
 
 record(bo,"$(P)CopyTRIG_PKTIM") {
@@ -143,7 +153,10 @@ record(bo,"$(P)CopyBASE_THRESH") {
 record(bo,"$(P)CopyBASE_THRESH_ENBL") {
 }
 
-record(bo,"$(P)CopyBASE_THRESHADJ") {
+record(bo,"$(P)CopyPGAIN") {
+}
+
+record(bo,"$(P)CopyBASE_LEN") {
 }
 
 record(bo,"$(P)CopyEMAX") {
