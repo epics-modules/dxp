@@ -5,24 +5,28 @@
 #include <devSup.h>
 
 #define NUM_DXP_SCAS 16
+typedef enum {
+   DXP_SATURN,
+   DXP_4C2X,
+   DXP_XMAP
+} DXP_MODULE_TYPE;
 
 /* This is the bit position in RUNTASKS for enable baseline cut */
 #define RUNTASKS_BLCUT 0x400
 
 typedef struct {
    unsigned short runtasks;
-   unsigned short gaindac;
    unsigned short blmin;
    unsigned short blmax;
-   unsigned short blcut;
-   unsigned short blfilter;
-   unsigned short basethresh;
-   unsigned short basethreshadj;
    unsigned short basebinning;
+   unsigned short basethresh;
    unsigned short slowlen;
+   unsigned short triggers;
+   unsigned short triggersa;
 } PARAM_OFFSETS;
 
 typedef struct {
+   DXP_MODULE_TYPE moduleType;
    char **names;
    unsigned short *access;
    unsigned short *lbound;

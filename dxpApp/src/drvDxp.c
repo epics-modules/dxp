@@ -30,6 +30,7 @@
 #endif
 
 #include "mca.h"
+#include "devDxp.h"
 #include "drvMca.h"
 #include "asynDriver.h"
 #include "asynInt32.h"
@@ -37,6 +38,7 @@
 #include "asynInt32Array.h"
 #include "asynDrvUser.h"
 #include "handel.h"
+#include "handel_constants.h"
 #include "xia_xerxes.h"
 
 
@@ -53,6 +55,7 @@ typedef struct {
     double etotal;
     int acquiring;
     int erased;
+    int moduleType;
 } dxpChannel_t;
 
 typedef struct {
@@ -149,6 +152,7 @@ int DXPConfig(const char *portName, int ndetectors)
     int detChan;
     asynStatus status;
     drvDxpPvt *pPvt;
+    unsigned short hdwrvar;
 
     pPvt = callocMustSucceed(1, sizeof(*pPvt),  "DXPConfig");
 
@@ -166,6 +170,20 @@ int DXPConfig(const char *portName, int ndetectors)
        dxpChannel->exists = 1;
        dxpChannel->acquiring = 0;
        dxpChannel->erased = 1;
+       /* Figure out what kind of module this is *
+        * THIS IS A TEMPORARY MECHANISM UNTIL HANDEL SUPPORTS IT */
+       xiaGetParameter(detChan, "HDWRVAR", &hdwrvar);
+       switch (hdwrvar) {
+          case 0: dxpChannel->moduleType = DXP_XMAP;
+                  break;
+          case 4: dxpChannel->moduleType = DXP_SATURN;
+                  break;
+          case 5: dxpChannel->moduleType = DXP_4C2X;
+                  break;
+          default:
+             printf("DXPConfig: unknown module type = %d\n", hdwrvar);
+             return(-1);
+        }
     }
     /* Link with higher level routines */
     pPvt->common.interfaceType = asynCommonType;
@@ -267,6 +285,7 @@ static asynStatus drvDxpWrite(void *drvPvt, asynUser *pasynUser,
     dxpChannel_t *dxpChan;
     double double_value;
     int runActive=0;
+    int ignore=0;
 
     pasynManager->getAddr(pasynUser, &signal);
     dxpChan = findChannel(pPvt, pasynUser, signal);
@@ -330,6 +349,9 @@ static asynStatus drvDxpWrite(void *drvPvt, asynUser *pasynUser,
             xiaStopRun(pPvt->detChan);
             xiaSetAcquisitionValues(pPvt->detChan, "number_mca_channels", 
                                     &double_value);
+            if (dxpChan->moduleType == DXP_XMAP) {
+                xiaBoardOperation(pPvt->detChan, "apply", &ignore);
+            }
             break;
         case mcaModePHA:
             /* set mode to Pulse Height Analysis */
@@ -509,7 +531,10 @@ static void getAcquisitionStatus(drvDxpPvt *pPvt, asynUser *pasynUser,
       dxpChan->etotal = 0.;
    } else {
       dxpChan->etotal =  0.;
-      xiaGetRunData(pPvt->detChan, "livetime", &pPvt->dxpChannel->elive);
+      if (dxpChan->moduleType == DXP_XMAP) 
+         xiaGetRunData(pPvt->detChan, "trigger_livetime", &pPvt->dxpChannel->elive);
+      else
+         xiaGetRunData(pPvt->detChan, "livetime", &pPvt->dxpChannel->elive);
       xiaGetRunData(pPvt->detChan, "runtime", &pPvt->dxpChannel->ereal);
       xiaGetRunData(pPvt->detChan, "run_active", &run_active);
       /* If Handel thinks the run is active, but the hardware does not, then
@@ -528,8 +553,10 @@ static void setPreset(drvDxpPvt *pPvt, asynUser *pasynUser,
                       dxpChannel_t *dxpChan, 
                       int mode, double time)
 {
-   double zero=0.;
+   double presetType;
+   double presetValue;
    int runActive=0;
+   int ignore=0;
 
    switch (mode) {
       case mcaPresetRealTime:
@@ -544,21 +571,45 @@ static void setPreset(drvDxpPvt *pPvt, asynUser *pasynUser,
    if ((dxpChan->plive == 0.) && (dxpChan->preal == 0.)) {
        xiaGetRunData(pPvt->detChan, "run_active", &runActive);
        xiaStopRun(pPvt->detChan);
-       xiaSetAcquisitionValues(pPvt->detChan, "preset_standard", &zero);
+       presetValue = 0.;
+       if (dxpChan->moduleType == DXP_XMAP) {
+           presetType = XIA_PRESET_NONE;
+           xiaSetAcquisitionValues(pPvt->detChan, "preset_type", &presetType);
+           xiaSetAcquisitionValues(pPvt->detChan, "preset_values", &presetValue);
+           xiaBoardOperation(pPvt->detChan, "apply", &ignore);
+       } else {
+           xiaSetAcquisitionValues(pPvt->detChan, "preset_standard", &presetValue);
+       }
    }
    /* If preset live time is zero and real time is non-zero use real time */
    if ((dxpChan->plive == 0.) && (dxpChan->preal != 0.)) {
        time = dxpChan->preal;
        xiaGetRunData(pPvt->detChan, "run_active", &runActive);
        xiaStopRun(pPvt->detChan);
-       xiaSetAcquisitionValues(pPvt->detChan, "preset_runtime", &time);
+       if (dxpChan->moduleType == DXP_XMAP) {
+           presetType = XIA_PRESET_FIXED_REAL;
+           presetValue = time; /* *1.e6;  xMAP presets are in microseconds */
+           xiaSetAcquisitionValues(pPvt->detChan, "preset_type", &presetType);
+           xiaSetAcquisitionValues(pPvt->detChan, "preset_values", &presetValue);
+           xiaBoardOperation(pPvt->detChan, "apply", &ignore);
+       } else {
+           xiaSetAcquisitionValues(pPvt->detChan, "preset_runtime", &time);
+       }
    }
    /* If preset live time is non-zero use live time */
    if (dxpChan->plive != 0.) {
        time = dxpChan->plive;
        xiaGetRunData(pPvt->detChan, "run_active", &runActive);
        xiaStopRun(pPvt->detChan);
-       xiaSetAcquisitionValues(pPvt->detChan, "preset_livetime", &time);
+       if (dxpChan->moduleType == DXP_XMAP) {
+           presetType = XIA_PRESET_FIXED_LIVE;
+           presetValue = time; /* 1.e6;  xMAP presets are in microseconds */
+           xiaSetAcquisitionValues(pPvt->detChan, "preset_type", &presetType);
+           xiaSetAcquisitionValues(pPvt->detChan, "preset_values", &presetValue);
+           xiaBoardOperation(pPvt->detChan, "apply", &ignore);
+       } else {
+           xiaSetAcquisitionValues(pPvt->detChan, "preset_livetime", &time);
+       }
    }
    if (runActive) xiaStartRun(pPvt->detChan, 1);
 }
@@ -687,7 +738,7 @@ static void dxp_mem_dumpCallFunc(const iocshArgBuf *args)
 {
     int channel = args[0].ival;
 
-    dxp_mem_dump(&channel);
+/*    dxp_mem_dump(&channel); */
 }
 
 static const iocshArg xiaSaveSystemArg0 = { "ini file",iocshArgString};
