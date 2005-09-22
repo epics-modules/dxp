@@ -21,6 +21,24 @@ menu(dxpYN) {
     choice(dxpYN_Yes,"Yes")
     choice(dxpYN_No,"No")
 }
+menu(dxpFilter) {
+    choice(dxpFilter2,         "2")
+    choice(dxpFilter4,         "4")
+    choice(dxpFilter8,         "8")
+    choice(dxpFilter16,       "16")
+    choice(dxpFilter32,       "32")
+    choice(dxpFilter64,       "64")
+    choice(dxpFilter128,     "128")
+    choice(dxpFilter256,     "256")
+    choice(dxpFilter512,     "512")
+    choice(dxpFilter1024,   "1024")
+    choice(dxpFilter2048,   "2048")
+    choice(dxpFilter4096,   "4096")
+    choice(dxpFilter8192,   "8192")
+    choice(dxpFilter16384, "16384")
+    choice(dxpFilter32768, "32768")
+    choice(dxpFilter65536, "65536")
+}
 
 recordtype(dxp) {
     include "dbCommon.dbd"
@@ -224,7 +242,35 @@ recordtype(dxp) {
         pp(TRUE)
     }
 
-# Higher level control parameters - all double, 28 total
+# Baseline filter length
+    field(BASE_LEN,DBF_MENU) {
+        prompt("Baseline filter length")
+        special(SPC_MOD)
+        pp(TRUE)
+        menu(dxpFilter)
+        asl(ASL0)
+        initial(8)
+    }
+
+# Baseline cut enable
+    field(BASE_CUT_ENBL,DBF_MENU) {
+        prompt("Enable baseline cut")
+        promptgroup(GUI_COMMON)
+        interest(1)
+        special(SPC_MOD)
+        pp(TRUE)
+        menu(dxpNY)
+    }
+    field(BASE_CUT_ENBL_RBV,DBF_MENU) {
+        prompt("Enable baseline cut readback")
+        promptgroup(GUI_COMMON)
+        interest(1)
+        special(SPC_NOMOD)
+        menu(dxpNY)
+    }
+
+
+# Higher level control parameters - all double, 27 total
     field(PKTIM,DBF_DOUBLE) {
         prompt("Peaking time")
         asl(ASL0)
@@ -267,6 +313,11 @@ recordtype(dxp) {
         special(SPC_MOD)
         pp(TRUE)
         initial(4.)
+    }
+    field(PGAIN_RBV,DBF_DOUBLE) {
+        prompt("Preamp Gain readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
     }
     field(EMAX,DBF_DOUBLE) {
         prompt("Maximum energy (keV)")
@@ -347,6 +398,13 @@ recordtype(dxp) {
         asl(ASL0)
         initial(0.1)
     }
+    field(BHIST_TIME,DBF_DOUBLE) {
+        prompt("Baseline history time (usec)")
+        special(SPC_MOD)
+        pp(TRUE)
+        asl(ASL0)
+        initial(1.0)
+    }
     field(BASE_CUT_PCT,DBF_DOUBLE) {
         prompt("Baseline cut (%)")
         special(SPC_MOD)
@@ -359,36 +417,20 @@ recordtype(dxp) {
         asl(ASL0)
         special(SPC_NOMOD)
     }
-    field(BASE_LEN,DBF_DOUBLE) {
-        prompt("Baseline filter length")
-        special(SPC_MOD)
-        pp(TRUE)
-        asl(ASL0)
-    }
-    field(BASE_LEN_RBV,DBF_DOUBLE) {
-        prompt("Baseline filter length readback")
-        asl(ASL0)
-        special(SPC_NOMOD)
-    }
     field(BASE_THRESH,DBF_DOUBLE) {
         prompt("Baseline threshold")
         special(SPC_MOD)
         pp(TRUE)
         asl(ASL0)
+        initial(1.0)
     }
     field(BASE_THRESH_RBV,DBF_DOUBLE) {
         prompt("Baseline threshold readback")
         asl(ASL0)
         special(SPC_NOMOD)
     }
-    field(BASE_THRESHADJ,DBF_DOUBLE) {
-        prompt("Baseline threshold adjust")
-        special(SPC_MOD)
-        pp(TRUE)
-        asl(ASL0)
-    }
-    field(BASE_THRESHADJ_RBV,DBF_DOUBLE) {
-        prompt("Baseline threshold adjust readback")
+    field(BASE_LEN_RBV,DBF_DOUBLE) {
+        prompt("Baseline filter length readback")
         asl(ASL0)
         special(SPC_NOMOD)
     }
@@ -1856,7 +1898,12 @@ recordtype(dxp) {
         size(16)
         special(SPC_NOMOD)
     }
-    field(S01O,DBF_SHORT) {
+    field(S01OL,DBF_SHORT) {
+        prompt("")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(S01OH,DBF_SHORT) {
         prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
@@ -1873,7 +1920,12 @@ recordtype(dxp) {
         size(16)
         special(SPC_NOMOD)
     }
-    field(S02O,DBF_SHORT) {
+    field(S02OL,DBF_SHORT) {
+        prompt("")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(S02OH,DBF_SHORT) {
         prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
@@ -1890,7 +1942,12 @@ recordtype(dxp) {
         size(16)
         special(SPC_NOMOD)
     }
-    field(S03O,DBF_SHORT) {
+    field(S03OL,DBF_SHORT) {
+        prompt("")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(S03OH,DBF_SHORT) {
         prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
@@ -1907,7 +1964,12 @@ recordtype(dxp) {
         size(16)
         special(SPC_NOMOD)
     }
-    field(S04O,DBF_SHORT) {
+    field(S04OL,DBF_SHORT) {
+        prompt("")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(S04OH,DBF_SHORT) {
         prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
@@ -1924,7 +1986,12 @@ recordtype(dxp) {
         size(16)
         special(SPC_NOMOD)
     }
-    field(S05O,DBF_SHORT) {
+    field(S05OL,DBF_SHORT) {
+        prompt("")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(S05OH,DBF_SHORT) {
         prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
@@ -1941,7 +2008,12 @@ recordtype(dxp) {
         size(16)
         special(SPC_NOMOD)
     }
-    field(S06O,DBF_SHORT) {
+    field(S06OL,DBF_SHORT) {
+        prompt("")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(S06OH,DBF_SHORT) {
         prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
@@ -1959,7 +2031,12 @@ recordtype(dxp) {
         size(16)
         special(SPC_NOMOD)
     }
-    field(S07O,DBF_SHORT) {
+    field(S07OL,DBF_SHORT) {
+        prompt("")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(S07OH,DBF_SHORT) {
         prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
@@ -1976,7 +2053,12 @@ recordtype(dxp) {
         size(16)
         special(SPC_NOMOD)
     }
-    field(S08O,DBF_SHORT) {
+    field(S08OL,DBF_SHORT) {
+        prompt("")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(S08OH,DBF_SHORT) {
         prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
@@ -1993,7 +2075,12 @@ recordtype(dxp) {
         size(16)
         special(SPC_NOMOD)
     }
-    field(S09O,DBF_SHORT) {
+    field(S09OL,DBF_SHORT) {
+        prompt("")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(S09OH,DBF_SHORT) {
         prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
@@ -2010,7 +2097,12 @@ recordtype(dxp) {
         size(16)
         special(SPC_NOMOD)
     }
-    field(S10O,DBF_SHORT) {
+    field(S10OL,DBF_SHORT) {
+        prompt("")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(S10OH,DBF_SHORT) {
         prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
@@ -2027,7 +2119,12 @@ recordtype(dxp) {
         size(16)
         special(SPC_NOMOD)
     }
-    field(S11O,DBF_SHORT) {
+    field(S11OL,DBF_SHORT) {
+        prompt("")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(S11OH,DBF_SHORT) {
         prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
@@ -2044,7 +2141,12 @@ recordtype(dxp) {
         size(16)
         special(SPC_NOMOD)
     }
-    field(S12O,DBF_SHORT) {
+    field(S12OL,DBF_SHORT) {
+        prompt("")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(S12OH,DBF_SHORT) {
         prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
@@ -2061,7 +2163,12 @@ recordtype(dxp) {
         size(16)
         special(SPC_NOMOD)
     }
-    field(S13O,DBF_SHORT) {
+    field(S13OL,DBF_SHORT) {
+        prompt("")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(S13OH,DBF_SHORT) {
         prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
@@ -2078,7 +2185,12 @@ recordtype(dxp) {
         size(16)
         special(SPC_NOMOD)
     }
-    field(S14O,DBF_SHORT) {
+    field(S14OL,DBF_SHORT) {
+        prompt("")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(S14OH,DBF_SHORT) {
         prompt("")
         asl(ASL0)
         special(SPC_NOMOD)
