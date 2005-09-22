@@ -1,12 +1,12 @@
 
 file {
-	name="/home/epics/synApps5-1beta2/dxp/dxpApp/op/adl/16element_history.adl"
+	name="/home/epics/support/dxp/2-4beta/dxpApp/op/adl/16element_history.adl"
 	version=030000
 }
 display {
 	object {
-		x=44
-		y=86
+		x=42
+		y=58
 		width=1935
 		height=945
 	}
@@ -107,7 +107,7 @@ rectangle {
 	}
 	plotcom {
 		title="$(P)$(D)1"
-		xlabel="Time"
+		xlabel="Time (usec)"
 		ylabel="ADC units"
 		clr=14
 		bclr=2
@@ -115,6 +115,7 @@ rectangle {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+                xdata="$(P)$(D)1.BHIST_X"
 		ydata="$(P)$(D)1.BHIST"
 		data_clr=27
 	}
@@ -137,7 +138,7 @@ rectangle {
 	}
 	plotcom {
 		title="$(P)$(D)2"
-		xlabel="Time"
+		xlabel="Time (usec)"
 		ylabel="ADC units"
 		clr=14
 		bclr=2
@@ -145,6 +146,7 @@ rectangle {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+                xdata="$(P)$(D)2.BHIST_X"
 		ydata="$(P)$(D)2.BHIST"
 		data_clr=27
 	}
@@ -167,7 +169,7 @@ rectangle {
 	}
 	plotcom {
 		title="$(P)$(D)4"
-		xlabel="Time"
+		xlabel="Time (usec)"
 		ylabel="ADC units"
 		clr=14
 		bclr=2
@@ -175,6 +177,7 @@ rectangle {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+                xdata="$(P)$(D)4.BHIST_X"
 		ydata="$(P)$(D)4.BHIST"
 		data_clr=27
 	}
@@ -197,7 +200,7 @@ rectangle {
 	}
 	plotcom {
 		title="$(P)$(D)3"
-		xlabel="Time"
+		xlabel="Time (usec)"
 		ylabel="ADC units"
 		clr=14
 		bclr=2
@@ -205,6 +208,7 @@ rectangle {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+                xdata="$(P)$(D)3.BHIST_X"
 		ydata="$(P)$(D)3.BHIST"
 		data_clr=27
 	}
@@ -275,7 +279,7 @@ text {
 	}
 	plotcom {
 		title="$(P)$(D)5"
-		xlabel="Time"
+		xlabel="Time (usec)"
 		ylabel="ADC units"
 		clr=14
 		bclr=2
@@ -283,6 +287,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+                xdata="$(P)$(D)5.BHIST_X"
 		ydata="$(P)$(D)5.BHIST"
 		data_clr=27
 	}
@@ -305,7 +310,7 @@ text {
 	}
 	plotcom {
 		title="$(P)$(D)7"
-		xlabel="Time"
+		xlabel="Time (usec)"
 		ylabel="ADC units"
 		clr=14
 		bclr=2
@@ -313,6 +318,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+                xdata="$(P)$(D)7.BHIST_X"
 		ydata="$(P)$(D)7.BHIST"
 		data_clr=27
 	}
@@ -335,7 +341,7 @@ text {
 	}
 	plotcom {
 		title="$(P)$(D)8"
-		xlabel="Time"
+		xlabel="Time (usec)"
 		ylabel="ADC units"
 		clr=14
 		bclr=2
@@ -343,6 +349,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+                xdata="$(P)$(D)8.BHIST_X"
 		ydata="$(P)$(D)8.BHIST"
 		data_clr=27
 	}
@@ -365,7 +372,7 @@ text {
 	}
 	plotcom {
 		title="$(P)$(D)6"
-		xlabel="Time"
+		xlabel="Time (usec)"
 		ylabel="ADC units"
 		clr=14
 		bclr=2
@@ -373,6 +380,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+                xdata="$(P)$(D)6.BHIST_X"
 		ydata="$(P)$(D)6.BHIST"
 		data_clr=27
 	}
@@ -395,7 +403,7 @@ text {
 	}
 	plotcom {
 		title="$(P)$(D)9"
-		xlabel="Time"
+		xlabel="Time (usec)"
 		ylabel="ADC units"
 		clr=14
 		bclr=2
@@ -403,6 +411,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+                xdata="$(P)$(D)9.BHIST_X"
 		ydata="$(P)$(D)9.BHIST"
 		data_clr=27
 	}
@@ -485,7 +494,7 @@ text {
 	}
 	plotcom {
 		title="$(P)$(D)16"
-		xlabel="Time"
+		xlabel="Time (usec)"
 		ylabel="ADC units"
 		clr=14
 		bclr=2
@@ -493,6 +502,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+                xdata="$(P)$(D)16.BHIST_X"
 		ydata="$(P)$(D)16.BHIST"
 		data_clr=27
 	}
@@ -527,7 +537,7 @@ text {
 	}
 	plotcom {
 		title="$(P)$(D)15"
-		xlabel="Time"
+		xlabel="Time (usec)"
 		ylabel="ADC units"
 		clr=14
 		bclr=2
@@ -535,6 +545,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+                xdata="$(P)$(D)15.BHIST_X"
 		ydata="$(P)$(D)15.BHIST"
 		data_clr=27
 	}
@@ -569,7 +580,7 @@ text {
 	}
 	plotcom {
 		title="$(P)$(D)14"
-		xlabel="Time"
+		xlabel="Time (usec)"
 		ylabel="ADC units"
 		clr=14
 		bclr=2
@@ -577,6 +588,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+                xdata="$(P)$(D)14.BHIST_X"
 		ydata="$(P)$(D)14.BHIST"
 		data_clr=27
 	}
@@ -611,7 +623,7 @@ text {
 	}
 	plotcom {
 		title="$(P)$(D)12"
-		xlabel="Time"
+		xlabel="Time (usec)"
 		ylabel="ADC units"
 		clr=14
 		bclr=2
@@ -619,6 +631,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+                xdata="$(P)$(D)12.BHIST_X"
 		ydata="$(P)$(D)12.BHIST"
 		data_clr=27
 	}
@@ -641,7 +654,7 @@ text {
 	}
 	plotcom {
 		title="$(P)$(D)13"
-		xlabel="Time"
+		xlabel="Time (usec)"
 		ylabel="ADC units"
 		clr=14
 		bclr=2
@@ -649,6 +662,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+                xdata="$(P)$(D)13.BHIST_X"
 		ydata="$(P)$(D)13.BHIST"
 		data_clr=27
 	}
@@ -671,7 +685,7 @@ text {
 	}
 	plotcom {
 		title="$(P)$(D)10"
-		xlabel="Time"
+		xlabel="Time (usec)"
 		ylabel="ADC units"
 		clr=14
 		bclr=2
@@ -679,6 +693,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+                xdata="$(P)$(D)10.BHIST_X"
 		ydata="$(P)$(D)10.BHIST"
 		data_clr=27
 	}
@@ -737,7 +752,7 @@ text {
 	}
 	plotcom {
 		title="$(P)$(D)11"
-		xlabel="Time"
+		xlabel="Time (usec)"
 		ylabel="ADC units"
 		clr=14
 		bclr=2
@@ -745,6 +760,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+                xdata="$(P)$(D)11.BHIST_X"
 		ydata="$(P)$(D)11.BHIST"
 		data_clr=27
 	}
@@ -822,4 +838,31 @@ text {
 	}
 	textix="16 Element Baseline History"
 	align="horiz. centered"
+}
+text {
+	object {
+		x=43
+		y=647
+		width=210
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Time per point (usec):"
+}
+"text entry" {
+	object {
+		x=262
+		y=647
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)BaselineHistoryTimes"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
 }

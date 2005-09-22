@@ -1,12 +1,12 @@
 
 file {
-	name="C:\epics\adl\dxp_baseline_history.adl"
-	version=020306
+	name="/home/epics/support/dxp/2-4beta/dxpApp/op/adl/dxp_baseline_history.adl"
+	version=030000
 }
 display {
 	object {
-		x=509
-		y=58
+		x=242
+		y=91
 		width=650
 		height=375
 	}
@@ -96,13 +96,14 @@ display {
 	}
 	plotcom {
 		title="$(P)$(R) Baseline History"
-		xlabel="Time"
+		xlabel="Time (usec)"
 		ylabel="ADC units"
 		clr=14
 		bclr=4
 	}
 	style="line"
 	trace[0] {
+		xdata="$(P)$(R).BHIST_X"
 		ydata="$(P)$(R).BHIST"
 		data_clr=54
 	}
@@ -113,43 +114,81 @@ display {
 		rangeStyle="auto-scale"
 	}
 }
-"message button" {
-	object {
-		x=389
-		y=351
-		width=80
-		height=20
-	}
-	control {
-		chan="$(P)$(R):ReadHistory.PROC"
-		clr=14
-		bclr=51
-	}
-	label="Read Once"
-	press_msg="1"
-}
 text {
 	object {
-		x=194
+		x=8
 		y=351
-		width=105
+		width=210
 		height=20
 	}
 	"basic attribute" {
 		clr=14
 	}
-	textix="Read Rate:"
+	textix="Time per point (usec):"
 }
-menu {
+"text entry" {
 	object {
-		x=302
-		y=352
-		width=80
-		height=18
+		x=227
+		y=351
+		width=60
+		height=20
 	}
 	control {
-		chan="$(P)$(R):ReadHistory.SCAN"
+		chan="$(P)$(R).BHIST_TIME"
 		clr=14
 		bclr=51
+	}
+	limits {
+	}
+}
+composite {
+	object {
+		x=303
+		y=351
+		width=275
+		height=20
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=303
+				y=351
+				width=105
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Read Rate:"
+		}
+		menu {
+			object {
+				x=411
+				y=352
+				width=80
+				height=18
+			}
+			control {
+				chan="$(P)$(R):ReadHistory.SCAN"
+				clr=14
+				bclr=51
+			}
+		}
+		"message button" {
+			object {
+				x=498
+				y=351
+				width=80
+				height=20
+			}
+			control {
+				chan="$(P)$(R):ReadHistory.PROC"
+				clr=14
+				bclr=51
+			}
+			label="Read Once"
+			press_msg="1"
+		}
 	}
 }
