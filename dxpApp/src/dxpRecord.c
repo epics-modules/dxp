@@ -1038,6 +1038,7 @@ static long get_precision(struct dbAddr *paddr, long *precision)
     if (dxpRecordDebug > 5) printf("(get_precision): entry\n");
     switch (fieldIndex) {
         case dxpRecordTRACE_WAIT:
+        case dxpRecordBHIST_TIME:
         case dxpRecordICR:
         case dxpRecordOCR:
             *precision = 1;
