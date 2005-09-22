@@ -68,6 +68,54 @@ dxpApp_SYS_LIBS_cygwin32 += rpc
 dxpApp_LIBS += seq pv
 dxpApp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
+# xMAP application for cygwin
+
+PROD_IOC_cygwin32 += xmapApp
+
+# <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
+xmapApp_SRCS_cygwin32 += dxp_registerRecordDeviceDriver.cpp
+xmapApp_SRCS_cygwin32 += dxpMain.cpp
+xmapApp_SRCS_vxWorks += -nil-
+
+xmapApp_LIBS += dxp
+xmapApp_LIBS += mca
+xmapApp_LIBS += calc sscan autosave
+xmapApp_LIBS += asyn
+xmapApp_SYS_LIBS_cygwin32 += xmap_handel
+xmapApp_SYS_LIBS_cygwin32 += DLPORTIO
+xmapApp_SYS_LIBS_cygwin32 += rpc
+xmapApp_LIBS += seq pv
+xmapApp_LIBS += $(EPICS_BASE_IOC_LIBS)
+
+
+# Test applications
+PROD_IOC_Linux += test_basethresh
+PROD_IOC_cygwin32 += test_basethresh
+test_basethresh_SRCS += test_basethresh.c
+test_basethresh_LIBS += handel
+test_basethresh_SYS_LIBS_cygwin32 += DLPORTIO
+test_basethresh_LIBS += $(EPICS_BASE_IOC_LIBS)
+
+PROD_IOC_cygwin32 += test_set_acquisition_values
+test_set_acquisition_values_SRCS += test_set_acquisition_values.c
+test_set_acquisition_values_LIBS += dxp
+test_set_acquisition_values_SYS_LIBS += xmap_handel
+test_set_acquisition_values_SYS_LIBS += DLPORTIO
+test_set_acquisition_values_LIBS += $(EPICS_BASE_IOC_LIBS)
+
+PROD_IOC_cygwin32 += test_scas
+test_scas_SRCS += test_scas.c
+test_scas_LIBS += dxp
+test_scas_SYS_LIBS += xmap_handel
+test_scas_SYS_LIBS += DLPORTIO
+test_scas_LIBS += $(EPICS_BASE_IOC_LIBS)
+
+PROD_IOC_cygwin32 += test_read_baseline_history
+test_read_baseline_history_SRCS += test_read_baseline_history.c
+test_read_baseline_history_LIBS += dxp
+test_read_baseline_history_SYS_LIBS += xmap_handel
+test_read_baseline_history_SYS_LIBS += DLPORTIO
+test_read_baseline_history_LIBS += $(EPICS_BASE_IOC_LIBS)
 #===========================
 # Build application that lets other apps run with iopl(3)
 PROD_IOC_Linux += startWithIopl3
