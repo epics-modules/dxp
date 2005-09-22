@@ -5,9 +5,8 @@
  * may be required by users of Handel. Internal constants
  * do not belong in this file.
  *
- * Created 11/15/03 -- PJF
- *
- * Copyright (c) 2003, X-ray Instrumentation Associates
+ * Copyright (c) 2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -40,12 +39,23 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
+ * $Id: handel_constants.h,v 1.2 2005-09-22 14:56:23 rivers Exp $
+ *
  */
 
 
 #ifndef HANDEL_CONSTANTS_H
 #define HANDEL_CONSTANTS_H
 
+/** Preset Run Types **/
+#define XIA_PRESET_NONE           0.0
+#define XIA_PRESET_FIXED_REAL     1.0
+#define XIA_PRESET_FIXED_LIVE     2.0
+#define XIA_PRESET_FIXED_EVENTS   3.0
+#define XIA_PRESET_FIXED_TRIGGERS 4.0
+
+
+/** Old Test Constants **/
 #define XIA_HANDEL_TEST_MASK             0x1
 #define XIA_HANDEL_DYN_MODULE_TEST_MASK  0x2
 #define XIA_HANDEL_FILE_TEST_MASK        0x4
