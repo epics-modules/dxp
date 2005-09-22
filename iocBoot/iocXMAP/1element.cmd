@@ -2,13 +2,13 @@
 
 # Tell EPICS all about the record types, device-support modules, drivers,
 # etc. in this build from dxpApp
-dbLoadDatabase("../../dbd/dxp.dbd")
+dbLoadDatabase("$(DXP)/dbd/dxp.dbd")
 dxp_registerRecordDeviceDriver(pdbbase)
 
 # Setup for save_restore
 < ../save_restore.cmd
 save_restoreSet_status_prefix("dxpXMAP:")
-dbLoadRecords("../../../autosave/asApp/Db/save_restoreStatus.db", "P=dxpXMAP:")
+dbLoadRecords("$(AUTOSAVE)/asApp/Db/save_restoreStatus.db", "P=dxpXMAP:")
 set_pass0_restoreFile("auto_settings.sav")
 set_pass1_restoreFile("auto_settings.sav")
 
@@ -16,21 +16,21 @@ set_pass1_restoreFile("auto_settings.sav")
 xiaSetLogLevel(2)
 # Execute the following line if you have a Vortex detector or
 # another detector with a reset pre-amplifier
-xiaInit("xmap8.ini")
+xiaInit("xmap4.ini")
 xiaStartSystem
 
 # DXPConfig(serverName, nchans)
 DXPConfig("DXP1",  1)
 
 # DXP record
-dbLoadRecords("../../dxpApp/Db/xmap_reset.db", "P=dxpXMAP:, R=dxp1, INP=@asyn(DXP1 0)")
+dbLoadRecords("$(DXP)/dxpApp/Db/xmap_reset.db", "P=dxpXMAP:, R=dxp1, INP=@asyn(DXP1 0)")
 # MCA record
-dbLoadRecords("../../../mca/mcaApp/Db/mca.db", "P=dxpXMAP:, M=mca1, DTYP=asynMCA,INP=@asyn(DXP1 0),NCHAN=2048")
+dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=dxpXMAP:, M=mca1, DTYP=asynMCA,INP=@asyn(DXP1 0),NCHAN=2048")
 
 #dbLoadTemplate("roi_to_sca.substitutions")
 
 # Debugging flags
-xiaSetLogLevel(4)
+xiaSetLogLevel(2)
 #asynSetTraceMask DXP1 0 255
 #var mcaRecordDebug 10
 #var dxpRecordDebug 10

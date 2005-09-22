@@ -2,13 +2,13 @@
 
 # Tell EPICS all about the record types, device-support modules, drivers,
 # etc. in this build from dxpApp
-dbLoadDatabase("../../dbd/dxp.dbd")
+dbLoadDatabase("$(DXP)/dbd/dxp.dbd")
 dxp_registerRecordDeviceDriver(pdbbase)
 
 # Setup for save_restore
 < ../save_restore.cmd
 save_restoreSet_status_prefix("dxpXMAP:")
-dbLoadRecords("../../../autosave/asApp/Db/save_restoreStatus.db", "P=dxpXMAP:")
+dbLoadRecords("$(AUTOSAVE)/asApp/Db/save_restoreStatus.db", "P=dxpXMAP:")
 set_pass0_restoreFile("auto_settings8.sav")
 set_pass1_restoreFile("auto_settings8.sav")
 
