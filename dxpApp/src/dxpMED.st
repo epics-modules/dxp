@@ -78,10 +78,15 @@ assign  BASE_THRESH_ENBL to {"","","","","","","","","","","","","","","","","",
 int     copyBASE_THRESH_ENBL; assign copyBASE_THRESH_ENBL to "{P}CopyBASE_THRESH_ENBL";
 monitor copyBASE_THRESH_ENBL; evflag copyBASE_THRESH_ENBLMon; sync copyBASE_THRESH_ENBL copyBASE_THRESH_ENBLMon;
 
-double  BASE_THRESHADJ[MAX_DETECTORS]; 
-assign  BASE_THRESHADJ to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
-int     copyBASE_THRESHADJ; assign copyBASE_THRESHADJ to "{P}CopyBASE_THRESHADJ";
-monitor copyBASE_THRESHADJ; evflag copyBASE_THRESHADJMon; sync copyBASE_THRESHADJ copyBASE_THRESHADJMon;
+double  BASE_LEN[MAX_DETECTORS]; 
+assign  BASE_LEN to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
+int     copyBASE_LEN; assign copyBASE_LEN to "{P}CopyBASE_LEN";
+monitor copyBASE_LEN; evflag copyBASE_LENMon; sync copyBASE_LEN copyBASE_LENMon;
+
+double  PGAIN[MAX_DETECTORS]; 
+assign  PGAIN to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
+int     copyPGAIN; assign copyPGAIN to "{P}CopyPGAIN";
+monitor copyPGAIN; evflag copyPGAINMon; sync copyPGAIN copyPGAINMon;
 
 double  EMAX[MAX_DETECTORS]; 
 assign  EMAX to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
@@ -122,6 +127,26 @@ int     readDXPBaseline[MAX_DETECTORS];
 assign  readDXPBaseline to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
 int     readDXPBaselines; assign readDXPBaselines to "{P}DoReadDXPBaselines";
 monitor readDXPBaselines; evflag readDXPBaselinesMon; sync readDXPBaselines readDXPBaselinesMon;
+
+int     readDXPBaselineHistory[MAX_DETECTORS]; 
+assign  readDXPBaselineHistory to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
+int     readDXPBaselineHistories; assign readDXPBaselineHistories to "{P}DoReadDXPBaselineHistories";
+monitor readDXPBaselineHistories; evflag readDXPBaselineHistoriesMon; sync readDXPBaselineHistories readDXPBaselineHistoriesMon;
+
+int     readDXPTrace[MAX_DETECTORS]; 
+assign  readDXPTrace to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
+int     readDXPTraces; assign readDXPTraces to "{P}DoReadDXPTraces";
+monitor readDXPTraces; evflag readDXPTracesMon; sync readDXPTraces readDXPTracesMon;
+
+double  DXPTraceWait[MAX_DETECTORS]; 
+assign  DXPTraceWait to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
+double  DXPTraceWaits; assign DXPTraceWaits to "{P}TraceWaits";
+monitor DXPTraceWaits; evflag DXPTraceWaitsMon; sync DXPTraceWaits DXPTraceWaitsMon;
+
+double  DXPBaselineHistoryTime[MAX_DETECTORS]; 
+assign  DXPBaselineHistoryTime to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
+double  DXPBaselineHistoryTimes; assign DXPBaselineHistoryTimes to "{P}BaselineHistoryTimes";
+monitor DXPBaselineHistoryTimes; evflag DXPBaselineHistoryTimesMon; sync DXPBaselineHistoryTimes DXPBaselineHistoryTimesMon;
 
 int     readMCA[MAX_DETECTORS]; 
 assign  readMCA to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
@@ -199,8 +224,10 @@ ss dxp_control {
                pvAssign(BASE_THRESH[i], temp);
                sprintf(temp, "%s%s%d.T14V", prefix, dxp, det);
                pvAssign(BASE_THRESH_ENBL[i], temp);
-               sprintf(temp, "%s%s%d.BASE_THRESHADJ", prefix, dxp, det);
-               pvAssign(BASE_THRESHADJ[i], temp);
+               sprintf(temp, "%s%s%d.BASE_LEN", prefix, dxp, det);
+               pvAssign(BASE_LEN[i], temp);
+               sprintf(temp, "%s%s%d.PGAIN", prefix, dxp, det);
+               pvAssign(PGAIN[i], temp);
                sprintf(temp, "%s%s%d.EMAX", prefix, dxp, det);
                pvAssign(EMAX[i], temp);
                sprintf(temp, "%s%s%d.ADC_RULE", prefix, dxp, det);
@@ -217,6 +244,14 @@ ss dxp_control {
                pvAssign(readDXP[i], temp);
                sprintf(temp, "%s%s%d:ReadHistogram.PROC", prefix, dxp, det);
                pvAssign(readDXPBaseline[i], temp);
+               sprintf(temp, "%s%s%d:ReadHistory.PROC", prefix, dxp, det);
+               pvAssign(readDXPBaselineHistory[i], temp);
+               sprintf(temp, "%s%s%d:ReadTrace.PROC", prefix, dxp, det);
+               pvAssign(readDXPTrace[i], temp);
+               sprintf(temp, "%s%s%d.TRACE_WAIT", prefix, dxp, det);
+               pvAssign(DXPTraceWait[i], temp);
+               sprintf(temp, "%s%s%d.BHIST_TIME", prefix, dxp, det);
+               pvAssign(DXPBaselineHistoryTime[i], temp);
                sprintf(temp, "%s%s%d.READ", prefix, mca, det);
                pvAssign(readMCA[i], temp);
                sprintf(temp, "%s%s%d.PROC", prefix, mca, det);
@@ -351,14 +386,24 @@ ss dxp_control {
             pvPut(copyBASE_THRESH_ENBL);
         } state monitor_changes
 
-        when(efTestAndClear(copyBASE_THRESHADJMon) && (copyBASE_THRESHADJ == 1)) {
-            pvGet(BASE_THRESHADJ[0]);
+        when(efTestAndClear(copyBASE_LENMon) && (copyBASE_LEN == 1)) {
+            pvGet(BASE_LEN[0]);
             for (i=1; i<nDetectors; i++) {
-                BASE_THRESHADJ[i] = BASE_THRESHADJ[0];
-                pvPut(BASE_THRESHADJ[i]);
+                BASE_LEN[i] = BASE_LEN[0];
+                pvPut(BASE_LEN[i]);
             }
-            copyBASE_THRESHADJ = 0;
-            pvPut(copyBASE_THRESHADJ);
+            copyBASE_LEN = 0;
+            pvPut(copyBASE_LEN);
+        } state monitor_changes
+
+        when(efTestAndClear(copyPGAINMon) && (copyPGAIN == 1)) {
+            pvGet(PGAIN[0]);
+            for (i=1; i<nDetectors; i++) {
+                PGAIN[i] = PGAIN[0];
+                pvPut(PGAIN[i]);
+            }
+            copyPGAIN = 0;
+            pvPut(copyPGAIN);
         } state monitor_changes
 
         when(efTestAndClear(copyEMAXMon) && (copyEMAX == 1)) {
@@ -397,6 +442,38 @@ ss dxp_control {
             }
             readDXPBaselines = 0;
             pvPut(readDXPBaselines);
+        } state monitor_changes
+
+        when(efTestAndClear(readDXPBaselineHistoriesMon) && (readDXPBaselineHistories == 1)) {
+            for (i=0; i<nDetectors; i++) {
+                readDXPBaselineHistory[i] = 1;
+                pvPut(readDXPBaselineHistory[i]);
+            }
+            readDXPBaselineHistories = 0;
+            pvPut(readDXPBaselineHistories);
+        } state monitor_changes
+
+        when(efTestAndClear(readDXPTracesMon) && (readDXPTraces == 1)) {
+            for (i=0; i<nDetectors; i++) {
+                readDXPTrace[i] = 1;
+                pvPut(readDXPTrace[i]);
+            }
+            readDXPTraces = 0;
+            pvPut(readDXPTraces);
+        } state monitor_changes
+
+        when(efTestAndClear(DXPTraceWaitsMon)) {
+            for (i=0; i<nDetectors; i++) {
+                DXPTraceWait[i] = DXPTraceWaits;
+                pvPut(DXPTraceWait[i]);
+            }
+        } state monitor_changes
+
+        when(efTestAndClear(DXPBaselineHistoryTimesMon)) {
+            for (i=0; i<nDetectors; i++) {
+                DXPBaselineHistoryTime[i] = DXPBaselineHistoryTimes;
+                pvPut(DXPBaselineHistoryTime[i]);
+            }
         } state monitor_changes
 
         when(efTestAndClear(ReadMCAsMon) && (ReadMCAs == 1)) {
