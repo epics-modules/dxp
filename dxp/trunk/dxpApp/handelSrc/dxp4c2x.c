@@ -3777,13 +3777,13 @@ static int dxp_get_runstats(unsigned short array[], Dsp_Info* dsp,
   /* Calculate the event rates */
   if(*live > 0.)
 	{
-	  *icr = 0.001 * (*fast) / (*live);
+	  *icr = (*fast) / (*live);
 	} else {
 	  *icr = -999.;
 	}
   if(real > 0.)
 	{
-	  *ocr = 0.001 * nEvents / real;
+	  *ocr = nEvents / real;
 	} else {
 	  *ocr = -999.;
 	}
