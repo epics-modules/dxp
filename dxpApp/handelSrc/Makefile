@@ -70,6 +70,7 @@ INC += xia_xerxes_structures.h
 INC += xerxes_structures.h
 INC += xerxesdef.h
 INC += handel.h
+INC += handel_constants.h
 INC += handeldef.h
 INC += handel_generic.h
 
