@@ -9,7 +9,8 @@
  *                      from specification.
  *
  *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2002,2003,2004 X-ray Instrumentation Associates
+ *               2005 XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -43,6 +44,9 @@
  * SUCH DAMAGE.
  *
  *  Following are prototypes for HanDeL library routines
+ *
+ * $Id: handel.h,v 1.2 2005-09-27 19:03:28 rivers Exp $
+ *
  */
 
 /** @file handel.h */
@@ -52,9 +56,7 @@
 
 #include "xia_common.h"
 
-#ifndef HANDELDEF_H
-#include <handeldef.h>
-#endif
+#include "handeldef.h"
 
 #define HANDEL_CODE_VERSION				0
 #define HANDEL_CODE_REVISION			0
@@ -161,6 +163,12 @@ HANDEL_IMPORT int HANDEL_API xiaSetLogOutput(char *fileName);
   HANDEL_IMPORT void HANDEL_API xiaGetVersionInfo(int *rel, int *min, int *maj,
 												  char *pretty);
 
+  HANDEL_IMPORT int HANDEL_API xiaMemStatistics(unsigned long *total,
+												unsigned long *current,
+												unsigned long *peak);
+  HANDEL_EXPORT void HANDEL_API xiaMemSetCheckpoint(void);
+  HANDEL_EXPORT void HANDEL_API xiaMemLeaks(char *);
+
 #ifdef __MEM_DBG__
 
 #include <crtdbg.h>
@@ -251,6 +259,10 @@ HANDEL_IMPORT int HANDEL_API xiaSetLogOutput();
   HANDEL_IMPORT int HANDEL_API xiaSetIOPriority();
 
   HANDEL_IMPORT void HANDEL_API xiaGetVersionInfo();
+
+  HANDEL_IMPORT int HANDEL_API xiaMemStatistics();
+  HANDEL_EXPORT void HANDEL_API xiaMemSetCheckpoint();
+  HANDEL_EXPORT void HANDEL_API xiaMemLeaks();
 
 #endif                                  /*   end if _HANDEL_PROTO_ */
 

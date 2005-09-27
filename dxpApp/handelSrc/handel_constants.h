@@ -39,7 +39,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: handel_constants.h,v 1.2 2005-09-22 14:56:23 rivers Exp $
+ * $Id: handel_constants.h,v 1.3 2005-09-27 19:03:28 rivers Exp $
  *
  */
 

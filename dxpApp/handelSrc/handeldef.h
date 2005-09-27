@@ -1,12 +1,8 @@
 /*
  *  handeldef.h
  *
- *  Modified 2-Feb-97 EO: add prototype for dxp_primitive routines
- *      dxp_read_long and dxp_write_long; added various parameters
- *  Major Mods 3-17-00 JW: Complete revamping of libraries
- *  Copied 6-25-01 JW: copied xerxesdef.h to handeldef.h
- *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -39,7 +35,9 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE. 
  *
- *    Following are prototypes for dxp driver routines
+ *
+ * $Id: handeldef.h,v 1.2 2005-09-27 19:03:28 rivers Exp $
+ *
  */
 
 

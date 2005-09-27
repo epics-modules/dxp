@@ -1,10 +1,8 @@
 /*
  *  handel_errors.h
  *
- *  Created 3-17-00:  JW: File to contain Error codes for XIA drivers.
- *  Copied 6-25-01 JW: copied xerxes_errors.h to handel_errors.h
- *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -35,7 +33,10 @@
  * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR 
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
- * SUCH DAMAGE. 
+ * SUCH DAMAGE.
+ *
+ * $Id: handel_errors.h,v 1.2 2005-09-27 19:03:28 rivers Exp $
+ * 
  *
  */
 
@@ -43,9 +44,7 @@
 #ifndef HANDEL_ERROR_H
 #define HANDEL_ERROR_H
 
-#ifndef HANDELDEF_H
-#include <handeldef.h>
-#endif
+#include "handeldef.h"
 
 /*
  *  some error codes
@@ -120,6 +119,9 @@
 #define XIA_BINS_OOR			359 /** There are too many or too few bins for this module type */
 #define XIA_MISSING_TYPE		360 /** The type for the current detector is not specified properly */
 #define XIA_NO_MMU              361 /** No MMU defined and/or required for this module */
+#define XIA_NULL_FIRMWARE       362 /** No firmware set defined */
+#define XIA_NO_FDD              363 /** No FDD defined in the firmware set */
+#define XIA_WRONG_DET_TYPE      364 /** The detector type is wrong for the requested operation */
 
 /*  host machine errors codes:  401-500 */
 #define XIA_NOMEM			401 /** Unable to allocate memory */
@@ -140,6 +142,7 @@
 #define XIA_FILE_TYPE		507 /** Improper file type specified */
 #define XIA_END				508 /** There are no more instances of the name specified. Pos set to end */
 #define XIA_INVALID_STR     509 /** Invalid string format */
+#define XIA_UNIMPLEMENTED   510 /** The routine is unimplemented in this version */
 
 /* PSL error 601-700 */
 #define XIA_NOSUPPORT_FIRM	601 /** The specified firmware is not supported by this board type */
@@ -194,6 +197,11 @@
 #define XIA_MAXWIDTH_OOR    646 /** The specified value for MAXWIDTH is out-of-
 								 ** range.
 								 **/
+#define XIA_NULL_TYPE       647 /** A NULL file type was specified */
+#define XIA_GAIN_SCALE      648 /** Gain scale factor is not valid */
+#define XIA_NULL_INFO       649 /** The specified info array is NULL */
+#define XIA_UNKNOWN_PARAM_DATA 650 /** Unknown parameter data type */
+#define XIA_MAX_SCAS        651 /** The specified number of SCAs is more then the maximum allowed */
 
 /* XUP errors 701-800 */
 #define XIA_XUP_VERSION     701 /** XUP version is not supported */
@@ -201,6 +209,7 @@
 #define XIA_BAK_MISSING     703 /** Requested BAK file cannot be opened */
 #define XIA_SIZE_MISMATCH   704 /** Size read from file is incorrect */
 #define XIA_NO_ACCESS       705 /** Specified access file isn't valid */
+#define XIA_N_FILTER_BAD    706 /** The number of filter parameters in the FDD doesn't match the number requires for the hardware */
 
 /* Unit Test Errors 801 - 900 */
 #define XIA_UNIT_TEST       801    

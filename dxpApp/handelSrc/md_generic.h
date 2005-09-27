@@ -1,9 +1,8 @@
 /*
  *  md_generic.h
  *
- *  Creation 12-4-01 JW
- *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -36,6 +35,9 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *  
+ *
+ * $Id: md_generic.h,v 1.2 2005-09-27 19:03:28 rivers Exp $
+ *
  *    Generic constant definitions related to the MD layer
  */
 
