@@ -98,26 +98,6 @@ assign  ADC_RULE to {"","","","","","","","","","","","","","","","","","","",""
 int     copyADC_RULE; assign copyADC_RULE to "{P}CopyADC_RULE";
 monitor copyADC_RULE; evflag copyADC_RULEMon; sync copyADC_RULE copyADC_RULEMon;
 
-int     mcaStart[MAX_DETECTORS]; 
-assign  mcaStart to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
-int     StartAll; assign StartAll to "{P}StartAll";
-monitor StartAll; evflag StartAllMon; sync StartAll StartAllMon;
-
-int     mcaStop[MAX_DETECTORS]; 
-assign  mcaStop to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
-int     StopAll; assign StopAll to "{P}StopAll";
-monitor StopAll; evflag StopAllMon; sync StopAll StopAllMon;
-
-int     mcaErase[MAX_DETECTORS]; 
-assign  mcaErase to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
-int     EraseAll; assign EraseAll to "{P}EraseAll";
-monitor EraseAll; evflag EraseAllMon; sync EraseAll EraseAllMon;
-
-int     mcaEraseStart[MAX_DETECTORS]; 
-assign  mcaEraseStart to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
-int     EraseStart; assign EraseStart to "{P}EraseStart";
-monitor EraseStart; evflag EraseStartMon; sync EraseStart EraseStartMon;
-
 int     readDXP[MAX_DETECTORS]; 
 assign  readDXP to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
 int     readDXPs; assign readDXPs to "{P}DoReadDXPs";
@@ -232,14 +212,6 @@ ss dxp_control {
                pvAssign(EMAX[i], temp);
                sprintf(temp, "%s%s%d.ADC_RULE", prefix, dxp, det);
                pvAssign(ADC_RULE[i], temp);
-               sprintf(temp, "%s%s%d.STRT", prefix, mca, det);
-               pvAssign(mcaStart[i], temp);
-               sprintf(temp, "%s%s%d.STOP", prefix, mca, det);
-               pvAssign(mcaStop[i], temp);
-               sprintf(temp, "%s%s%d.ERAS", prefix, mca, det);
-               pvAssign(mcaErase[i], temp);
-               sprintf(temp, "%s%s%d.ERST", prefix, mca, det);
-               pvAssign(mcaEraseStart[i], temp);
                sprintf(temp, "%s%s%d:ReadParams.PROC", prefix, dxp, det);
                pvAssign(readDXP[i], temp);
                sprintf(temp, "%s%s%d:ReadHistogram.PROC", prefix, dxp, det);
@@ -492,45 +464,6 @@ ss dxp_control {
             }
             StatusMCAs = 0;
             pvPut(StatusMCAs);
-        } state monitor_changes
-
-        when(efTestAndClear(StartAllMon) && (StartAll == 1)) {
-            /* We could just do first channel on each module for efficiency */
-            for (i=0; i<nDetectors; i++) {
-                mcaStart[i] = 1;
-                pvPut(mcaStart[i]);
-            }
-            StartAll = 0;
-            pvPut(StartAll);
-        } state monitor_changes
-
-        when(efTestAndClear(StopAllMon) && (StopAll == 1)) {
-            /* We could just do first channel on each module for efficiency */
-            for (i=0; i<nDetectors; i++) {
-                mcaStop[i] = 1;
-                pvPut(mcaStop[i]);
-            }
-            StopAll = 0;
-            pvPut(StopAll);
-        } state monitor_changes
-
-        when(efTestAndClear(EraseAllMon) && (EraseAll == 1)) {
-            for (i=0; i<nDetectors; i++) {
-                mcaErase[i] = 1;
-                pvPut(mcaErase[i]);
-            }
-            EraseAll = 0;
-            pvPut(EraseAll);
-        } state monitor_changes
-
-        when(efTestAndClear(EraseStartMon) && (EraseStart == 1)) {
-            /* We could just do first channel on each module for efficiency */
-            for (i=0; i<nDetectors; i++) {
-                mcaEraseStart[i] = 1;
-                pvPut(mcaEraseStart[i]);
-            }
-            EraseStart = 0;
-            pvPut(EraseStart);
         } state monitor_changes
 
         when(efTestAndClear(PresetRealMon)) {
