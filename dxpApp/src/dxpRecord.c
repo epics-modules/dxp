@@ -209,6 +209,7 @@ static long init_record(struct dxpRecord *pdxp, int pass)
     DXP_LONG_PARAM *long_param;
     unsigned short offset;
     char label[100];
+    char module_name[MAXALIAS_LEN];
 
     if (pass != 0) return(0);
     if (dxpRecordDebug > 5) printf("(init_record): entry\n");
@@ -230,11 +231,10 @@ static long init_record(struct dxpRecord *pdxp, int pass)
             goto bad;
         }
     }
-    if (detChan < 0) {
-        printf("dxpRecord:init_record hardware communication error\n");
-        status = -1;
-        goto bad;
-    }
+
+    /* If this is a detector set (detChan<0) then use detChan=0 for the following */
+    if (detChan < 0) detChan = 0;
+
     /* Figure out what kind of module this is */
     xiaGetParameter(detChan, "HDWRVAR", &hdwrvar);
     if (hdwrvar > MAX_MODULE_TYPES) {
@@ -261,14 +261,20 @@ static long init_record(struct dxpRecord *pdxp, int pass)
               status = -1;
               goto bad;
         }
+        xiaGetNumModules(&minfo->numModules);
+        minfo->first_channels = calloc(minfo->numModules, sizeof(int));
+        for (i=0; i<minfo->numModules; i++) {
+            xiaGetModules_VB(i, module_name);
+            xiaGetModuleItem(module_name, "channel0_alias", &minfo->first_channels[i]);
+        }
         xiaGetNumParams(detChan, &minfo->nparams);
         xiaGetRunData(detChan, "baseline_length", &minfo->nbase_histogram);
         xiaGetSpecialRunData(detChan, "adc_trace_length", &minfo->ntrace);
         xiaGetSpecialRunData(detChan, "baseline_history_length", 
                              &minfo->nbase_history);
-        minfo->names = (char **)malloc(minfo->nparams * sizeof(char *));
+        minfo->param_names = (char **)malloc(minfo->nparams * sizeof(char *));
         for (i=0; i<minfo->nparams; i++) {
-           minfo->names[i] = 
+           minfo->param_names[i] = 
                (char *) malloc(MAX_DSP_PARAM_NAME_LEN * sizeof(char *));
         }
         minfo->access =
@@ -283,13 +289,13 @@ static long init_record(struct dxpRecord *pdxp, int pass)
         /* The following calls are not supported in the xMAP version of Handel, so
          * don't use them.  The only thing we really need to get is names, which we can
          * do with xiaGetParamName()
-        *xiaGetParamData(detChan, "names", minfo->names);
+        *xiaGetParamData(detChan, "names", minfo->_param_names);
         *xiaGetParamData(detChan, "access", minfo->access);
         *xiaGetParamData(detChan, "lower_bounds", minfo->lbound);
         *xiaGetParamData(detChan, "upper_bounds", minfo->ubound);
         */
         for (i=0; i<minfo->nparams; i++) {
-           xiaGetParamName(detChan, i, minfo->names[i]);
+           xiaGetParamName(detChan, i, minfo->param_names[i]);
         }
     }
 
@@ -989,7 +995,7 @@ static void setDxpTasks(struct dxpRecord *pdxp)
     * before record processes again */
     pdxp->pptr[minfo->offsets.runtasks] = runtasks;
     status = (*pdset->send_dxp_msg)
-         (pdxp,  MSG_DXP_SET_SHORT_PARAM, minfo->names[minfo->offsets.runtasks], 
+         (pdxp,  MSG_DXP_SET_SHORT_PARAM, minfo->param_names[minfo->offsets.runtasks], 
          runtasks, 0., NULL);
    if (dxpRecordDebug > 5) printf("dxpRecord(setDxpTasks): exit\n");
 }
@@ -1191,7 +1197,7 @@ static int getParamOffset(MODULE_INFO *minfo, char *label, unsigned short *offse
 
     *offset = -1;
     for (i=0; i<minfo->nparams; i++) {
-        if (strcmp(label, minfo->names[i]) == 0) {
+        if (strcmp(label, minfo->param_names[i]) == 0) {
             *offset = i;
             return(0);
         }
