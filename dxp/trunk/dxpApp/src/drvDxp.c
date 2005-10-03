@@ -65,7 +65,7 @@ typedef struct {
     int ndetectors;
     int ngroups;
     int nchans;     /* Number of MCA bins */
-    int numModules;
+    unsigned int numModules;
     int *first_channels;
     char *portName;
     asynInterface common;
@@ -522,10 +522,10 @@ static asynStatus drvDxpRead(void *drvPvt, asynUser *pasynUser,
             *pfvalue = 0.;
             break;
         case mcaElapsedLiveTime:
-            *pfvalue = pPvt->dxpChannel->elive;
+            *pfvalue = dxpChan->elive;
             break;
         case mcaElapsedRealTime:
-            *pfvalue = pPvt->dxpChannel->ereal;
+            *pfvalue = dxpChan->ereal;
             break;
         case mcaElapsedCounts:
             *pfvalue = dxpChan->etotal;
@@ -604,25 +604,37 @@ static void getAcquisitionStatus(drvDxpPvt *pPvt, asynUser *pasynUser,
 {
    unsigned long run_active;
    int detChan = pPvt->detChan;
+   int i;
 
-   if (detChan < 0) return;  /* Ignore detector groups */
-
-   if (dxpChan->erased) {
-      pPvt->dxpChannel->elive = 0.;
-      pPvt->dxpChannel->ereal = 0.;
-      dxpChan->etotal = 0.;
+   if (detChan < 0) {  /* This is a detChan set */
+       dxpChan->ereal = 0.;
+       dxpChan->elive = 0.;
+       dxpChan->etotal = 0.;
+       dxpChan->acquiring = 0;
+       for (i=0; i<pPvt->ndetectors; i++) {
+           dxpChan->ereal = MAX(dxpChan->ereal, pPvt->dxpChannel[i].ereal);
+           dxpChan->elive = MAX(dxpChan->elive, pPvt->dxpChannel[i].elive);
+           dxpChan->etotal = MAX(dxpChan->etotal, pPvt->dxpChannel[i].etotal);
+           dxpChan->acquiring = MAX(dxpChan->acquiring, pPvt->dxpChannel[i].acquiring);
+       }
    } else {
-      dxpChan->etotal =  0.;
-      if (dxpChan->moduleType == DXP_XMAP) 
-         xiaGetRunData(detChan, "trigger_livetime", &pPvt->dxpChannel->elive);
-      else
-         xiaGetRunData(detChan, "livetime", &pPvt->dxpChannel->elive);
-      xiaGetRunData(detChan, "runtime", &pPvt->dxpChannel->ereal);
-      xiaGetRunData(detChan, "run_active", &run_active);
-      /* If Handel thinks the run is active, but the hardware does not, then
-       * stop the run */
-      if (run_active == XIA_RUN_HANDEL) xiaStopRun(detChan);
-      dxpChan->acquiring = (run_active != 0);
+       if (dxpChan->erased) {
+          dxpChan->elive = 0.;
+          dxpChan->ereal = 0.;
+          dxpChan->etotal = 0.;
+       } else {
+          dxpChan->etotal =  0.;
+          if (dxpChan->moduleType == DXP_XMAP) 
+             xiaGetRunData(detChan, "trigger_livetime", &dxpChan->elive);
+          else
+             xiaGetRunData(detChan, "livetime", &dxpChan->elive);
+          xiaGetRunData(detChan, "runtime", &dxpChan->ereal);
+          xiaGetRunData(detChan, "run_active", &run_active);
+          /* If Handel thinks the run is active, but the hardware does not, then
+           * stop the run */
+          if (run_active == XIA_RUN_HANDEL) xiaStopRun(detChan);
+          dxpChan->acquiring = (run_active != 0);
+       }
    }
    asynPrint(pasynUser, ASYN_TRACE_FLOW, 
              "getAcquisitionStatus [%s detChan=%d]): acquiring=%d\n",
