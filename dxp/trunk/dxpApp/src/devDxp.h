@@ -27,7 +27,9 @@ typedef struct {
 
 typedef struct {
    DXP_MODULE_TYPE moduleType;
-   char **names;
+   char **param_names;
+   unsigned int numModules;
+   int *first_channels;
    unsigned short *access;
    unsigned short *lbound;
    unsigned short *ubound;

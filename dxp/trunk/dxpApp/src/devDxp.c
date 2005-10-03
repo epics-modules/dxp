@@ -98,6 +98,19 @@ static char *sca_lo[NUM_DXP_SCAS];
 static char *sca_hi[NUM_DXP_SCAS];
 #define SCA_NAME_LEN 10
 
+#define XMAP_APPLY(detChan) { \
+    int i, ignore=0; \
+    if (minfo->moduleType == DXP_XMAP) { \
+        if (detChan < 0) { \
+            for (i=0; i<minfo->numModules; i++) { \
+                xiaBoardOperation(minfo->first_channels[i], "apply", &ignore); \
+            } \
+         } else { \
+             xiaBoardOperation(detChan, "apply", &ignore); \
+         } \
+    } \
+}
+
 static const struct devDxpDset devDxp = {
     5,
     NULL,
@@ -158,8 +171,8 @@ static long init_record(dxpRecord *pdxp, int *detChan)
     status = pasynManager->connectDevice(pasynUser, pPvt->portName, 
                                          pPvt->channel);
     if (status != asynSuccess) {
-        asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                  "devDxp::init_record, connectDevice failed\n");
+        errlogPrintf("devDxp::init_record %s, connectDevice failed\n",
+                     pdxp->name);
         goto bad;
     }
 
@@ -223,16 +236,16 @@ void asynCallback(asynUser *pasynUser)
     unsigned short monitor_mask = DBE_VALUE | DBE_LOG;
     MODULE_INFO *minfo = (MODULE_INFO *)pdxp->miptr;
     int status;
-    int detChan;
+    int detChan, detChan0;
     double *pfield;
     double info[2];
     double dvalue;
     int i;
     int runActive=0;
     DXP_SCA *sca;
-    int ignore=0;
 
     pasynManager->getAddr(pasynUser, &detChan);
+    if (detChan < 0) detChan0 = 0; else detChan0 = detChan;
     asynPrint(pasynUser, ASYN_TRACE_FLOW,
               "devDxp::asynCallback: command=%d\n",
               pmsg->dxpCommand);
@@ -249,19 +262,17 @@ void asynCallback(asynUser *pasynUser)
              "devDxp::asynCallback, MSG_DXP_SET_SHORT_PARAM"
              " calling xiaSetAcquisitionValues name=%s value=%d\n",
              pmsg->name, pmsg->param);
-         xiaGetRunData(detChan, "run_active", &runActive);
+         xiaGetRunData(detChan0, "run_active", &runActive);
          xiaStopRun(detChan);
          /* Note that we use xiaSetAcquisitionValues rather than xiaSetParameter
           * so that the new value will be saved with xiaSaveSystem */
          dvalue = pmsg->param;
          xiaSetAcquisitionValues(detChan, pmsg->name, &dvalue);
-         if (minfo->moduleType == DXP_XMAP) {
-            xiaBoardOperation(detChan, "apply", &ignore);
-         }
+         XMAP_APPLY(detChan);
          readDxpParams(pasynUser);
          break;
      case MSG_DXP_SET_DOUBLE_PARAM:
-         xiaGetRunData(detChan, "run_active", &runActive);
+         xiaGetRunData(detChan0, "run_active", &runActive);
          xiaStopRun(detChan);
          pfield = (double *)pmsg->pointer;
          if (pfield == &pdxp->slow_trig) {
@@ -272,9 +283,7 @@ void asynCallback(asynUser *pasynUser)
                  " setting energy_threshold=%f\n",
                  pmsg->dvalue);
              xiaSetAcquisitionValues(detChan, "energy_threshold", &dvalue);
-             if (minfo->moduleType == DXP_XMAP) {
-                xiaBoardOperation(detChan, "apply", &ignore);
-             }
+             XMAP_APPLY(detChan);
          }
          else if (pfield == &pdxp->pktim) {
              asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
@@ -282,9 +291,7 @@ void asynCallback(asynUser *pasynUser)
                  " setting peaking_time=%f\n",
                  pmsg->dvalue);
              xiaSetAcquisitionValues(detChan, "peaking_time", &pmsg->dvalue);
-             if (minfo->moduleType == DXP_XMAP) {
-                xiaBoardOperation(detChan, "apply", &ignore);
-             }
+             XMAP_APPLY(detChan);
          }
          else if (pfield == &pdxp->gaptim) {
              asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
@@ -292,9 +299,7 @@ void asynCallback(asynUser *pasynUser)
                  " setting gap_time=%f\n",
                  pmsg->dvalue);
              xiaSetAcquisitionValues(detChan, "gap_time", &pmsg->dvalue);
-             if (minfo->moduleType == DXP_XMAP) {
-                xiaBoardOperation(detChan, "apply", &ignore);
-             }
+             XMAP_APPLY(detChan);
          }
          else if (pfield == &pdxp->adc_rule) {
              asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
@@ -302,9 +307,7 @@ void asynCallback(asynUser *pasynUser)
                  " setting adc_percent_rule=%f\n",
                  pmsg->dvalue);
              xiaSetAcquisitionValues(detChan, "adc_percent_rule", &pmsg->dvalue);
-             if (minfo->moduleType == DXP_XMAP) {
-                xiaBoardOperation(detChan, "apply", &ignore);
-             }
+             XMAP_APPLY(detChan);
          }
          else if (pfield == &pdxp->ecal) {
              dvalue = pdxp->ecal * 1000.;
@@ -313,9 +316,7 @@ void asynCallback(asynUser *pasynUser)
                  " setting calibration_energy=%f\n",
                  dvalue);
              xiaSetAcquisitionValues(detChan, "calibration_energy", &dvalue);
-             if (minfo->moduleType == DXP_XMAP) {
-                xiaBoardOperation(detChan, "apply", &ignore);
-             }
+             XMAP_APPLY(detChan);
          }
          else if (pfield == &pdxp->fast_trig) {
              /* Convert from keV to eV */
@@ -325,9 +326,7 @@ void asynCallback(asynUser *pasynUser)
                  " setting trigger_threshold=%f\n",
                  dvalue);
              xiaSetAcquisitionValues(detChan, "trigger_threshold", &dvalue);
-             if (minfo->moduleType == DXP_XMAP) {
-                xiaBoardOperation(detChan, "apply", &ignore);
-             }
+             XMAP_APPLY(detChan);
          }
          else if (pfield == &pdxp->trig_pktim) {
              asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
@@ -335,9 +334,7 @@ void asynCallback(asynUser *pasynUser)
                  " setting trigger_peaking_time=%f\n",
                  pmsg->dvalue);
              xiaSetAcquisitionValues(detChan, "trigger_peaking_time", &pmsg->dvalue);
-             if (minfo->moduleType == DXP_XMAP) {
-                xiaBoardOperation(detChan, "apply", &ignore);
-             }
+             XMAP_APPLY(detChan);
          }
          else if (pfield == &pdxp->trig_gaptim) {
              asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
@@ -345,9 +342,7 @@ void asynCallback(asynUser *pasynUser)
                  " setting trigger_gap_time=%f\n",
                  pmsg->dvalue);
              xiaSetAcquisitionValues(detChan, "trigger_gap_time", &pmsg->dvalue);
-             if (minfo->moduleType == DXP_XMAP) {
-                xiaBoardOperation(detChan, "apply", &ignore);
-             }
+             XMAP_APPLY(detChan);
          }
          else if (pfield == &pdxp->pgain) {
              asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
@@ -355,9 +350,7 @@ void asynCallback(asynUser *pasynUser)
                  " setting pre-amp gain=%f\n",
                  pmsg->dvalue);
              xiaSetAcquisitionValues(detChan, "preamp_gain", &pmsg->dvalue);
-             if (minfo->moduleType == DXP_XMAP) {
-                xiaBoardOperation(detChan, "apply", &ignore);
-             }
+             XMAP_APPLY(detChan);
          }
          else if (pfield == &pdxp->base_cut_pct) {
              asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
@@ -367,9 +360,7 @@ void asynCallback(asynUser *pasynUser)
              /* The xMAP does not support this yet */
              if (minfo->moduleType != DXP_XMAP) {
                 xiaSetAcquisitionValues(detChan, "baseline_cut", &pmsg->dvalue);
-                if (minfo->moduleType == DXP_XMAP) {
-                   xiaBoardOperation(detChan, "apply", &ignore);
-                }
+                XMAP_APPLY(detChan);
              }
          }
          else if (pfield == (double *)&pdxp->base_cut_enbl) {
@@ -381,9 +372,7 @@ void asynCallback(asynUser *pasynUser)
              /* The xMAP does not support this yet */
              if (minfo->moduleType != DXP_XMAP) {
                 xiaSetAcquisitionValues(detChan, "enable_baseline_cut", &dvalue);
-                if (minfo->moduleType == DXP_XMAP) {
-                   xiaBoardOperation(detChan, "apply", &ignore);
-                }
+                XMAP_APPLY(detChan);
              }
          }
          else if (pfield == (double *)&pdxp->base_len) {
@@ -394,10 +383,10 @@ void asynCallback(asynUser *pasynUser)
                  " setting baseline filter length=%f\n",
                  dvalue);
              if (minfo->moduleType == DXP_XMAP) {
-                xiaSetAcquisitionValues(detChan, "baseline_average", &dvalue);
-                xiaBoardOperation(detChan, "apply", &ignore);
+                 xiaSetAcquisitionValues(detChan, "baseline_average", &dvalue);
+                 XMAP_APPLY(detChan);
              } else {
-                xiaSetAcquisitionValues(detChan, "baseline_filter_length", &dvalue);
+                 xiaSetAcquisitionValues(detChan, "baseline_filter_length", &dvalue);
              }
          }
          else if (pfield == &pdxp->base_thresh) {
@@ -409,7 +398,7 @@ void asynCallback(asynUser *pasynUser)
              if (minfo->moduleType == DXP_XMAP) {
                  dvalue = pmsg->dvalue * 1000.;    /* Convert to eV */
                  xiaSetAcquisitionValues(detChan, "baseline_threshold", &dvalue);
-                 xiaBoardOperation(detChan, "apply", &ignore);
+                 XMAP_APPLY(detChan);
              } else {
                  xiaSetAcquisitionValues(detChan, "BASETHRESH", &pmsg->dvalue);
              }
@@ -424,9 +413,7 @@ void asynCallback(asynUser *pasynUser)
                  " setting emax=%f, mca_bin_width=%f\n",
                  pmsg->dvalue, dvalue);
              xiaSetAcquisitionValues(detChan, "mca_bin_width", &dvalue);
-             if (minfo->moduleType == DXP_XMAP) {
-                 xiaBoardOperation(detChan, "apply", &ignore);
-             }
+             XMAP_APPLY(detChan);
          }
          else if (pfield == &pdxp->trace_wait) {
              /* New value of trace wait.  Just set flag, monitor() will post events */
@@ -439,12 +426,10 @@ void asynCallback(asynUser *pasynUser)
          readDxpParams(pasynUser);
          break;
      case MSG_DXP_SET_SCAS:
-         xiaGetRunData(detChan, "run_active", &runActive);
+         xiaGetRunData(detChan0, "run_active", &runActive);
          xiaStopRun(detChan);
          xiaSetAcquisitionValues(detChan, "number_of_scas", &pmsg->dvalue);
-         if (minfo->moduleType == DXP_XMAP) {
-             xiaBoardOperation(detChan, "apply", &ignore);
-         }
+         XMAP_APPLY(detChan);
          sca = (DXP_SCA *)&pdxp->sca0_lo;
          for (i=0; i<pmsg->dvalue; i++) {
              if (sca[i].lo < 0) {
@@ -461,23 +446,19 @@ void asynCallback(asynUser *pasynUser)
              }
              dvalue = sca[i].lo;
              xiaSetAcquisitionValues(detChan, sca_lo[i], &dvalue);
-             if (minfo->moduleType == DXP_XMAP) {
-                 xiaBoardOperation(detChan, "apply", &ignore);
-             }
+             XMAP_APPLY(detChan);
              dvalue = sca[i].hi;
              xiaSetAcquisitionValues(detChan, sca_hi[i], &dvalue);
-             if (minfo->moduleType == DXP_XMAP) {
-                 xiaBoardOperation(detChan, "apply", &ignore);
-             }
+             XMAP_APPLY(detChan);
           }
          readDxpParams(pasynUser);
          break;
      case MSG_DXP_READ_BASELINE:
-         xiaGetRunData(detChan, "baseline", pdxp->bptr);
+         xiaGetRunData(detChan0, "baseline", pdxp->bptr);
          pdxpReadbacks->newBaselineHistogram = 1;
          break;
      case MSG_DXP_CONTROL_TASK:
-         xiaGetRunData(detChan, "run_active", &runActive);
+         xiaGetRunData(detChan0, "run_active", &runActive);
          xiaStopRun(detChan);
          info[0] = 1.;
          info[1] = pmsg->dvalue;
@@ -491,7 +472,7 @@ void asynCallback(asynUser *pasynUser)
                  "devDxp::asynCallback, MSG_DXP_CONTROL_TASK"
                  " reading adc_trace\n",
                  pmsg->dvalue);
-            xiaGetSpecialRunData(detChan, "adc_trace", pdxp->tptr);
+            xiaGetSpecialRunData(detChan0, "adc_trace", pdxp->tptr);
             pdxpReadbacks->newAdcTrace = 1;
          }
          else if (strcmp(pmsg->name, "baseline_history") == 0) {
@@ -499,7 +480,7 @@ void asynCallback(asynUser *pasynUser)
                  "devDxp::asynCallback, MSG_DXP_CONTROL_TASK"
                  " reading baseline_history\n",
                  pmsg->dvalue);
-            xiaGetSpecialRunData(detChan, "baseline_history", pdxp->bhptr);
+            xiaGetSpecialRunData(detChan0, "baseline_history", pdxp->bhptr);
             pdxpReadbacks->newBaselineHistory = 1;
          }   
          break;
@@ -543,12 +524,12 @@ static void readDxpParams(asynUser *pasynUser)
     int detChan;
     int acquiring;
     int runActive=0;
-    int ignore=0;
     MODULE_INFO *minfo = (MODULE_INFO *)pdxp->miptr;
 
     asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW,
              "devDxp::readDxpParams: entry\n");
     pasynManager->getAddr(pasynUser, &detChan);
+    if (detChan < 0) detChan = 0;
     xiaGetParamData(detChan, "values", pdxp->pptr);
     xiaGetRunData(detChan, "input_count_rate", &pdxpReadbacks->icr);
     xiaGetRunData(detChan, "output_count_rate", &pdxpReadbacks->ocr);
@@ -632,9 +613,7 @@ static void readDxpParams(asynUser *pasynUser)
            xiaGetRunData(detChan, "run_active", &runActive);
            xiaStopRun(detChan);
            xiaSetAcquisitionValues(detChan, "mca_bin_width", &dvalue);
-           if (minfo->moduleType == DXP_XMAP) {
-              xiaBoardOperation(detChan, "apply", &ignore);
-           }
+           XMAP_APPLY(detChan);
            if (runActive) xiaStartRun(detChan, 1);
            xiaGetAcquisitionValues(detChan, "mca_bin_width",
                                    &pdxpReadbacks->mca_bin_width);
