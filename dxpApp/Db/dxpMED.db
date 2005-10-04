@@ -4,17 +4,32 @@
 # Database for multi-element detector with DXP2X MCAs from XIA.
 
 record(bo,"$(P)EraseAll") {
+        field(VAL,"1")
+        field(OUT,"$(P)$(MCAALL).ERAS PP MS")
+        field(FLNK,"$(P)StatusAllOnce")
 }
 
 record(bo,"$(P)EraseStart") {
+        field(VAL,"1")
+        field(OUT,"$(P)$(MCAALL).ERST PP MS")
         field(FLNK,"$(P)SetAcquireBusy")
 }
 
 record(bo,"$(P)StartAll") {
+        field(VAL,"1")
+        field(OUT,"$(P)$(MCAALL).STRT PP MS")
         field(FLNK,"$(P)SetAcquireBusy")
 }
 
+# Need to process status all once when acqusition first starts, to read status so that
+# Acquiring gets set to 1, so StatusAll processes
 grecord(bo,"$(P)SetAcquireBusy") {
+        field(VAL, "1")
+        field(OUT, "$(P)DoStatusAll PP MS")
+        field(FLNK,"$(P)SetAcquireBusy2")
+}
+
+grecord(bo,"$(P)SetAcquireBusy2") {
         field(DISV,"1")
         field(SDIS,"$(P)AcquireBusy NPP NMS")
         field(OMSL,"closed_loop")
@@ -27,6 +42,8 @@ record(busy,"$(P)AcquireBusy") {
 }
 
 record(bo,"$(P)StopAll") {
+        field(VAL,"1")
+        field(OUT,"$(P)$(MCAALL).STOP PP MS")
 }
 
 record(ao,"$(P)PresetReal") {
@@ -38,13 +55,18 @@ record(ao,"$(P)PresetLive") {
 }
 
 record(bi,"$(P)Acquiring") {
+        field(INP,"$(P)$(MCAALL).ACQG CP MS")
+        field("ZNAM","Done")
+        field("ONAM","Acquiring")
 }
 
 record(ai,"$(P)ElapsedReal") {
+        field(INP,"$(P)$(MCAALL).ERTM CP MS")
         field(PREC, "2")
 }
 
 record(ai,"$(P)ElapsedLive") {
+        field(INP,"$(P)$(MCAALL).ELTM CP MS")
         field(PREC, "2")
 }
 
@@ -60,7 +82,13 @@ grecord(bo,"$(P)StatusAll") {
         field(OUT, "$(P)DoStatusAll PP MS")
 }
 
+grecord(bo,"$(P)StatusAllOnce") {
+        field(VAL, "1")
+        field(OUT, "$(P)DoStatusAll PP MS")
+}
+
 grecord(bo,"$(P)DoStatusAll") {
+        field(FLNK,"$(P)$(MCAALL).PROC PP MS")
 }
 
 record(bo,"$(P)ReadAll") {
