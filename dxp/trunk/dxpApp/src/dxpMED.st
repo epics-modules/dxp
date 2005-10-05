@@ -128,6 +128,9 @@ assign  DXPBaselineHistoryTime to {"","","","","","","","","","","","","","","",
 double  DXPBaselineHistoryTimes; assign DXPBaselineHistoryTimes to "{P}BaselineHistoryTimes";
 monitor DXPBaselineHistoryTimes; evflag DXPBaselineHistoryTimesMon; sync DXPBaselineHistoryTimes DXPBaselineHistoryTimesMon;
 
+int     Acquiring; assign Acquiring to "{P}Acquiring";
+monitor Acquiring; evflag  AcquiringMon; sync Acquiring AcquiringMon;
+
 int     readMCA[MAX_DETECTORS]; 
 assign  readMCA to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
 int     ReadMCAs; assign ReadMCAs to "{P}DoReadAll";
@@ -137,6 +140,7 @@ int     statusMCA[MAX_DETECTORS];
 assign  statusMCA to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
 int     StatusMCAs; assign StatusMCAs to "{P}DoStatusAll";
 monitor StatusMCAs; evflag StatusMCAsMon; sync StatusMCAs StatusMCAsMon;
+int     statusMCAAll; assign statusMCAAll to "";
 
 double  mcaPresetReal[MAX_DETECTORS]; 
 assign  mcaPresetReal to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
@@ -147,21 +151,6 @@ double  mcaPresetLive[MAX_DETECTORS];
 assign  mcaPresetLive to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
 double  PresetLive; assign PresetLive to "{P}PresetLive";
 monitor PresetLive; evflag PresetLiveMon; sync PresetLive PresetLiveMon;
-
-int     mcaAcquiring[MAX_DETECTORS]; 
-assign  mcaAcquiring to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
-int     Acquiring; assign Acquiring to "{P}Acquiring";
-evflag  AcquiringMon; sync mcaAcquiring AcquiringMon;
-
-double  mcaElapsedReal[MAX_DETECTORS];
-assign  mcaElapsedReal to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
-double  ElapsedReal; assign ElapsedReal to "{P}ElapsedReal";
-evflag  ElapsedRealMon; sync mcaElapsedReal ElapsedRealMon;
-
-double  mcaElapsedLive[MAX_DETECTORS]; 
-assign  mcaElapsedLive to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
-double  ElapsedLive; assign ElapsedLive to "{P}ElapsedLive";
-evflag  ElapsedLiveMon; sync mcaElapsedLive ElapsedLiveMon;
 
 double  mcaDeadTime[MAX_DETECTORS]; 
 assign  mcaDeadTime to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
@@ -179,7 +168,6 @@ ss dxp_control {
             dxp = macValueGet("DXP");
             mca = macValueGet("MCA");
             nDetectors = atoi(macValueGet("N_DETECTORS"));
-            prevAcquiring = Acquiring;
             for (i=0; i<nDetectors; i++) {
                det = i+1;
                sprintf(temp, "%s%s%d.TRIG_PKTIM", prefix, dxp, det);
@@ -232,19 +220,12 @@ ss dxp_control {
                pvAssign(mcaPresetReal[i], temp);
                sprintf(temp, "%s%s%d.PLTM", prefix, mca, det);
                pvAssign(mcaPresetLive[i], temp);
-               sprintf(temp, "%s%s%d.ACQG", prefix, mca, det);
-               pvAssign(mcaAcquiring[i], temp);
-               pvMonitor(mcaAcquiring[i]);
-               sprintf(temp, "%s%s%d.ERTM", prefix, mca, det);
-               pvAssign(mcaElapsedReal[i], temp);
-               pvMonitor(mcaElapsedReal[i]);
-               sprintf(temp, "%s%s%d.ELTM", prefix, mca, det);
-               pvAssign(mcaElapsedLive[i], temp);
-               pvMonitor(mcaElapsedLive[i]);
                sprintf(temp, "%s%s%d.IDTIM", prefix, mca, det);
                pvAssign(mcaDeadTime[i], temp);
                pvMonitor(mcaDeadTime[i]);
            }
+           sprintf(temp, "%s%sAll.PROC", prefix, mca);
+           pvAssign(statusMCAAll, temp);
         } state monitor_changes
     }
     state monitor_changes {
@@ -449,6 +430,7 @@ ss dxp_control {
         } state monitor_changes
 
         when(efTestAndClear(ReadMCAsMon) && (ReadMCAs == 1)) {
+            /* printf("dxpMED: read MCAs\n"); */
             for (i=0; i<nDetectors; i++) {
                 readMCA[i] = 1;
                 pvPut(readMCA[i]);
@@ -458,12 +440,26 @@ ss dxp_control {
         } state monitor_changes
 
         when(efTestAndClear(StatusMCAsMon) && (StatusMCAs == 1)) {
+            /* printf("dxpMED: read MCA status\n"); */
             for (i=0; i<nDetectors; i++) {
                 statusMCA[i] = 1;
                 pvPut(statusMCA[i]);
             }
+            statusMCAAll = 1;
+            pvPut(statusMCAAll);
             StatusMCAs = 0;
             pvPut(StatusMCAs);
+        } state monitor_changes
+
+
+        when(efTestAndClear(AcquiringMon)) {
+            /* printf("dxpMED: Acquiring=%d\n", Acquiring); */
+            /* On the transition from Acquiring=1 to 0 clear the AcquireBusy record */
+            if ((Acquiring == 0) && (prevAcquiring == 1)) {
+               AcquireBusy = 0;
+               pvPut(AcquireBusy);
+            }
+            prevAcquiring = Acquiring;
         } state monitor_changes
 
         when(efTestAndClear(PresetRealMon)) {
@@ -480,36 +476,6 @@ ss dxp_control {
             }
         } state monitor_changes
 
-        when(efTestAndClear(AcquiringMon)) {
-            Acquiring = 0;
-            for (i=0; i<nDetectors; i++) {
-                if (mcaAcquiring[i]) Acquiring = 1;
-            }
-            pvPut(Acquiring);
-            /* On the transition from Acquiring=1 to 0 clear the AcquireBusy record */
-            if ((Acquiring == 0) && (prevAcquiring == 1)) {
-               AcquireBusy = 0;
-               pvPut(AcquireBusy);
-            }
-            prevAcquiring = Acquiring;
-        } state monitor_changes
-
-        when(efTestAndClear(ElapsedRealMon)) {
-            ElapsedReal = 0.;
-            for (i=0; i<nDetectors; i++) {
-                if (mcaElapsedReal[i] > ElapsedReal) ElapsedReal = mcaElapsedReal[i];
-            }
-            pvPut(ElapsedReal);
-        } state monitor_changes
-
-        when(efTestAndClear(ElapsedLiveMon)) {
-            ElapsedLive = 0.;
-            for (i=0; i<nDetectors; i++) {
-                if (mcaElapsedLive[i] > ElapsedLive) ElapsedLive = mcaElapsedLive[i];
-            }
-            pvPut(ElapsedLive);
-        } state monitor_changes
- 
         when(efTestAndClear(DeadTimeMon)) {
             DeadTime = 0.;
             for (i=0; i<nDetectors; i++) {
