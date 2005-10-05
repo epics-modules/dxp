@@ -131,6 +131,13 @@ test_get_modules_SYS_LIBS += DLPORTIO
 test_get_modules_LIBS += dxp
 test_get_modules_LIBS += $(EPICS_BASE_IOC_LIBS)
 
+PROD_IOC_cygwin32 += test_sets
+test_sets_SRCS += test_sets.c
+test_sets_SYS_LIBS += xmap_handel
+test_sets_SYS_LIBS += DLPORTIO
+test_sets_LIBS += dxp
+test_sets_LIBS += $(EPICS_BASE_IOC_LIBS)
+
 #===========================
 #===========================
 # Build application that lets other apps run with iopl(3)
