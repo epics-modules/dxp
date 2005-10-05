@@ -616,6 +616,9 @@ static void getAcquisitionStatus(drvDxpPvt *pPvt, asynUser *pasynUser,
            dxpChan->elive = MAX(dxpChan->elive, pPvt->dxpChannel[i].elive);
            dxpChan->etotal = MAX(dxpChan->etotal, pPvt->dxpChannel[i].etotal);
            dxpChan->acquiring = MAX(dxpChan->acquiring, pPvt->dxpChannel[i].acquiring);
+           asynPrint(pasynUser, ASYN_TRACE_FLOW, 
+                     "getAcquisitionStatus [%s detChan set=%d, channel=%d]): acquiring=%d\n",
+                     pPvt->portName, detChan, i, pPvt->dxpChannel[i].acquiring);
        }
    } else {
        if (dxpChan->erased) {
@@ -633,7 +636,7 @@ static void getAcquisitionStatus(drvDxpPvt *pPvt, asynUser *pasynUser,
           /* If Handel thinks the run is active, but the hardware does not, then
            * stop the run */
           if (run_active == XIA_RUN_HANDEL) xiaStopRun(detChan);
-          dxpChan->acquiring = (run_active != 0);
+          dxpChan->acquiring = (run_active & XIA_RUN_HARDWARE);
        }
    }
    asynPrint(pasynUser, ASYN_TRACE_FLOW, 
