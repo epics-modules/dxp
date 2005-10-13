@@ -22,6 +22,8 @@
 #include <cantProceed.h>
 #include <epicsExport.h>
 #include <epicsTime.h>
+#include <epicsEvent.h>
+#include <epicsThread.h>
 #include <epicsString.h>
 #include <iocsh.h>
 
@@ -55,8 +57,10 @@ typedef struct {
     int ptechan;
     double etotal;
     int acquiring;
+    int prev_acquiring;
     int erased;
     int moduleType;
+    asynUser *pasynUser;
 } dxpChannel_t;
 
 typedef struct {
@@ -68,8 +72,11 @@ typedef struct {
     unsigned int numModules;
     int *first_channels;
     char *portName;
+    epicsEventId pollEventId;
+    double pollTime;
     asynInterface common;
     asynInterface int32;
+    void *int32InterruptPvt;
     asynInterface float64;
     asynInterface int32Array;
     asynInterface drvUser;
@@ -99,6 +106,7 @@ static asynStatus drvDxpWrite(         void *drvPvt, asynUser *pasynUser,
                                        epicsInt32 ivalue, epicsFloat64 dvalue);
 static asynStatus drvDxpRead(          void *drvPvt, asynUser *pasynUser,
                                        epicsInt32 *pivalue, epicsFloat64 *pfvalue);
+static void pollTask(                  drvDxpPvt *pPvt);
 
 /* These functions are public, exported in interfaces */
 static asynStatus int32Write(          void *drvPvt, asynUser *pasynUser,
@@ -160,7 +168,7 @@ static asynDrvUser drvDxpDrvUser = {
 };
 
 
-int DXPConfig(const char *portName, int ndetectors, int ngroups) 
+int DXPConfig(const char *portName, int ndetectors, int ngroups, int pollFreq) 
 {
     int i;
     dxpChannel_t *dxpChannel;
@@ -177,6 +185,7 @@ int DXPConfig(const char *portName, int ndetectors, int ngroups)
 
     pPvt->ndetectors = ndetectors;
     pPvt->ngroups = ngroups;
+    pPvt->pollEventId = epicsEventCreate(epicsEventFull);
     pPvt->dxpChannel = (dxpChannel_t *)
                 calloc((ndetectors+ngroups), sizeof(dxpChannel_t));
     /* Allocate memory arrays for each channel if it is valid */
@@ -186,6 +195,7 @@ int DXPConfig(const char *portName, int ndetectors, int ngroups)
        dxpChannel->detChan = i;
        dxpChannel->exists = 1;
        dxpChannel->acquiring = 0;
+       dxpChannel->prev_acquiring = -1;
        dxpChannel->erased = 1;
        /* Figure out what kind of module this is *
         * THIS IS A TEMPORARY MECHANISM UNTIL HANDEL SUPPORTS IT */
@@ -208,6 +218,7 @@ int DXPConfig(const char *portName, int ndetectors, int ngroups)
        dxpChannel->detChan = detChan;
        dxpChannel->exists = 1;
        dxpChannel->acquiring = 0;
+       dxpChannel->prev_acquiring = -1;
        dxpChannel->erased = 1;
        /* Figure out what kind of module this is *
         * THIS IS A TEMPORARY MECHANISM UNTIL HANDEL SUPPORTS IT */
@@ -264,6 +275,8 @@ int DXPConfig(const char *portName, int ndetectors, int ngroups)
         errlogPrintf("DXPConfig: Can't register int32.\n");
         return(-1);
     }
+    pasynManager->registerInterruptSource(portName, &pPvt->int32,
+                                          &pPvt->int32InterruptPvt);
     status = pasynFloat64Base->initialize(portName,&pPvt->float64);
     if (status != asynSuccess) {
         errlogPrintf("DXPConfig: Can't register float64.\n");
@@ -278,6 +291,28 @@ int DXPConfig(const char *portName, int ndetectors, int ngroups)
     if (status != asynSuccess) {
         errlogPrintf("DXPConfig: Can't register drvUser.\n");
         return(-1);
+    }
+    for (i=0; i<pPvt->ndetectors+pPvt->ngroups; i++) {
+        /* Create asynUser and connect to device for debugging in pollTask */
+        pPvt->dxpChannel[i].pasynUser = pasynManager->createAsynUser(0, 0);
+        /* Connect to device */
+        status = pasynManager->connectDevice(pPvt->dxpChannel[i].pasynUser, portName, pPvt->dxpChannel[i].detChan);
+        if (status != asynSuccess) {
+            errlogPrintf("DXPConfig, connectDevice failed for DXP channel %d\n", pPvt->dxpChannel[i].detChan);
+            return -1;
+        }
+    }
+
+    if (pollFreq > 0) {
+        pPvt->pollTime = 1./pollFreq;
+        if (pPvt->pollTime < epicsThreadSleepQuantum())
+            pPvt->pollTime = epicsThreadSleepQuantum();
+        if (epicsThreadCreate("dxpPollTask",
+                               epicsThreadPriorityHigh,
+                               epicsThreadGetStackSize(epicsThreadStackMedium),
+                               (EPICSTHREADFUNC)pollTask,
+                               pPvt) == NULL)
+          errlogPrintf("DXPConfig: epicsThreadCreate failure\n");
     }
 
     return(0);
@@ -352,6 +387,8 @@ static asynStatus drvDxpWrite(void *drvPvt, asynUser *pasynUser,
                 s = xiaStartRun(detChan, resume);
                 dxpChan->acquiring = 1;
                 dxpChan->erased = 0;
+                /* Send signal to polling task to wake it up */
+                epicsEventSignal(pPvt->pollEventId);
                 /* If this is a detChan set then set the acquiring flag and clear the erased
                  * flags on all detChans in the set.  (For now do all detChans). */
                 if (detChan < 0) {
@@ -715,6 +752,82 @@ static void setPreset(drvDxpPvt *pPvt, asynUser *pasynUser,
 }
 
 
+static void pollTask(drvDxpPvt *pPvt)
+{
+    int  i, j;
+    int addr, reason, detChan, anyAcquiring, anyChanged;
+    ELLLIST *pclientList;
+    interruptNode *pnode;
+    int acq, *acquiring, *prev_acquiring;
+
+    acquiring      = calloc(pPvt->ndetectors + pPvt->ngroups, sizeof(int));
+    prev_acquiring = calloc(pPvt->ndetectors + pPvt->ngroups, sizeof(int));
+
+    /* This task waits for an event from the driver signaling that acquisition has started.
+     * Once acquisition starts it quickly polls until acquisition is complete.
+     * When acquisition changes state it calls all registered clients with the new value of the
+     * acquisition status
+     */
+
+    while(1) {
+        /* Wait for event from the driver siqnalling that acquisition has started */
+        epicsEventWait(pPvt->pollEventId);
+        anyAcquiring = 1;
+        while(anyAcquiring) {
+            /* We lock the port here because we need exclusive access to Handel, because it is not thread safe, 
+             * and the asyn port thread could access it */
+            pasynManager->lockPort(pPvt->dxpChannel[0].pasynUser);
+            for (i=0; i<pPvt->ndetectors; i++) {
+                acquiring[i] = 0;
+                detChan = pPvt->dxpChannel[i].detChan;
+                xiaGetRunData(detChan, "run_active", &acq);
+                if (acq & XIA_RUN_HARDWARE) acquiring[i]=1;
+            }
+            pasynManager->unlockPort(pPvt->dxpChannel[0].pasynUser);
+            for (i=pPvt->ndetectors; i<pPvt->ndetectors+pPvt->ngroups; i++) {
+                acquiring[i] = 0;
+                for (j=0; j<pPvt->ndetectors; j++) {
+                    acquiring[i] = MAX(acquiring[i], acquiring[j]);
+                }
+            }
+            anyAcquiring = 0;
+            anyChanged = 0;
+            for (i=0; i<pPvt->ndetectors+pPvt->ngroups; i++) {
+                if (acquiring[i]) anyAcquiring=1;
+                if ((prev_acquiring[i]==1) && (acquiring[i]==0)) anyChanged=1;
+            }
+            if (anyChanged) {
+                /* Make int32 callbacks */
+                pasynManager->interruptStart(pPvt->int32InterruptPvt, &pclientList);
+                pnode = (interruptNode *)ellFirst(pclientList);
+                while (pnode) {
+                    asynInt32Interrupt *pint32Interrupt = pnode->drvPvt;
+                    addr = pint32Interrupt->addr;
+                    reason = pint32Interrupt->pasynUser->reason;
+                    for (i=0; i<pPvt->ndetectors+pPvt->ngroups; i++) {
+                        if ((prev_acquiring[i]==1) && (acquiring[i]==0)) {
+                            detChan = pPvt->dxpChannel[i].detChan;
+                            if ((reason == mcaAcquiring) && (detChan == addr)) {
+                                asynPrint(pPvt->dxpChannel[i].pasynUser, ASYN_TRACE_FLOW, 
+                                          "drvDxp::pollTask: issuing callback addr=%d, reason=%d, acquiring=%d\n", 
+                                          addr, reason, acquiring[i]);
+                                pint32Interrupt->callback(pint32Interrupt->userPvt,
+                                                          pint32Interrupt->pasynUser,
+                                                          acquiring[i]);
+                            }
+                        }
+                    }
+                    pnode = (interruptNode *)ellNext(&pnode->node);
+                }
+                pasynManager->interruptEnd(pPvt->int32InterruptPvt);
+            }
+            for (i=0; i<pPvt->ndetectors+pPvt->ngroups; i++) prev_acquiring[i]  = acquiring[i];
+            epicsThreadSleep(pPvt->pollTime);
+        }
+    }
+}
+
+
 /* asynDrvUser routines */
 static asynStatus drvUserCreate(void *drvPvt, asynUser *pasynUser,
                                 const char *drvInfo,
@@ -794,13 +907,15 @@ asynStatus disconnect(void *drvPvt, asynUser *pasynUser)
 static const iocshArg DXPConfigArg0 = { "server name",iocshArgString};
 static const iocshArg DXPConfigArg1 = { "number of detectors",iocshArgInt};
 static const iocshArg DXPConfigArg2 = { "number of detector groups",iocshArgInt};
-static const iocshArg * const DXPConfigArgs[3] = {&DXPConfigArg0,
+static const iocshArg DXPConfigArg3 = { "poll frequency",iocshArgInt};
+static const iocshArg * const DXPConfigArgs[4] = {&DXPConfigArg0,
                                                   &DXPConfigArg1,
-                                                  &DXPConfigArg2}; 
-static const iocshFuncDef DXPConfigFuncDef = {"DXPConfig",3,DXPConfigArgs};
+                                                  &DXPConfigArg2,
+                                                  &DXPConfigArg3}; 
+static const iocshFuncDef DXPConfigFuncDef = {"DXPConfig",4,DXPConfigArgs};
 static void DXPConfigCallFunc(const iocshArgBuf *args)
 {
-    DXPConfig(args[0].sval, args[1].ival, args[2].ival);
+    DXPConfig(args[0].sval, args[1].ival, args[2].ival, args[3].ival);
 }
 
 static const iocshArg xiaLogLevelArg0 = { "logging level",iocshArgInt};
