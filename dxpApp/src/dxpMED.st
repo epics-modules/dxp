@@ -128,19 +128,22 @@ assign  DXPBaselineHistoryTime to {"","","","","","","","","","","","","","","",
 double  DXPBaselineHistoryTimes; assign DXPBaselineHistoryTimes to "{P}BaselineHistoryTimes";
 monitor DXPBaselineHistoryTimes; evflag DXPBaselineHistoryTimesMon; sync DXPBaselineHistoryTimes DXPBaselineHistoryTimesMon;
 
-int     Acquiring; assign Acquiring to "{P}Acquiring";
-monitor Acquiring; evflag  AcquiringMon; sync Acquiring AcquiringMon;
-
 int     readMCA[MAX_DETECTORS]; 
 assign  readMCA to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
 int     ReadMCAs; assign ReadMCAs to "{P}DoReadAll";
 monitor ReadMCAs; evflag ReadMCAsMon; sync ReadMCAs ReadMCAsMon;
+int     readMCAAll; assign readMCAAll to "";
 
 int     statusMCA[MAX_DETECTORS];
 assign  statusMCA to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
 int     StatusMCAs; assign StatusMCAs to "{P}DoStatusAll";
 monitor StatusMCAs; evflag StatusMCAsMon; sync StatusMCAs StatusMCAsMon;
 int     statusMCAAll; assign statusMCAAll to "";
+
+int     mcaAcquiring[MAX_DETECTORS]; 
+assign  mcaAcquiring to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
+monitor mcaAcquiring; evflag  mcaAcquiringMon; sync mcaAcquiring mcaAcquiringMon;
+int     Acquiring; assign Acquiring to "{P}Acquiring";
 
 double  mcaPresetReal[MAX_DETECTORS]; 
 assign  mcaPresetReal to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
@@ -216,6 +219,8 @@ ss dxp_control {
                pvAssign(readMCA[i], temp);
                sprintf(temp, "%s%s%d.PROC", prefix, mca, det);
                pvAssign(statusMCA[i], temp);
+               sprintf(temp, "%s%s%d.ACQG", prefix, mca, det);
+               pvAssign(mcaAcquiring[i], temp);
                sprintf(temp, "%s%s%d.PRTM", prefix, mca, det);
                pvAssign(mcaPresetReal[i], temp);
                sprintf(temp, "%s%s%d.PLTM", prefix, mca, det);
@@ -226,6 +231,10 @@ ss dxp_control {
            }
            sprintf(temp, "%s%sAll.PROC", prefix, mca);
            pvAssign(statusMCAAll, temp);
+           sprintf(temp, "%s%sAll.READ", prefix, mca);
+           pvAssign(readMCAAll, temp);
+           pvGet(Acquiring);
+           prevAcquiring = Acquiring;
         } state monitor_changes
     }
     state monitor_changes {
@@ -435,6 +444,8 @@ ss dxp_control {
                 readMCA[i] = 1;
                 pvPut(readMCA[i]);
             }
+            readMCAAll = 1;
+            pvPut(readMCAAll);
             ReadMCAs = 0;
             pvPut(ReadMCAs);
         } state monitor_changes
@@ -452,14 +463,19 @@ ss dxp_control {
         } state monitor_changes
 
 
-        when(efTestAndClear(AcquiringMon)) {
-            /* printf("dxpMED: Acquiring=%d\n", Acquiring); */
+        when(efTestAndClear(mcaAcquiringMon)) {
+            Acquiring = 0;
+            for (i=0; i<nDetectors; i++) {
+                if (mcaAcquiring[i]) Acquiring = 1;
+            }
+            /* printf("dxpMED: Acquiring=%d, prevAcquiring=%d\n", Acquiring, prevAcquiring); */
             /* On the transition from Acquiring=1 to 0 clear the AcquireBusy record */
             if ((Acquiring == 0) && (prevAcquiring == 1)) {
                AcquireBusy = 0;
                pvPut(AcquireBusy);
             }
             prevAcquiring = Acquiring;
+            pvPut(Acquiring);
         } state monitor_changes
 
         when(efTestAndClear(PresetRealMon)) {
