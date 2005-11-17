@@ -89,54 +89,12 @@ xmapApp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 
 # Test applications
-PROD_IOC_Linux += test_basethresh
-PROD_IOC_cygwin32 += test_basethresh
-test_basethresh_SRCS += test_basethresh.c
-test_basethresh_LIBS += handel
-test_basethresh_SYS_LIBS_cygwin32 += DLPORTIO
-test_basethresh_LIBS += $(EPICS_BASE_IOC_LIBS)
-
-PROD_IOC_cygwin32 += test_set_acquisition_values
-test_set_acquisition_values_SRCS += test_set_acquisition_values.c
-test_set_acquisition_values_SYS_LIBS += xmap_handel
-test_set_acquisition_values_SYS_LIBS += DLPORTIO
-test_set_acquisition_values_LIBS += dxp
-test_set_acquisition_values_LIBS += $(EPICS_BASE_IOC_LIBS)
-
-PROD_IOC_cygwin32 += test_scas
-test_scas_SRCS += test_scas.c
-test_scas_SYS_LIBS += xmap_handel
-test_scas_SYS_LIBS += DLPORTIO
-test_scas_LIBS += dxp
-test_scas_LIBS += $(EPICS_BASE_IOC_LIBS)
-
-PROD_IOC_cygwin32 += test_read_baseline_history
-test_read_baseline_history_SRCS += test_read_baseline_history.c
-test_read_baseline_history_SYS_LIBS += xmap_handel
-test_read_baseline_history_SYS_LIBS += DLPORTIO
-test_read_baseline_history_LIBS += dxp
-test_read_baseline_history_LIBS += $(EPICS_BASE_IOC_LIBS)
-
-PROD_IOC_cygwin32 += test_read_events
-test_read_events_SRCS += test_read_events.c
-test_read_events_SYS_LIBS += xmap_handel
-test_read_events_SYS_LIBS += DLPORTIO
-test_read_events_LIBS += dxp
-test_read_events_LIBS += $(EPICS_BASE_IOC_LIBS)
-
-PROD_IOC_cygwin32 += test_get_modules
-test_get_modules_SRCS += test_get_modules.c
-test_get_modules_SYS_LIBS += xmap_handel
-test_get_modules_SYS_LIBS += DLPORTIO
-test_get_modules_LIBS += dxp
-test_get_modules_LIBS += $(EPICS_BASE_IOC_LIBS)
-
-PROD_IOC_cygwin32 += test_sets
-test_sets_SRCS += test_sets.c
-test_sets_SYS_LIBS += xmap_handel
-test_sets_SYS_LIBS += DLPORTIO
-test_sets_LIBS += dxp
-test_sets_LIBS += $(EPICS_BASE_IOC_LIBS)
+PROD_IOC_cygwin32 += test_sets1
+test_sets1_SRCS += test_sets1.c
+test_sets1_SYS_LIBS += xmap_handel
+test_sets1_SYS_LIBS += DLPORTIO
+test_sets1_LIBS += dxp
+test_sets1_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #===========================
 #===========================
