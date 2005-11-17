@@ -5,19 +5,19 @@
 
 record(bo,"$(P)EraseAll") {
         field(VAL,"1")
-        field(OUT,"$(P)$(MCAALL).ERAS PP MS")
+        field(OUT,"$(P)$(MCAALL).ERAS CA MS")
         field(FLNK,"$(P)StatusAllOnce")
 }
 
 record(bo,"$(P)EraseStart") {
         field(VAL,"1")
-        field(OUT,"$(P)$(MCAALL).ERST PP MS")
+        field(OUT,"$(P)$(MCAALL).ERST CA MS")
         field(FLNK,"$(P)SetAcquireBusy")
 }
 
 record(bo,"$(P)StartAll") {
         field(VAL,"1")
-        field(OUT,"$(P)$(MCAALL).STRT PP MS")
+        field(OUT,"$(P)$(MCAALL).STRT CA MS")
         field(FLNK,"$(P)SetAcquireBusy")
 }
 
@@ -25,7 +25,7 @@ record(bo,"$(P)StartAll") {
 # Set Acquiring to 1, so StatusAll begins processing
 grecord(bo,"$(P)SetAcquireBusy") {
         field(VAL, "1")
-        field(OUT, "$(P)StatusAllOnce.PROC PP MS")
+#        field(OUT, "$(P)ReadAllOnce.PROC PP MS")
         field(FLNK,"$(P)SetAcquireBusy2")
 }
 
@@ -40,7 +40,7 @@ record(busy,"$(P)AcquireBusy") {
 
 record(bo,"$(P)StopAll") {
         field(VAL,"1")
-        field(OUT,"$(P)$(MCAALL).STOP PP MS")
+        field(OUT,"$(P)$(MCAALL).STOP CA MS")
 }
 
 record(ao,"$(P)PresetReal") {
@@ -52,6 +52,7 @@ record(ao,"$(P)PresetLive") {
 }
 
 record(bi,"$(P)Acquiring") {
+        field("INP", "$(P)$(MCAALL).ACQG CP MS")
         field("ZNAM","Done")
         field("ONAM","Acquiring")
 }
@@ -72,8 +73,8 @@ record(ai,"$(P)DeadTime") {
 
 grecord(ai,"$(P)StatusAll") {
         field(SCAN,".5 second")
-#        field(DISV,"0")
-#        field(SDIS,"$(P)Acquiring NPP NMS")
+        field(DISV,"0")
+        field(SDIS,"$(P)Acquiring NPP NMS")
         field(FLNK, "$(P)StatusAllOnce PP MS")
 }
 
@@ -96,8 +97,8 @@ grecord(ai,"$(P)ReadCallback") {
 
 record(ai,"$(P)ReadAll") {
         field(SCAN,"1 second")
-#        field(DISV,"0")
-#        field(SDIS,"$(P)Acquiring NPP NMS")
+        field(DISV,"0")
+        field(SDIS,"$(P)Acquiring NPP NMS")
         field(FLNK, "$(P)ReadAllOnce PP MS")
 }
 
