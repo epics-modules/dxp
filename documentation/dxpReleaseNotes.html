@@ -14,6 +14,27 @@ content="text/html; charset=iso-8859-1">
 See <a href="dxpKnownProblems.html">known problems</a> for information
 on problems each release.
 
+<h2 align="center">Release 2-4 (??-September-2005) </h2>
+<ul>
+  <li>Added support for detector "groups" in the dxp and mca record drivers.  This is used to turn on 
+      and off acquisition on all detectors as efficiently as possible.  Modifed dxpMED.db and dxpMED.st to
+      take advantage of this new capability.
+  <li>Added support for the new xMAP PXI modules.  This support runs on the cygwin-x86 architecture.
+  <li>Enhancements to dxpRecord:
+  <ul>
+     <li>Made baseline filter length (BASE_LEN) be a menu rather than a number.
+     <li>Added readback for baseline filter length (BASE_LEN_RBV)
+     <li>Added the baseline cut enable (BASE_CUT_ENBL) and readback (BASE_CUT_ENBL_RBV) fields.
+     <li>Implemented the pre-amp gain (PGAIN) and readback (PGAIN_RBV) fields.
+     <li>Added time/point for the baseline history (BHIST_TIME).  This is currently only implemented on the xMAP.
+     <li>Removed BASETHRADJ since xMAP does not support it, and it's available as low-level parameter.
+  </ul>
+  <li>Added code to support ADC trace and baseline history to dxpMED.st for multi-element detectors.
+  <li>Fixes and enhancements for 40MHz version of Saturn.
+  <li>This version does NOT support the DXP4C2X because that support from XIA lags behind the Saturn and xMAP in terms
+      of what acquisition parameters it supports.  The DXP4C2X will be supported in the next release.
+</ul>
+
 <h2 align="center">Release 2-3 (11-August-2005) </h2>
 <ul>
   <li>Added several readback fields to dxpRecord (BASETHRESH_RBV, etc.)
