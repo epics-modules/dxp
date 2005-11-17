@@ -19,11 +19,10 @@ xiaSetLogLevel(2)
 xiaInit("xmap16.ini")
 xiaStartSystem
 
-# DXPConfig(serverName, nchans)
-DXPConfig("DXP1",  16, 1)
+# DXPConfig(serverName, ndetectors, ngroups, pollFrequency)
+DXPConfig("DXP1",  16, 1, 100)
 
 dbLoadTemplate("16element.template")
-dbLoadRecords("$(DXP)/dxpApp/Db/dxpMED.db","P=dxpXMAP:med:, MCAALL=mcaAll")
 
 #xiaSetLogLevel(4)
 iocInit
