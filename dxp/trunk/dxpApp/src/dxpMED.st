@@ -11,12 +11,14 @@ program dxpMED("P=13GE2:med:,DXP=dxp,MCA=mca,N_DETECTORS=16")
  * can run at once */
 option +r;
 
+%%#include <errlog.h>
 #define MAX_DETECTORS 30
 
 int i;
 int det;
 int nDetectors;
 int prevAcquiring;
+int allDone;
 char temp[100];
 
 char *prefix;
@@ -143,7 +145,8 @@ int     statusMCAAll; assign statusMCAAll to "";
 int     mcaAcquiring[MAX_DETECTORS]; 
 assign  mcaAcquiring to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
 monitor mcaAcquiring; evflag  mcaAcquiringMon; sync mcaAcquiring mcaAcquiringMon;
-int     Acquiring; assign Acquiring to "{P}Acquiring";
+int     Acquiring; assign Acquiring to "";
+monitor Acquiring; evflag AcquiringMon; sync Acquiring AcquiringMon;
 
 double  mcaPresetReal[MAX_DETECTORS]; 
 assign  mcaPresetReal to {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""};
@@ -233,7 +236,8 @@ ss dxp_control {
            pvAssign(statusMCAAll, temp);
            sprintf(temp, "%s%sAll.READ", prefix, mca);
            pvAssign(readMCAAll, temp);
-           pvGet(Acquiring);
+           sprintf(temp, "%s%sAll.ACQG", prefix, mca);
+           pvAssign(Acquiring, temp);
            prevAcquiring = Acquiring;
         } state monitor_changes
     }
@@ -463,11 +467,7 @@ ss dxp_control {
         } state monitor_changes
 
 
-        when(efTestAndClear(mcaAcquiringMon)) {
-            Acquiring = 0;
-            for (i=0; i<nDetectors; i++) {
-                if (mcaAcquiring[i]) Acquiring = 1;
-            }
+        when(efTestAndClear(AcquiringMon)) {
             /* printf("dxpMED: Acquiring=%d, prevAcquiring=%d\n", Acquiring, prevAcquiring); */
             /* On the transition from Acquiring=1 to 0 clear the AcquireBusy record */
             if ((Acquiring == 0) && (prevAcquiring == 1)) {
@@ -475,7 +475,19 @@ ss dxp_control {
                pvPut(AcquireBusy);
             }
             prevAcquiring = Acquiring;
-            pvPut(Acquiring);
+        } state monitor_changes
+
+        when(efTestAndClear(mcaAcquiringMon)) {
+            /* Transition on one or more mcaAcquiring status, wait 10msec for mcaAll to also change */
+            allDone = 1;
+            for (i=0; i<nDetectors; i++) {
+                if (mcaAcquiring[i]) allDone = 0;
+            }
+            /* If all individual MCAs are done, but mcaAll is not done, then force read on mcaAll */
+            if (allDone && Acquiring) {
+               readMCAAll = 1;
+               pvPut(readMCAAll);
+            }
         } state monitor_changes
 
         when(efTestAndClear(PresetRealMon)) {
