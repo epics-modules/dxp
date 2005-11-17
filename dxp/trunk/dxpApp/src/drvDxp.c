@@ -772,6 +772,9 @@ static void pollTask(drvDxpPvt *pPvt)
     while(1) {
         /* Wait for event from the driver siqnalling that acquisition has started */
         epicsEventWait(pPvt->pollEventId);
+        /* We set the flag saying things are now acquiring, since we could miss acquire=1 when polling for
+         * very short acquisition */
+        for (i=0; i<pPvt->ndetectors+pPvt->ngroups; i++) prev_acquiring[i]  = 1;
         anyAcquiring = 1;
         while(anyAcquiring) {
             /* We lock the port here because we need exclusive access to Handel, because it is not thread safe, 
