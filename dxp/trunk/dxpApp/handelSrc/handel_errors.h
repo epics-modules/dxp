@@ -35,7 +35,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: handel_errors.h,v 1.2 2005-09-27 19:03:28 rivers Exp $
+ * $Id: handel_errors.h,v 1.3 2005-11-17 01:14:27 rivers Exp $
  * 
  *
  */
@@ -202,6 +202,9 @@
 #define XIA_NULL_INFO       649 /** The specified info array is NULL */
 #define XIA_UNKNOWN_PARAM_DATA 650 /** Unknown parameter data type */
 #define XIA_MAX_SCAS        651 /** The specified number of SCAs is more then the maximum allowed */
+#define XIA_UNKNOWN_BUFFER  652 /** Requested buffer is unknown */
+#define XIA_NO_MAPPING      653 /** Mapping mode is currently not installed/enabled */
+#define XIA_MAPPING_PT_CTL  654 /** Wrong mapping point control for operation */
 
 /* XUP errors 701-800 */
 #define XIA_XUP_VERSION     701 /** XUP version is not supported */

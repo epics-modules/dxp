@@ -36,7 +36,7 @@
  * SUCH DAMAGE. 
  *
  *
- * $Id: handeldef.h,v 1.2 2005-09-27 19:03:28 rivers Exp $
+ * $Id: handeldef.h,v 1.3 2005-11-17 01:14:27 rivers Exp $
  *
  */
 

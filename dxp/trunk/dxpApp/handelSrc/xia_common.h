@@ -1,9 +1,8 @@
 /*
  *  xia_common.h
  *
- *  Creation 06/26/02 - PJF
- *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -36,6 +35,9 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *  
+ *
+ * $Id: xia_common.h,v 1.2 2005-11-17 01:14:27 rivers Exp $
+ *
  *    All of the useful typedefs and macros
  *    go in here. Two conditions must be met
  *    in order to qualify as an "xia_common"
@@ -69,10 +71,25 @@ typedef unsigned short flag_t;
 #define STRNEQ(x, y) (strncmp((x), (y), strlen(y)) == 0)
 #define ROUND(x)    ((x) < 0.0 ? ceil((x) - 0.5) : floor((x) + 0.5))
 #define PRINT_NON_NULL(x) ((x) == NULL ? "NULL" : (x))
-#define MIN(x, y)  ((x) < (y) ? (x) : (y))
-#define MAX(x, y)  ((x) > (y) ? (x) : (y))
-#define BYTE_TO_WORD(lo, hi)  (unsigned short)(((unsigned short)(hi) << 8) | (lo)) 
+#define BYTE_TO_WORD(lo, hi) (unsigned short)(((unsigned short)(hi) << 8) | (lo))
+#define WORD_TO_LONG(lo, hi) (unsigned long)(((unsigned long)(hi) << 16) | (lo)) 
 #define LO_BYTE(word) ((word) & 0xFF)
 #define HI_BYTE(word) (((word) >> 8) & 0xFF)
+/*
+#define MAKE_LOWER_CASE(s,i) for ((i) = 0; (i) < strlen((s)); (i)++) \
+                                 (s)[i] = (char)tolower((s)[i])
+*/
+#define N_ELEMS(x) (sizeof(x) / sizeof((x)[0]))
+
+
+/* These macros already exist on Linux, so they need to be protected */
+
+#ifndef MIN
+#define MIN(x, y)  ((x) < (y) ? (x) : (y))
+#endif /* MIN */
+
+#ifndef MAX
+#define MAX(x, y)  ((x) > (y) ? (x) : (y))
+#endif /* MAX */
 
 #endif						/* Endif for XIA_COMMON_H */
