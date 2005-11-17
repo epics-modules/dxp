@@ -67,8 +67,8 @@ It currently supports the following hardware and operating systems:</p>
       parallel port.</li>
   <li>The DXP2X running the EPICS IOC on vxWorks, using the 
       Kinetic Systems VME to CAMAC interface.
-  <li>As soon as XIA releases the new PXI DXP-XMAP hardware, support
-      for that will be provided under Windows (and perhaps Linux).</li>
+  <li>The xMAP running the EPICS IOC on Windows, using the National Instruments
+      PCI to PXI adapter.</li>
 </ul>
 
 The DXP Record can perform the following tasks:
@@ -219,9 +219,10 @@ digital pulse processing as implemented in the DXP models from XIA.</p>
       <td>R</td>
       <td>"Baseline History X"</td>
       <td>DBF_FLOAT</td>
-      <td>The baseline history X axis array.  This array will be used to display the baseline
+      <td>The baseline history X axis array.  This array is used to display the baseline
           histogram with an X-axis calibrated in microseconds.  
-          NOTE: It is not currently implemented because of complexities in Handel.</td>
+          NOTE: This field currently only contains calibrated values for the xMAP hardware.  
+          It is not possible to obtain calibrated time values for the Saturn or DXP-2X.</td>
     </tr>
     <tr valign="top">
       <td>TRACE</td>
@@ -476,9 +477,14 @@ acquisition, rather than tha fields above.</p>
       <td>R/W*</td>
       <td>"Pre-amp gain"</td>
       <td>DBF_DOUBLE</td>
-      <td>The gain of the detector pre-amp in mV/keV. NOTE: This field is not currently implemented,
-          because the pre-amp gain must be specified in the .ini file that is read at startup,
-          and Handel has no way to modify it after startup.</td>
+      <td>The gain of the detector pre-amp in mV/keV. </td>
+    </tr>
+    <tr valign="top">
+      <td>PGAIN_RBV</td>
+      <td>R</td>
+      <td>"Pre-amp gain readback"</td>
+      <td>DBF_DOUBLE</td>
+      <td>The readback value of the pre-amp gain in mV/keV.</td>
     </tr>
     <tr valign="top">
       <td>EMAX</td>
@@ -499,12 +505,27 @@ acquisition, rather than tha fields above.</p>
           not be correct if the pre-amp gain in the .ini file is wrong.</td>
     </tr>
     <tr valign="top">
+      <td>ECAL</td>
+      <td>R/W*</td>
+      <td>"Calibration energy (keV)"</td>
+      <td>DBF_DOUBLE</td>
+      <td>The "calibration energy".  This is the energy at which the ADC_RULE applies.  The default is 10 keV,
+          and there is rarely any need to change this.</td>
+    </tr>
+    <tr valign="top">
+      <td>ECAL_RBV</td>
+      <td>R</td>
+      <td>"Calibration energy readback (keV)"</td>
+      <td>DBF_DOUBLE</td>
+      <td>The actual calibration energy .</td>
+    </tr>
+    <tr valign="top">
       <td>ADC_RULE</td>
       <td>R/W*</td>
-      <td>"ADC rule at .5 EMAX"</td>
+      <td>"ADC rule at ECAL"</td>
       <td>DBF_DOUBLE</td>
       <td>The percent of the range of the input ADC that should be used for pulses whose energy
-          is at the middle channel of the spectrum, i.e. at EMAX/2.  The normal range is 5-10% for
+          is at the energy of the ECAL field, normally 10 keV.  The normal range is 5-10% for
           reset pre-amplifiers and 30-50% for RC pre-amplifiers.  The goal is to digitize the baseline
           noise into a few ADC bits (look at the ADC trace), but not have the value so large
           that the input signal drifts out of the ADC range (look at the number of drift ups and
@@ -528,30 +549,76 @@ acquisition, rather than tha fields above.</p>
           disable the baseline cut.</td>
     </tr>
     <tr valign="top">
+      <td>BASE_CUT_PCT_RBV</td>
+      <td>R</td>
+      <td>"Baseline cut % readback"</td>
+      <td>DBF_DOUBLE</td>
+      <td>The actual baseline cut value.</td>
+    </tr>
+    <tr valign="top">
+      <td>BASE_CUT_ENBL</td>
+      <td>R/W*</td>
+      <td>"Enable baseline cut %"</td>
+      <td>DBF_MENU</td>
+      <td>A flag to enable or disable the baseline cut.</td>
+    </tr>
+    <tr valign="top">
+      <td>BASE_CUT_ENBLE_RBV</td>
+      <td>R</td>
+      <td>"Baseline cut enable readback"</td>
+      <td>DBF_DOUBLE</td>
+      <td>The actual baseline cut enable value.</td>
+    </tr>
+    <tr valign="top">
       <td>BASE_LEN</td>
       <td>R/W*</td>
       <td>"Baseline filter length"</td>
+      <td>DBF_MENU</td>
+      <td>The length of the baseline filter in samples.  Menu values are powers of 2 from
+          2 to 65536.</td>
+    </tr>
+    <tr valign="top">
+      <td>BASE_LEN_RBV</td>
+      <td>R</td>
+      <td>"Baseline filter length readback"</td>
       <td>DBF_DOUBLE</td>
-      <td>The length of the baseline filter in samples.</td>
+      <td>The baseline filter length readback.</td>
     </tr>
     <tr valign="top">
       <td>BASE_THRESH</td>
       <td>R/W*</td>
       <td>"Baseline filter threshold"</td>
       <td>DBF_DOUBLE</td>
-      <td>The baseline filter threshold in unknown units.  This is a new DXP parameter, and is
-          not yet documented by XIA.  However, it has a major effect on spectra, and it is often
-          necessary to increase this value from the initial value.  The .T14V field can be used to
+      <td>The baseline filter threshold.  In this release the units of this parameter are keV on the xMAP
+          and integer device units on the Saturn and DXP-2X.
+          This is a new DXP parameter, and is not yet documented by XIA.  
+          However, it has a major effect on spectra, and it is often
+          necessary to increase this value from the initial value.  
+          On the Saturn and DXP-2X the .T14V field can be used to
           enable or disable automatic modification of this parameter by the DXP firmware.</td>
     </tr>
     <tr valign="top">
-      <td>BASE_THRESHADJ</td>
-      <td>R/W*</td>
-      <td>"Baseline filter threshold adjust"</td>
+      <td>BASE_THRESH_RBV</td>
+      <td>R</td>
+      <td>"Baseline threshold readback"</td>
       <td>DBF_DOUBLE</td>
-      <td>The baseline filter threshold adjust in unknown units.  This is a new DXP parameter, and is
-          not yet documented by XIA.  If the .T14V field is set to enable automatic modification of
-          BASE_THRESH then this parameter controls the amount of adjustment.</td>
+      <td>The baseline threshold readback.</td>
+    </tr>
+    <tr valign="top">
+      <td>TRACE_WAIT</td>
+      <td>R/W*</td>
+      <td>"Trace wait (usec)"</td>
+      <td>DBF_DOUBLE</td>
+      <td>The time per point to collect the ADC trace data.  Units are microseconds.</td>
+    </tr>
+    <tr valign="top">
+      <td>BHIST_TIME</td>
+      <td>R/W*</td>
+      <td>"Baseline history time (usec)"</td>
+      <td>DBF_DOUBLE</td>
+      <td>The time per point to collect the baseline history data.  Units are microseconds.
+          This parameter is only applicable to the xMAP hardware in the current release.  
+          It is not possible to control the time per baseline history point on the Saturn and DXP-2X.</td>
     </tr>
   </tbody>
 </table>
@@ -675,7 +742,7 @@ counts in each of 16 SCAs.  The SCAs are defined by a low channel and a high cha
 </table>
 
 
-<p> </p>
+<p>
 <hr>
 <h2 align="center"><a name="Low-level Fields">
                             Low-level Fields</a></h2>
@@ -701,6 +768,8 @@ it just requires modification of the ASCII database file.</li>
 <li> A value field, for example A01V.  For low-level parameters that can
 be modified, this field is R/W*.  For low-level parameters that are read-only this field is R.</li>
 <li> An offset field, for example A01O.  This field is for internal use by the record, and cannot be modified.
+For the statistics fields, which are 32-bit integers, there are two offset fields, 
+OL for the least significant 16 bits, and OH for the most significant 16 bits.
 </ul>
 <p> The naming convention for the low-level parameters is PrefixNumberSuffix, e.g. A01L.  As explained above
 the suffix has the value L, V or O. 
@@ -1345,7 +1414,7 @@ The logging level can be set to 1=error, 2=warning, 3=information, 4=debug.
 to the record and is intended to support all DXP models. It is not expected that there
 will be a need for additional device support.</p>
 
-<p>The EPICS Ssoftware communicates with the XIA Handel software through an
+<p>The EPICS software communicates with the XIA Handel software through an
 <a href="http://www.aps.anl.gov/epics/modules/soft/asyn/"target="_blank">asyn server</a>.
 This server provides
 a single thread that is used for all calls to the Handel library.  For the MCA record the
@@ -1380,10 +1449,6 @@ general
 
 <p>The following are some future plans for the DXP record:
 <ul>
-<li>Support the new PXI DXP-XMAP hardware.  The hardware itself is faster and better,
-and the PXI bus should allow much faster data acquisition than CAMAC for multi-element
-detectors.</li>
-
 <li>Implement multi-threading for multi-element detectors.  Although Handel is not thread-safe,
 it is still possible to have multiple threads (e.g. one thread per detector element).  
 Access to Handel
@@ -1392,12 +1457,9 @@ significant performance improvement.  When one thread is done reading a spectrum
 example, it can be computing ROIs while the next thread is doing a DMA read 
 of its hardware via Handel.</li>
 
-<li>Make the asyn driver poll the hardware at a fast rate while it is acquiring (e.g. 60Hz) to
-see if it is done.  It can then issue a callback to the DXP and MCA device support indicating
-that acquisition is complete.  This may significantly reduce the latency and improve performance
-relative to the 10Hz polling that is currently provided.</li>
+<li>Implement the on-the-fly MCA scanning mode with the mapping version of the xMAP firmware.</li>
 
-<li>Implement the on-the-fly SCA scanning mode with the timing versions of the Saturn and
+<li>Implement the on-the-fly SCA scanning mode with the timing versions of the xMAP, Saturn and
 DXP2X firmware.</li>
 
 <li>Implement the list mode readout of the new DXP-XMAP PXI hardware.</li>
