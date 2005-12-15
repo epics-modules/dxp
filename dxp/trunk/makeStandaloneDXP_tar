@@ -1,9 +1,11 @@
 tar czvf /home/epics/public_html/pub/dxpStandalone.tar.gz -C ../.. \
 mca/6-6/mcaApp/Db/ \
 mca/6-6/mcaApp/op/adl/ \
-autosave/4-1-1/asApp/Db/ \
-autosave/4-1-1/asApp/op/adl/ \
+autosave/4-1-2beta/asApp/Db/ \
+autosave/4-1-2beta/asApp/op/adl/ \
+dxp/2-4beta/documentation \
 dxp/2-4beta/dxpApp/Db \
+dxp/2-4beta/dxpApp/firmware \
 dxp/2-4beta/dxpApp/op/adl \
 dxp/2-4beta/bin/cygwin-x86 \
 dxp/2-4beta/bin/linux-x86 \
