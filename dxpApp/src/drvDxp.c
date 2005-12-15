@@ -20,7 +20,6 @@
 
 #include <errlog.h>
 #include <cantProceed.h>
-#include <epicsExport.h>
 #include <epicsTime.h>
 #include <epicsEvent.h>
 #include <epicsThread.h>
@@ -43,6 +42,7 @@
 #include "handel_constants.h"
 #include "handel_generic.h"
 #include "xia_xerxes.h"
+#include <epicsExport.h>
 
 
 typedef struct {

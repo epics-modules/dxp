@@ -23,7 +23,6 @@
 #include <recGbl.h>
 #include <alarm.h>
 #include <cantProceed.h>
-#include <epicsExport.h>
 #include <epicsString.h>
 #include <epicsThread.h>
 
@@ -33,6 +32,7 @@
 #include "dxpRecord.h"
 #include "devDxp.h"
 #include "handel.h"
+#include <epicsExport.h>
 
 typedef struct {
     long fast_peaks;
