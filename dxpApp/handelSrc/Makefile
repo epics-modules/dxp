@@ -12,12 +12,15 @@ include $(TOP)/configure/CONFIG
 LIBRARY_IOC_Linux += handel
 LIBRARY_IOC_vxWorks += handel
 LIBRARY_IOC_cygwin32 += handel
+LIBRARY_IOC_WIN32 += handel
 
-USR_CFLAGS_Linux +=    -DEXCLUDE_CAMAC -DEXCLUDE_DXP4C -DEXCLUDE_DXP4C2X
+USR_CFLAGS_Linux    += -DEXCLUDE_CAMAC -DEXCLUDE_DXP4C -DEXCLUDE_DXP4C2X
 USR_CFLAGS_cygwin32 += -DEXCLUDE_CAMAC -DEXCLUDE_DXP4C -DEXCLUDE_DXP4C2X
-USR_CFLAGS_vxWorks +=  -DEXCLUDE_DXPX10P
+USR_CFLAGS_WIN32    += -DEXCLUDE_CAMAC -DEXCLUDE_DXP4C -DEXCLUDE_DXP4C2X
+USR_CFLAGS_vxWorks  += -DEXCLUDE_DXPX10P
 USR_CFLAGS +=          -DEXCLUDE_UDXP -DEXCLUDE_UDXPS -DEXCLUDE_DGF200 -DEXCLUDE_POLARIS 
 USR_CFLAGS +=          -DEXCLUDE_USB -DEXCLUDE_SERIAL -DEXCLUDE_ARCNET
+USR_CFLAGS_WIN32    += -DHANDEL_USE_DLL -DHANDEL_MAKE_DLL -DWIN32
 
 # The following lines eliminate the -ansi flag when compiling md_epics.c, because it
 # does inline assembly that does not work with -ansi.
@@ -33,9 +36,11 @@ handel_SRCS_vxWorks  += dxp4c2x.c dxp4c2x_psl.c
 handel_SRCS_vxWorks  += dxp4c.c
 handel_SRCS_Linux    += x10p.c x10p_psl.c
 handel_SRCS_cygwin32 += x10p.c x10p_psl.c
+handel_SRCS_WIN32    += x10p.c x10p_psl.c
 handel_SRCS_Linux    += md_epics.c
 handel_SRCS_vxWorks  += md_epics.c
 handel_SRCS_cygwin32 += md_win95.c epplib.c
+handel_SRCS_WIN32    += md_win95.c epplib.c
 handel_SRCS += xerxes.c
 handel_SRCS += xerxes_log.c
 handel_SRCS += md_log.c
@@ -57,12 +62,16 @@ handel_SRCS += handel_sort.c
 handel_SRCS += handel_system.c
 handel_SRCS += handel_xerxes.c
 
-handel_LIBS_Linux += $(EPICS_BASE_IOC_LIBS)
-handel_LIBS_cygwin32 += $(EPICS_BASE_IOC_LIBS)
-handel_LIBS_vxWorks += $(EPICS_BASE_IOC_LIBS)
+handel_LIBS += $(EPICS_BASE_IOC_LIBS)
+handel_LIBS += $(EPICS_BASE_IOC_LIBS)
+handel_LIBS += $(EPICS_BASE_IOC_LIBS)
+handel_LIBS_WIN32 += DLPORTIO
 LIB_INSTALLS_cygwin32 += ../DLPORTIO.lib ../xmap_handel.lib
-BIN_INSTALLS_cygwin32 += ../fdd.dll ../handel.dll ../handel_vba.dll ../md.dll 
+LIB_INSTALLS_WIN32    += ../DLPORTIO.lib ../xmap_handel.lib
+BIN_INSTALLS_cygwin32 += ../fdd.dll ../xmap_handel.dll ../handel_vba.dll ../md.dll 
+BIN_INSTALLS_WIN32    += ../fdd.dll ../xmap_handel.dll ../handel_vba.dll ../md.dll 
 BIN_INSTALLS_cygwin32 += ../plxlib.dll ../xerxes.dll ../xmap.dll ../xmap_psl.dll
+BIN_INSTALLS_WIN32    += ../plxlib.dll ../xerxes.dll ../xmap.dll ../xmap_psl.dll
 INC += xia_common.h
 INC += xia_xerxes.h
 INC += xerxes_generic.h
@@ -75,24 +84,8 @@ INC += handeldef.h
 INC += handel_generic.h
 
 #===========================
-ifneq ($(strip $(LIB_INSTALLS_$(OS_CLASS))),)
-LIB_INSTALLS+=$(subst -nil-,,$(LIB_INSTALLS_$(OS_CLASS)))
-else
-ifdef LIB_INSTALLS_DEFAULT
-LIB_INSTALLS+=$(LIB_INSTALLS_DEFAULT)
-endif
-endif
 
 include $(TOP)/configure/RULES
 #----------------------------------------
 #  ADD RULES AFTER THIS LINE
-
-ifdef LIB_INSTALLS
-buildInstall : libInstalls
-endif
-
-libInstalls:  $(LIB_INSTALLS)
-	@echo "Installing $(^F)"
-	@$(INSTALL) -d -m 555 $^ $(INSTALL_LIB)
-
 
