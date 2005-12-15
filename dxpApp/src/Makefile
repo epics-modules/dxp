@@ -20,6 +20,7 @@ DBDINC += dxpRecord
 DBD += dxpSupport.dbd
 DBD += dxp.dbd
 DBD += dxpVX.dbd
+DBD += dxpWin32.dbd
 
 USR_CFLAGS += -DXIA_SPECIAL_MEM
 USR_CFLAGS += -DEXCLUDE_DGFG200
@@ -49,7 +50,7 @@ PROD_IOC_WIN32 += dxpApp
 # <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
 dxpApp_SRCS_Linux += dxp_registerRecordDeviceDriver.cpp
 dxpApp_SRCS_cygwin32 += dxp_registerRecordDeviceDriver.cpp
-dxpApp_SRCS_WIN32 += dxp_registerRecordDeviceDriver.cpp
+dxpApp_SRCS_WIN32 += dxpWin32_registerRecordDeviceDriver.cpp
 dxpApp_SRCS_vxWorks += dxpVX_registerRecordDeviceDriver.cpp
 dxpApp_SRCS_Linux += dxpMain.cpp
 dxpApp_SRCS_cygwin32 += dxpMain.cpp
@@ -64,25 +65,29 @@ dxpApp_LIBS += calc sscan autosave
 dxpApp_LIBS_vxWorks += camac
 dxpApp_LIBS += asyn
 dxpApp_SYS_LIBS_cygwin32 += DLPORTIO
+dxpApp_LIBS_WIN32 += DLPORTIO
 dxpApp_SYS_LIBS_cygwin32 += rpc
 dxpApp_LIBS += seq pv
 dxpApp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
-# xMAP application for cygwin
+# xMAP application for cygwin32 and win32
 
 PROD_IOC_cygwin32 += xmapApp
+PROD_IOC_WIN32    += xmapApp
 
 # <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
-xmapApp_SRCS_cygwin32 += dxp_registerRecordDeviceDriver.cpp
-xmapApp_SRCS_cygwin32 += dxpMain.cpp
-xmapApp_SRCS_vxWorks += -nil-
+xmapApp_SRCS_DEFAULT += dxp_registerRecordDeviceDriver.cpp
+xmapApp_SRCS_WIN32   += dxpWin32_registerRecordDeviceDriver.cpp
+xmapApp_SRCS += dxpMain.cpp
 
 xmapApp_LIBS += dxp
 xmapApp_LIBS += mca
 xmapApp_LIBS += calc sscan autosave
 xmapApp_LIBS += asyn
 xmapApp_SYS_LIBS_cygwin32 += xmap_handel
+xmapApp_LIBS_WIN32    += xmap_handel
 xmapApp_SYS_LIBS_cygwin32 += DLPORTIO
+xmapApp_LIBS_WIN32    += DLPORTIO
 xmapApp_SYS_LIBS_cygwin32 += rpc
 xmapApp_LIBS += seq pv
 xmapApp_LIBS += $(EPICS_BASE_IOC_LIBS)
