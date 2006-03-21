@@ -32,7 +32,7 @@ dxp_SRCS += devDxp.c
 dxp_SRCS += drvDxp.c
 dxp_SRCS += dxpMED.st
 
-dxp_LIBS += handel
+dxp_LIBS += handelSrc
 dxp_LIBS += mca 
 dxp_LIBS += calc sscan autosave
 dxp_LIBS += asyn
@@ -59,7 +59,7 @@ dxpApp_SRCS_vxWorks += -nil-
 #The following adds support from base/src/vxWorks
 dxpApp_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary
 
-dxpApp_LIBS += dxp handel
+dxpApp_LIBS += dxp handelSrc
 dxpApp_LIBS += mca
 dxpApp_LIBS += calc sscan autosave
 dxpApp_LIBS_vxWorks += camac
@@ -84,8 +84,8 @@ xmapApp_LIBS += dxp
 xmapApp_LIBS += mca
 xmapApp_LIBS += calc sscan autosave
 xmapApp_LIBS += asyn
-xmapApp_SYS_LIBS_cygwin32 += xmap_handel
-xmapApp_LIBS_WIN32    += xmap_handel
+xmapApp_SYS_LIBS_cygwin32 += handel
+xmapApp_LIBS_WIN32    += handel
 xmapApp_SYS_LIBS_cygwin32 += DLPORTIO
 xmapApp_LIBS_WIN32    += DLPORTIO
 xmapApp_SYS_LIBS_cygwin32 += rpc
@@ -96,7 +96,7 @@ xmapApp_LIBS += $(EPICS_BASE_IOC_LIBS)
 # Test applications
 PROD_IOC_cygwin32 += test_sets1
 test_sets1_SRCS += test_sets1.c
-test_sets1_SYS_LIBS += xmap_handel
+test_sets1_SYS_LIBS += handel
 test_sets1_SYS_LIBS += DLPORTIO
 test_sets1_LIBS += dxp
 test_sets1_LIBS += $(EPICS_BASE_IOC_LIBS)
