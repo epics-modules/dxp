@@ -1,3 +1,10 @@
+file "$(DXP)/dxpApp/Db/dxpMED.db"
+{
+pattern
+{P,           MCAALL,    INP          }
+{dxpXMAP:med: mcaAll, "@asyn(DXP1,-1)"}
+}
+
 file "$(MCA)/mcaApp/Db/simple_mca.db"
 {
 pattern
