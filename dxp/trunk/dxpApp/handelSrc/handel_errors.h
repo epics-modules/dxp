@@ -35,7 +35,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: handel_errors.h,v 1.3 2005-11-17 01:14:27 rivers Exp $
+ * $Id: handel_errors.h,v 1.4 2006-05-19 19:56:13 rivers Exp $
  * 
  *
  */
@@ -205,6 +205,10 @@
 #define XIA_UNKNOWN_BUFFER  652 /** Requested buffer is unknown */
 #define XIA_NO_MAPPING      653 /** Mapping mode is currently not installed/enabled */
 #define XIA_MAPPING_PT_CTL  654 /** Wrong mapping point control for operation */
+#define XIA_UNKNOWN_PT_CTL  655 /** Unknown mapping point control. */
+#define XIA_CLOCK_SPEED     656 /** The hardware is reporting an invalid clock speed. */
+#define XIA_BAD_DECIMATION  657 /** Passed in decimation is invalid. */
+#define XIA_BAD_SYNCH_RUN   658 /** Specified value for synchronous run is bad. */
 
 /* XUP errors 701-800 */
 #define XIA_XUP_VERSION     701 /** XUP version is not supported */

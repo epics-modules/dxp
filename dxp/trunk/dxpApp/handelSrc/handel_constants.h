@@ -39,7 +39,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: handel_constants.h,v 1.4 2005-11-17 01:14:27 rivers Exp $
+ * $Id: handel_constants.h,v 1.5 2006-05-19 19:56:13 rivers Exp $
  *
  */
 
@@ -58,7 +58,6 @@
 /** Mapping Mode Point Control Types **/
 #define XIA_MAPPING_CTL_GATE 1.0
 #define XIA_MAPPING_CTL_SYNC 2.0
-#define XIA_MAPPING_CTL_HOST 3.0
 
 
 /** Old Test Constants **/

@@ -45,7 +45,7 @@
  *
  *  Following are prototypes for HanDeL library routines
  *
- * $Id: handel.h,v 1.3 2005-11-17 01:14:27 rivers Exp $
+ * $Id: handel.h,v 1.4 2006-05-19 19:56:13 rivers Exp $
  *
  */
 
@@ -98,6 +98,7 @@ HANDEL_IMPORT int HANDEL_API xiaGetNumDetectors(unsigned int *numDet);
 HANDEL_IMPORT int HANDEL_API xiaGetDetectors(char *detectors[]);
 HANDEL_IMPORT int HANDEL_API xiaGetDetectors_VB(unsigned int index, char *alias);
 HANDEL_IMPORT int HANDEL_API xiaRemoveDetector(char *alias);
+  HANDEL_IMPORT int HANDEL_API xiaDetectorFromDetChan(int detChan, char *alias);
 HANDEL_IMPORT int HANDEL_API xiaNewFirmware(char *alias);
 HANDEL_IMPORT int HANDEL_API xiaAddFirmwareItem(char *alias, char *name, void *value);
 HANDEL_IMPORT int HANDEL_API xiaModifyFirmwareItem(char *alias, unsigned short decimation, 
@@ -117,6 +118,7 @@ HANDEL_IMPORT int HANDEL_API xiaGetNumModules(unsigned int *numModules);
 HANDEL_IMPORT int HANDEL_API xiaGetModules(char *modules[]);
 HANDEL_IMPORT int HANDEL_API xiaGetModules_VB(unsigned int index, char *alias);
 HANDEL_IMPORT int HANDEL_API xiaRemoveModule(char *alias);
+  HANDEL_IMPORT int HANDEL_API xiaModuleFromDetChan(int detChan, char *alias);
 HANDEL_IMPORT int HANDEL_API xiaAddChannelSetElem(unsigned int detChanSet, unsigned int newChan);
 HANDEL_IMPORT int HANDEL_API xiaRemoveChannelSetElem(unsigned int detChan, unsigned int chan);
 HANDEL_IMPORT int HANDEL_API xiaRemoveChannelSet(unsigned int detChan);
