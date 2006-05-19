@@ -23,7 +23,6 @@ xiaStartSystem
 DXPConfig("DXP1",  4)
 
 dbLoadTemplate("4element.template")
-dbLoadRecords("$(DXP)/dxpApp/Db/dxpMED.db","P=dxpXMAP:med:")
 
 #xiaSetLogLevel(4)
 iocInit
