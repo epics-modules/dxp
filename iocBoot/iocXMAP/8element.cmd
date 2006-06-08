@@ -19,11 +19,10 @@ xiaSetLogLevel(2)
 xiaInit("xmap8.ini")
 xiaStartSystem
 
-# DXPConfig(serverName, nchans)
-DXPConfig("DXP1",  8)
+# DXPConfig(serverName, ndetectors, ngroups, pollFrequency)
+DXPConfig("DXP1",  8, 1, 100)
 
 dbLoadTemplate("8element.template")
-dbLoadRecords("$(DXP)/dxpApp/Db/dxpMED.db","P=dxpXMAP:med:")
 
 #xiaSetLogLevel(4)
 iocInit
@@ -33,3 +32,4 @@ seq dxpMED, "P=dxpXMAP:med:, DXP=dxp, MCA=mca, N_DETECTORS=8"
 ### Start up the autosave task and tell it what to do.
 # Save settings every thirty seconds
 create_monitor_set("auto_settings8.req", 30)
+
