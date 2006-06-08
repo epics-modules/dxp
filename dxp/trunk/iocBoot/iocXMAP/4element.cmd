@@ -19,8 +19,8 @@ xiaSetLogLevel(2)
 xiaInit("xmap4.ini")
 xiaStartSystem
 
-# DXPConfig(serverName, nchans)
-DXPConfig("DXP1",  4)
+# DXPConfig(serverName, ndetectors, ngroups, pollFrequency)
+DXPConfig("DXP1",  4, 1, 100)
 
 dbLoadTemplate("4element.template")
 
@@ -32,3 +32,4 @@ seq dxpMED, "P=dxpXMAP:med:, DXP=dxp, MCA=mca, N_DETECTORS=4"
 ### Start up the autosave task and tell it what to do.
 # Save settings every thirty seconds
 create_monitor_set("auto_settings4.req", 30)
+
