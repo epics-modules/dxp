@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *  
  *
- * $Id: xia_common.h,v 1.3 2006-05-19 19:57:22 rivers Exp $
+ * $Id: xia_common.h,v 1.4 2006-06-21 21:10:50 rivers Exp $
  *
  *    All of the useful typedefs and macros
  *    go in here. Two conditions must be met
@@ -75,10 +75,7 @@ typedef unsigned short flag_t;
 #define WORD_TO_LONG(lo, hi) (unsigned long)(((unsigned long)(hi) << 16) | (lo)) 
 #define LO_BYTE(word) ((word) & 0xFF)
 #define HI_BYTE(word) (((word) >> 8) & 0xFF)
-/*
-#define MAKE_LOWER_CASE(s, i) for ((i) = 0; (i) < strlen((s)); (i)++) \
-                                 (s)[i] = (char)tolower((s)[i])
-*/
+#define MAKE_LOWER_CASE(s, i) for ((i) = 0; (i) < strlen((s)); (i)++) (s)[i] = (char)tolower((s)[i])
 #define N_ELEMS(x) (sizeof(x) / sizeof((x)[0]))
 
 
