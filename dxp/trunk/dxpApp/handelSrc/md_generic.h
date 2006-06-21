@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *  
  *
- * $Id: md_generic.h,v 1.4 2006-05-19 19:56:13 rivers Exp $
+ * $Id: md_generic.h,v 1.5 2006-06-21 15:45:45 rivers Exp $
  *
  *    Generic constant definitions related to the MD layer
  */
