@@ -35,7 +35,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: handel_errors.h,v 1.4 2006-05-19 19:56:13 rivers Exp $
+ * $Id: handel_errors.h,v 1.5 2006-06-21 15:42:51 rivers Exp $
  * 
  *
  */
