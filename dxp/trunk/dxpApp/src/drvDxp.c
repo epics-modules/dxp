@@ -712,7 +712,7 @@ static void setPreset(drvDxpPvt *pPvt, asynUser *pasynUser,
        if (dxpChan->moduleType == DXP_XMAP) {
            presetType = XIA_PRESET_NONE;
            xiaSetAcquisitionValues(detChan, "preset_type", &presetType);
-           xiaSetAcquisitionValues(detChan, "preset_values", &presetValue);
+           xiaSetAcquisitionValues(detChan, "preset_value", &presetValue);
            XMAP_APPLY(detChan);
        } else {
            xiaSetAcquisitionValues(detChan, "preset_standard", &presetValue);
@@ -727,7 +727,7 @@ static void setPreset(drvDxpPvt *pPvt, asynUser *pasynUser,
            presetType = XIA_PRESET_FIXED_REAL;
            presetValue = time; /* *1.e6;  xMAP presets are in microseconds */
            xiaSetAcquisitionValues(detChan, "preset_type", &presetType);
-           xiaSetAcquisitionValues(detChan, "preset_values", &presetValue);
+           xiaSetAcquisitionValues(detChan, "preset_value", &presetValue);
            XMAP_APPLY(detChan);
        } else {
            xiaSetAcquisitionValues(detChan, "preset_runtime", &time);
@@ -742,7 +742,7 @@ static void setPreset(drvDxpPvt *pPvt, asynUser *pasynUser,
            presetType = XIA_PRESET_FIXED_LIVE;
            presetValue = time; /* 1.e6;  xMAP presets are in microseconds */
            xiaSetAcquisitionValues(detChan, "preset_type", &presetType);
-           xiaSetAcquisitionValues(detChan, "preset_values", &presetValue);
+           xiaSetAcquisitionValues(detChan, "preset_value", &presetValue);
            XMAP_APPLY(detChan);
        } else {
            xiaSetAcquisitionValues(detChan, "preset_livetime", &time);
