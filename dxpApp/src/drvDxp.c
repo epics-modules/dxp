@@ -860,11 +860,8 @@ static asynStatus drvUserGetType(void *drvPvt, asynUser *pasynUser,
 {
     mcaCommand command = pasynUser->reason;
 
-    *pptypeName = NULL;
-    *psize = 0;
-    if (pptypeName)
-        *pptypeName = epicsStrDup(mcaCommands[command].commandString);
-    if (psize) *psize = sizeof(command);
+    *pptypeName = epicsStrDup(mcaCommands[command].commandString);
+    *psize = sizeof(command);
     return(asynSuccess);
 }
 
