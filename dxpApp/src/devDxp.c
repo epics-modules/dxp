@@ -29,6 +29,7 @@
 #include <asynDriver.h>
 #include <asynEpicsUtils.h>
 
+#include "epicsHandelLock.h"
 #include "dxpRecord.h"
 #include "devDxp.h"
 #include "handel.h"
@@ -249,6 +250,9 @@ void asynCallback(asynUser *pasynUser)
     asynPrint(pasynUser, ASYN_TRACE_FLOW,
               "devDxp::asynCallback: command=%d\n",
               pmsg->dxpCommand);
+
+     /* Interlock access to Handel library */
+     epicsHandelLock();
 
      switch(pmsg->dxpCommand) {
      case MSG_DXP_START_RUN:
@@ -508,6 +512,7 @@ void asynCallback(asynUser *pasynUser)
          asynPrint(pasynUser, ASYN_TRACE_ERROR,
                   "devMcaAsyn::asynCallback: error in freeAsynUser\n");
      }
+     epicsHandelUnlock();
      asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW,
               "devDxp::asynCallback: exit\n");
 }
