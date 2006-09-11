@@ -42,6 +42,7 @@
 #include "handel_constants.h"
 #include "handel_generic.h"
 #include "xia_xerxes.h"
+#include "epicsHandelLock.h"
 #include <epicsExport.h>
 
 
@@ -188,6 +189,10 @@ int DXPConfig(const char *portName, int ndetectors, int ngroups, int pollFreq)
     pPvt->pollEventId = epicsEventCreate(epicsEventFull);
     pPvt->dxpChannel = (dxpChannel_t *)
                 calloc((ndetectors+ngroups), sizeof(dxpChannel_t));
+
+    /* Interlock access to Handel library */
+    epicsHandelLock();
+
     /* Allocate memory arrays for each channel if it is valid */
     for (i=0; i<ndetectors; i++) {
        dxpChannel = &pPvt->dxpChannel[i];
@@ -209,6 +214,7 @@ int DXPConfig(const char *portName, int ndetectors, int ngroups, int pollFreq)
                   break;
           default:
              printf("DXPConfig: unknown module type = %d\n", hdwrvar);
+             epicsHandelUnlock();
              return(-1);
         }
     }
@@ -232,6 +238,7 @@ int DXPConfig(const char *portName, int ndetectors, int ngroups, int pollFreq)
                   break;
           default:
              printf("DXPConfig: unknown module type = %d\n", hdwrvar);
+             epicsHandelUnlock();
              return(-1);
         }
     } 
@@ -241,6 +248,7 @@ int DXPConfig(const char *portName, int ndetectors, int ngroups, int pollFreq)
         xiaGetModules_VB(i, module_name);
         xiaGetModuleItem(module_name, "channel0_alias", &pPvt->first_channels[i]);
     }
+    epicsHandelUnlock();
     pPvt->common.interfaceType = asynCommonType;
     pPvt->common.pinterface  = (void *)&drvDxpCommon;
     pPvt->common.drvPvt = pPvt;
@@ -377,6 +385,8 @@ static asynStatus drvDxpWrite(void *drvPvt, asynUser *pasynUser,
               "drvDxpWrite %s detChan=%d, command=%d, ivalue=%d, dvalue=%f\n",
               pPvt->portName, detChan, command, ivalue, dvalue);
     if (dxpChan == NULL) return(asynError);
+
+    epicsHandelLock();
 
     switch (command) {
         case mcaStartAcquire:
@@ -521,6 +531,7 @@ static asynStatus drvDxpWrite(void *drvPvt, asynUser *pasynUser,
             break;
     }
     if (runActive) xiaStartRun(detChan, 1);
+    epicsHandelUnlock();
     return(status);
 }
 
@@ -605,6 +616,8 @@ static asynStatus int32ArrayRead(void *drvPvt, asynUser *pasynUser,
     if (dxpChan == NULL) return(asynError);
     if (dxpChan->detChan < 0) return(asynSuccess); /* Ignore detChan groups */
 
+    epicsHandelLock();
+
     if (dxpChan->erased) {
         memset(data, 0, pPvt->nchans*sizeof(int));
     } else {
@@ -624,6 +637,7 @@ static asynStatus int32ArrayRead(void *drvPvt, asynUser *pasynUser,
          xiaStopRun(dxpChan->detChan);
          dxpChan->acquiring = 0;
      }
+    epicsHandelUnlock();
     return(asynSuccess);
 }
 
@@ -642,6 +656,8 @@ static void getAcquisitionStatus(drvDxpPvt *pPvt, asynUser *pasynUser,
    unsigned long run_active;
    int detChan = pPvt->detChan;
    int i;
+
+   epicsHandelLock();
 
    if (detChan < 0) {  /* This is a detChan set */
        dxpChan->ereal = 0.;
@@ -679,6 +695,7 @@ static void getAcquisitionStatus(drvDxpPvt *pPvt, asynUser *pasynUser,
    asynPrint(pasynUser, ASYN_TRACE_FLOW, 
              "getAcquisitionStatus [%s detChan=%d]): acquiring=%d\n",
              pPvt->portName, detChan, dxpChan->acquiring);
+   epicsHandelUnlock();
 }
 
 
@@ -704,6 +721,8 @@ static void setPreset(drvDxpPvt *pPvt, asynUser *pasynUser,
          break;
    }
    
+   epicsHandelLock();
+
    /* If preset live and real time are both zero set to count forever */
    if ((dxpChan->plive == 0.) && (dxpChan->preal == 0.)) {
        xiaGetRunData(detChan0, "run_active", &runActive);
@@ -749,6 +768,7 @@ static void setPreset(drvDxpPvt *pPvt, asynUser *pasynUser,
        }
    }
    if (runActive) xiaStartRun(detChan, 1);
+   epicsHandelUnlock();
 }
 
 
@@ -783,7 +803,9 @@ static void pollTask(drvDxpPvt *pPvt)
             for (i=0; i<pPvt->ndetectors; i++) {
                 acquiring[i] = 0;
                 detChan = pPvt->dxpChannel[i].detChan;
+                epicsHandelLock();
                 xiaGetRunData(detChan, "run_active", &acq);
+                epicsHandelUnlock();
                 if (acq & XIA_RUN_HARDWARE) acquiring[i]=1;
             }
             pasynManager->unlockPort(pPvt->dxpChannel[0].pasynUser);
@@ -923,7 +945,9 @@ static const iocshArg * const xiaLogLevelArgs[1] = {&xiaLogLevelArg0};
 static const iocshFuncDef xiaLogLevelFuncDef = {"xiaSetLogLevel",1,xiaLogLevelArgs};
 static void xiaLogLevelCallFunc(const iocshArgBuf *args)
 {
+    epicsHandelLock();
     xiaSetLogLevel(args[0].ival);
+    epicsHandelUnlock();
 }
 
 static const iocshArg xiaLogOutputArg0 = { "logging level",iocshArgString};
@@ -931,7 +955,9 @@ static const iocshArg * const xiaLogOutputArgs[1] = {&xiaLogOutputArg0};
 static const iocshFuncDef xiaLogOutputFuncDef = {"xiaSetLogOutput",1,xiaLogOutputArgs};
 static void xiaLogOutputCallFunc(const iocshArgBuf *args)
 {
+    epicsHandelLock();
     xiaSetLogOutput(args[0].sval);
+    epicsHandelUnlock();
 }
 
 static const iocshArg xiaInitArg0 = { "ini file",iocshArgString};
@@ -939,13 +965,17 @@ static const iocshArg * const xiaInitArgs[1] = {&xiaInitArg0};
 static const iocshFuncDef xiaInitFuncDef = {"xiaInit",1,xiaInitArgs};
 static void xiaInitCallFunc(const iocshArgBuf *args)
 {
+    epicsHandelLock();
     xiaInit(args[0].sval);
+    epicsHandelUnlock();
 }
 
 static const iocshFuncDef xiaStartSystemFuncDef = {"xiaStartSystem",0,0};
 static void xiaStartSystemCallFunc(const iocshArgBuf *args)
 {
+    epicsHandelLock();
     xiaStartSystem();
+    epicsHandelUnlock();
 }
 
 static const iocshArg dxp_mem_dumpArg0 = { "channel",iocshArgInt};
@@ -963,7 +993,9 @@ static const iocshArg * const xiaSaveSystemArgs[1] = {&xiaSaveSystemArg0};
 static const iocshFuncDef xiaSaveSystemFuncDef = {"xiaSaveSystem",1,xiaSaveSystemArgs};
 static void xiaSaveSystemCallFunc(const iocshArgBuf *args)
 {
+    epicsHandelLock();
     xiaSaveSystem("handel_ini", args[0].sval);
+    epicsHandelUnlock();
 }
 
 void dxpRegister(void)
