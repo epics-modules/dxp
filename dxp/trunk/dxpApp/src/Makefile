@@ -27,6 +27,7 @@ USR_CFLAGS += -DEXCLUDE_DGFG200
 USR_CFLAGS += -DEXCLUDE_UDXPS
 
 # The following are compiled and added to the Support library
+dxp_SRCS += epicsHandelLock.c
 dxp_SRCS += dxpRecord.c
 dxp_SRCS += devDxp.c
 dxp_SRCS += drvDxp.c
