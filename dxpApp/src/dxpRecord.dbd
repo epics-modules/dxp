@@ -270,7 +270,7 @@ recordtype(dxp) {
     }
 
 
-# Higher level control parameters - all double, 27 total
+# Higher level control parameters - all double, 29 total
     field(PKTIM,DBF_DOUBLE) {
         prompt("Peaking time")
         asl(ASL0)
@@ -414,6 +414,18 @@ recordtype(dxp) {
     }
     field(BASE_CUT_PCT_RBV,DBF_DOUBLE) {
         prompt("Baseline cut % readback")
+        asl(ASL0)
+        special(SPC_NOMOD)
+    }
+    field(MAXWIDTH,DBF_DOUBLE) {
+        prompt("Max. width (%)")
+        special(SPC_MOD)
+        pp(TRUE)
+        asl(ASL0)
+        initial(20.)
+    }
+    field(MAXWIDTH_RBV,DBF_DOUBLE) {
+        prompt("Maxwidth readback")
         asl(ASL0)
         special(SPC_NOMOD)
     }
