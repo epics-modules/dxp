@@ -27,7 +27,7 @@ USR_CFLAGS += -DEXCLUDE_DGFG200
 USR_CFLAGS += -DEXCLUDE_UDXPS
 
 # The following are compiled and added to the Support library
-dxp_SRCS += epicsHandelLock.c
+dxp_SRCS += epicsHandelUtils.c
 dxp_SRCS += dxpRecord.c
 dxp_SRCS += devDxp.c
 dxp_SRCS += drvDxp.c
@@ -95,12 +95,12 @@ xmapApp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 
 # Test applications
-PROD_IOC_cygwin32 += test_sets1
-test_sets1_SRCS += test_sets1.c
-test_sets1_SYS_LIBS += handel
-test_sets1_SYS_LIBS += DLPORTIO
-test_sets1_LIBS += dxp
-test_sets1_LIBS += $(EPICS_BASE_IOC_LIBS)
+PROD_IOC_cygwin32 += test_sca1
+test_sca1_SRCS += test_sca1.c
+test_sca1_SYS_LIBS += handelSrc
+test_sca1_SYS_LIBS += DLPORTIO
+test_sca1_LIBS += dxp
+test_sca1_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #===========================
 #===========================
