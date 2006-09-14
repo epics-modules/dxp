@@ -24,14 +24,12 @@
 #include <epicsEvent.h>
 #include <epicsThread.h>
 #include <epicsString.h>
-#include <iocsh.h>
 
 #ifdef linux
 #include <sys/io.h>
 #endif
 
 #include "mca.h"
-#include "devDxp.h"
 #include "drvMca.h"
 #include "asynDriver.h"
 #include "asynInt32.h"
@@ -42,8 +40,8 @@
 #include "handel_constants.h"
 #include "handel_generic.h"
 #include "xia_xerxes.h"
-#include "epicsHandelLock.h"
-#include <epicsExport.h>
+#include "drvDxp.h"
+#include "epicsHandelUtils.h"
 
 
 typedef struct {
@@ -93,6 +91,7 @@ typedef struct {
         xiaBoardOperation(detChan, "apply", &ignore); \
     } \
 }
+
 
 
 /* These functions are private, not in any interface */
@@ -680,10 +679,8 @@ static void getAcquisitionStatus(drvDxpPvt *pPvt, asynUser *pasynUser,
           dxpChan->etotal = 0.;
        } else {
           dxpChan->etotal =  0.;
-          if (dxpChan->moduleType == DXP_XMAP) 
-             xiaGetRunData(detChan, "trigger_livetime", &dxpChan->elive);
-          else
-             xiaGetRunData(detChan, "livetime", &dxpChan->elive);
+          /* The xMAP now (V0.9) supports livetime, not just trigger livetime */
+          xiaGetRunData(detChan, "livetime", &dxpChan->elive);
           xiaGetRunData(detChan, "runtime", &dxpChan->ereal);
           xiaGetRunData(detChan, "run_active", &run_active);
           /* If Handel thinks the run is active, but the hardware does not, then
@@ -923,91 +920,3 @@ asynStatus disconnect(void *drvPvt, asynUser *pasynUser)
     pasynManager->exceptionDisconnect(pasynUser);
     return(asynSuccess);
 }
-
-
-/* iocsh functions */
-static const iocshArg DXPConfigArg0 = { "server name",iocshArgString};
-static const iocshArg DXPConfigArg1 = { "number of detectors",iocshArgInt};
-static const iocshArg DXPConfigArg2 = { "number of detector groups",iocshArgInt};
-static const iocshArg DXPConfigArg3 = { "poll frequency",iocshArgInt};
-static const iocshArg * const DXPConfigArgs[4] = {&DXPConfigArg0,
-                                                  &DXPConfigArg1,
-                                                  &DXPConfigArg2,
-                                                  &DXPConfigArg3}; 
-static const iocshFuncDef DXPConfigFuncDef = {"DXPConfig",4,DXPConfigArgs};
-static void DXPConfigCallFunc(const iocshArgBuf *args)
-{
-    DXPConfig(args[0].sval, args[1].ival, args[2].ival, args[3].ival);
-}
-
-static const iocshArg xiaLogLevelArg0 = { "logging level",iocshArgInt};
-static const iocshArg * const xiaLogLevelArgs[1] = {&xiaLogLevelArg0};
-static const iocshFuncDef xiaLogLevelFuncDef = {"xiaSetLogLevel",1,xiaLogLevelArgs};
-static void xiaLogLevelCallFunc(const iocshArgBuf *args)
-{
-    epicsHandelLock();
-    xiaSetLogLevel(args[0].ival);
-    epicsHandelUnlock();
-}
-
-static const iocshArg xiaLogOutputArg0 = { "logging level",iocshArgString};
-static const iocshArg * const xiaLogOutputArgs[1] = {&xiaLogOutputArg0};
-static const iocshFuncDef xiaLogOutputFuncDef = {"xiaSetLogOutput",1,xiaLogOutputArgs};
-static void xiaLogOutputCallFunc(const iocshArgBuf *args)
-{
-    epicsHandelLock();
-    xiaSetLogOutput(args[0].sval);
-    epicsHandelUnlock();
-}
-
-static const iocshArg xiaInitArg0 = { "ini file",iocshArgString};
-static const iocshArg * const xiaInitArgs[1] = {&xiaInitArg0};
-static const iocshFuncDef xiaInitFuncDef = {"xiaInit",1,xiaInitArgs};
-static void xiaInitCallFunc(const iocshArgBuf *args)
-{
-    epicsHandelLock();
-    xiaInit(args[0].sval);
-    epicsHandelUnlock();
-}
-
-static const iocshFuncDef xiaStartSystemFuncDef = {"xiaStartSystem",0,0};
-static void xiaStartSystemCallFunc(const iocshArgBuf *args)
-{
-    epicsHandelLock();
-    xiaStartSystem();
-    epicsHandelUnlock();
-}
-
-static const iocshArg dxp_mem_dumpArg0 = { "channel",iocshArgInt};
-static const iocshArg * const dxp_mem_dumpArgs[1] = {&dxp_mem_dumpArg0};
-static const iocshFuncDef dxp_mem_dumpFuncDef = {"dxp_mem_dump",1,dxp_mem_dumpArgs};
-static void dxp_mem_dumpCallFunc(const iocshArgBuf *args)
-{
-    int channel = args[0].ival;
-
-/*    dxp_mem_dump(&channel); */
-}
-
-static const iocshArg xiaSaveSystemArg0 = { "ini file",iocshArgString};
-static const iocshArg * const xiaSaveSystemArgs[1] = {&xiaSaveSystemArg0};
-static const iocshFuncDef xiaSaveSystemFuncDef = {"xiaSaveSystem",1,xiaSaveSystemArgs};
-static void xiaSaveSystemCallFunc(const iocshArgBuf *args)
-{
-    epicsHandelLock();
-    xiaSaveSystem("handel_ini", args[0].sval);
-    epicsHandelUnlock();
-}
-
-void dxpRegister(void)
-{
-    iocshRegister(&xiaInitFuncDef,xiaInitCallFunc);
-    iocshRegister(&xiaLogLevelFuncDef,xiaLogLevelCallFunc);
-    iocshRegister(&xiaLogOutputFuncDef,xiaLogOutputCallFunc);
-    iocshRegister(&xiaStartSystemFuncDef,xiaStartSystemCallFunc);
-    iocshRegister(&xiaSaveSystemFuncDef,xiaSaveSystemCallFunc);
-    iocshRegister(&dxp_mem_dumpFuncDef,dxp_mem_dumpCallFunc);
-    iocshRegister(&DXPConfigFuncDef,DXPConfigCallFunc);
-}
-
-epicsExportRegistrar(dxpRegister);
-
