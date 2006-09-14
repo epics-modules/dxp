@@ -29,7 +29,7 @@
 #include <asynDriver.h>
 #include <asynEpicsUtils.h>
 
-#include "epicsHandelLock.h"
+#include "epicsHandelUtils.h"
 #include "dxpRecord.h"
 #include "devDxp.h"
 #include "handel.h"
@@ -54,6 +54,7 @@ typedef struct {
     double base_len;
     double base_cut_pct;
     double base_cut_enbl;
+    double maxwidth;
     double pgain;
     int newBaselineHistory;
     int newBaselineHistogram;
@@ -66,7 +67,7 @@ typedef struct {
     double number_scas;
     double sca_lo[NUM_DXP_SCAS];
     double sca_hi[NUM_DXP_SCAS];
-    int sca_counts[NUM_DXP_SCAS];
+    double sca_counts[NUM_DXP_SCAS];
     double eVPerBin;
 } dxpReadbacks;
 
@@ -150,6 +151,7 @@ static long init_record(dxpRecord *pdxp, int *detChan)
     /* Allocate asynDxpPvt private structure */
     pPvt = callocMustSucceed(1, sizeof(devDxpPvt), 
                              "devDxp:: init_record");
+
      /* Create asynUser */
     pasynUser = pasynManager->createAsynUser(asynCallback, 0);
     pasynUser->userPvt = pPvt;
@@ -302,7 +304,13 @@ void asynCallback(asynUser *pasynUser)
                  "devDxp::asynCallback, MSG_DXP_SET_DOUBLE_PARAM"
                  " setting gap_time=%f\n",
                  pmsg->dvalue);
-             xiaSetAcquisitionValues(detChan, "gap_time", &pmsg->dvalue);
+             if (minfo->moduleType == DXP_XMAP) {
+                 /* On the xMAP the parameter that can be written is minimum_gap_time */
+                 xiaSetAcquisitionValues(detChan, "minimum_gap_time", &pmsg->dvalue);
+             } else {
+                /* On the Saturn and DXP2X it is gap_time */
+                 xiaSetAcquisitionValues(detChan, "gap_time", &pmsg->dvalue);
+             }
              XMAP_APPLY(detChan);
          }
          else if (pfield == &pdxp->adc_rule) {
@@ -346,6 +354,20 @@ void asynCallback(asynUser *pasynUser)
                  " setting trigger_gap_time=%f\n",
                  pmsg->dvalue);
              xiaSetAcquisitionValues(detChan, "trigger_gap_time", &pmsg->dvalue);
+             XMAP_APPLY(detChan);
+         }
+         else if (pfield == &pdxp->maxwidth) {
+             asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
+                 "devDxp::asynCallback, MSG_DXP_SET_DOUBLE_PARAM"
+                 " setting maxwidth=%f\n",
+                 pmsg->dvalue);
+             if (minfo->moduleType == DXP_XMAP) {
+                /* On the xMAP maxwidth is an acquisition parameter in microseconds */
+                xiaSetAcquisitionValues(detChan, "maxwidth", &pmsg->dvalue);
+             } else {
+                /* On Saturn and DXP2X we need to use the raw parameter */
+                xiaSetAcquisitionValues(detChan, "MAXWIDTH", &pmsg->dvalue);
+             }
              XMAP_APPLY(detChan);
          }
          else if (pfield == &pdxp->pgain) {
@@ -398,7 +420,6 @@ void asynCallback(asynUser *pasynUser)
                  "devDxp::asynCallback, MSG_DXP_SET_DOUBLE_PARAM"
                  " setting baseline threshold=%f\n",
                  pmsg->dvalue);
-             /* We will be able to use an acquisition value for this in the next release */ 
              if (minfo->moduleType == DXP_XMAP) {
                  dvalue = pmsg->dvalue * 1000.;    /* Convert to eV */
                  xiaSetAcquisitionValues(detChan, "baseline_threshold", &dvalue);
@@ -569,6 +590,8 @@ static void readDxpParams(asynUser *pasynUser)
                                 &pdxpReadbacks->trig_pktim);
         xiaGetAcquisitionValues(detChan, "trigger_gap_time",
                                 &pdxpReadbacks->trig_gaptim);
+        xiaGetAcquisitionValues(detChan, "maxwidth",
+                                &pdxpReadbacks->maxwidth);
         xiaGetAcquisitionValues(detChan, "preamp_gain",
                                 &pdxpReadbacks->pgain);
         if (minfo->moduleType == DXP_XMAP) {
@@ -624,17 +647,22 @@ static void readDxpParams(asynUser *pasynUser)
                                    &pdxpReadbacks->mca_bin_width);
         }
   
-        /* There seems to be a bug in Handel.  It gives error reading number_of_scas
-         * written to, and then it always reads backs as 16, no matter what was written
-         * Comment out reading it, just set to 16 for now
-         * xiaGetAcquisitionValues(detChan, "number_of_scas",
-         *                      &pdxpReadbacks->number_scas); */
-        pdxpReadbacks->number_scas = 16;
+        xiaGetAcquisitionValues(detChan, "number_of_scas",
+                                &pdxpReadbacks->number_scas);
         for (i=0; i<pdxpReadbacks->number_scas; i++) {
             xiaGetAcquisitionValues(detChan, sca_lo[i], &pdxpReadbacks->sca_lo[i]);
             xiaGetAcquisitionValues(detChan, sca_hi[i], &pdxpReadbacks->sca_hi[i]);
         }
-        xiaGetRunData(detChan, "sca", pdxpReadbacks->sca_counts);
+        /* The sca data on the xMAP is double, it is long on other products */
+        if (minfo->moduleType == DXP_XMAP) {
+            xiaGetRunData(detChan, "sca", pdxpReadbacks->sca_counts);
+        } else {
+            long long_sca_counts[NUM_DXP_SCAS];
+            xiaGetRunData(detChan, "sca", long_sca_counts);
+            for (i=0; i<pdxpReadbacks->number_scas; i++) {
+                pdxpReadbacks->sca_counts[i] = long_sca_counts[i];
+            }
+        }
     }
     asynPrint(pasynUser, ASYN_TRACEIO_DEVICE,
         "devDxp::readDxpParams\n"
@@ -725,6 +753,10 @@ static long monitor(struct dxpRecord *pdxp)
    if (pdxp->trig_gaptim_rbv != pdxpReadbacks->trig_gaptim) {
       pdxp->trig_gaptim_rbv = pdxpReadbacks->trig_gaptim;
       db_post_events(pdxp, &pdxp->trig_gaptim_rbv, monitor_mask);
+   }
+   if (pdxp->maxwidth_rbv != pdxpReadbacks->maxwidth) {
+      pdxp->maxwidth_rbv = pdxpReadbacks->maxwidth;
+      db_post_events(pdxp, &pdxp->maxwidth_rbv, monitor_mask);
    }
    if (pdxp->adc_rule_rbv != pdxpReadbacks->adc_rule) {
       pdxp->adc_rule_rbv = pdxpReadbacks->adc_rule;
