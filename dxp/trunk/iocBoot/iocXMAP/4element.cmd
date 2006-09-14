@@ -25,6 +25,16 @@ DXPConfig("DXP1",  4, 1, 100)
 dbLoadTemplate("4element.template")
 
 #xiaSetLogLevel(4)
+#asynSetTraceMask DXP1   0 255
+#asynSetTraceIOMask DXP1 0 2
+#asynSetTraceMask DXP1   1 255
+#asynSetTraceIOMask DXP1 1 2
+#asynSetTraceMask DXP1   2 255
+#asynSetTraceIOMask DXP1 2 2
+#asynSetTraceMask DXP1   3 255
+#asynSetTraceIOMask DXP1 3 2
+#var dxpRecordDebug 20
+
 iocInit
 
 seq dxpMED, "P=dxpXMAP:med:, DXP=dxp, MCA=mca, N_DETECTORS=4"
