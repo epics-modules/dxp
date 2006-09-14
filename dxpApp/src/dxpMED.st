@@ -188,7 +188,7 @@ ss dxp_control {
                pvAssign(GAPTIM[i], temp);
                sprintf(temp, "%s%s%d.SLOW_TRIG", prefix, dxp, det);
                pvAssign(SLOW_TRIG[i], temp);
-               sprintf(temp, "%s%s%d.F05V", prefix, dxp, det);
+               sprintf(temp, "%s%s%d.MAXWIDTH", prefix, dxp, det);
                pvAssign(MAX_WIDTH[i], temp);
                sprintf(temp, "%s%s%d.BASE_CUT_PCT", prefix, dxp, det);
                pvAssign(BASE_CUT_PCT[i], temp);
