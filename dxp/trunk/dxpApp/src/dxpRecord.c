@@ -28,7 +28,7 @@
 #include        "mca.h"
 #include        "handel.h"
 #include        "handel_generic.h"
-#include        "epicsHandelLock.h"
+#include        "epicsHandelUtils.h"
 #include        "devDxp.h"
 
 
@@ -51,9 +51,6 @@ static long get_precision(struct dbAddr *paddr, long *precision);
 static long get_graphic_double(struct dbAddr *paddr, struct dbr_grDouble *pgd);
 static long get_control_double(struct dbAddr *paddr, struct dbr_ctrlDouble *pcd);
 #define get_alarm_double NULL
-
-/* This is the maximum value of HDWRVAR - need to get from XIA, keep updated */
-#define MAX_MODULE_TYPES 6
 
 
 /* The dxp record contains many short integer parameters which control the
@@ -141,7 +138,7 @@ typedef struct  {
                                 * These are also read-only */
 #define NUM_TASK_PARAMS     16 /* The number of task parameters described above
                                 *  in the record. */
-#define NUM_DOUBLE_PARAMS   27 /* The number of double parameters in the record 
+#define NUM_DOUBLE_PARAMS   29 /* The number of double parameters in the record 
                                 * Must start with PKTIME */
  
 #define NUM_SHORT_WRITE_PARAMS \
@@ -170,7 +167,7 @@ volatile int dxpRecordDebug = 0;
 epicsExportAddress(int, dxpRecordDebug);
 
 
-static MODULE_INFO moduleInfo[MAX_MODULE_TYPES];
+static MODULE_INFO moduleInfo[MAX_DXP_MODULE_TYPE+1];
 static long monitor(struct dxpRecord *pdxp);
 static void setDxpTasks(struct dxpRecord *pdxp);
 static int setSCAs(struct dxpRecord *pdxp);
@@ -205,7 +202,6 @@ static long init_record(struct dxpRecord *pdxp, int pass)
     int detChan;
     MODULE_INFO *minfo;
     int status;
-    unsigned short hdwrvar;
     DXP_SHORT_PARAM *short_param;
     DXP_LONG_PARAM *long_param;
     unsigned short offset;
@@ -242,34 +238,23 @@ static long init_record(struct dxpRecord *pdxp, int pass)
     epicsHandelLock();
 
     /* Figure out what kind of module this is */
-    xiaGetParameter(detChan, "HDWRVAR", &hdwrvar);
-    if (hdwrvar > MAX_MODULE_TYPES) {
-        printf("dxpRecord:init_record hdwrvar=%d > MAX_MODULE_TYPES\n", hdwrvar);
+    
+    pdxp->mtyp = dxpGetModuleType();
+    if ((pdxp->mtyp < 0) || (pdxp->mtyp > MAX_DXP_MODULE_TYPE)) {
+        printf("dxpRecord:init_record unknown module type %d\n", pdxp->mtyp);
         status = -1;
         epicsHandelUnlock();
         goto bad;
     }
         
-    if (dxpRecordDebug > 5) printf("%s (init_record): hdrwvar=%d\n", pdxp->name, hdwrvar);
-    pdxp->mtyp = hdwrvar;
+    if (dxpRecordDebug > 5) printf("%s (init_record): module type=%d\n", pdxp->name, pdxp->mtyp);
     pdxp->miptr = minfo = &moduleInfo[pdxp->mtyp];
+    minfo->moduleType = pdxp->mtyp;
 
     /* If minfo->nparams=0 then this is the first DXP record of this 
      * module type, allocate global (not record instance) structures */
     if (minfo->nparams == 0) {
-        switch (hdwrvar) {
-           case 0: minfo->moduleType = DXP_XMAP;
-                   break;
-           case 4: minfo->moduleType = DXP_SATURN;
-                   break;
-           case 5: minfo->moduleType = DXP_4C2X;
-                   break;
-           default:
-              printf("dxpRecord:init_record unknown module type = %d\n", hdwrvar);
-              status = -1;
-              epicsHandelUnlock();
-              goto bad;
-        }
+        if (dxpRecordDebug > 5) printf("%s (init_record): allocating minfo structures\n", pdxp->name);
         xiaGetNumModules(&minfo->numModules);
         minfo->first_channels = calloc(minfo->numModules, sizeof(int));
         for (i=0; i<minfo->numModules; i++) {
@@ -298,7 +283,7 @@ static long init_record(struct dxpRecord *pdxp, int pass)
         /* The following calls are not supported in the xMAP version of Handel, so
          * don't use them.  The only thing we really need to get is names, which we can
          * do with xiaGetParamName()
-        *xiaGetParamData(detChan, "names", minfo->_param_names);
+        *xiaGetParamData(detChan, "names", minfo->param_names);
         *xiaGetParamData(detChan, "access", minfo->access);
         *xiaGetParamData(detChan, "lower_bounds", minfo->lbound);
         *xiaGetParamData(detChan, "upper_bounds", minfo->ubound);
@@ -460,48 +445,51 @@ static long init_record(struct dxpRecord *pdxp, int pass)
         if (minfo->moduleType != DXP_XMAP) epicsThreadSleep(4.0);
         /* Set first parameter we send is BASETHRESH.  If it is sent later
          * there is a problem because calibration runs may overwrite it? */
-        status = (*pdset->send_dxp_msg)
-                   (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
-                   pdxp->base_thresh, &pdxp->base_thresh);
-        status = (*pdset->send_dxp_msg)
-                   (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
-                   pdxp->slow_trig, &pdxp->slow_trig);
-        if (pdxp->pktim > 0.) status = (*pdset->send_dxp_msg)
-                   (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
-                   pdxp->pktim, &pdxp->pktim);
-        status = (*pdset->send_dxp_msg)
-                   (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
-                   pdxp->gaptim, &pdxp->gaptim);
-        if (pdxp->fast_trig > 0.) status = (*pdset->send_dxp_msg)
-                   (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
-                   pdxp->fast_trig, &pdxp->fast_trig);
         if (pdxp->trig_pktim > 0.) status = (*pdset->send_dxp_msg)
                    (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
                    pdxp->trig_pktim, &pdxp->trig_pktim);
         status = (*pdset->send_dxp_msg)
                    (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
                    pdxp->trig_gaptim, &pdxp->trig_gaptim);
-        if (pdxp->ecal > 0.) status = (*pdset->send_dxp_msg)
+        if (pdxp->fast_trig > 0.) status = (*pdset->send_dxp_msg)
                    (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
-                   pdxp->ecal, &pdxp->ecal);
-        if (pdxp->adc_rule > 0.) status = (*pdset->send_dxp_msg)
+                   pdxp->fast_trig, &pdxp->fast_trig);
+        if (pdxp->pktim > 0.) status = (*pdset->send_dxp_msg)
                    (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
-                   pdxp->adc_rule, &pdxp->adc_rule);
+                   pdxp->pktim, &pdxp->pktim);
         status = (*pdset->send_dxp_msg)
                    (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
-                   pdxp->base_len, &pdxp->base_len);
+                   pdxp->gaptim, &pdxp->gaptim);
+        status = (*pdset->send_dxp_msg)
+                   (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
+                   pdxp->slow_trig, &pdxp->slow_trig);
+        status = (*pdset->send_dxp_msg)
+                   (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
+                   pdxp->maxwidth, &pdxp->maxwidth);
         status = (*pdset->send_dxp_msg)
                    (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
                    pdxp->base_cut_pct, &pdxp->base_cut_pct);
         status = (*pdset->send_dxp_msg)
                    (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
                    0., &pdxp->base_cut_enbl);
-        if (pdxp->emax > 0.) status = (*pdset->send_dxp_msg)
+        status = (*pdset->send_dxp_msg)
                    (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
-                   pdxp->emax, &pdxp->emax);
+                   pdxp->base_thresh, &pdxp->base_thresh);
+        status = (*pdset->send_dxp_msg)
+                   (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
+                   pdxp->base_len, &pdxp->base_len);
         if (pdxp->pgain > 0.) status = (*pdset->send_dxp_msg)
                    (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
                    pdxp->pgain, &pdxp->pgain);
+        if (pdxp->emax > 0.) status = (*pdset->send_dxp_msg)
+                   (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
+                   pdxp->emax, &pdxp->emax);
+        if (pdxp->adc_rule > 0.) status = (*pdset->send_dxp_msg)
+                   (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
+                   pdxp->adc_rule, &pdxp->adc_rule);
+        if (pdxp->ecal > 0.) status = (*pdset->send_dxp_msg)
+                   (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
+                   pdxp->ecal, &pdxp->ecal);
     }
 
     if (dxpRecordDebug > 5) printf("%s (init_record): exit\n", pdxp->name);
@@ -1210,9 +1198,7 @@ static int getParamOffset(MODULE_INFO *minfo, char *label, unsigned short *offse
 {
     int i;
 
-    if (dxpRecordDebug > 10) printf("dxpRecord:(getParamOffset): looking up %s, minfo=%p nparams=%d\n", 
-                                    label, minfo, minfo->nparams);
-    *offset = -1;
+    *offset = 0;
     for (i=0; i<minfo->nparams; i++) {
         if (strcmp(label, minfo->param_names[i]) == 0) {
             *offset = i;
