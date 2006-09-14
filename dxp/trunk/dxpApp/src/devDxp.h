@@ -4,13 +4,6 @@
 #include <dxpRecord.h>
 #include <devSup.h>
 
-#define NUM_DXP_SCAS 16
-typedef enum {
-   DXP_SATURN,
-   DXP_4C2X,
-   DXP_XMAP
-} DXP_MODULE_TYPE;
-
 /* This is the bit position in RUNTASKS for enable baseline cut */
 #define RUNTASKS_BLCUT 0x400
 
