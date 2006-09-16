@@ -59,12 +59,11 @@ int main(int argc, char **argv)
         for (check=0; check<MAX_CHECKS; check++) {
             done = 1;
             for (chan=0; chan<NUM_CHANNELS; chan++) {
-/*
                 xiaGetRunData(chan, "trigger_livetime", &elive[chan]);
                 CHECK_STATUS(status);
                 xiaGetRunData(chan, "runtime", &ereal[chan]);
                 CHECK_STATUS(status);
-*/
+
                 status = xiaGetRunData(chan, "run_active", &acquiring[check][chan]);
                 CHECK_STATUS(status);
                 if (acquiring[check][chan] & XIA_RUN_HARDWARE) done=0;
