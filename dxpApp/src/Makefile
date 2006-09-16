@@ -95,12 +95,12 @@ xmapApp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 
 # Test applications
-PROD_IOC_cygwin32 += test_sca1
-test_sca1_SRCS += test_sca1.c
-test_sca1_SYS_LIBS += handelSrc
-test_sca1_SYS_LIBS += DLPORTIO
-test_sca1_LIBS += dxp
-test_sca1_LIBS += $(EPICS_BASE_IOC_LIBS)
+PROD_IOC_cygwin32 += test_sets
+test_sets_SRCS += test_sets.c
+test_sets_SYS_LIBS += handel
+test_sets_SYS_LIBS += DLPORTIO
+test_sets_LIBS += dxp
+test_sets_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #===========================
 #===========================
