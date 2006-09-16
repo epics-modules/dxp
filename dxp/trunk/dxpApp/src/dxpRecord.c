@@ -377,6 +377,11 @@ static long init_record(struct dxpRecord *pdxp, int pass)
         printf("dxpRecord:init_record cannot find SLOWLEN\n");
         goto bad;
     }
+    status = getParamOffset(minfo, "MAXWIDTH", &minfo->offsets.maxwidth); 
+    if (status != 0) {
+        printf("dxpRecord:init_record cannot find MAXWIDTH\n");
+        goto bad;
+    }
     if (minfo->moduleType == DXP_XMAP) {
         status = getParamOffset(minfo, "TRIGGERS", &minfo->offsets.triggers); 
         if (status != 0) {
@@ -484,12 +489,13 @@ static long init_record(struct dxpRecord *pdxp, int pass)
         if (pdxp->emax > 0.) status = (*pdset->send_dxp_msg)
                    (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
                    pdxp->emax, &pdxp->emax);
-        if (pdxp->adc_rule > 0.) status = (*pdset->send_dxp_msg)
-                   (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
-                   pdxp->adc_rule, &pdxp->adc_rule);
         if (pdxp->ecal > 0.) status = (*pdset->send_dxp_msg)
                    (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
                    pdxp->ecal, &pdxp->ecal);
+        /* Need to do adc_rule last? */
+        if (pdxp->adc_rule > 0.) status = (*pdset->send_dxp_msg)
+                   (pdxp,  MSG_DXP_SET_DOUBLE_PARAM, NULL, 0,
+                   pdxp->adc_rule, &pdxp->adc_rule);
     }
 
     if (dxpRecordDebug > 5) printf("%s (init_record): exit\n", pdxp->name);
@@ -1070,6 +1076,8 @@ static long get_precision(struct dbAddr *paddr, long *precision)
         case dxpRecordGAPTIM_RBV:
         case dxpRecordBASE_CUT_PCT:
         case dxpRecordBASE_CUT_PCT_RBV:
+        case dxpRecordMAXWIDTH:
+        case dxpRecordMAXWIDTH_RBV:
             *precision = 2;
             break;
         case dxpRecordPGAIN:
