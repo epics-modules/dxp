@@ -16,6 +16,7 @@ typedef struct {
    unsigned short slowlen;
    unsigned short triggers;
    unsigned short triggersa;
+   unsigned short maxwidth;
 } PARAM_OFFSETS;
 
 typedef struct {
