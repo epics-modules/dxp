@@ -590,8 +590,6 @@ static void readDxpParams(asynUser *pasynUser)
                                 &pdxpReadbacks->trig_pktim);
         xiaGetAcquisitionValues(detChan, "trigger_gap_time",
                                 &pdxpReadbacks->trig_gaptim);
-        xiaGetAcquisitionValues(detChan, "maxwidth",
-                                &pdxpReadbacks->maxwidth);
         xiaGetAcquisitionValues(detChan, "preamp_gain",
                                 &pdxpReadbacks->pgain);
         if (minfo->moduleType == DXP_XMAP) {
@@ -605,10 +603,13 @@ static void readDxpParams(asynUser *pasynUser)
            xiaGetAcquisitionValues(detChan, "baseline_threshold",
                                    &pdxpReadbacks->base_thresh);
            pdxpReadbacks->base_thresh /= 1000.;  /* Convert to keV */
+           xiaGetAcquisitionValues(detChan, "maxwidth",
+                                   &pdxpReadbacks->maxwidth);
         } else {
            /* Cannot read the BASETHRESH aquisition parameter, because this does
             * not update to reflect automatic baseline threshold adjustment */
            pdxpReadbacks->base_thresh = pdxp->pptr[minfo->offsets.basethresh];
+           pdxpReadbacks->maxwidth = pdxp->pptr[minfo->offsets.maxwidth];
         }
         if (minfo->moduleType != DXP_XMAP) {
            xiaGetAcquisitionValues(detChan, "baseline_cut",
