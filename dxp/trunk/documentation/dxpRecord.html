@@ -155,7 +155,7 @@ digital pulse processing as implemented in the DXP models from XIA.</p>
       <td>R</td>
       <td>"Module type"</td>
       <td>DBF_LONG</td>
-      <td>The module type (Saturn=4, etc.) assigned by XIA for each hardware model.</td>
+      <td>The module type (defined in epicsHandelUtils.h) for the hardware model.</td>
     </tr>
   </tbody>
 </table>
@@ -473,6 +473,21 @@ acquisition, rather than tha fields above.</p>
           from the requested threshold.</td>
     </tr>
     <tr valign="top">
+      <td>MAXWIDTH</td>
+      <td>R/W*</td>
+      <td>"Maximum width"</td>
+      <td>DBF_DOUBLE</td>
+      <td>Maximim peak width for pileup inspection.  NOTE: On the xMAP the units are microseconds 
+          but on the Saturn and DXP2X the units are currently integer device units.</td>
+    </tr>
+    <tr valign="top">
+      <td>MAXWIDTH_RBV</td>
+      <td>R</td>
+      <td>"Maximum width readback"</td>
+      <td>DBF_DOUBLE</td>
+      <td>The actual maximum width for pileup, which may differ
+          from the requested value.</td>
+    <tr valign="top">
       <td>PGAIN</td>
       <td>R/W*</td>
       <td>"Pre-amp gain"</td>
@@ -750,7 +765,9 @@ counts in each of 16 SCAs.  The SCAs are defined by a low channel and a high cha
 <p>The DXP record provides control and/or display of all low level parameters in the DXP, 
 of which there are more than 80. Note that only expert users should modify these parameters directly.
 Most users will only control the high-level parameters described above, and let Handel control the 
-low-level parameters.
+low-level parameters.  Note that on the xMAP many of these parameters do not exist, and their use
+should be avoided.  It is expected that newer Handel releases for the Saturn and DXP2X will make
+the use of low-level parameters unnecessary on those models as well.
 
 <p>The low-level parameter control is provided in a flexible and extensible way, 
 because the parameters are specific to
@@ -1393,6 +1410,9 @@ type the following at the IOC prompt (assuming your DXP asyn server is called DX
 asynSetTraceMask("DXP1",0,255)
 asynSetTraceIOMask("DXP1",0,2)
 </pre>
+The second parameter in these commands is the asyn "address" which is the channel number
+in the system.  For a system with 16 dxp records on port DXP1 the parameter must be in
+the range 0-15.
 </li>
 
 <li>Handel debugging.  To turn on informational messages from the XIA Handel and 
@@ -1428,7 +1448,11 @@ asyn interfaces provided by the asyn server.  Rather, the callback routine direc
 the Handel functions.  This is perfectly OK to do, and is much simpler than trying to provide
 interfaces in the asyn server for all of the functions that the device support needs.  By 
 using a single asyn server (single thread) for both the MCA and DXP records it is 
-guaranteed that they will not conflict.</p>
+guaranteed that they will not conflict.  There is also an EPICS mutex that is used to
+protect all calls to the Handel library.  This is necessary even with the single
+asyn server thread because the init_record routine makes some Handel calls directly, and
+this can conflict with the asyn server thread that is already running when init_record is still
+being called.</p>
 
 <p>The DXP and MCA records communicate only through the Handel API, they do not call any
 Xerxes functions directly.  Handel calls Xerxes, which in turn calls the machine-dependent
@@ -1450,19 +1474,19 @@ general
 <p>The following are some future plans for the DXP record:
 <ul>
 <li>Implement multi-threading for multi-element detectors.  Although Handel is not thread-safe,
-it is still possible to have multiple threads (e.g. one thread per detector element).  
-Access to Handel
-will need to be protected with a mutual exclusion semaphore, but multi-threading can still lead to 
-significant performance improvement.  When one thread is done reading a spectrum, for
+the EPICS mutex described above allows multiple threads (e.g. one thread per detector element) to call 
+Handel. 
+When one thread is done reading a spectrum, for
 example, it can be computing ROIs while the next thread is doing a DMA read 
-of its hardware via Handel.</li>
+of its hardware via Handel.  It is not clear if this would result in a significant performance
+improvement.</li>
 
 <li>Implement the on-the-fly MCA scanning mode with the mapping version of the xMAP firmware.</li>
 
 <li>Implement the on-the-fly SCA scanning mode with the timing versions of the xMAP, Saturn and
 DXP2X firmware.</li>
 
-<li>Implement the list mode readout of the new DXP-XMAP PXI hardware.</li>
+<li>Implement the list mode readout of the new DXP-XMAP PXI hardware when it is released.</li>
 </ul>
 
 <p> </p>
@@ -1525,7 +1549,7 @@ not in the DXP application.</p>
 <address>
   Suggestions and comments to: <a href="mailto:rivers@cars.uchicago.edu">Mark
   Rivers </a>: (rivers@cars.uchicago.edu) <br>
-  Last modified: February 13, 2005
+  Last modified: September 19, 2006
 </address>
 </body>
 </html>
