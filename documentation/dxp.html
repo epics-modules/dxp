@@ -19,8 +19,8 @@
 <p>From <a href="http://www.xia.com">XIA</a></p>
 <ul>
   <li>DXP digital-signal processing spectroscopy systems.&nbsp; These include 
-  the DXP4C, DXP2X4C CAMAC modules, as well as the Saturn module that uses the 
-  enhanced parallel port interface.</li>
+  the xMAP PXI module, the DXP2X4C CAMAC module, and the Saturn module that uses the 
+  enhanced parallel port interface, </li>
 </ul>
 
 <p>Prior to EPICS 3.14 this support was in the <b>camac</b> module of synApps. Starting 
@@ -45,13 +45,23 @@ below:</p>
   </tr>
 
   <tr valign=top>
+    <td>2-5</td>
+    <td>20-Sept-2006</td>
+    <td><a href="http://cars.uchicago.edu/software/pub/dxpR2-5.tgz">dxpR2-5.tgz</a></td>
+    <td><a href="dxpDoc.html">dxpDoc.html</a><br>
+        <a href="dxpRecord.html">dxpRecord.html</a></td>
+    <td><a href="dxpReleaseNotes.html">Release notes</a></td>
+    <td><a href="dxpKnownProblems.html">Known Problems</a></td>
+ </tr>
+
+  <tr valign=top>
     <td>2-4</td>
     <td>17-May-2006</td>
     <td><a href="http://cars.uchicago.edu/software/pub/dxpR2-4.tgz">dxpR2-4.tgz</a></td>
     <td><a href="dxpDoc.html">dxpDoc.html</a><br>
         <a href="dxpRecord.html">dxpRecord.html</a></td>
     <td><a href="dxpReleaseNotes.html">Release notes</a></td>
-    <td>See release notes</td>
+    <td><a href="dxpKnownProblems.html">Known Problems</a></td>
  </tr>
 
   <tr valign=top>
@@ -61,7 +71,7 @@ below:</p>
     <td><a href="dxpDoc.html">dxpDoc.html</a><br>
         <a href="dxpRecord.html">dxpRecord.html</a></td>
     <td><a href="dxpReleaseNotes.html">Release notes</a></td>
-    <td>See release notes</td>
+    <td><a href="dxpKnownProblems.html">Known Problems</a></td>
  </tr>
 
   <tr valign=top>
@@ -71,7 +81,7 @@ below:</p>
     <td><a href="dxpDoc.html">dxpDoc.html</a><br>
         <a href="dxpRecord.html">dxpRecord.html</a></td>
     <td><a href="dxpReleaseNotes.html">Release notes</a></td>
-    <td>See release notes</td>
+    <td><a href="dxpKnownProblems.html">Known Problems</a></td>
  </tr>
 
   <tr valign=top>
@@ -115,6 +125,82 @@ below:</p>
     <th>Release needed</td>
     <th>Required for</td>
   </tr>
+
+  <tr>
+    <td rowspan=7>2-5</td>
+    <td>EPICS base</td>
+    <td>3.14.8.2</td>
+    <td>Base support</td>
+  </tr>
+  <tr>
+    <td>calc</td>
+    <td>2-6-3</td>
+    <td>Record support</td>
+  </tr>
+  <tr>
+    <td>sscan</td>
+    <td>2-5-3</td>
+    <td>Record support</td>
+  </tr>
+  <tr>
+    <td>autosave</td>
+    <td>4-2-1</td>
+    <td>Save/restore support</td>
+  </tr>
+  <tr>
+    <td>asyn</td>
+    <td>4-6</td>
+    <td>Driver support</td>
+  </tr>
+  <tr>
+    <td>mca</td>
+    <td>6-8</td>
+    <td>MCA support</td>
+  </tr>
+  <tr>
+    <td>camac</td>
+    <td>2-5</td>
+    <td>CAMAC support</td>
+  </tr>
+
+
+  <tr>
+    <td rowspan=7>2-4</td>
+    <td>EPICS base</td>
+    <td>3.14.8.2</td>
+    <td>Base support</td>
+  </tr>
+  <tr>
+    <td>calc</td>
+    <td>2-6-3</td>
+    <td>Record support</td>
+  </tr>
+  <tr>
+    <td>sscan</td>
+    <td>2-5-3</td>
+    <td>Record support</td>
+  </tr>
+  <tr>
+    <td>autosave</td>
+    <td>4-2-1</td>
+    <td>Save/restore support</td>
+  </tr>
+  <tr>
+    <td>asyn</td>
+    <td>4-6</td>
+    <td>Driver support</td>
+  </tr>
+  <tr>
+    <td>mca</td>
+    <td>6-8</td>
+    <td>MCA support</td>
+  </tr>
+  <tr>
+    <td>camac</td>
+    <td>2-4</td>
+    <td>CAMAC support</td>
+  </tr>
+
 
   <tr>
     <td rowspan=7>2-2</td>
@@ -292,6 +378,7 @@ This software was originally developed by Mark Rivers.
 <li>ANL/APS : In use at CARS, XOR, PNC, the APS detector pool for Vortex detectors,
  and several other beamlines.</li>
 <li>NSLS: In use at&nbsp; X-26A, X-17B2 and several other beamlines</li>
+<li>Others: In use at the Swiss Light Source, Advanced Light Source and others.</li>
 </ul>
 </body>
 </html>
