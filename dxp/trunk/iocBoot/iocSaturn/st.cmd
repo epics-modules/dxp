@@ -10,8 +10,8 @@ dxp_registerRecordDeviceDriver(pdbbase)
 xiaSetLogLevel(2)
 # Execute the following line if you have a Vortex detector or 
 # another detector with a reset pre-amplifier
-xiaInit("vortex.ini")
-#xiaInit("vortex40MHz.ini")
+#xiaInit("vortex.ini")
+xiaInit("vortex40MHz.ini")
 # Execute the following line if you have a Ketek detector or 
 # another detector with an RC pre-amplifier
 #xiaInit("ketek.ini")
