@@ -38,3 +38,5 @@ file scan_settings.req                  P=$(P),S=scan3
 file scan_settings.req                  P=$(P),S=scan4
 file scan_settings.req                  P=$(P),S=scanH
 
+file saveData_settings.req              P=$(P)
+
