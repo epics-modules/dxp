@@ -1,14 +1,14 @@
 
 file {
-	name="C:\Program Files\EPICS\adls\single_dxp_top.adl"
-	version=020306
+	name="/home/epics/devel/dxp/2-5beta/dxpApp/op/adl/single_dxp_top.adl"
+	version=030000
 }
 display {
 	object {
-		x=269
-		y=97
+		x=88
+		y=53
 		width=705
-		height=570
+		height=600
 	}
 	clr=14
 	bclr=4
@@ -92,7 +92,7 @@ rectangle {
 		x=4
 		y=37
 		width=310
-		height=530
+		height=560
 	}
 	"basic attribute" {
 		clr=54
@@ -356,7 +356,7 @@ rectangle {
 		x=320
 		y=37
 		width=380
-		height=530
+		height=560
 	}
 	"basic attribute" {
 		clr=54
@@ -887,7 +887,7 @@ text {
 text {
 	object {
 		x=483
-		y=223
+		y=251
 		width=80
 		height=20
 	}
@@ -900,7 +900,7 @@ text {
 rectangle {
 	object {
 		x=325
-		y=220
+		y=248
 		width=370
 		height=160
 	}
@@ -940,7 +940,7 @@ text {
 "text entry" {
 	object {
 		x=528
-		y=245
+		y=273
 		width=75
 		height=22
 	}
@@ -955,7 +955,7 @@ text {
 text {
 	object {
 		x=455
-		y=246
+		y=274
 		width=70
 		height=20
 	}
@@ -968,7 +968,7 @@ text {
 "text update" {
 	object {
 		x=609
-		y=246
+		y=274
 		width=74
 		height=20
 	}
@@ -983,7 +983,7 @@ text {
 text {
 	object {
 		x=425
-		y=272
+		y=300
 		width=100
 		height=20
 	}
@@ -996,7 +996,7 @@ text {
 menu {
 	object {
 		x=528
-		y=272
+		y=300
 		width=75
 		height=20
 	}
@@ -1009,7 +1009,7 @@ menu {
 text {
 	object {
 		x=395
-		y=298
+		y=326
 		width=130
 		height=20
 	}
@@ -1022,7 +1022,7 @@ text {
 "text update" {
 	object {
 		x=609
-		y=298
+		y=326
 		width=74
 		height=20
 	}
@@ -1037,7 +1037,7 @@ text {
 "text entry" {
 	object {
 		x=528
-		y=324
+		y=352
 		width=75
 		height=22
 	}
@@ -1052,7 +1052,7 @@ text {
 text {
 	object {
 		x=375
-		y=325
+		y=353
 		width=150
 		height=20
 	}
@@ -1065,7 +1065,7 @@ text {
 "text update" {
 	object {
 		x=609
-		y=325
+		y=353
 		width=74
 		height=20
 	}
@@ -1080,7 +1080,7 @@ text {
 text {
 	object {
 		x=405
-		y=351
+		y=379
 		width=120
 		height=20
 	}
@@ -1093,7 +1093,7 @@ text {
 menu {
 	object {
 		x=528
-		y=351
+		y=379
 		width=75
 		height=20
 	}
@@ -1106,7 +1106,7 @@ menu {
 composite {
 	object {
 		x=528
-		y=437
+		y=465
 		width=155
 		height=22
 	}
@@ -1115,7 +1115,7 @@ composite {
 		"text entry" {
 			object {
 				x=528
-				y=437
+				y=465
 				width=75
 				height=22
 			}
@@ -1130,7 +1130,7 @@ composite {
 		"text update" {
 			object {
 				x=609
-				y=438
+				y=466
 				width=74
 				height=20
 			}
@@ -1147,7 +1147,7 @@ composite {
 text {
 	object {
 		x=425
-		y=438
+		y=466
 		width=100
 		height=20
 	}
@@ -1160,7 +1160,7 @@ text {
 "text update" {
 	object {
 		x=476
-		y=464
+		y=492
 		width=100
 		height=20
 	}
@@ -1175,7 +1175,7 @@ text {
 "text update" {
 	object {
 		x=587
-		y=464
+		y=492
 		width=100
 		height=20
 	}
@@ -1190,7 +1190,7 @@ text {
 text {
 	object {
 		x=410
-		y=464
+		y=492
 		width=60
 		height=20
 	}
@@ -1203,7 +1203,7 @@ text {
 "text update" {
 	object {
 		x=476
-		y=489
+		y=517
 		width=100
 		height=20
 	}
@@ -1218,7 +1218,7 @@ text {
 "text update" {
 	object {
 		x=588
-		y=489
+		y=517
 		width=100
 		height=20
 	}
@@ -1233,7 +1233,7 @@ text {
 text {
 	object {
 		x=330
-		y=489
+		y=517
 		width=140
 		height=20
 	}
@@ -1246,7 +1246,7 @@ text {
 "related display" {
 	object {
 		x=528
-		y=514
+		y=542
 		width=130
 		height=22
 	}
@@ -1267,7 +1267,7 @@ text {
 text {
 	object {
 		x=385
-		y=515
+		y=543
 		width=140
 		height=20
 	}
@@ -1279,7 +1279,7 @@ text {
 "related display" {
 	object {
 		x=528
-		y=541
+		y=569
 		width=130
 		height=20
 	}
@@ -1310,7 +1310,7 @@ text {
 text {
 	object {
 		x=475
-		y=541
+		y=569
 		width=50
 		height=20
 	}
@@ -1323,7 +1323,7 @@ text {
 menu {
 	object {
 		x=528
-		y=298
+		y=326
 		width=75
 		height=20
 	}
@@ -1336,7 +1336,7 @@ menu {
 "text update" {
 	object {
 		x=609
-		y=272
+		y=300
 		width=74
 		height=20
 	}
@@ -1351,7 +1351,7 @@ menu {
 text {
 	object {
 		x=415
-		y=411
+		y=439
 		width=110
 		height=20
 	}
@@ -1364,7 +1364,7 @@ text {
 "text entry" {
 	object {
 		x=528
-		y=410
+		y=438
 		width=75
 		height=22
 	}
@@ -1379,7 +1379,7 @@ text {
 "text update" {
 	object {
 		x=609
-		y=411
+		y=439
 		width=74
 		height=20
 	}
@@ -1394,7 +1394,7 @@ text {
 text {
 	object {
 		x=325
-		y=384
+		y=412
 		width=200
 		height=20
 	}
@@ -1407,7 +1407,7 @@ text {
 "text entry" {
 	object {
 		x=528
-		y=383
+		y=411
 		width=75
 		height=22
 	}
@@ -1422,7 +1422,7 @@ text {
 "text update" {
 	object {
 		x=609
-		y=384
+		y=412
 		width=74
 		height=20
 	}
@@ -1430,6 +1430,49 @@ text {
 		chan="$(P)$(D).PGAIN_RBV"
 		clr=54
 		bclr=3
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=368
+		y=222
+		width=100
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Max. Width"
+	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=588
+		y=222
+		width=74
+		height=20
+	}
+	monitor {
+		chan="$(P)$(D).MAXWIDTH_RBV"
+		clr=54
+		bclr=3
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=476
+		y=221
+		width=74
+		height=22
+	}
+	control {
+		chan="$(P)$(D).MAXWIDTH"
+		clr=14
+		bclr=51
 	}
 	limits {
 	}
