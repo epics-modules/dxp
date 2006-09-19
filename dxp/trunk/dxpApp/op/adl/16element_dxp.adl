@@ -1,6 +1,6 @@
 
 file {
-	name="/home/epics/devel/dxp/2-4beta/dxpApp/op/adl/16element_dxp.adl"
+	name="/home/epics/devel/dxp/2-5beta/dxpApp/op/adl/16element_dxp.adl"
 	version=030000
 }
 display {
@@ -252,8 +252,8 @@ rectangle {
 }
 "related display" {
 	object {
-		x=326
-		y=49
+		x=328
+		y=44
 		width=70
 		height=20
 	}
@@ -272,8 +272,8 @@ rectangle {
 }
 text {
 	object {
-		x=401
-		y=49
+		x=403
+		y=44
 		width=70
 		height=20
 	}
@@ -284,102 +284,70 @@ text {
 }
 "related display" {
 	object {
-		x=326
-		y=74
+		x=328
+		y=69
 		width=70
 		height=20
 	}
 	display[0] {
-		label="ROI 0"
-		name="16element_ROI.adl"
-		args="P=$(P), R=0"
+		label="ROI/SCA 0"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=0"
 	}
 	display[1] {
-		label="ROI 1"
-		name="16element_ROI.adl"
-		args="P=$(P), R=1"
+		label="ROI/SCA 1"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=1"
 	}
 	display[2] {
-		label="ROI 2"
-		name="16element_ROI.adl"
-		args="P=$(P), R=2"
+		label="ROI/SCA 2"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=2"
 	}
 	display[3] {
-		label="ROI 3"
-		name="16element_ROI.adl"
-		args="P=$(P), R=3"
+		label="ROI/SCA 3"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=3"
 	}
 	display[4] {
-		label="ROI 4"
-		name="16element_ROI.adl"
-		args="P=$(P), R=4"
+		label="ROI/SCA 4"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=4"
+	}
+	display[5] {
+		label="ROI/SCA 5"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=5"
+	}
+	display[6] {
+		label="ROI/SCA 6"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=6"
+	}
+	display[7] {
+		label="ROI/SCA 7"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=7"
 	}
 	clr=14
 	bclr=4
 }
 text {
 	object {
-		x=401
-		y=74
+		x=403
+		y=69
 		width=70
 		height=20
 	}
 	"basic attribute" {
 		clr=14
 	}
-	textix="ROIs 0-4"
+	textix="ROI/SCA 0-7"
 }
 "related display" {
 	object {
-		x=326
-		y=99
-		width=70
-		height=20
-	}
-	display[0] {
-		label="ROI 5"
-		name="16element_ROI.adl"
-		args="P=$(P), R=5"
-	}
-	display[1] {
-		label="ROI 6"
-		name="16element_ROI.adl"
-		args="P=$(P), R=6"
-	}
-	display[2] {
-		label="ROI 7"
-		name="16element_ROI.adl"
-		args="P=$(P), R=7"
-	}
-	display[3] {
-		label="ROI 8"
-		name="16element_ROI.adl"
-		args="P=$(P), R=8"
-	}
-	display[4] {
-		label="ROI 9"
-		name="16element_ROI.adl"
-		args="P=$(P), R=9"
-	}
-	clr=14
-	bclr=4
-}
-text {
-	object {
-		x=401
-		y=99
-		width=70
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="ROIs 5-9"
-}
-"related display" {
-	object {
-		x=326
-		y=124
+		x=328
+		y=119
 		width=70
 		height=20
 	}
@@ -393,8 +361,8 @@ text {
 }
 text {
 	object {
-		x=401
-		y=124
+		x=403
+		y=119
 		width=70
 		height=20
 	}
@@ -405,8 +373,8 @@ text {
 }
 text {
 	object {
-		x=401
-		y=174
+		x=403
+		y=169
 		width=70
 		height=20
 	}
@@ -417,8 +385,8 @@ text {
 }
 "related display" {
 	object {
-		x=326
-		y=174
+		x=328
+		y=169
 		width=70
 		height=20
 	}
@@ -749,8 +717,8 @@ menu {
 }
 "related display" {
 	object {
-		x=326
-		y=149
+		x=328
+		y=144
 		width=70
 		height=20
 	}
@@ -764,8 +732,8 @@ menu {
 }
 text {
 	object {
-		x=401
-		y=149
+		x=403
+		y=144
 		width=70
 		height=20
 	}
@@ -818,4 +786,140 @@ text {
 	}
 	label="Read"
 	press_msg="1"
+}
+text {
+	object {
+		x=403
+		y=194
+		width=70
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Scan"
+}
+"related display" {
+	object {
+		x=328
+		y=194
+		width=70
+		height=20
+	}
+	display[0] {
+		label="Scan 1"
+		name="scan_more.adl"
+		args="P=$(P), S=scan1, N=1, DW=Dwait1, PW=Pwait1"
+	}
+	display[1] {
+		label="Scan 2"
+		name="scan_more.adl"
+		args="P=$(P), S=scan2, N=2, DW=Dwait2, PW=Pwait2"
+	}
+	display[2] {
+		label="Scan 3"
+		name="scan_more.adl"
+		args="P=$(P), S=scan3, N=3, DW=Dwait3, PW=Pwait3"
+	}
+	display[3] {
+		label="Scan 4"
+		name="scan_more.adl"
+		args="P=$(P), S=scan4, N=4, DW=Dwait4, PW=Pwait4"
+	}
+	display[4] {
+		label="Scan H"
+		name="scan_more.adl"
+		args="P=$(P), S=scanH, N=1, DW=DwaitH, PW=PwaitH"
+	}
+	clr=14
+	bclr=4
+}
+"related display" {
+	object {
+		x=328
+		y=219
+		width=70
+		height=20
+	}
+	display[0] {
+		label="Save/restore"
+		name="save_restoreStatus_more.adl"
+		args="P=$(P)"
+	}
+	clr=14
+	bclr=4
+}
+text {
+	object {
+		x=403
+		y=219
+		width=110
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Save/restore"
+}
+"related display" {
+	object {
+		x=328
+		y=94
+		width=70
+		height=20
+	}
+	display[0] {
+		label="ROI/SCA 8"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=8"
+	}
+	display[1] {
+		label="ROI/SCA 9"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=9"
+	}
+	display[2] {
+		label="ROI/SCA 10"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=10"
+	}
+	display[3] {
+		label="ROI/SCA 11"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=11"
+	}
+	display[4] {
+		label="ROI/SCA 12"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=12"
+	}
+	display[5] {
+		label="ROI/SCA 13"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=13"
+	}
+	display[6] {
+		label="ROI/SCA 14"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=14"
+	}
+	display[7] {
+		label="ROI/SCA 15"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=15"
+	}
+	clr=14
+	bclr=4
+}
+text {
+	object {
+		x=403
+		y=94
+		width=70
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="ROI/SCA 8-15"
 }
