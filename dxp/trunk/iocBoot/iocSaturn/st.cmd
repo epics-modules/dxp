@@ -18,8 +18,9 @@ xiaInit("vortex40MHz.ini")
 #xiaInit("ketek40MHz.ini")
 xiaStartSystem
 
-# DXPConfig(serverName, nchans)
-DXPConfig("DXP1",  1)
+# DXPConfig(serverName, ndetectors, ngroups, pollFrequency)
+DXPConfig("DXP1",  1, 1, 100)
+
 
 # DXP record
 # Execute the following line if you have a Vortex detector or 
@@ -31,6 +32,7 @@ dbLoadRecords("../../dxpApp/Db/dxp2x_reset.db","P=dxpSaturn:, R=dxp1, INP=@asyn(
 
 # MCA record
 dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=dxpSaturn:, M=mca1, DTYP=asynMCA,INP=@asyn(DXP1 0),NCHAN=2048")
+dbLoadRecords("../../dxpApp/Db/mcaCallback.db", "P=dxpSaturn:, M=mca1,INP=@asyn(DXP1 0)")
 
 # Template to copy MCA ROIs to DXP SCAs
 dbLoadTemplate("roi_to_sca.substitutions")
@@ -42,6 +44,11 @@ dbLoadRecords("$(AUTOSAVE)/asApp/Db/save_restoreStatus.db", "P=dxpSaturn:")
 set_pass0_restoreFile("auto_settings.sav")
 set_pass1_restoreFile("auto_settings.sav")
 
+### Scan-support software
+# crate-resident scan.  This executes 1D, 2D, 3D, and 4D scans, and caches
+# 1D data, but it doesn't store anything to disk.  (See 'saveData' below for that.)
+dbLoadRecords("$(SSCAN)/sscanApp/Db/scan.db","P=dxpSaturn:,MAXPTS1=2000,MAXPTS2=1000,MAXPTS3=10,MAXPTS4=10,MAXPTSH=2048")
+
 # Debugging flags
 #asynSetTraceMask DXP1 0 255
 #var mcaRecordDebug 10
@@ -52,5 +59,8 @@ iocInit
 ### Start up the autosave task and tell it what to do.
 
 # Save settings every thirty seconds
-create_monitor_set("auto_settings.req", 30)
+create_monitor_set("auto_settings.req", 30, P=dxpSaturn:)
+
+### Start the saveData task.
+saveData_Init("saveData.req", "P=dxpSaturn:")
 
