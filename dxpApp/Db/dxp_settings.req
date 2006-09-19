@@ -6,8 +6,7 @@ $(P)$(R).FAST_TRIG
 $(P)$(R).PKTIM
 $(P)$(R).GAPTIM
 $(P)$(R).SLOW_TRIG
-# MAXWIDTH
-$(P)$(R).F05V
+$(P)$(R).MAXWIDTH
 $(P)$(R).BASE_CUT_PCT
 $(P)$(R).BASE_CUT_ENBL
 $(P)$(R).BASE_LEN
