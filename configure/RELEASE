@@ -20,7 +20,7 @@ CALC=/corvette/home/epics/devel/calc/2-6-3
 SSCAN=/corvette/home/epics/devel/sscan/2-5-3
 AUTOSAVE=/corvette/home/epics/devel/autosave/4-2-1
 CAMAC=/corvette/home/epics/devel/camac/2-5
-DXP=/corvette/home/epics/devel/dxp/2-5beta
+DXP=/corvette/home/epics/devel/dxp/2-5
 
 #Capfast users may need the following definitions
 #CAPFAST_TEMPLATES=
