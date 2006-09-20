@@ -14,13 +14,13 @@ SNCSEQ=J:/epics/devel/seq/2-0-11
 # EPICS_BASE usually appears last so other apps can override stuff:
 EPICS_BASE=H:/epics/base-3.14.8.2
 
-ASYN=J:/epics/devel/asyn/4-6beta
-MCA=J:/epics/devel/mca/6-7beta
-CALC=J:/epics/devel/calc/2-7beta
-SSCAN=J:/epics/devel/sscan/2-5-2beta
-AUTOSAVE=J:/epics/devel/autosave/4-1-4beta
-CAMAC=J:/epics/devel/camac/2-4
-DXP=J:/epics/devel/dxp/2-4beta
+ASYN=J:/epics/devel/asyn/4-7beta
+MCA=J:/epics/devel/mca/6-8
+CALC=J:/epics/devel/calc/2-6-3
+SSCAN=J:/epics/devel/sscan/2-5-3
+AUTOSAVE=J:/epics/devel/autosave/4-2-1
+CAMAC=J:/epics/devel/camac/2-5
+DXP=J:/epics/devel/dxp/2-5beta
 
 #Capfast users may need the following definitions
 #CAPFAST_TEMPLATES=
