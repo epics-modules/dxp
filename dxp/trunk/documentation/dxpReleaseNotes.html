@@ -1,18 +1,40 @@
 <html>
 
 <head>
-<meta http-equiv="Content-Type"
-content="text/html; charset=iso-8859-1">
-<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
 <title>DXP ReleaseNotes</title>
 </head>
-
-<body bgcolor="#FFFFFF">
 
 <h1 align="center">dxp Release Notes</h1>
 
 See <a href="dxpKnownProblems.html">known problems</a> for information
 on problems each release.
+
+<h2 align="center">Release 2-5 (20-Sept-2006) </h2>
+<ul>
+  <li>Upgraded xMAP DLLs and firmware to release 0.9.1 of xManager.  This release from XIA appears to fix 
+      all of the initialization problems and other bugs that I have reported to them.
+  <li>Fixed bug in devDxp.c that was causing crashes when reading SCA data on xMAP with 0.9.1 firmware and software.
+  <li>Added mutex to interlock access to Handel library.  This was needed because the poller thread, asyn port
+      and dxpRecord::init_record can all be calling Handel at the same time.
+  <li>This release uses R6-8 of the mcaRecord, which fixed a serious bug.  Previously the MCA record posted monitors
+      for .ACQG=0 (acquire done) before it posted monitors on the VAL field.  This could cause clients to collect bad
+      data.
+  <li>Added MAXWIDTH and MAXWIDTH_RBV fields to the dxpRecord.
+  <li>Changed the xMAP to use the energy livetime, rather than trigger livetime, for the MCA record livetime.
+  <li>Fixed the way in which the software determines what type of hardware (xMAP, Saturn, DXP2X) it is running on.
+      Previously it was reading the HDWRVAR low-level parameter, and this was not a reliable test.
+  <li>Moved iocsh commands from drvDxp.c to new file, epicsHandelUtils.c.
+  <li>Changed order of downloading parameters in dxpRecord::init_record so they all get applied the first time.
+  <li>Added feature to dxpMED.st.  It now copies the ROI LO and HI fields from the MCA records to the corresponding
+      SCA LO and HI fields in the DXP records.
+  <li>Implemented the poller thread callbacks in the Saturn database.  In R2-4 they were only implemented on the xMAP.
+  <li>Loaded EPICS sscan records and initialized saveData in the startup scripts in iocSaturn and iocXMAP.  Added 
+      menus for them to the top-level medm screens.  This is very useful for collecting data as quickly as possible
+      using saveData in the EPICS IOC.
+  <li>Combined MCA ROIs and DXP SCAs onto a single medm screen for multi-element detectors.
+  <li>Changed the prefix of the PVs in iocXMAP from dxpXMAP:med: to dxpXMAP:.
+</ul>
+  
 
 <h2 align="center">Release 2-4 (17-May-2006) </h2>
 <ul>
@@ -20,6 +42,13 @@ on problems each release.
       and off acquisition on all detectors as efficiently as possible.  Modifed dxpMED.db and dxpMED.st to
       take advantage of this new capability.
   <li>Added support for the new xMAP PXI modules.  This support runs on the cygwin-x86 architecture.
+  <li>Added a poller thread to the driver.  The poller thread rapidly polls to see if acquisition is complete
+      on all channels.  When it is complete it issues callbacks to records that have registered for them.  This
+      is used to greatly decrease the latency of MCA records knowing when acquisition is complete.  Previously
+      they were limited to 10Hz, or 50msec typically latency.  The rate of the poller thread is configured in the
+      DXPConfig command.  It is typically 100Hz, which does not place a significant load on the system, but reduces
+      the average latency to 5msec.  This poller thread is used in place of interrupts, which none of the XIA
+      hardware types support.
   <li>Enhancements to dxpRecord:
   <ul>
      <li>Made baseline filter length (BASE_LEN) be a menu rather than a number.
@@ -33,8 +62,8 @@ on problems each release.
   <li>Fixes and enhancements for 40MHz version of Saturn.
   <li>Added support for native Windows build, in addition to Cygwin.
   <li>This version does NOT support the DXP4C2X because that support from XIA lags behind the Saturn and xMAP in terms
-      of what acquisition parameters it supports.  The DXP4C2X will be supported in the next release.
-  <li>List of things to be added/fixed in next release:
+      of what acquisition parameters it supports.  The DXP4C2X will be supported in a future release.
+  <li>List of things to be added/fixed in a future release:
   <ul>
     <li>Implement missing functions on DXP-2X so it will work again.
     <li>Get algorithm for baseline threshold in energy units, implement on Saturn and DXP-2X.
