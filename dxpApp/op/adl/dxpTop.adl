@@ -107,19 +107,19 @@ text {
 		height=20
 	}
 	display[0] {
-		label="Single DXP"
+		label="Single Saturn"
 		name="single_dxp_top.adl"
 		args="P=dxpSaturn:, M=mca1, D=dxp1"
 	}
 	display[1] {
-		label="1 element MED"
+		label="Saturn 1-element MED"
 		name="1element_dxp.adl"
-		args="P=dxpSaturn:med:, M=mca1, D=dxp1"
+		args="P=dxpSaturn:, M=mca1, D=dxp1"
 	}
 	display[2] {
-		label="16 element MED"
+		label="DXP2X 16-element MED"
 		name="16element_dxp.adl"
-		args="P=dxp2X:med:, M=mca, D=dxp"
+		args="P=dxp2X:, M=mca, D=dxp"
 	}
 	display[3] {
 		label="Single XMAP"
@@ -127,7 +127,7 @@ text {
 		args="P=dxpXMAP:, M=mca1, D=dxp1"
 	}
 	display[4] {
-		label="xMAP 16 element"
+		label="xMAP 16-element MED"
 		name="16element_dxp.adl"
 		args="P=dxpXMAP:, M=mca, D=dxp"
 	}
