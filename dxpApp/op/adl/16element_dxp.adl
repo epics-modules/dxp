@@ -143,7 +143,7 @@ rectangle {
 	object {
 		x=4
 		y=37
-		width=295
+		width=300
 		height=314
 	}
 	"basic attribute" {
@@ -268,7 +268,7 @@ rectangle {
 		args="P=$(P)"
 	}
 	clr=14
-	bclr=4
+	bclr=51
 }
 text {
 	object {
@@ -330,7 +330,7 @@ text {
 		args="P=$(P),M=$(M),D=$(D),R=7"
 	}
 	clr=14
-	bclr=4
+	bclr=51
 }
 text {
 	object {
@@ -357,7 +357,7 @@ text {
 		args="P=$(P)"
 	}
 	clr=14
-	bclr=4
+	bclr=51
 }
 text {
 	object {
@@ -411,7 +411,7 @@ text {
 		args="P=$(P), D=$(D)"
 	}
 	clr=14
-	bclr=4
+	bclr=51
 }
 "text update" {
 	object {
@@ -479,7 +479,7 @@ text {
 	"basic attribute" {
 		clr=14
 	}
-	textix="Status rate"
+	textix="MCA Status rate"
 }
 menu {
 	object {
@@ -728,7 +728,7 @@ menu {
 		args="P=$(P)"
 	}
 	clr=14
-	bclr=4
+	bclr=51
 }
 text {
 	object {
@@ -832,7 +832,7 @@ text {
 		args="P=$(P), S=scanH, N=1, DW=DwaitH, PW=PwaitH"
 	}
 	clr=14
-	bclr=4
+	bclr=51
 }
 "related display" {
 	object {
@@ -847,7 +847,7 @@ text {
 		args="P=$(P)"
 	}
 	clr=14
-	bclr=4
+	bclr=51
 }
 text {
 	object {
@@ -909,7 +909,7 @@ text {
 		args="P=$(P),M=$(M),D=$(D),R=15"
 	}
 	clr=14
-	bclr=4
+	bclr=51
 }
 text {
 	object {
