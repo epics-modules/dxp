@@ -175,7 +175,6 @@ int DXPConfig(const char *portName, int ndetectors, int ngroups, int pollFreq)
     int detChan;
     asynStatus status;
     drvDxpPvt *pPvt;
-    unsigned short hdwrvar;
     char module_name[MAXALIAS_LEN];
 
     pPvt = callocMustSucceed(1, sizeof(*pPvt),  "DXPConfig");
@@ -201,21 +200,12 @@ int DXPConfig(const char *portName, int ndetectors, int ngroups, int pollFreq)
        dxpChannel->acquiring = 0;
        dxpChannel->prev_acquiring = -1;
        dxpChannel->erased = 1;
-       /* Figure out what kind of module this is *
-        * THIS IS A TEMPORARY MECHANISM UNTIL HANDEL SUPPORTS IT */
-       xiaGetParameter(detChan, "HDWRVAR", &hdwrvar);
-       switch (hdwrvar) {
-          case 0: dxpChannel->moduleType = DXP_XMAP;
-                  break;
-          case 4: dxpChannel->moduleType = DXP_SATURN;
-                  break;
-          case 5: dxpChannel->moduleType = DXP_4C2X;
-                  break;
-          default:
-             printf("DXPConfig: unknown module type = %d\n", hdwrvar);
-             epicsHandelUnlock();
-             return(-1);
-        }
+       dxpChannel->moduleType = dxpGetModuleType();
+       if ((dxpChannel->moduleType < 0) || (dxpChannel->moduleType > MAX_DXP_MODULE_TYPE)) {
+          printf("DXPConfig: unknown module type = %d\n", dxpChannel->moduleType);
+          epicsHandelUnlock();
+          return(-1);
+       }
     }
     for (i=0; i<ngroups; i++) {
        dxpChannel = &pPvt->dxpChannel[ndetectors+i];
@@ -225,21 +215,13 @@ int DXPConfig(const char *portName, int ndetectors, int ngroups, int pollFreq)
        dxpChannel->acquiring = 0;
        dxpChannel->prev_acquiring = -1;
        dxpChannel->erased = 1;
-       /* Figure out what kind of module this is *
-        * THIS IS A TEMPORARY MECHANISM UNTIL HANDEL SUPPORTS IT */
-       xiaGetParameter(0, "HDWRVAR", &hdwrvar);
-       switch (hdwrvar) {
-          case 0: dxpChannel->moduleType = DXP_XMAP;
-                  break;
-          case 4: dxpChannel->moduleType = DXP_SATURN;
-                  break;
-          case 5: dxpChannel->moduleType = DXP_4C2X;
-                  break;
-          default:
-             printf("DXPConfig: unknown module type = %d\n", hdwrvar);
-             epicsHandelUnlock();
-             return(-1);
-        }
+       /* Figure out what kind of module this is */
+       dxpChannel->moduleType = dxpGetModuleType();
+       if ((dxpChannel->moduleType < 0) || (dxpChannel->moduleType > MAX_DXP_MODULE_TYPE)) {
+          printf("DXPConfig: unknown module type = %d\n", dxpChannel->moduleType);
+          epicsHandelUnlock();
+          return(-1);
+       }
     } 
     xiaGetNumModules(&pPvt->numModules);
     pPvt->first_channels = calloc(pPvt->numModules, sizeof(int));
