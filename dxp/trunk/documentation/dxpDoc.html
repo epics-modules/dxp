@@ -142,7 +142,7 @@ digital signal processor based multichannel analyzers from
       <p>Building from the source code requires downloading 
       <a href="http://www.aps.anl.gov/epics/base/index.php" target="_blank">EPICS base</a>
       and all of the required 
-      <a href="dxp.html" target="_blank">synApps components</a>.
+      <a href="http://www.aps.anl.gov/aod/bcda/synApps/index.php" target="_blank">synApps components</a>.
       In addition, to build from source code on
       Windows requires the gcc, g++, perl and make packages from Cygwin.  It is beyond the scope of
       this document to describe how to build the source code.  Consult other EPICS documentation
@@ -174,15 +174,14 @@ digital signal processor based multichannel analyzers from
       which contain medm.  Note that medm may work with non-commercial versions of X windows servers for
       Windows, but Exceed is the only package that is guaranteed to work.
   <li>Download 
-      <a href="http://cars.uchicago.edu/software/pub/dxpStandalone.tar.gz">dxpStandalone.tar.gz</a>,
-      which will always be the latest release of the EPICS DXP software, containing binaries for Windows.</li>
+      <a href="http://cars.uchicago.edu/software/pub/dxpStandalone_2-5.tgz">dxpStandalone_2-5.tgz</a>,
+      which is the latest release of the EPICS DXP software, containing binaries for Windows.</li>
   <li>Unpack that distribution into a directory such as C:\EPICS or C:\Program Files\EPICS.  
       The distribution file, dxpStandlone.tar.gz can be unpacked using WinZip, or with the gunzip and
       tar utilities that come with Cygwin.  To use the Cygwin tools:
       <pre>
       $ cd /cygdrive/c/epics         # Or wherever you have chosen to put the EPICS software
-      $ gunzip dxpStandalone.tar.gz  # Convert dxpStandalone.tar.gz to dxpStandalone.tar
-      $ tar xvf dxpStandalone.tar    # Unpack the tar file.
+      $ tar xzvf dxpStandalone_2-5.tar    # Unpack the tar file.
       </pre>
   <li>Make sure that the .fdd and .ini files in dxp/iocBoot/iocSaturn/ have Unix-type line terminators.
       This can be done by running the Cygwin bash shell and typing
@@ -223,10 +222,10 @@ digital signal processor based multichannel analyzers from
 <p>To use the EPICS DXP software with a Saturn on a Linux computer do the following:
 <ul>
   <li>Download 
-      <a href="http://cars.uchicago.edu/software/pub/dxpStandalone.tar.gz">dxpStandalone.tar.gz</a>,
+      <a href="http://cars.uchicago.edu/software/pub/dxpStandalone_2-5.tgz">dxpStandalone_2-5.tgz</a>,
       which is the latest release of the EPICS DXP software, containing binaries for Linux.</li>
   <li>Unpack that distribution into a directory such as /usr/local/epics.  
-      The distribution file, dxpStandlone.tar.gz can be unpacked using the Linux gunzip and tar utilities.
+      The distribution file, dxpStandalone_2-5.tgz can be unpacked using the Linux tar utility.
   <li>Make sure that the .fdd and .ini files in dxp/iocBoot/iocSaturn/ have Unix-type line terminators.
       This can be done by typing
       <pre>
