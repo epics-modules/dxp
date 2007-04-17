@@ -817,7 +817,7 @@ static void pollTask(drvDxpPvt *pPvt)
                                           addr, reason, acquiring[i]);
                                 pint32Interrupt->callback(pint32Interrupt->userPvt,
                                                           pint32Interrupt->pasynUser,
-                                                          acquiring[i]);
+                                                          acquiring[i], asynSuccess);
                             }
                         }
                     }
