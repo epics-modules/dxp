@@ -20,7 +20,6 @@ DBDINC += dxpRecord
 DBD += dxpSupport.dbd
 DBD += dxp.dbd
 DBD += dxpVX.dbd
-DBD += dxpWin32.dbd
 
 USR_CFLAGS += -DXIA_SPECIAL_MEM
 USR_CFLAGS += -DEXCLUDE_DGFG200
@@ -49,15 +48,10 @@ PROD_IOC_cygwin32 += dxpApp
 PROD_IOC_WIN32 += dxpApp
 
 # <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
-dxpApp_SRCS_Linux += dxp_registerRecordDeviceDriver.cpp
-dxpApp_SRCS_cygwin32 += dxp_registerRecordDeviceDriver.cpp
-dxpApp_SRCS_WIN32 += dxpWin32_registerRecordDeviceDriver.cpp
+dxpApp_SRCS_DEFAULT += dxpMain.cpp dxp_registerRecordDeviceDriver.cpp
 dxpApp_SRCS_vxWorks += dxpVX_registerRecordDeviceDriver.cpp
-dxpApp_SRCS_Linux += dxpMain.cpp
-dxpApp_SRCS_cygwin32 += dxpMain.cpp
-dxpApp_SRCS_WIN32 += dxpMain.cpp
-dxpApp_SRCS_vxWorks += -nil-
-#The following adds support from base/src/vxWorks
+
+# The following adds support from base/src/vxWorks
 dxpApp_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary
 
 dxpApp_LIBS += dxp handelSrc
@@ -77,9 +71,7 @@ PROD_IOC_cygwin32 += xmapApp
 PROD_IOC_WIN32    += xmapApp
 
 # <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
-xmapApp_SRCS_DEFAULT += dxp_registerRecordDeviceDriver.cpp
-xmapApp_SRCS_WIN32   += dxpWin32_registerRecordDeviceDriver.cpp
-xmapApp_SRCS += dxpMain.cpp
+xmapApp_SRCS += dxp_registerRecordDeviceDriver.cpp
 
 xmapApp_LIBS += dxp
 xmapApp_LIBS += mca
