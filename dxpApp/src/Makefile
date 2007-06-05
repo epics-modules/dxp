@@ -71,7 +71,7 @@ PROD_IOC_cygwin32 += xmapApp
 PROD_IOC_WIN32    += xmapApp
 
 # <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
-xmapApp_SRCS += dxp_registerRecordDeviceDriver.cpp
+xmapApp_SRCS += dxpMain.cpp dxp_registerRecordDeviceDriver.cpp
 
 xmapApp_LIBS += dxp
 xmapApp_LIBS += mca
