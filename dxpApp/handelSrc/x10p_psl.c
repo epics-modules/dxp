@@ -154,10 +154,9 @@ PSL_STATIC int PSL_API pslGetBaseHistory(int detChan, void *value);
 PSL_STATIC int PSL_API pslDoControlTask(int detChan, short task, unsigned int len, void *info);
 PSL_STATIC int PSL_API pslDoControlTaskWithoutStop(int detChan, short task, unsigned int len,
 												   void *info);
-PSL_STATIC int PSL_API pslCalculateGain(int detChan, double adcPercentRule, 
-										double calibEV, double preampGain, 
-										double MCABinWidth, parameter_t SLOWLEN, 
-										parameter_t *GAINDAC, double gainScale);
+PSL_STATIC int PSL_API pslCalculateGain(int detChan, double adcPercentRule, double calibEV, 
+                                                     double preampGain, double MCABinWidth, parameter_t SLOWLEN, 
+						     parameter_t *GAINDAC, double gainScale);
 PSL_STATIC int PSL_API pslDoGainSetting(int detChan, XiaDefaults *defaults, double preampGain, 
 										double gainScale);
 PSL_STATIC double PSL_API pslCalculateSysGain(void);
@@ -214,8 +213,8 @@ char *defaultNames[] = {
   "actual_gap_time" };
 
 double defaultValues[] = { 8.0, 20.0, 4096.0, 0.0, 0.0, 5.0, 5900.0,
-						   .150, .200, 0.0, 1000.0, 0.0, 1.0, 50., 50., 1.0, 
-						   2.0, 5.0, 128., .150};
+                          .150, .200, 0.0, 1000.0, 0.0, 1.0, 50., 50., 1.0, 
+                           2.0, 5.0, 128., .150};
 
 #define PI 3.1415926535897932
 
@@ -699,7 +698,7 @@ PSL_STATIC int PSL_API pslSetAcquisitionValues(int detChan, char *name, void *va
 		status = pslDoPreset(detChan, value, PRESET_IN); 
 		
 	  } else if ((strncmp(name, "peakint", 7) == 0) ||
-				 (strncmp(name, "peaksam", 7) == 0)) {
+		     (strncmp(name, "peaksam", 7) == 0)) {
 		
 		status = pslDoFilter(detChan, name, value, defaults, firmwareSet,
 							 detector->gain[detector_chan], gainScale);
