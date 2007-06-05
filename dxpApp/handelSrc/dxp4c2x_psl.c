@@ -102,7 +102,19 @@ PSL_STATIC int PSL_API pslDoADCPercentRule(int detChan, void *value,
 					   double preampGain, double gainScale);
 PSL_STATIC int PSL_API pslDoEnableGate(int detChan, void *value, 
 				       XiaDefaults *defaults);
+PSL_STATIC int PSL_API pslDoEnableBaselineCut(int detChan, void *value, 
+											  XiaDefaults *defaults);
+PSL_STATIC int PSL_API pslDoBaselineCut(int detChan, void *value, XiaDefaults *defaults);
+PSL_STATIC int PSL_API pslDoBaselineFilterLength(int detChan, void *value, XiaDefaults *defaults);
 PSL_STATIC int PSL_API pslDoEnableInterrupt(int detChan, void *value);
+PSL_STATIC int PSL_API pslDoPolarity(int detChan, void *value, XiaDefaults *defaults, 
+									 Detector *detector, int detectorChannel);
+PSL_STATIC int PSL_API pslDoResetDelay(int detChan, void *value, XiaDefaults *defaults, 
+									   Detector *detector, int detectorChannel);
+PSL_STATIC int PSL_API pslDoDecayTime(int detChan, void *value, XiaDefaults *defaults, 
+									  Detector *detector, int detectorChannel);
+PSL_STATIC int PSL_API pslDoPreampGain(int detChan, void *value, XiaDefaults *defaults, 
+									  Detector *detector, int detectorChannel, double gainScale);
 PSL_STATIC int PSL_API pslDoCalibrationEnergy(int detChan, void *value, 
 					      XiaDefaults *defaults, 
 					      double preampGain, double gainScale);
@@ -144,10 +156,12 @@ PSL_STATIC int PSL_API pslDoOpenRelay(int detChan, void *info);
 PSL_STATIC int PSL_API pslDoCloseRelay(int detChan, void *info);
 PSL_STATIC int PSL_API pslEndSpecialRun(int detChan);
 
-PSL_STATIC int PSL_API pslCalculateGain(double adcPercentRule, double calibEV, 
+PSL_STATIC int PSL_API pslCalculateGain(int detChan, double adcPercentRule, double calibEV, 
 					double preampGain, double MCABinWidth, 
 					parameter_t SLOWLEN, parameter_t *GAINDAC, 
 					double gainScale);
+PSL_STATIC int PSL_API pslDoGainSetting(int detChan, XiaDefaults *defaults, double preampGain, 
+										double gainScale);
 PSL_STATIC double PSL_API pslCalculateSysGain(void);
 PSL_STATIC boolean_t PSL_API pslIsUpperCase(char *name);
 PSL_STATIC double PSL_API pslGetClockSpeed(int detChan);
@@ -181,6 +195,34 @@ static BoardOperation boardOps[] = {
 };
 
 #define NUM_BOARD_OPS (sizeof(boardOps) / sizeof(boardOps[0]))
+
+char *defaultNames[] = { 
+  "peaking_time",
+  "mca_bin_width",
+  "number_mca_channels",
+  "mca_low_limit",
+  "energy_threshold",
+  "adc_percent_rule",
+  "calibration_energy",
+  "gap_time",
+  "trigger_peaking_time",
+  "trigger_gap_time",
+  "trigger_threshold",
+  "enable_gate",
+  "enable_baseline_cut",
+  "reset_delay",
+  "decay_time",
+  "detector_polarity",
+  "preamp_gain",
+  "baseline_cut",
+  "baseline_filter_length",
+  "actual_gap_time" };
+
+double defaultValues[] = { 8.0, 20.0, 4096.0, 0.0, 0.0, 5.0, 5900.0,
+                          .150, .200, 0.0, 1000.0, 0.0, 1.0, 50., 50., 1.0, 
+                           2.0, 5.0, 128., .150};
+
+#define PI 3.1415926535897932
 
 /*****************************************************************************
  *
@@ -591,6 +633,18 @@ PSL_STATIC int PSL_API pslSetAcquisitionValues(int detChan, char *name, void *va
 
 	status = pslDoEnableGate(detChan, value, defaults);
 
+    } else if (STREQ(name, "enable_baseline_cut")) {
+		
+        status = pslDoEnableBaselineCut(detChan, value, defaults);
+
+    } else if (STREQ(name, "baseline_cut")) {
+		
+	status = pslDoBaselineCut(detChan, value, defaults);
+
+    } else if (STREQ(name, "baseline_filter_length")) {
+		
+	status = pslDoBaselineFilterLength(detChan, value, defaults);
+		
     } else if (STREQ(name, "enable_interrupt")) {
 
 	status = pslDoEnableInterrupt(detChan, value);
@@ -603,6 +657,22 @@ PSL_STATIC int PSL_API pslSetAcquisitionValues(int detChan, char *name, void *va
 
 	status = pslDoGapTime(detChan, value, firmwareSet, defaults);
 
+    } else if (STREQ(name, "reset_delay")) {
+		
+	status = pslDoResetDelay(detChan, value, defaults, detector, detector_chan);
+		
+    } else if (STREQ(name, "decay_time")) {
+		
+	status = pslDoDecayTime(detChan, value, defaults, detector, detector_chan);
+		
+    } else if (STREQ(name, "preamp_gain")) {
+		
+	status = pslDoPreampGain(detChan, value, defaults, detector, detector_chan, gainScale);
+		
+    } else if (STREQ(name, "detector_polarity")) {
+		
+	status = pslDoPolarity(detChan, value, defaults, detector, detector_chan);
+		
     } else if (STREQ(name, "trigger_peaking_time")) {
 
 	status = pslDoTriggerPeakingTime(detChan, value, defaults);
@@ -636,17 +706,20 @@ PSL_STATIC int PSL_API pslSetAcquisitionValues(int detChan, char *name, void *va
 
 	status = pslDoFilter(detChan, name, value, defaults, firmwareSet);
 
-	} else if (STRNEQ(name, "number_of_scas")) {
+    } else if (STRNEQ(name, "number_of_scas")) {
 	  
-	  status = _pslDoNSca(detChan, value, m);
+        status = _pslDoNSca(detChan, value, m);
 
-	} else if (STRNEQ(name, "sca")) {
+    } else if (STRNEQ(name, "sca")) {
 	  status = _pslDoSCA(detChan, name, value, m, defaults);
 
     } else if (pslIsUpperCase(name)) {
 
 	status = pslDoParam(detChan, name, value, defaults);
 	
+    } else if ((STREQ(name,  "actual_gap_time"))) {
+/* Do Nothing, these are read-only acquisition values */
+
     } else {
 
 	status = XIA_UNKNOWN_VALUE;
@@ -1230,6 +1303,168 @@ PSL_STATIC int PSL_API pslDoMCABinWidth(int detChan, void *value, XiaDefaults *d
     return XIA_SUCCESS;
 }
 
+/*****************************************************************************
+ *
+ * This performs the gain calculation, retrieving all the values from 
+ * the defaults.  Mainly a convenience routine.
+ *
+ *****************************************************************************/
+PSL_STATIC int PSL_API pslDoGainSetting(int detChan, XiaDefaults *defaults, 
+										double preampGain, double gainScale)
+{
+    int status;
+    int statusX;
+
+    double adcPercentRule = 0.0;
+    double calibEV = 0.0;
+    double mcaBinWidth = 0.0;
+    double threshold = 0.0;
+    double slowthresh = 0.0;
+
+    parameter_t GAINDAC;
+    parameter_t SLOWLEN;
+
+    status = pslGetDefault("adc_percent_rule", (void *)&adcPercentRule, defaults);
+
+    if (status != XIA_SUCCESS) 
+	  {
+		sprintf(info_string, "Error setting adc_percent_rule for detChan %d", detChan);
+		pslLogError("pslDoGainSetting", info_string, status);
+		return status;
+	  }
+
+    status = pslGetDefault("calibration_energy", (void *)&calibEV, defaults);
+
+    if (status != XIA_SUCCESS) 
+	  {
+		sprintf(info_string, "Error getting calibration_energy for detChan %d", detChan);
+		pslLogError("pslDoGainSetting", info_string, status);
+		return status;
+	  }
+
+    status = pslGetDefault("mca_bin_width", (void *)&mcaBinWidth, defaults);
+
+    if (status != XIA_SUCCESS) 
+	  {
+		sprintf(info_string, "Error getting mca_bin_width for detChan %d", detChan);
+		pslLogError("pslDoGainSetting", info_string, status);
+		return status;
+	  }
+
+    statusX = dxp_get_one_dspsymbol(&detChan, "SLOWLEN", &SLOWLEN);
+
+    if (statusX != DXP_SUCCESS) 
+	  {
+		status = XIA_XERXES;
+		sprintf(info_string, "Error getting SLOWLEN from detChan %d", detChan);
+		pslLogError("pslDoGainSetting", info_string, status);
+		return status;
+	  }
+
+    /* Calculate and set the gain */
+    status = pslCalculateGain(detChan, adcPercentRule, calibEV, preampGain, mcaBinWidth, 
+							  SLOWLEN, &GAINDAC, gainScale); 
+	
+    if (status != XIA_SUCCESS) 
+	  {
+		sprintf(info_string, "Error calculating gain for detChan %d", detChan);
+		pslLogError("pslDoGainSetting", info_string, status);
+		return status;
+	  }
+
+    statusX = dxp_set_one_dspsymbol(&detChan, "GAINDAC", &GAINDAC);
+
+    if (statusX != DXP_SUCCESS) 
+	  {
+		status = XIA_XERXES;
+		sprintf(info_string, "Error setting GAINDAC for detChan %d", detChan);
+		pslLogError("pslDoGainSetting", info_string, status);
+		return XIA_XERXES;
+	  }
+
+    /* Call routines that depend on changes in the gain so that
+     * their calculations will now be correct.
+     */
+
+    /* Use the "old" settings to recalculate the trigger threshold, slow
+	 * threshold and MCA bin width.
+     */
+    status = pslGetDefault("trigger_threshold", (void *)&threshold, defaults);
+
+    if (status != XIA_SUCCESS) 
+	  {
+		sprintf(info_string, "Error getting mca_bin_width for detChan %d", detChan);
+		pslLogError("pslDoGainSetting", info_string, status);
+		return status;
+	  }
+
+    status = pslDoTriggerThreshold(detChan, (void *)&threshold, defaults);
+
+    if (status != XIA_SUCCESS) 
+	  {
+		sprintf(info_string, "Error updating trigger threshold for detChan %d", detChan);
+		pslLogError("pslDoGainSetting", info_string, status);
+		return status;
+	  }
+	
+    status = pslGetDefault("energy_threshold", (void *)&slowthresh, defaults);
+
+    if (status != XIA_SUCCESS) 
+	  {
+		sprintf(info_string, "Error getting mca_bin_width for detChan %d", detChan);
+		pslLogError("pslDoGainSetting", info_string, status);
+		return status;
+	  }
+
+    status = pslDoEnergyThreshold(detChan, (void *)&slowthresh, defaults);
+
+    if (status != XIA_SUCCESS) 
+	  {
+		sprintf(info_string, "Error updating energy threshold for detChan %d", detChan);
+		pslLogError("pslDoGainSetting", info_string, status);
+		return status;
+	  }
+
+    /* Calculate and set the gain (again). It's done twice, for now, to
+     * protect against the case where we change all of these other parameters
+     * and then find out the gain is out-of-range and, therefore, the whole
+     * system is out-of-sync.
+     */
+    status = pslCalculateGain(detChan, adcPercentRule, calibEV, preampGain, mcaBinWidth, SLOWLEN, &GAINDAC, gainScale); 
+	
+    if (status != XIA_SUCCESS) 
+	  {
+		sprintf(info_string, "Error calculating gain for detChan %d", detChan);
+		pslLogError("pslDoGainSetting", info_string, status);
+		return status;
+	  }
+
+    statusX = dxp_set_one_dspsymbol(&detChan, "GAINDAC", &GAINDAC);
+
+    if (statusX != DXP_SUCCESS) 
+	  {
+		status = XIA_XERXES;
+		sprintf(info_string, "Error setting GAINDAC for detChan %d", detChan);
+		pslLogError("pslDoGainSetting", info_string, status);
+		return status;
+	  }
+
+    /* Start and stop a run to "set" the GAINDAC.
+     * Reference: BUG ID #83
+     */
+    status = pslQuickRun(detChan, defaults);
+
+    if (status != XIA_SUCCESS) 
+	  {
+		sprintf(info_string, "Error performing a quick run to set GAINDAC on detChan %d",
+				detChan);
+		pslLogError("pslDoGainSetting", info_string, status);
+		return status;
+	  }
+	
+	return XIA_SUCCESS;
+}
+
 
 /*****************************************************************************
  *
@@ -1311,7 +1546,7 @@ PSL_STATIC int PSL_API pslDoADCPercentRule(int detChan, void *value,
     }
 
     /* Calculate and set the gain */
-    status = pslCalculateGain(adcPercentRule, calibEV, preampGain, mcaBinWidth, SLOWLEN, &GAINDAC, gainScale); 
+    status = pslCalculateGain(detChan, adcPercentRule, calibEV, preampGain, mcaBinWidth, SLOWLEN, &GAINDAC, gainScale); 
 	
     if (status != XIA_SUCCESS) {
 
@@ -1414,7 +1649,7 @@ PSL_STATIC int PSL_API pslDoADCPercentRule(int detChan, void *value,
      * and then find out the gain is out-of-range and, therefore, the whole
      * system is out-of-sync.
      */
-    status = pslCalculateGain(adcPercentRule, calibEV, preampGain, mcaBinWidth, SLOWLEN, &GAINDAC, gainScale); 
+    status = pslCalculateGain(detChan, adcPercentRule, calibEV, preampGain, mcaBinWidth, SLOWLEN, &GAINDAC, gainScale); 
 	
     if (status != XIA_SUCCESS) {
 
@@ -1469,6 +1704,366 @@ PSL_STATIC int PSL_API pslDoEnableGate(int detChan, void *value, XiaDefaults *de
 
     return XIA_SUCCESS;
 }
+
+/*****************************************************************************
+ *
+ * This routine sets the reset delay for the X10P, this is also a detector 
+ * parameter.
+ *
+ *****************************************************************************/
+PSL_STATIC int PSL_API pslDoResetDelay(int detChan, void *value, XiaDefaults *defaults, 
+									   Detector *detector, int detectorChannel)
+{
+  int status;
+  int statusX;
+
+  parameter_t RESETINT;
+
+  /* Only set the DSP parameter if the detector type is correct */
+  if (detector->type == XIA_DET_RESET) 
+	{
+	  /* DSP stores the reset interval in 0.25us ticks */
+	  RESETINT = (parameter_t) ROUND(4.0 * *((double *) value));
+	  
+	  /* Quick bounds check on the RESETINT */
+	  if (RESETINT > 16383) 
+		{
+		  RESETINT = 16383;
+		}
+
+	  /* Write the new delay time to the DSP */
+	  statusX = dxp_set_one_dspsymbol(&detChan, "RESETINT", &RESETINT);
+	  
+	  if (statusX != DXP_SUCCESS) 
+		{
+		  status = XIA_XERXES;
+		  sprintf(info_string, "Error setting RESETINT for detChan %d", detChan);
+		  pslLogError("pslDoResetDelay", info_string, status);
+		  return status;
+		}
+
+	  /* Reset the value to a legal increment */
+	  *((double *) value) = ((double) RESETINT) * 0.25;
+
+	  /* Modify the detector structure with the new delay time */
+	  detector->typeValue[detectorChannel] = *((double *) value);
+	}
+
+  /* Set the reset_delay entry */
+  status = pslSetDefault("reset_delay", value, defaults);
+  if (status != XIA_SUCCESS)
+	{
+	  pslLogError("pslDoResetDelay", "Error setting reset_delay in the defaults", status);
+	  return status;
+	}
+  
+  return XIA_SUCCESS;
+}
+
+/*****************************************************************************
+ *
+ * This routine sets the decay time for the X10P, this is also a detector 
+ * parameter.
+ *
+ *****************************************************************************/
+PSL_STATIC int PSL_API pslDoDecayTime(int detChan, void *value, XiaDefaults *defaults, 
+									  Detector *detector, int detectorChannel)
+{
+  int status;
+  int statusX;
+
+  double decayTime;
+
+  parameter_t RCTAU;
+  parameter_t RCTAUFRAC;
+
+  /* Only set the DSP parameter if the detector type is correct */
+  if (detector->type == XIA_DET_RCFEED) 
+	{
+	  decayTime = *((double *) value);
+	  /* DSP stores the decay time as microsecond part and fractional part */
+	  RCTAU = (parameter_t) floor(decayTime);
+	  RCTAUFRAC = (parameter_t) ROUND((decayTime - (double) RCTAU) * 65536);
+	  
+	  /* Write the new delay time to the DSP */
+	  statusX = dxp_set_one_dspsymbol(&detChan, "RCTAU", &RCTAU);
+  
+	  if (statusX != DXP_SUCCESS) 
+		{
+		  status = XIA_XERXES;
+		  sprintf(info_string, "Error setting RCTAU for detChan %d", detChan);
+		  pslLogError("pslDoDecayTime", info_string, status);
+		  return status;
+		}
+	  
+	  /* Write the new delay time to the DSP */
+	  statusX = dxp_set_one_dspsymbol(&detChan, "RCTAUFRAC", &RCTAUFRAC);
+	  
+	  if (statusX != DXP_SUCCESS) 
+		{
+		  status = XIA_XERXES;
+		  sprintf(info_string, "Error setting RCTAUFRAC for detChan %d", detChan);
+		  pslLogError("pslDoDecayTime", info_string, status);
+		  return status;
+		}
+	  
+	  /* Modify the detector structure with the new delay time */
+	  detector->typeValue[detectorChannel] = *((double *) value);
+	}
+  
+  /* Set the decay_time entry */
+  status = pslSetDefault("decay_time", value, defaults);
+  if (status != XIA_SUCCESS)
+	{
+	  pslLogError("pslDoDecayTime", "Error setting decay_time in the defaults", status);
+	  return status;
+	}
+  
+  return XIA_SUCCESS;
+}
+
+/*****************************************************************************
+ *
+ * This routine sets the preamp gain in mV/keV for the saturn, this is also a detector 
+ * parameter.
+ *
+ *****************************************************************************/
+PSL_STATIC int PSL_API pslDoPreampGain(int detChan, void *value, XiaDefaults *defaults, 
+									   Detector *detector, int detectorChannel, 
+									   double gainScale)
+{
+  int status;
+
+  double preampGain;
+
+  preampGain = *((double *) value);
+
+  /* set the gain with the new preampGain */
+  status = pslDoGainSetting(detChan, defaults, preampGain, gainScale); 
+  
+  if (status != XIA_SUCCESS) 
+	{
+	  sprintf(info_string, "Error setting the Gain for detChan %d", detChan);
+	  pslLogError("pslDoPreampGain", info_string, status);
+	  return status;
+	}
+
+  /* Modify the detector structure with the new preamp gain */
+  detector->gain[detectorChannel] = *((double *) value);
+  
+  /* Set the preamp_gain entry */
+  status = pslSetDefault("preamp_gain", value, defaults);
+  if (status != XIA_SUCCESS)
+	{
+	  pslLogError("pslDoPreampGain", "Error setting preamp_gain in the defaults", status);
+	  return status;
+	}
+  
+  return XIA_SUCCESS;
+}
+
+/*****************************************************************************
+ *
+ * This routine sets the polarity for the X10P, this is also a detector 
+ * parameter.
+ *
+ *****************************************************************************/
+PSL_STATIC int PSL_API pslDoPolarity(int detChan, void *value, XiaDefaults *defaults, 
+									 Detector *detector, int detectorChannel)
+{
+  int statusX;
+  int status;
+  
+  double polarity;
+  
+  parameter_t POLARITY;
+  
+  polarity = *((double *) value);
+  POLARITY = (parameter_t) polarity;
+  
+  statusX = dxp_set_one_dspsymbol(&detChan, "POLARITY", &POLARITY);
+  
+  if (statusX != DXP_SUCCESS) {
+	
+	status = XIA_XERXES;
+	sprintf(info_string, "Error setting POLARITY for detChan %d", detChan);
+	pslLogError("pslDoPolarity", info_string, status);
+	return status;
+  }
+  
+  /* Start and stop a run to "set" the polarity value.
+   * Reference: BUG ID #17, #84
+   */
+  status = pslQuickRun(detChan, defaults);
+  
+  if (status != XIA_SUCCESS) 
+	{
+	  sprintf(info_string, "Error performing a quick run to set POLARITY on detChan %d",
+			  detChan);
+	  pslLogError("pslDoPolarity", info_string, status);
+	  return status;
+	}
+  
+  /* Set the entry in the detector structure for polarity */
+  detector->polarity[detectorChannel] = (unsigned short) polarity;
+
+  /* Set the polarity entry in the acquisition value list */
+  status = pslSetDefault("detector_polarity", (void *) &polarity, defaults);
+  if (status != XIA_SUCCESS)
+	{
+	  pslLogError("pslDoPolarity", "Error setting detector_polarity in the defaults", status);
+	  return status;
+	}
+  
+  return XIA_SUCCESS;
+}
+
+
+/*****************************************************************************
+ *
+ * This routine sets/resets the bit of RUNTASKS that controls the baseline cut 
+ * operation in the DSP.
+ *
+ *****************************************************************************/
+PSL_STATIC int PSL_API pslDoEnableBaselineCut(int detChan, void *value, XiaDefaults *defaults)
+{
+  int status;
+  int statusX;
+
+  parameter_t RUNTASKS;
+
+  /* Set the proper bit of the RUNTASKS DSP parameter */
+  /* First retrieve RUNTASKS from the DSP */
+  statusX = dxp_get_one_dspsymbol(&detChan, "RUNTASKS", &RUNTASKS);
+  if (statusX != DXP_SUCCESS) 
+	{
+	  status = XIA_XERXES;
+	  sprintf(info_string, "Error getting RUNTASKS for detChan %d", detChan);
+	  pslLogError("pslDoEnableBaselineCut", info_string, status);
+	  return status;
+	}
+  
+  /* Set/reset the bit (masks are in x10p.h) */
+  if (*((double *) value) == 1.0) {
+	RUNTASKS |= BASELINE_CUT;
+  } else {
+	RUNTASKS &= ~BASELINE_CUT;
+  }
+
+  /* Finally write RUNTASKS back to the DSP */
+  statusX = dxp_set_one_dspsymbol(&detChan, "RUNTASKS", &RUNTASKS);
+  if (statusX != DXP_SUCCESS) 
+	{
+	  status = XIA_XERXES;
+	  sprintf(info_string, "Error writing RUNTASKS for detChan %d", detChan);
+	  pslLogError("pslDoEnableBaselineCut", info_string, status);
+	  return status;
+	}
+
+  /* Set the enable_baseline_cut entry */
+  status = pslSetDefault("enable_baseline_cut", value, defaults);
+  if (status != XIA_SUCCESS)
+	{
+	  pslLogError("pslDoEnableBaselineCut", "Error setting enable_baseline_cut in the defaults", status);
+	  return status;
+	}
+  
+  return XIA_SUCCESS;
+}
+
+
+/*****************************************************************************
+ *
+ * This routine sets the value of the Baseline Cut in percent
+ *
+ *****************************************************************************/
+PSL_STATIC int PSL_API pslDoBaselineCut(int detChan, void *value, XiaDefaults *defaults)
+{
+  int status;
+  int statusX;
+
+  parameter_t BLCUT;
+
+  double blcut;
+
+  /* Calculate the value for the baseline cut in 1.15 notation.  The value stored
+   * as the acquisition value is in percent. 
+   */
+  blcut = *((double *) value);
+  BLCUT = (parameter_t) ROUND(32768. * blcut / 100.);
+
+  /* Write BLCUT to the DSP */
+  statusX = dxp_set_one_dspsymbol(&detChan, "BLCUT", &BLCUT);
+  if (statusX != DXP_SUCCESS) 
+	{
+	  status = XIA_XERXES;
+	  sprintf(info_string, "Error writing BLCUT for detChan %d", detChan);
+	  pslLogError("pslDoBaselineCut", info_string, status);
+	  return status;
+	}
+
+  /* Set the baseline_cut entry */
+  status = pslSetDefault("baseline_cut", value, defaults);
+  if (status != XIA_SUCCESS)
+	{
+	  pslLogError("pslDoBaselineCut", "Error setting baseline_cut in the defaults", status);
+	  return status;
+	}
+  
+  return XIA_SUCCESS;
+}
+
+
+/*****************************************************************************
+ *
+ * This routine sets the value of the Baseline Filter Length 
+ *
+ *****************************************************************************/
+PSL_STATIC int PSL_API pslDoBaselineFilterLength(int detChan, void *value, XiaDefaults *defaults)
+{
+  int status;
+  int statusX;
+
+  parameter_t BLFILTER;
+
+  double blfilter;
+
+  /* Calculate the value for 1/(baseline filter length)  in 1.15 notation.  The value stored
+   * as the acquisition value is just samples. 
+   */
+  blfilter = *((double *) value);
+  /* sanity check on values of the filter length */
+  if (blfilter < 1.) 
+	{
+	  blfilter = 1.;
+	}
+  if (blfilter > 32768) 
+	{
+	  blfilter = 32768;
+	}
+  BLFILTER = (parameter_t) ROUND(32768. / blfilter);
+
+  /* Write BLFILTER to the DSP */
+  statusX = dxp_set_one_dspsymbol(&detChan, "BLFILTER", &BLFILTER);
+  if (statusX != DXP_SUCCESS) 
+	{
+	  status = XIA_XERXES;
+	  sprintf(info_string, "Error writing BLFILTER for detChan %d", detChan);
+	  pslLogError("pslDoBaselineFilterLength", info_string, status);
+	  return status;
+	}
+
+  /* Set the baseline_cut entry */
+  status = pslSetDefault("baseline_filter_length", value, defaults);
+  if (status != XIA_SUCCESS)
+	{
+	  pslLogError("pslDoBaselineFilterLength", "Error setting baseline_filter_length in the defaults", status);
+	  return status;
+	}
+  
+  return XIA_SUCCESS;
+}
+
 
 
 /*****************************************************************************
@@ -1567,7 +2162,7 @@ PSL_STATIC int PSL_API pslDoCalibrationEnergy(int detChan, void *value,
     }
 
     /* Calculate and set the gain */
-    status = pslCalculateGain(adcPercentRule, calibEV, preampGain, mcaBinWidth, SLOWLEN, &GAINDAC, gainScale); 
+    status = pslCalculateGain(detChan, adcPercentRule, calibEV, preampGain, mcaBinWidth, SLOWLEN, &GAINDAC, gainScale); 
 	
     if (status != XIA_SUCCESS) {
 
@@ -1670,7 +2265,7 @@ PSL_STATIC int PSL_API pslDoCalibrationEnergy(int detChan, void *value,
      * and then find out the gain is out-of-range and, therefore, the whole
      * system is out-of-sync.
      */
-    status = pslCalculateGain(adcPercentRule, calibEV, preampGain, mcaBinWidth, SLOWLEN, &GAINDAC, gainScale); 
+    status = pslCalculateGain(detChan, adcPercentRule, calibEV, preampGain, mcaBinWidth, SLOWLEN, &GAINDAC, gainScale); 
 	
     if (status != XIA_SUCCESS) {
 	
@@ -1742,12 +2337,13 @@ PSL_STATIC int PSL_API pslGetAcquisitionValues(int detChan, char *name,
  * probably found external to the program.
  *
  *****************************************************************************/
-PSL_STATIC int PSL_API pslCalculateGain(double adcPercentRule, double calibEV, 
+PSL_STATIC int PSL_API pslCalculateGain(int detChan, double adcPercentRule, double calibEV, 
                                         double preampGain, double MCABinWidth, 
                                         parameter_t SLOWLEN, parameter_t *GAINDAC, 
                                         double gainScale)
 {
     int status;
+    int statusX;
 
     double gSystem;
     double gTotal;
@@ -1759,63 +2355,81 @@ PSL_STATIC int PSL_API pslCalculateGain(double adcPercentRule, double calibEV,
     double gGAINDAC;
     double eVPerADC;
     double dBINFACT1;
-    double BINFACT1;
     double binScale;
     double gaindacBits = 16.0;
 
-    gSystem = pslCalculateSysGain();
+	parameter_t BINFACT1;
 
-    sprintf(info_string, "gSystem = %f", gSystem);
-    pslLogDebug("pslCalculateGain", info_string);
+    gSystem = pslCalculateSysGain();
 
     gSystem *= gainScale;
 
-    sprintf(info_string, "gSystem (after scale) = %f", gSystem);
-    pslLogDebug("pslCalculateGain", info_string);  
-
     gTotal = ((adcPercentRule / 100.0) * inputRange) / ((calibEV / 1000.0) * preampGain);
-
-    sprintf(info_string, "gTotal = %f", gTotal);
-    pslLogDebug("pslCalculateGain", info_string);
 
     /* Scale gTotal as a BINFACT1 correction */
     eVPerADC  = (double)(calibEV / ((adcPercentRule / 100.0) * NUM_BITS_ADC));
     dBINFACT1 = (MCABinWidth / eVPerADC) * (double)SLOWLEN * 4.0;
-    BINFACT1 = floor(dBINFACT1 + 0.5);
+    BINFACT1 = (parameter_t) ROUND(dBINFACT1);
 
-    binScale = BINFACT1 / dBINFACT1;
+	/* Calculate the scale factor used to correct the gain */
+    binScale = (double) BINFACT1 / dBINFACT1;
 
+	/* Adjust the gain by the BINFACT change */
     gTotal *= binScale;
-
-    sprintf(info_string, "gTotal (after binScale) = %f", gTotal);
-    pslLogDebug("pslCalculateGain", info_string);
 
     gVar = gTotal / (gSystem * gBase);
 
-    sprintf(info_string, "gVar = %f", gVar);
-    pslLogDebug("pslCalculateGain", info_string);
-
     /* Now we can start converting to GAINDAC */
     gDB = (20.0 * log10(gVar));
-
-    sprintf(info_string, "gDB = %f", gDB);
-    pslLogDebug("pslCalculateGain", info_string);
 	
-    if ((gDB < -6.0) ||
-	(gDB > 30.0)) {
+    if ((gDB < -6.0) || (gDB > 30.0)) 
+	  {
+		/* Try the other value of BINFACT1, it was rounded, but sometimes, this rounding can lead
+		 * us out of range, this should alleviate some of the cases where we go out of range, but
+		 * the consequence is that the gain will be changed more than if BINFACT had just been 
+		 * rounded */
+		if (BINFACT1 > dBINFACT1) 
+		  {
+			BINFACT1--;
+		  } else {
+			BINFACT1++;
+		  }
 
-	status = XIA_GAIN_OOR;
-	sprintf(info_string, "Gain value %f (in dB) is out-of-range", gDB);
-	pslLogError("pslCalculateGain", info_string, status);
-	return status;
-    }
+		binScale = (double) BINFACT1 / dBINFACT1;
+		
+		/* Adjust the gain by the BINFACT change */
+		gTotal *= binScale;
+		
+		gVar = gTotal / (gSystem * gBase);
+		
+		/* Now we can start converting to GAINDAC */
+		gDB = (20.0 * log10(gVar));
+		
+		if ((gDB < -6.0) || (gDB > 30.0)) 
+		  {
+			status = XIA_GAIN_OOR;
+			sprintf(info_string, "Gain value %f (in dB) is out-of-range", gDB);
+			pslLogError("pslCalculateGain", info_string, status);
+			return status;
+		  }
+	  }
 
     gDB += 10.0;
 
-    gGAINDAC = gDB * ((double)(pow(2, gaindacBits) / gaindacDB));
+    gGAINDAC = gDB * ((double) (pow(2, gaindacBits) / gaindacDB));
 
-    *GAINDAC = (parameter_t)ROUND(gGAINDAC);
+    *GAINDAC = (parameter_t) ROUND(gGAINDAC);
 
+	/* Must set the value of BINFACT1 anytime the gain changes */
+	statusX = dxp_set_one_dspsymbol(&detChan, "BINFACT1", &BINFACT1);
+	if (statusX != DXP_SUCCESS) 
+	  {
+		status = XIA_XERXES;
+		sprintf(info_string, "Error setting BINFACT1 for detChan %d", detChan);
+		pslLogError("pslCalculateGain", info_string, status);
+		return status;
+	  }
+		
     return XIA_SUCCESS;
 }
 
@@ -2002,7 +2616,7 @@ PSL_STATIC int PSL_API pslGainCalibrate(int detChan, Detector *detector, int det
     preampGain *= 1.0 / deltaGain;
     detector->gain[detector_chan] = preampGain;
 
-    status = pslCalculateGain(adcPercentRule, calibEV, preampGain, mcaBinWidth, SLOWLEN, &GAINDAC, gainScale);
+    status = pslCalculateGain(detChan, adcPercentRule, calibEV, preampGain, mcaBinWidth, SLOWLEN, &GAINDAC, gainScale);
 
     if (status != XIA_SUCCESS) {
 	/* If there is a problem here, then we probably need a way to 
@@ -3175,6 +3789,7 @@ PSL_STATIC int PSL_API pslSetPolarity(int detChan, Detector *detector,
     return XIA_SUCCESS;
 }
 
+
 /*****************************************************************************
  *
  * This routine creates a default w/ information specific to the x10p in it.
@@ -3185,38 +3800,22 @@ PSL_STATIC int PSL_API pslGetDefaultAlias(char *alias, char **names, double *val
     int len;
     int i;
 
-    char *defNames[] = { "peaking_time",
-			 "trigger_threshold",
-			 "mca_bin_width",
-			 "number_mca_channels",
-			 "mca_low_limit",
-			 "energy_threshold",
-			 "adc_percent_rule",
-			 "calibration_energy",
-			 "gap_time",
-			 "trigger_peaking_time",
-			 "trigger_gap_time",
-			 "enable_gate" };
-
-    double defValues[] = {16.0, 1000.0, 20.0, 4096.0, 0.0, 0.0, 5.0, 5900.0,
-			  .150, .200, 0.0, 0.0};
-
-    char *defaultsName = "defaults_dxp4c2x";
+    char *aliasName = "defaults_dxp4c2x";
 
     pslLogDebug("pslGetDefaultAlias", "Preparing to copy default defaults");
 	
-    len = sizeof(defValues) / sizeof(defValues[0]);
-    for (i = 0; i < len; i++) {
-
-	sprintf(info_string, "defNames[%d] = %s, defValues[%d] = %3.3f", i, defNames[i], i, defValues[i]);
-	pslLogDebug("pslGetDefaultAlias", info_string);
-
-	strcpy(names[i], defNames[i]);
-	values[i] = defValues[i];
-    }
-
-    strcpy(alias, defaultsName);
-
+    len = sizeof(defaultValues) / sizeof(defaultValues[0]);
+    for (i = 0; i < len; i++) 
+	  {
+		sprintf(info_string, "defNames[%d] = %s, defValues[%d] = %3.3f", i, defaultNames[i], i, defaultValues[i]);
+		pslLogDebug("pslGetDefaultAlias", info_string);
+		
+		strcpy(names[i], defaultNames[i]);
+		values[i] = defaultValues[i];
+	  }
+	
+    strcpy(alias, aliasName);
+	
     return XIA_SUCCESS;
 }
 
@@ -4107,8 +4706,7 @@ PSL_STATIC int PSL_API pslUpdateTriggerFilter(int detChan, XiaDefaults *defaults
 
 PSL_STATIC unsigned int PSL_API pslGetNumDefaults(void)
 {
-
-    return 12;
+    return sizeof(defaultNames) / sizeof(defaultNames[0]);
 } 
 
 
