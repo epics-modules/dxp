@@ -1,12 +1,12 @@
 
 file {
-	name="i:\epics\synApps5-1beta2\dxp\dxpApp\op\adl\4element_dxp.adl"
-	version=030003
+	name="/home/epics/devel/dxp/2-6beta/dxpApp/op/adl/4element_dxp.adl"
+	version=030000
 }
 display {
 	object {
-		x=343
-		y=44
+		x=264
+		y=129
 		width=580
 		height=352
 	}
@@ -87,45 +87,34 @@ display {
 		1a7309,
 	}
 }
-composite {
+"text update" {
 	object {
-		x=31
+		x=61
 		y=200
-		width=257
-		height=21
+		width=80
+		height=20
 	}
-	"composite name"=""
-	children {
-		"text update" {
-			object {
-				x=31
-				y=200
-				width=80
-				height=20
-			}
-			monitor {
-				chan="$(P)DeadTime"
-				clr=15
-				bclr=14
-			}
-			clrmod="alarm"
-			align="horiz. right"
-			limits {
-			}
-		}
-		text {
-			object {
-				x=118
-				y=201
-				width=170
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="% Dead time"
-		}
+	monitor {
+		chan="$(P)DeadTime"
+		clr=15
+		bclr=14
 	}
+	clrmod="alarm"
+	align="horiz. right"
+	limits {
+	}
+}
+text {
+	object {
+		x=148
+		y=201
+		width=110
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="% Dead time"
 }
 rectangle {
 	object {
@@ -154,7 +143,7 @@ rectangle {
 	object {
 		x=4
 		y=37
-		width=295
+		width=300
 		height=314
 	}
 	"basic attribute" {
@@ -263,103 +252,103 @@ rectangle {
 }
 "related display" {
 	object {
-		x=326
-		y=72
-		width=60
+		x=328
+		y=44
+		width=70
 		height=20
 	}
 	display[0] {
-		label="ROI 0"
-		name="4element_ROI.adl"
-		args="P=$(P), R=0"
+		label="DXP Control"
+		name="4element_dxp_all.adl"
+		args="P=$(P), D=$(D), M=$(M)"
 	}
 	display[1] {
-		label="ROI 1"
-		name="4element_ROI.adl"
-		args="P=$(P), R=1"
-	}
-	display[2] {
-		label="ROI 2"
-		name="4element_ROI.adl"
-		args="P=$(P), R=2"
-	}
-	display[3] {
-		label="ROI 3"
-		name="4element_ROI.adl"
-		args="P=$(P), R=3"
-	}
-	display[4] {
-		label="ROI 4"
-		name="4element_ROI.adl"
-		args="P=$(P), R=4"
+		label="DXP Statistics"
+		name="4element_dxp_statistics.adl"
+		args="P=$(P)"
 	}
 	clr=14
-	bclr=4
+	bclr=51
 }
 text {
 	object {
-		x=391
-		y=72
-		width=140
+		x=403
+		y=44
+		width=70
 		height=20
 	}
 	"basic attribute" {
 		clr=14
 	}
-	textix="ROIs 0-4"
+	textix="DXPs"
 }
 "related display" {
 	object {
-		x=326
-		y=97
-		width=60
+		x=328
+		y=69
+		width=70
 		height=20
 	}
 	display[0] {
-		label="ROI 5"
-		name="4element_ROI.adl"
-		args="P=$(P), R=5"
+		label="ROI/SCA 0"
+		name="4element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=0"
 	}
 	display[1] {
-		label="ROI 6"
-		name="4element_ROI.adl"
-		args="P=$(P), R=6"
+		label="ROI/SCA 1"
+		name="4element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=1"
 	}
 	display[2] {
-		label="ROI 7"
-		name="4element_ROI.adl"
-		args="P=$(P), R=7"
+		label="ROI/SCA 2"
+		name="4element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=2"
 	}
 	display[3] {
-		label="ROI 8"
-		name="4element_ROI.adl"
-		args="P=$(P), R=8"
+		label="ROI/SCA 3"
+		name="4element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=3"
 	}
 	display[4] {
-		label="ROI 9"
-		name="4element_ROI.adl"
-		args="P=$(P), R=9"
+		label="ROI/SCA 4"
+		name="4element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=4"
+	}
+	display[5] {
+		label="ROI/SCA 5"
+		name="4element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=5"
+	}
+	display[6] {
+		label="ROI/SCA 6"
+		name="4element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=6"
+	}
+	display[7] {
+		label="ROI/SCA 7"
+		name="4element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=7"
 	}
 	clr=14
-	bclr=4
+	bclr=51
 }
 text {
 	object {
-		x=391
-		y=97
-		width=150
+		x=403
+		y=69
+		width=70
 		height=20
 	}
 	"basic attribute" {
 		clr=14
 	}
-	textix="ROIs 5-9"
+	textix="ROI/SCA 0-7"
 }
 "related display" {
 	object {
-		x=326
-		y=122
-		width=60
+		x=328
+		y=119
+		width=70
 		height=20
 	}
 	display[0] {
@@ -368,13 +357,13 @@ text {
 		args="P=$(P)"
 	}
 	clr=14
-	bclr=4
+	bclr=51
 }
 text {
 	object {
-		x=391
-		y=122
-		width=40
+		x=403
+		y=119
+		width=70
 		height=20
 	}
 	"basic attribute" {
@@ -382,53 +371,11 @@ text {
 	}
 	textix="Calibration"
 }
-"related display" {
-	object {
-		x=326
-		y=147
-		width=60
-		height=20
-	}
-	display[0] {
-		label="Timing"
-		name="4element_time.adl"
-		args="P=$(P)"
-	}
-	clr=14
-	bclr=4
-}
 text {
 	object {
-		x=391
-		y=147
-		width=40
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Acquisition time"
-}
-"related display" {
-	object {
-		x=326
-		y=172
-		width=60
-		height=20
-	}
-	display[0] {
-		label="Spectra plots"
-		name="4element_plots.adl"
-		args="P=$(P)mca"
-	}
-	clr=14
-	bclr=4
-}
-text {
-	object {
-		x=391
-		y=172
-		width=40
+		x=403
+		y=169
+		width=70
 		height=20
 	}
 	"basic attribute" {
@@ -438,72 +385,33 @@ text {
 }
 "related display" {
 	object {
-		x=326
-		y=197
-		width=60
+		x=328
+		y=169
+		width=70
 		height=20
 	}
 	display[0] {
-		label="Detector 1"
-		name="mca_small.adl"
-		args="P=$(P), M=mca1"
+		label="MCA Spectra"
+		name="4element_plots.adl"
+		args="P=$(P)mca"
 	}
 	display[1] {
-		label="Detector 2"
-		name="mca_small.adl"
-		args="P=$(P), M=mca2"
+		label="Baseline Histogram"
+		name="4element_baseline.adl"
+		args="P=$(P), D=$(D)"
 	}
 	display[2] {
-		label="Detector 3"
-		name="mca_small.adl"
-		args="P=$(P), M=mca3"
+		label="Baseline History"
+		name="4element_history.adl"
+		args="P=$(P), D=$(D)"
 	}
 	display[3] {
-		label="Detector 4"
-		name="mca_small.adl"
-		args="P=$(P), M=mca4"
+		label="ADC Trace"
+		name="4element_trace.adl"
+		args="P=$(P), D=$(D)"
 	}
 	clr=14
-	bclr=4
-}
-text {
-	object {
-		x=391
-		y=197
-		width=40
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Plots 1-4"
-}
-"related display" {
-	object {
-		x=326
-		y=222
-		width=60
-		height=20
-	}
-	display[0] {
-		label="Spectra plots"
-		name="4element_baseline.adl"
-		args="P=$(P)dxp"
-	}
-	clr=14
-	bclr=4
-}
-text {
-	object {
-		x=391
-		y=222
-		width=40
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Baseline Plots"
+	bclr=51
 }
 "text update" {
 	object {
@@ -548,117 +456,84 @@ text {
 	}
 	textix="Live time"
 }
-composite {
+menu {
 	object {
-		x=31
+		x=61
 		y=226
-		width=196
-		height=21
+		width=80
+		height=20
 	}
-	"composite name"=""
-	children {
-		menu {
-			object {
-				x=31
-				y=226
-				width=80
-				height=20
-			}
-			control {
-				chan="$(P)StatusAll.SCAN"
-				clr=14
-				bclr=51
-			}
-		}
-		text {
-			object {
-				x=117
-				y=227
-				width=110
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Status rate"
-		}
+	control {
+		chan="$(P)StatusAll.SCAN"
+		clr=14
+		bclr=51
 	}
 }
-composite {
+text {
 	object {
-		x=31
-		y=274
-		width=196
-		height=21
+		x=147
+		y=227
+		width=110
+		height=20
 	}
-	"composite name"=""
-	children {
-		menu {
-			object {
-				x=31
-				y=274
-				width=80
-				height=20
-			}
-			control {
-				chan="$(P)ReadDXPs.SCAN"
-				clr=14
-				bclr=51
-			}
-		}
-		text {
-			object {
-				x=117
-				y=275
-				width=110
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="DXP Read rate"
-		}
+	"basic attribute" {
+		clr=14
 	}
-}
-composite {
-	object {
-		x=31
-		y=298
-		width=246
-		height=21
-	}
-	"composite name"=""
-	children {
-		menu {
-			object {
-				x=31
-				y=298
-				width=80
-				height=20
-			}
-			control {
-				chan="$(P)EnableClientWait"
-				clr=14
-				bclr=51
-			}
-		}
-		text {
-			object {
-				x=117
-				y=299
-				width=160
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Wait for client"
-		}
-	}
+	textix="MCA Status rate"
 }
 menu {
 	object {
-		x=31
+		x=61
+		y=274
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)ReadDXPs.SCAN"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=147
+		y=275
+		width=130
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="DXP Read rate"
+}
+menu {
+	object {
+		x=61
+		y=298
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)EnableClientWait"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=147
+		y=299
+		width=150
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Wait for client"
+}
+menu {
+	object {
+		x=61
 		y=322
 		width=80
 		height=20
@@ -671,9 +546,9 @@ menu {
 }
 text {
 	object {
-		x=117
+		x=147
 		y=323
-		width=160
+		width=110
 		height=20
 	}
 	"basic attribute" {
@@ -815,71 +690,236 @@ text {
 	}
 	textix="Real time"
 }
-composite {
-	object {
-		x=31
-		y=250
-		width=196
-		height=21
-	}
-	"composite name"=""
-	children {
-		text {
-			object {
-				x=117
-				y=251
-				width=110
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="MCA Read rate"
-		}
-		menu {
-			object {
-				x=31
-				y=250
-				width=80
-				height=20
-			}
-			control {
-				chan="$(P)ReadAll.SCAN"
-				clr=14
-				bclr=51
-			}
-		}
-	}
-}
-"related display" {
-	object {
-		x=326
-		y=47
-		width=60
-		height=20
-	}
-	display[0] {
-		label="DXP Control"
-		name="4element_dxp_all.adl"
-		args="P=$(P)"
-	}
-	display[1] {
-		label="DXP Statistics"
-		name="4element_dxp_statistics.adl"
-		args="P=$(P)"
-	}
-	clr=14
-	bclr=4
-}
 text {
 	object {
-		x=391
-		y=47
-		width=150
+		x=147
+		y=251
+		width=130
 		height=20
 	}
 	"basic attribute" {
 		clr=14
 	}
-	textix="DXPs"
+	textix="MCA Read rate"
+}
+menu {
+	object {
+		x=61
+		y=250
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)ReadAll.SCAN"
+		clr=14
+		bclr=51
+	}
+}
+"related display" {
+	object {
+		x=328
+		y=144
+		width=70
+		height=20
+	}
+	display[0] {
+		label="Timing"
+		name="4element_time.adl"
+		args="P=$(P)"
+	}
+	clr=14
+	bclr=51
+}
+text {
+	object {
+		x=403
+		y=144
+		width=70
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Acquisition time"
+}
+"message button" {
+	object {
+		x=10
+		y=226
+		width=50
+		height=20
+	}
+	control {
+		chan="$(P)StatusAll.PROC"
+		clr=14
+		bclr=51
+	}
+	label="Read"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=10
+		y=250
+		width=50
+		height=20
+	}
+	control {
+		chan="$(P)ReadAll.PROC"
+		clr=14
+		bclr=51
+	}
+	label="Read"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=10
+		y=274
+		width=50
+		height=20
+	}
+	control {
+		chan="$(P)ReadDXPs.PROC"
+		clr=14
+		bclr=51
+	}
+	label="Read"
+	press_msg="1"
+}
+text {
+	object {
+		x=403
+		y=194
+		width=70
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Scan"
+}
+"related display" {
+	object {
+		x=328
+		y=194
+		width=70
+		height=20
+	}
+	display[0] {
+		label="Scan 1"
+		name="scan_more.adl"
+		args="P=$(P), S=scan1, N=1, DW=Dwait1, PW=Pwait1"
+	}
+	display[1] {
+		label="Scan 2"
+		name="scan_more.adl"
+		args="P=$(P), S=scan2, N=2, DW=Dwait2, PW=Pwait2"
+	}
+	display[2] {
+		label="Scan 3"
+		name="scan_more.adl"
+		args="P=$(P), S=scan3, N=3, DW=Dwait3, PW=Pwait3"
+	}
+	display[3] {
+		label="Scan 4"
+		name="scan_more.adl"
+		args="P=$(P), S=scan4, N=4, DW=Dwait4, PW=Pwait4"
+	}
+	display[4] {
+		label="Scan H"
+		name="scan_more.adl"
+		args="P=$(P), S=scanH, N=1, DW=DwaitH, PW=PwaitH"
+	}
+	clr=14
+	bclr=51
+}
+"related display" {
+	object {
+		x=328
+		y=219
+		width=70
+		height=20
+	}
+	display[0] {
+		label="Save/restore"
+		name="save_restoreStatus_more.adl"
+		args="P=$(P)"
+	}
+	clr=14
+	bclr=51
+}
+text {
+	object {
+		x=403
+		y=219
+		width=110
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Save/restore"
+}
+"related display" {
+	object {
+		x=328
+		y=94
+		width=70
+		height=20
+	}
+	display[0] {
+		label="ROI/SCA 8"
+		name="4element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=8"
+	}
+	display[1] {
+		label="ROI/SCA 9"
+		name="4element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=9"
+	}
+	display[2] {
+		label="ROI/SCA 10"
+		name="4element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=10"
+	}
+	display[3] {
+		label="ROI/SCA 11"
+		name="4element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=11"
+	}
+	display[4] {
+		label="ROI/SCA 12"
+		name="4element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=12"
+	}
+	display[5] {
+		label="ROI/SCA 13"
+		name="4element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=13"
+	}
+	display[6] {
+		label="ROI/SCA 14"
+		name="4element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=14"
+	}
+	display[7] {
+		label="ROI/SCA 15"
+		name="4element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=15"
+	}
+	clr=14
+	bclr=51
+}
+text {
+	object {
+		x=403
+		y=94
+		width=70
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="ROI/SCA 8-15"
 }
