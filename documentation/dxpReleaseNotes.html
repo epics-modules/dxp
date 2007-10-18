@@ -9,10 +9,13 @@
 See <a href="dxpKnownProblems.html">known problems</a> for information
 on problems each release.
 
-<h2 align="center">Release 2-6 (17-Apr-2007) </h2>
+<h2 align="center">Release 2-6 (18-Oct-2007) </h2>
 <ul>
+  <li>Removed architecture specific DBD files and Makefile rules, requires asyn R4-9.
+  <li>Enhancements and additions to 4 element detector ADL files.
+  <li>dxp4c2x_psl.c (CAMAC module). Added support for all of the same parameters that the Saturn (x10p_psl.c) supports. 
+      With this enhancement the DXP2X now has the same EPICS interface as the Saturn.
   <li>dxpMED.st. Increased number of detectors to 32, bug fixes thanks to Dave Madden from SLS.
-  <li>drvDxp.c.  Minor change to pass additional status argument in callback, required for asyn R4-8.
 </ul>
 
 <h2 align="center">Release 2-5 (20-Sept-2006) </h2>
