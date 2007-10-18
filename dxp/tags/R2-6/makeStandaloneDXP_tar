@@ -1,0 +1,14 @@
+tar czvf /home/epics/public_html/pub/dxpStandalone_2-5.tgz -C ../.. \
+mca/6-8/mcaApp/Db/ \
+mca/6-8/mcaApp/op/adl/ \
+autosave/4-2-1/asApp/Db/ \
+autosave/4-2-1/asApp/op/adl/ \
+dxp/2-5/documentation \
+dxp/2-5/dxpApp/Db \
+dxp/2-5/dxpApp/firmware \
+dxp/2-5/dxpApp/op/adl \
+dxp/2-5/bin/cygwin-x86 \
+dxp/2-5/bin/win32-x86 \
+dxp/2-5/bin/linux-x86 \
+dxp/2-5/dbd/ \
+dxp/2-5/iocBoot
