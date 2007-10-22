@@ -3,7 +3,9 @@
  *
  *  JEW: Shamelessly adapted from work by Don Wharton
  * 
- * Copyright XIA 2002
+ * Copyright (c) 2002,2003,2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
+ * All rights reserved.
  **************/
 
 /* These #pragmas remove warnings generated
