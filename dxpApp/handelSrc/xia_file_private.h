@@ -34,15 +34,31 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_file.h,v 1.2 2007-10-22 02:50:16 rivers Exp $
+ * $Id: xia_file_private.h,v 1.1 2007-10-22 02:50:16 rivers Exp $
  */
 
-#ifndef __XIA_FILE_H__
-#define __XIA_FILE_H__
-
-#include <stdio.h>
+#ifndef __XIA_FILE_PRIVATE_H__
+#define __XIA_FILE_PRIVATE_H__
 
 #include "dlldefs.h"
+#include "xia_common.h"
+
+
+/** Constants **/
+#define MAX_FILE_SIZE 256
+
+
+/** Structures **/
+typedef struct _xia_file_handle {
+
+  FILE *fp;
+
+  char file[MAX_FILE_SIZE];
+  int  line;
+
+  struct _xia_file_handle *next;
+
+} xia_file_handle_t;
 
 
 #ifdef __cplusplus
@@ -51,17 +67,12 @@ extern "C" {
 
   XIA_EXPORT FILE *xia_fopen(const char *name, const char *mode, char *file,
                              int line);
-  XIA_IMPORT int   xia_fclose(FILE *fp);
-  XIA_IMPORT int   xia_num_open_handles(void);
-  XIA_IMPORT void  xia_print_open_handles(FILE *stream);
+  XIA_EXPORT int   xia_fclose(FILE *fp);
+  XIA_EXPORT int   xia_num_open_handles(void);
+  XIA_EXPORT void  xia_print_open_handles(FILE *stream);
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-
-/** Common macros **/
-#define xia_file_open(name, mode) xia_fopen(name, mode, __FILE__, __LINE__)
-#define xia_file_close(fp) xia_fclose(fp)
-
-#endif /* __XIA_FILE_H__ */
+#endif /* __XIA_FILE_PRIVATE_H__ */
