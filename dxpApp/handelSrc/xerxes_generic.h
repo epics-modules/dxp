@@ -1,9 +1,8 @@
 /*
  *  xerxes_generic.h
  *
- *  Major Mods 3-17-00 JW: Complete revamping of libraries
- *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -36,6 +35,9 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
+ *
+ * $Id: xerxes_generic.h,v 1.2 2007-10-22 04:00:39 rivers Exp $
+ *
  *    Generic constant definitions
  */
 
@@ -55,7 +57,7 @@
 /* MAXSYMBOL_LEN is kept around for compatibility purposes,
  * but it should be converted to MAX_DSP_PARAM_NAME_LEN
  */
-#define MAX_DSP_PARAM_NAME_LEN 15
+#define MAX_DSP_PARAM_NAME_LEN 30
 
 /* Definitions for DXP4C configurations */
 

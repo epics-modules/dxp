@@ -1,11 +1,8 @@
 /*
  *  xia_xerxes.h
  *
- *  Modified 2-Feb-97 EO: add prototype for dxp_primitive routines
- *      dxp_read_long and dxp_write_long; added various parameters
- *  Major Mods 3-17-00 JW: Complete revamping of libraries
- *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -38,6 +35,9 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
+ *
+ * $Id: xia_xerxes.h,v 1.2 2007-10-22 03:59:43 rivers Exp $
+ *
  *    Following are prototypes for dxp driver routines
  */
 
@@ -46,13 +46,13 @@
 #define XIA_XERXES_H
 
 /* Define some generic constants for use by XerXes */
-#include <xerxes_generic.h>
+#include "xerxes_generic.h"
 
 /* Include structure typedefs for exporting of global variables */
-#include <xia_xerxes_structures.h>
-#include <xerxes_structures.h>
+#include "xia_xerxes_structures.h"
+#include "xerxes_structures.h"
 
-#include <xerxesdef.h>
+#include "xerxesdef.h"
 
 #include "xia_common.h"
 
@@ -119,10 +119,11 @@ XERXES_EXPORT int XERXES_API dxp_start_control_task(int *detChan, short *type,
 XERXES_EXPORT int XERXES_API dxp_stop_control_task(int *detChan);
 XERXES_EXPORT int XERXES_API dxp_control_task_info(int *detChan, short *type, int *info);
 XERXES_EXPORT int XERXES_API dxp_get_control_task_data(int *detChan, short *type, void *data);
-XERXES_EXPORT int XERXES_API dxp_readout_detector_run(int *, unsigned short [], unsigned short [], 
-						      unsigned long []);
+XERXES_EXPORT int XERXES_API dxp_readout_detector_run(int *detChan,
+													  unsigned short params[],
+													  unsigned long baseline[],
+													  unsigned long spectrum[]);
   XERXES_EXPORT int XERXES_API dxp_readout_sca(int *detChan, unsigned long *sca);
-XERXES_EXPORT int XERXES_API dxp_write_spectra(int *,int *);
 XERXES_EXPORT int XERXES_API dxp_dspdefaults(int *);
 XERXES_EXPORT int XERXES_API dxp_dspconfig(void);
 XERXES_EXPORT int XERXES_API dxp_fipconfig(void);
@@ -186,13 +187,14 @@ XERXES_EXPORT int XERXES_API dxp_read_memory(int *detChan, char *name, unsigned 
   XERXES_EXPORT int XERXES_API dxp_write_memory(int *detChan, char *name, unsigned long*data);
 XERXES_EXPORT int XERXES_API dxp_memory_length(int *detChan, char *name, unsigned long *data);
 
-XERXES_EXPORT int XERXES_API dxp_write_register(int *detChan, char *name, unsigned short *data);
-XERXES_EXPORT int XERXES_API dxp_read_register(int *detChan, char *name, unsigned short *data);
+  XERXES_EXPORT int XERXES_API dxp_write_register(int *detChan, char *name,
+												  unsigned long *data);
+  XERXES_EXPORT int XERXES_API dxp_read_register(int *detChan, char *name,
+												 unsigned long *data);
 XERXES_EXPORT int XERXES_API dxp_cmd(int *detChan, byte_t *cmd, unsigned int *lenS, byte_t *send,
 				     unsigned int *lenR, byte_t *receive, byte_t *ioFlags);
 XERXES_EXPORT int XERXES_API dxp_exit(int *detChan);
 
-  XERXES_EXPORT void XERXES_API dxp_unit_test(void);
 
 XERXES_EXPORT int XERXES_API dxp_set_io_priority(int *priority);
 
@@ -202,24 +204,18 @@ XERXES_EXPORT int XERXES_API dxp_set_io_priority(int *priority);
 #ifndef EXCLUDE_DXP4C2X
 XERXES_IMPORT int DXP_API dxp_init_dxp4c2x(Functions *funcs);
 #endif /* EXCLUDE_DXP4C2X */
-#ifndef EXCLUDE_DXP4C
-XERXES_IMPORT int DXP_API dxp_init_dxp4c(Functions *funcs);
-#endif /* EXCLUDE_DXP4C */
 #ifndef EXCLUDE_DXPX10P
 XERXES_IMPORT int DXP_API dxp_init_dxpx10p(Functions *funcs);
 #endif /* EXCLUDE_DXPX10P */
-#ifndef EXCLUDE_DGF200
-XERXES_IMPORT int DXP_API dxp_init_dgfg200(Functions *funcs);
-#endif /* EXCLUDE_DGF200 */
-#ifndef EXCLUDE_POLARIS
-XERXES_IMPORT int DXP_API dxp_init_polaris(Functions *funcs);
-#endif /* EXCLUDE_POLARIS */
 #ifndef EXCLUDE_UDXPS
 XERXES_IMPORT int DXP_API dxp_init_udxps(Functions *funcs);
 #endif /* EXCLUDE_UDXPS */
 #ifndef EXCLUDE_UDXP
 XERXES_IMPORT int DXP_API dxp_init_udxp(Functions *funcs);
 #endif /* EXCLUDE_UDXP */
+#ifndef EXCLUDE_XMAP
+  XERXES_IMPORT int DXP_API dxp_init_xmap(Functions *funcs);
+#endif /* EXCLUDE_XMAP */
 
 XERXES_IMPORT int MD_API dxp_md_init_util(Xia_Util_Functions *funcs, char *type);
 XERXES_IMPORT int MD_API dxp_md_init_io(Xia_Io_Functions *funcs, char *type);
@@ -271,7 +267,6 @@ XERXES_EXPORT int XERXES_API dxp_control_task_info();
 XERXES_EXPORT int XERXES_API dxp_get_control_task_data();
 XERXES_EXPORT int XERXES_API dxp_readout_detector_run();
   XERXES_EXPORT int XERXES_API dxp_readout_sca();
-XERXES_EXPORT int XERXES_API dxp_write_spectra();
 XERXES_EXPORT int XERXES_API dxp_dspconfig();
 XERXES_EXPORT int XERXES_API dxp_dspdefaults();
 XERXES_EXPORT int XERXES_API dxp_fipconfig();
@@ -339,7 +334,6 @@ XERXES_EXPORT int XERXES_API dxp_unhook();
 
   XERXES_EXPORT int XERXES_API dxp_exit();
 
-  XERXES_EXPORT void XERXES_API dxp_unit_test();
 
   XERXES_EXPORT int XERXES_API dxp_set_io_priority();
 
@@ -348,24 +342,19 @@ XERXES_EXPORT int XERXES_API dxp_unhook();
 #ifndef EXCLUDE_DXP4C2X
 XERXES_IMPORT int DXP_API dxp_init_dxp4c2x();
 #endif /* EXCLUDE_DXP4C2X */
-#ifndef EXCLUDE_DXP4C
-XERXES_IMPORT int DXP_API dxp_init_dxp4c();
-#endif /* EXCLUDE_DXP4C */
 #ifndef EXCLUDE_DXPX10P
 XERXES_IMPORT int DXP_API dxp_init_dxpx10p();
 #endif /* EXCLUDE_DXPX10P */
-#ifndef EXCLUDE_DGF200
-XERXES_IMPORT int DXP_API dxp_init_dgfg200();
-#endif /* EXCLUDE_DGF200 */
-#ifndef EXCLUDE_POLARIS
-XERXES_IMPORT int DXP_API dxp_init_polaris();
-#endif /* EXCLUDE_POLARIS */  
 #ifndef EXCLUDE_UDXPS
 XERXES_IMPORT int DXP_API dxp_init_udxps();
 #endif /* EXCLUDE_UDXPS */
 #ifndef EXCLUDE_UDXP
 XERXES_IMPORT int DXP_API dxp_init_udxp();
 #endif /* EXCLUDE_UDXP */
+
+#ifndef EXCLUDE_XMAP
+  XERXES_IMPORT int DXP_API dxp_init_xmap();
+#endif /* EXCLUDE_XMAP */
 
 XERXES_IMPORT int MD_API dxp_md_init_util();
 XERXES_IMPORT int MD_API dxp_md_init_io();
@@ -403,6 +392,10 @@ DXP_MD_FREE xerxes_md_free;
 DXP_MD_PUTS xerxes_md_puts;
 DXP_MD_WAIT xerxes_md_wait;
 DXP_MD_SET_PRIORITY xerxes_md_set_priority;
+DXP_MD_FGETS xerxes_md_fgets;
+DXP_MD_TMP_PATH xerxes_md_tmp_path;
+DXP_MD_CLEAR_TMP xerxes_md_clear_tmp;
+DXP_MD_PATH_SEP  xerxes_md_path_separator;
 
 XERXES_EXPORT Utils *utils;
 
@@ -414,8 +407,18 @@ XERXES_EXPORT Utils *utils;
 #define dxp_log_debug(x, y)		xerxes_md_log(MD_DEBUG, (x), (y), 0, __FILE__, __LINE__)
 
 
+/* Memory allocation macro wrappers */
+#ifdef USE_XIA_MEM_MANAGER
+#include "xia_mem.h"
+#define xerxes_md_alloc(n)  xia_mem_malloc((n), __FILE__, __LINE__)
+#define xerxes_md_free(ptr) xia_mem_free(ptr)
+#endif /* USE_XIA_MEM_MANAGER */
+
 /* Constants */
 #define MAX_MEM_TYPE_LEN  80
+
+/* This macro helps reduce the line length for function calls to the DD layer. */
+#define DD_FUNC(x)   (x)->btype->funcs
 
 
 #endif						/* Endif for XIA_XERXES_H */

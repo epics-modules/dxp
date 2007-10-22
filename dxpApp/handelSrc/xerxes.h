@@ -1,11 +1,8 @@
 /*
  *  xerxes.h
  *
- *  Modified 2-Feb-97 EO: add prototype for dxp_primitive routines
- *      dxp_read_long and dxp_write_long; added various parameters
- *  Major Mods 3-17-00 JW: Complete revamping of libraries
- *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -38,6 +35,9 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
+ *
+ * $Id: xerxes.h,v 1.2 2007-10-22 04:00:39 rivers Exp $
+ *
  *    Following are prototypes for dxp driver routines
  */
 
@@ -46,16 +46,10 @@
 #define XERXES_H
 
 /* Define some generic constants for use by XerXes */
-#ifndef XERXES_GENERIC_H
-#include <xerxes_generic.h>
-#endif	
-
-#include <xia_xerxes_structures.h>
-#include <xerxes_structures.h>
-
-#ifndef XERXESDEF_H
-#include <xerxesdef.h>
-#endif
+#include "xerxes_generic.h"
+#include "xia_xerxes_structures.h"
+#include "xerxes_structures.h"
+#include "xerxesdef.h"
 
 /* If this is compiled by a C++ compiler, make it clear that these are C routines */
 #ifdef __cplusplus
@@ -112,10 +106,11 @@ XERXES_IMPORT int XERXES_API dxp_start_control_task(int *detChan, short *type,
 XERXES_IMPORT int XERXES_API dxp_stop_control_task(int *detChan);
 XERXES_IMPORT int XERXES_API dxp_control_task_info(int *detChan, short *type, int *info);
 XERXES_IMPORT int XERXES_API dxp_get_control_task_data(int *detChan, short *type, void *data);
-XERXES_IMPORT int XERXES_API dxp_readout_detector_run(int *detChan, unsigned short params[], 
-						      unsigned short [], unsigned long []);
+XERXES_IMPORT int XERXES_API dxp_readout_detector_run(int *detChan,
+													  unsigned short params[],
+													  unsigned long baseline[],
+													  unsigned long spectrum[]);
   XERXES_IMPORT int XERXES_API dxp_readout_sca(int *detChan, unsigned long *sca);
-XERXES_IMPORT int XERXES_API dxp_write_spectra(int *,int *);
 XERXES_IMPORT int XERXES_API dxp_dspdefaults(int *);
 XERXES_IMPORT int XERXES_API dxp_dspconfig(void);
 XERXES_IMPORT int XERXES_API dxp_fipconfig(void);
@@ -182,15 +177,16 @@ XERXES_IMPORT int XERXES_API dxp_read_memory(int *detChan, char *name, unsigned 
   XERXES_IMPORT int XERXES_API dxp_write_memory(int *detChan, char *name, unsigned long *data);
 XERXES_IMPORT int XERXES_API dxp_memory_length(int *detChan, char *name, unsigned long *length);
 
-XERXES_IMPORT int XERXES_API dxp_write_register(int *detChan, char *name, unsigned short *data);
-XERXES_IMPORT int XERXES_API dxp_read_register(int *detChan, char *name, unsigned short *data);
+XERXES_IMPORT int XERXES_API dxp_write_register(int *detChan, char *name,
+												unsigned long *data);
+XERXES_IMPORT int XERXES_API dxp_read_register(int *detChan, char *name,
+											   unsigned long *data);
 
 XERXES_IMPORT int XERXES_API dxp_cmd(int *detChan, byte_t *cmd, unsigned int *lenS, byte_t *send,
 				     unsigned int *lenR, byte_t *receive, byte_t *ioFlags);
 
 XERXES_IMPORT int XERXES_API dxp_exit(int *detChan);
 
-  XERXES_IMPORT void XERXES_API dxp_unit_test(void);
 
 XERXES_IMPORT int XERXES_API dxp_set_io_priority(int *priority);
 
@@ -243,7 +239,6 @@ XERXES_IMPORT int XERXES_API dxp_control_task_info();
 XERXES_IMPORT int XERXES_API dxp_get_control_task_data();
 XERXES_IMPORT int XERXES_API dxp_readout_detector_run();
   XERXES_IMPORT int XERXES_API dxp_readout_sca();
-XERXES_IMPORT int XERXES_API dxp_write_spectra();
 XERXES_IMPORT int XERXES_API dxp_dspconfig();
 XERXES_IMPORT int XERXES_API dxp_dspdefaults();
 XERXES_IMPORT int XERXES_API dxp_fipconfig();
@@ -311,7 +306,6 @@ XERXES_IMPORT int XERXES_API dxp_cmd();
 
 XERXES_IMPORT int XERXES_API dxp_exit();
 
-  XERXES_IMPORT void XERXES_API dxp_unit_test();
 
   XERXES_IMPORT void XERXES_API dxp_get_version_info();
 

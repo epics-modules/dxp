@@ -1,10 +1,8 @@
 /*
  *  xerxes_structures.h
  *
- *  Created 6-22-00:  JW: Header for user use, it has better name space protection
- *						  This header is needed for the Machine Dependent code.
- *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -37,6 +35,8 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
+ * $Id: xerxes_structures.h,v 1.2 2007-10-22 04:00:39 rivers Exp $
+ *
  */
 
 
@@ -53,7 +53,7 @@
 /*
  *  Structure that points at the functions within the MD Interface
  */
-typedef int (*DXP_MD_IO)(int *, unsigned int *, unsigned int *, unsigned short *,
+typedef int (*DXP_MD_IO)(int *, unsigned int *, unsigned long *, void *,
 						 unsigned int *);
 typedef int (*DXP_MD_INITIALIZE)(unsigned int *, char *);
 typedef int (*DXP_MD_OPEN)(char *, int *);
@@ -95,6 +95,10 @@ typedef int (*DXP_MD_ENABLE_LOG)(void);
 typedef int (*DXP_MD_SET_LOG_LEVEL)(int);
 typedef void (*DXP_MD_LOG)(int, char *, char *, int, char *, int);
 typedef int (*DXP_MD_SET_PRIORITY)(int *);
+typedef char * (*DXP_MD_FGETS)(char *s, int size, FILE *stream); 
+typedef char * (*DXP_MD_TMP_PATH)(void);
+typedef void (*DXP_MD_CLEAR_TMP)(void);
+typedef char * (*DXP_MD_PATH_SEP)(void);
 
 struct Xia_Util_Functions {
   DXP_MD_ERROR_CONTROL dxp_md_error_control;
@@ -112,6 +116,10 @@ struct Xia_Util_Functions {
   DXP_MD_SET_LOG_LEVEL dxp_md_set_log_level;
   DXP_MD_LOG dxp_md_log;
   DXP_MD_SET_PRIORITY dxp_md_set_priority;
+  DXP_MD_FGETS dxp_md_fgets;
+  DXP_MD_TMP_PATH dxp_md_tmp_path;
+  DXP_MD_CLEAR_TMP dxp_md_clear_tmp;
+  DXP_MD_PATH_SEP dxp_md_path_separator;
 };
 typedef struct Xia_Util_Functions Xia_Util_Functions;
 

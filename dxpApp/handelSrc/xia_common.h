@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *  
  *
- * $Id: xia_common.h,v 1.4 2006-06-21 21:10:50 rivers Exp $
+ * $Id: xia_common.h,v 1.5 2007-10-22 03:59:43 rivers Exp $
  *
  *    All of the useful typedefs and macros
  *    go in here. Two conditions must be met

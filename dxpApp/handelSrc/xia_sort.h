@@ -1,10 +1,8 @@
-
 /*
  * xia_sort.h
  *
- * Created 10/16/01 -- PJF
- *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -36,6 +34,8 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
+ *
+ * $Id: xia_sort.h,v 1.2 2007-10-22 03:59:43 rivers Exp $
  *
  */
 
