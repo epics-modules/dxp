@@ -4,7 +4,8 @@
  *
  *  Created 10/01/03 -- PJF
  *
- * Copyright (c) 2003, X-ray Instrumentation Associates
+ * Copyright (c) 2003,2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 

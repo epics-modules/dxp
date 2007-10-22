@@ -1,11 +1,8 @@
 /*
  * xia_handel_structures.h
  *
- * Autonomous HanDeL structures definitions...
- *
- * Created 8/23/01 -- PJF
- *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -37,6 +34,8 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
+ *
+ * $Id: xia_handel_structures.h,v 1.2 2007-10-22 03:59:43 rivers Exp $
  *
  */
 
@@ -206,6 +205,11 @@ struct FirmwareSet {
      */
     unsigned int numKeywords;
 
+  /* Temporary directory where the expanded firmware files are stored.
+   * Can be NULL.
+   */
+  char *tmpPath;
+
     /* Point to the single MMU possible for each processor */
     char *mmu;
 
@@ -254,24 +258,27 @@ typedef struct Detector Detector;
 
 struct CurrentFirmware
 {
-    /* The current fippi that is being used. This exists so that
-     * we can check to see if we are running with the same fippi
-     * or not before downloading it again when the user does things
-     * like change peaking time.
-     */
-    char currentFiPPI[MAXFILENAME_LEN];
+  /* The current fippi that is being used. This exists so that
+   * we can check to see if we are running with the same fippi
+   * or not before downloading it again when the user does things
+   * like change peaking time.
+   */
+  char currentFiPPI[MAXFILENAME_LEN];
 
-    /* The current "user fippi" that is being used. */
-    char currentUserFiPPI[MAXFILENAME_LEN];
+  /* The current "user fippi" that is being used. */
+  char currentUserFiPPI[MAXFILENAME_LEN];
  
-    /* The current dsp that is being used. */
-    char currentDSP[MAXFILENAME_LEN];
+  /* The current dsp that is being used. */
+  char currentDSP[MAXFILENAME_LEN];
 
-    /* The current "user dsp" that is being used. */
-    char currentUserDSP[MAXFILENAME_LEN];
+  /* The current "user dsp" that is being used. */
+  char currentUserDSP[MAXFILENAME_LEN];
 
-    /* The current "mmu" that is being used. */
-    char currentMMU[MAXFILENAME_LEN];
+  /* The current "mmu" that is being used. */
+  char currentMMU[MAXFILENAME_LEN];
+
+  /* Not all products support a system FPGA */
+  char currentSysFPGA[MAXFILENAME_LEN];
 };
 typedef struct CurrentFirmware CurrentFirmware;
 
@@ -378,23 +385,25 @@ typedef struct Module Module;
  * track of which pointer to use via the "type".
  */
 struct HDLInterface {
-    /* Type of interface being defined here...j73a, epp, etc... */
-    unsigned int type;
+  /* Type of interface being defined here...j73a, epp, etc... */
+  unsigned int type;
 
-    /* Pointers to the various interface structures. Only ONE pointer should
-     * be valid per Interface structure. For instance, don't try and allocate
-     * memory for both the EPP and JY73A pointers! Use type (declared above)
-     * to determine which pointer to play with.
-     */
-    union {
-	struct Interface_Jy73a  *jorway73a;
-	struct Interface_Epp    *epp;
-	struct Interface_Serial *serial;
-	struct Interface_Usb    *usb;
-	struct Interface_Arcnet *arcnet;
+  /* Pointers to the various interface structures. Only ONE pointer should
+   * be valid per Interface structure. For instance, don't try and allocate
+   * memory for both the EPP and JY73A pointers! Use type (declared above)
+   * to determine which pointer to play with.
+   */
+  union {
+	  struct Interface_Jy73a  *jorway73a;
+	  struct Interface_Epp    *epp;
+	  struct Interface_Serial *serial;
+	  struct Interface_Usb    *usb;
+    struct Interface_Usb2   *usb2;
+	  struct Interface_Arcnet *arcnet;
+	  struct Interface_Plx    *plx;
 	  
-	/* Add other specific interfaces here */
-    } info;
+	  /* Add other specific interfaces here */
+  } info;
 };
 typedef struct HDLInterface HDLInterface;
 
@@ -433,6 +442,12 @@ struct Interface_Usb {
 };
 typedef struct Interface_Usb Interface_Usb;
 
+struct Interface_Usb2 {
+    /* The device name of the USB2 port. */
+    unsigned int device_number;
+};
+typedef struct Interface_Usb2 Interface_Usb2;
+
 struct Interface_Arcnet {
     /* The device name of the ARCNET port. */
     unsigned int node_id;
@@ -448,5 +463,14 @@ struct Interface_Serial {
     unsigned int baud_rate;
 };
 typedef struct Interface_Serial Interface_Serial;
+
+typedef struct Interface_Plx {
+  /* The PCI bus that the slot is on */
+  byte_t bus;
+  
+  /* The PCI slot that the module is plugged into */
+  byte_t slot;
+
+} Interface_Plx;
 
 #endif /* XIA_HANDEL_STRUCTURES_H */

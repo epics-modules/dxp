@@ -1,9 +1,8 @@
 /*
  * xia_psl.h
  *
- * Created 10/15/01 -- PJF
- *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -36,6 +35,9 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
+ *
+ * $Id: xia_psl.h,v 1.2 2007-10-22 03:59:43 rivers Exp $
+ *
  */
 
 
@@ -58,14 +60,15 @@ extern "C" {
 PSL_STATIC int PSL_API pslValidateModule(Module *module);
 PSL_STATIC int PSL_API pslValidateDefaults(XiaDefaults *defaults);
 PSL_STATIC int PSL_API pslDownloadFirmware(int detChan, char *type, char *file, 
-					   CurrentFirmware *currentFirmware, 
-					   char *rawFilename);
+                                           Module *m, char *rawFilename,
+                                           XiaDefaults *defs);
 PSL_STATIC int PSL_API pslSetAcquisitionValues(int detChan, char *name, void *value, 
 					       XiaDefaults *defaults, 
 					       FirmwareSet *firmwareSet, 
 					       CurrentFirmware *currentFirmware, 
 					       char *detectorType, double gainScale, 
-					       Detector *detector, int detector_chan, Module *m);
+					       Detector *detector, int detector_chan, Module *m,
+											   int modChan);
 PSL_STATIC int PSL_API pslGetAcquisitionValues(int detChan, char *name,
 											   void *value, 
 											   XiaDefaults *defaults);
@@ -77,14 +80,17 @@ PSL_STATIC int PSL_API pslGainChange(int detChan, double deltaGain,
 									 CurrentFirmware *currentFirmware, 
 									 char *detectorType, double gainScale,
 									 Detector *detector, int detector_chan,
-									 Module *m);
-PSL_STATIC int PSL_API pslGainCalibrate(int detChan, Detector *detector, 
-					int detector_chan, XiaDefaults *defaults, 
-					double deltaGain, double gainScale);
-PSL_STATIC int PSL_API pslStartRun(int detChan, unsigned short resume, XiaDefaults *defaults);
-PSL_STATIC int PSL_API pslStopRun(int detChan);
-PSL_STATIC int PSL_API pslGetRunData(int detChan, char *name, void *value, XiaDefaults *defaults);
-PSL_STATIC int PSL_API pslSetPolarity(int detChan, Detector *detector, int detectorChannel, XiaDefaults *defaults);
+									 Module *m, int modChan);
+PSL_STATIC int PSL_API pslGainCalibrate(int detChan, Detector *det, int modChan,
+										Module *m, XiaDefaults *defs,
+										double deltaGain, double gainScale);
+PSL_STATIC int pslStartRun(int detChan, unsigned short resume, XiaDefaults *defs,
+						   Module *m);
+PSL_STATIC int pslStopRun(int detChan, Module *m);
+PSL_STATIC int PSL_API pslGetRunData(int detChan, char *name, void *value,
+									 XiaDefaults *defaults, Module *m);
+PSL_STATIC int pslSetPolarity(int detChan, Detector *det, int detectorChannel,
+							  XiaDefaults *defs, Module *m);
 PSL_STATIC int PSL_API pslSetDetectorTypeValue(int detChan, Detector *detector, int detectorChannel, XiaDefaults *defaults);
 PSL_STATIC int PSL_API pslGetDefaultAlias(char *alias, char **names, double *values);
 PSL_STATIC unsigned int PSL_API pslGetNumDefaults(void);
@@ -93,7 +99,7 @@ PSL_STATIC int PSL_API pslSetParameter(int detChan, const char *name, unsigned s
 PSL_STATIC int PSL_API pslUserSetup(int detChan, XiaDefaults *defaults, FirmwareSet *firmwareSet, 
 									CurrentFirmware *currentFirmware, char *detectorType, 
 									double gainScale, Detector *detector, int detector_chan,
-									Module *m);
+									Module *m, int modChan);
 PSL_STATIC int PSL_API pslDoSpecialRun(int detChan, char *name, double gainScale, void *info, 
 				       XiaDefaults *defaults, Detector *detector, int detector_chan);
 PSL_STATIC int PSL_API pslGetSpecialRunData(int detChan, char *name, void *value, XiaDefaults *defaults);
@@ -118,6 +124,9 @@ PSL_STATIC int PSL_API pslUnHook(int detChan);
   PSL_SHARED XiaDaqEntry * pslFindEntry(char *name, XiaDefaults *defs);
   PSL_SHARED int pslInvalidate(char *name, XiaDefaults *defs);
   PSL_SHARED void pslDumpDefaults(XiaDefaults *defs);
+  PSL_SHARED double pslU64ToDouble(unsigned long *u64);
+  PSL_SHARED int pslRemoveDefault(char *name, XiaDefaults *defs,
+								  XiaDaqEntry **removed);
 
 #ifdef _cplusplus
 }
@@ -128,6 +137,27 @@ PSL_STATIC int PSL_API pslUnHook(int detChan);
 #define pslLogWarning(x, y)	utils->funcs->dxp_md_log(MD_WARNING, (x), (y), 0, __FILE__, __LINE__)
 #define pslLogInfo(x, y)	utils->funcs->dxp_md_log(MD_INFO, (x), (y), 0, __FILE__, __LINE__)
 #define pslLogDebug(x, y)	utils->funcs->dxp_md_log(MD_DEBUG, (x), (y), 0, __FILE__, __LINE__)
+
+
+/* Memory allocation wrappers */
+
+/* This is obviously a major hack, but the problem that I'm not dealing with here
+ * is that this code is shared across all of the PSLs. Each PSL has it's own 
+ * memory naming convention. In the future, we probably shouldn't allow psl.c
+ * to do any memory management, but that is neither here nor there.
+ */
+#ifdef USE_XIA_MEM_MANAGER
+#include "xia_mem.h"
+#define MALLOC(n) xia_mem_malloc((n), __FILE__, __LINE__)
+#define FREE(ptr) xia_mem_free(ptr)
+#else
+#define MALLOC(n) utils->funcs->dxp_md_alloc(n)
+#define FREE(ptr) utils->funcs->dxp_md_free(ptr)
+#endif /* USE_XIA_MEM_MANAGER */
+
+
+/* Wrappers around other MD utility routines. */
+#define FGETS(s, size, stream) utils->funcs->dxp_md_fgets((s), (size), (stream))
 
 
 #endif /* XIA_PSL_H */

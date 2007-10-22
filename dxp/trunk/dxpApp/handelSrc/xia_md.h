@@ -1,10 +1,8 @@
-/**
+/*
+ *  xia_md.h
  *
- * xia_md.h
- *
- * Created 02/19/02 -- PJF
- *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2002,2003,2004 X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -36,6 +34,9 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
+ *
+ *
+ * $Id: xia_md.h,v 1.2 2007-10-22 03:59:43 rivers Exp $
  *
  * Prototypes for MD layer
  *
@@ -104,6 +105,16 @@ extern FILE *out_stream;
 #define dxp_md_log_warning(x, y)	dxp_md_log(MD_WARNING, (x), (y), 0,   __FILE__, __LINE__)
 #define dxp_md_log_info(x, y)		dxp_md_log(MD_INFO,    (x), (y), 0,   __FILE__, __LINE__)
 #define dxp_md_log_debug(x, y)		dxp_md_log(MD_DEBUG,   (x), (y), 0,   __FILE__, __LINE__)
+
+DXP_MD_ALLOC md_md_alloc;
+DXP_MD_FREE  md_md_free;
+
+/* Memory allocation macro wrappers */
+#ifdef USE_XIA_MEM_MANAGER
+#include "xia_mem.h"
+#define md_md_alloc(n)  xia_mem_malloc((n), __FILE__, __LINE__)
+#define md_md_free(ptr) xia_mem_free(ptr)
+#endif /* USE_XIA_MEM_MANAGER */
 
 
 #endif /* XIA_MD_H */

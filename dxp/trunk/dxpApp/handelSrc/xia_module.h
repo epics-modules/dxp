@@ -4,9 +4,8 @@
  * Contains information specific to the module dynamic
  * configuration code.
  *
- * Created 9/14/01 -- PJF
- *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -38,6 +37,9 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
+ *
+ * $Id: xia_module.h,v 1.2 2007-10-22 03:59:43 rivers Exp $
+ *
  *
  */
 
@@ -85,24 +87,32 @@ typedef struct _AddChanType {
 } AddChanType_t;
 
 /* Interface */
-enum { NO_INTERFACE = 0,
+enum {
+  NO_INTERFACE = 0,
 #ifndef EXCLUDE_CAMAC
-	   JORWAY73A,
-	   GENERIC_SCSI,
+  JORWAY73A,
+  GENERIC_SCSI,
 #endif /* EXCLUDE_CAMAC */
 #ifndef EXCLUDE_EPP
-	   EPP,
-	   GENERIC_EPP,
+  EPP,
+  GENERIC_EPP,
 #endif /* EXCLUDE_EPP */
 #ifndef EXCLUDE_SERIAL
-	   SERIAL,
+  SERIAL,
 #endif /* EXCLUDE_SERIAL */
 #ifndef EXCLUDE_USB
-	   USB,
+  USB,
 #endif /* EXCLUDE_USB */
+#ifndef EXCLUDE_USB2
+  USB2,
+#endif /* EXCLUDE_USB2 */
 #ifndef EXCLUDE_ARCNET
-	   ARCNET,
+  ARCNET,
 #endif /* EXCLUDE_ARCNET */
+#ifndef EXCLUDE_PLX
+  PLX,
+#endif /* EXCLUDE_PLX */
+  LAST_INTERFACE
 };
 
 
@@ -119,22 +129,13 @@ enum {
 };
 
 
-static ModName_t validMods[] = {
+static ModName_t KNOWN_MODS[] = {
 
 #ifndef EXCLUDE_DXPX10P
   {"dxpx10p", "dxpx10p"},
   {"saturn",  "dxpx10p"},
   {"x10p",    "dxpx10p"},
 #endif /* EXCLUDE_DXPX10P */
-
-#ifndef EXCLUDE_DGF200
-  {"dgfg200", "dgfg200"},
-  {"g200",    "dgfg200"},
-#endif /* EXCLUDE_DGF200 */
-
-#ifndef EXCLUDE_POLARIS
-  {"polaris", "polaris"},
-#endif /* EXCLUDE_POLARIS */
 
 #ifndef EXCLUDE_DXP4C2X
   {"dxp4c2x", "dxp4c2x"},
@@ -150,9 +151,13 @@ static ModName_t validMods[] = {
   {"udxp",    "udxp"},
 #endif /* EXCLUDE_UDXP */
 
+#ifndef EXCLUDE_XMAP
+  {"xmap",    "xmap"},
+#endif /* EXCLUDE_XMAP */
+
 };
 
-#define NUM_VALID_MODS (sizeof(validMods) / sizeof(validMods[0]))
+#define N_KNOWN_MODS (sizeof(KNOWN_MODS) / sizeof(KNOWN_MODS[0]))
 
 /* Channel index offset in strings like channel{n}_alias, etc */
 #define CHANNEL_IDX_OFFSET  7

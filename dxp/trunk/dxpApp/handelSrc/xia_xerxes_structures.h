@@ -1,9 +1,8 @@
 /*
  *  xia_xerxes_structures.h
  *
- *  Created 3-17-00:  JW: File to contain Data Structures for DXP drivers.
- *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -36,13 +35,15 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
+ * $Id: xia_xerxes_structures.h,v 1.2 2007-10-22 03:59:43 rivers Exp $
+ *
  */
 
 
 #ifndef XIA_XERXES_STRUCTURES_H
 #define XIA_XERXES_STRUCTURES_H
 
-#include <xerxesdef.h>
+#include "xerxesdef.h"
 #include "xia_common.h"
 
 /* 
@@ -62,6 +63,8 @@ struct Parameter {
   unsigned short ubound;
 };
 typedef struct Parameter Parameter;
+
+
 /*
  * Structure containing the DSP parameter names
  */
@@ -74,8 +77,26 @@ struct Dsp_Params {
   unsigned short maxsym;
   /* Need the maximum symbol length for allocating memory */
   unsigned short maxsymlen;
+
+  /* These members were added to improve support for hardware
+   * that doesn't have a 1-to-1 mapping between DSP chips and
+   * channels. This means that a single DSP parameter array
+   * also has to contain all of the parameters for every channel in
+   * the system.
+   *
+   * The parameters contained above in 'parameters' are assumed to be the global
+   * DSP parameters. Similarly, 'nsymbol' refers to the number of global DSP
+   * parameters.
+   */
+  struct Parameter *per_chan_parameters;
+
+  unsigned short n_per_chan_symbols;
+
+  unsigned long *chan_offsets;
 };
 typedef struct Dsp_Params Dsp_Params;
+
+
 /*
  * Linked list containing the default parameter information
  * obtained from DSP parameter configuration files
@@ -99,7 +120,7 @@ struct Dsp_Info {
   char *filename;
   unsigned short *data;
   /* Need the number of words in the dsp program (length in size unsigned short) */
-  unsigned int proglen;
+  unsigned long proglen;
   /* Need the maximum program length for allocating memory */
   unsigned int maxproglen;
   /* Structure containing parameter information */
@@ -207,6 +228,14 @@ struct Board {
   struct Dsp_Defaults **defaults;
   /* Pointer to the FiPPi Program file for each channel */
   struct Fippi_Info **fippi;
+  /* Pointer to the System FPGA for the module (optional) */
+  struct Fippi_Info *system_fpga;
+  /* Pointer to the FiPPI A program file (optional) */
+  struct Fippi_Info *fippi_a;
+  /* Pointer to the Single DSP code for modules with only a single DSP for all
+   * of the channels.
+   */
+  struct Dsp_Info *system_dsp;
   /* Pointer to the MMU Program file for each channel */
   struct Fippi_Info *mmu;
   /* Pointer to the User Defined FiPPi Program file for each channel */
@@ -234,8 +263,10 @@ typedef int (*DXP_GET_FPGACONFIG)(Fippi_Info *);
 typedef int (*DXP_DOWNLOAD_FPGACONFIG)(int *ioChan, int *modChan, char *name, Board *board);
 typedef int (*DXP_DOWNLOAD_FPGA_DONE)(int *modChan, char *name, Board *board);
 typedef int (*DXP_GET_DSPDEFAULTS)(Dsp_Defaults *);
-typedef int (*DXP_DOWNLOAD_DSPCONFIG)(int *, int *, Dsp_Info *);
-typedef int (*DXP_DOWNLOAD_DSP_DONE)(int *, int *, int*, Dsp_Info *, unsigned short *, float *);
+typedef int (*DXP_DOWNLOAD_DSPCONFIG)(int *ioChan, int *modChan, Board *board);
+typedef int (*DXP_DOWNLOAD_DSP_DONE)(int *ioChan, int *modChan, int *mod,
+									 Board *board, unsigned short *value,
+									 float *timeout);
 typedef int (*DXP_CALIBRATE_CHANNEL)(int *, int *, unsigned short *, int *, Board *board);
 typedef int (*DXP_CALIBRATE_ASC)(int *, int *, unsigned short *, Board *board);
 typedef int (*DXP_LOOK_AT_ME)(int *, int *);
@@ -245,50 +276,65 @@ typedef int (*DXP_LOC)(char *, Dsp_Info *, unsigned short *);
 typedef int (*DXP_SYMBOLNAME)(unsigned short *, Dsp_Info *, char *);
 typedef int (*DXP_READ_SPECTRUM)(int *, int *, Board *, unsigned long *);
 typedef int (*DXP_TEST_SPECTRUM_MEMORY)(int *, int *, int *, Board *);
-typedef unsigned int (*DXP_GET_SPECTRUM_LENGTH)(Dsp_Info *, unsigned short *);
+typedef int (*DXP_GET_SPECTRUM_LENGTH)(int *ioChan, int *modChan, Board *board,
+									   unsigned int *len);
 typedef int (*DXP_READ_SCA)(int *, int *, Board *, unsigned long *);
 typedef unsigned int (*DXP_GET_SCA_LENGTH)(Dsp_Info *, unsigned short *);
-typedef int (*DXP_READ_BASELINE)(int *, int *, Board *, unsigned short *);
+typedef int (*DXP_READ_BASELINE)(int *ioChan, int *modChan, Board *board,
+								 unsigned long *baseline);
 typedef int (*DXP_TEST_BASELINE_MEMORY)(int *, int *, int *, Board *);
-typedef unsigned int (*DXP_GET_BASELINE_LENGTH)(Dsp_Info *, unsigned short *);
+typedef int (*DXP_GET_BASELINE_LENGTH)(int *modChan, Board *b,
+									   unsigned int *len);
 typedef int (*DXP_TEST_EVENT_MEMORY)(int *, int *, int *, Board *);
 typedef unsigned int (*DXP_GET_EVENT_LENGTH)(Dsp_Info *, unsigned short *);
 typedef int (*DXP_WRITE_DSPPARAMS)(int *, int *, Dsp_Info *, unsigned short *);
 typedef int (*DXP_WRITE_DSP_PARAM_ADDR)(int *, int *, unsigned int *, unsigned short *);
-typedef int (*DXP_READ_DSPPARAMS)(int *, int *, Dsp_Info *, unsigned short *);
-typedef int (*DXP_READ_DSPSYMBOL)(int *, int *, char *, Dsp_Info *, double *);
-typedef int (*DXP_MODIFY_DSPSYMBOL)(int *, int *, char *, unsigned short *, Dsp_Info *);
+typedef int (*DXP_READ_DSPPARAMS)(int *ioChan, int *modChan, Board *b,
+								  unsigned short *params);
+typedef int (*DXP_READ_DSPSYMBOL)(int *, int *, char *, Board *, double *);
+typedef int (*DXP_MODIFY_DSPSYMBOL)(int *, int *, char *, unsigned short *,
+									Board *);
 typedef int (*DXP_DSPPARAM_DUMP)(int *, int *, Dsp_Info *);
 typedef int (*DXP_BEGIN_RUN)(int *ioChan, int *modChan, unsigned short *gate, 
-							unsigned short *resume, Board *board);
-typedef int (*DXP_END_RUN)(int *ioChan, int *modChan);
+							unsigned short *resume, Board *board, int *id);
+typedef int (*DXP_END_RUN)(int *ioChan, int *modChan, Board *board);
 typedef int (*DXP_RUN_ACTIVE)(int *, int *, int *);
 typedef int (*DXP_BEGIN_CONTROL_TASK)(int *ioChan, int *modChan, short *type, unsigned int *length,
 									  int *info, Board *board);
 typedef int (*DXP_END_CONTROL_TASK)(int *ioChan, int *modChan, Board *board);
 typedef int (*DXP_CONTROL_TASK_PARAMS)(int *ioChan, int *modChan, short *type, Board *board, int *info);
 typedef int (*DXP_CONTROL_TASK_DATA)(int *ioChan, int *modChan, short *type, Board *board, void *data);
-typedef int (*DXP_GET_RUNSTATS)(unsigned short *, Dsp_Info *, unsigned int *, unsigned int *, 
-								unsigned int *, unsigned int *, unsigned int *, double *, double *, double *);
+typedef int (*DXP_GET_RUNSTATS)(int *ioChan, int *modChan, Board *b,
+								unsigned long *evts, unsigned long *under, 
+								unsigned long *over, unsigned long *fast,
+								unsigned long *basee, double *live, double *icr,
+								double *ocr);
 typedef int (*DXP_DECODE_ERROR)(unsigned short *, Dsp_Info *, unsigned short *, unsigned short *);
-typedef int (*DXP_CLEAR_ERROR)(int *, int *, Dsp_Info *);
-typedef int (*DXP_CHANGE_GAINS)(int *, int *, int *, float *, Dsp_Info *);
+typedef int (*DXP_CLEAR_ERROR)(int *, int *, Board *);
+typedef int (*DXP_CHANGE_GAINS)(int *, int *, int *, float *, Board *);
 typedef int (*DXP_SETUP_ASC)(int *, int *, int *, float *, float *, unsigned short *, 
-								float *, float *, float *, Dsp_Info *);
+								float *, float *, float *, Board *);
 typedef int (*DXP_PREP_FOR_READOUT)(int *, int *);
 typedef int (*DXP_DONE_WITH_READOUT)(int *, int *, Board *);
 typedef int (*DXP_SETUP_CMD)(Board *, char *, unsigned int *, byte_t *, unsigned int *, byte_t *, byte_t);
 
 typedef int (*DXP_READ_MEM)(int *, int *, Board *, char *, unsigned long *, unsigned long *, unsigned long *);
 
-typedef int (*DXP_WRITE_REG)(int *, int *, char *, unsigned short *);
-typedef int (*DXP_READ_REG)(int *, int *, char *, unsigned short *);
+typedef int (*DXP_WRITE_REG)(int *ioChan, int *modChan, char *name,
+							 unsigned long *data);
+typedef int (*DXP_READ_REG)(int *ioChan, int *modChan, char *name,
+							unsigned long *data);
 
 typedef int (*DXP_DO_CMD)(int *, byte_t, unsigned int, byte_t *, unsigned int, byte_t *, byte_t);
 
 typedef int (*DXP_UNHOOK)(Board *board);
 
 typedef int (*DXP_WRITE_MEM)(int *, int *, Board *, char *, unsigned long *, unsigned long *, unsigned long *);
+
+typedef int (*DXP_GET_SYMBOL_BY_INDEX)(int modChan, unsigned short index,
+									   Board *board, char *name);
+typedef int (*DXP_GET_NUM_PARAMS)(int modChan, Board *board,
+								  unsigned short *n_params);
 
 struct Functions {
   DXP_INIT_DRIVER dxp_init_driver;
@@ -359,6 +405,8 @@ struct Functions {
   DXP_READ_SCA dxp_read_sca;
   DXP_WRITE_MEM dxp_write_mem;
 
+  DXP_GET_SYMBOL_BY_INDEX dxp_get_symbol_by_index;
+  DXP_GET_NUM_PARAMS dxp_get_num_params;
 };
 typedef struct Functions Functions;
 

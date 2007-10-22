@@ -1,12 +1,8 @@
 /*
  *  xia_handel.h
  *
- *  Modified 2-Feb-97 EO: add prototype for dxp_primitive routines
- *      dxp_read_long and dxp_write_long; added various parameters
- *  Major Mods 3-17-00 JW: Complete revamping of libraries
- *  Copied 6-25-01 JW: copied xia_xerxes.h to xia_handel.h
- *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -38,6 +34,9 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
+ *
+ * $Id: xia_handel.h,v 1.2 2007-10-22 03:59:43 rivers Exp $
+ *
  *
  *    Following are prototypes for HanDeL library routines
  */
@@ -93,6 +92,7 @@ HANDEL_EXPORT int HANDEL_API xiaGetNumDetectors(unsigned int *numDetectors);
 HANDEL_EXPORT int HANDEL_API xiaGetDetectors(char *detectors[]);
 HANDEL_EXPORT int HANDEL_API xiaGetDetectors_VB(unsigned int index, char *alias);
 HANDEL_EXPORT int HANDEL_API xiaRemoveDetector(char *alias);
+  HANDEL_EXPORT int HANDEL_API xiaDetectorFromDetChan(int detChan, char *alias);
 HANDEL_EXPORT int HANDEL_API xiaNewFirmware(char *alias);
 HANDEL_EXPORT int HANDEL_API xiaAddFirmwareItem(char *alias, char *name, void *value);
 HANDEL_EXPORT int HANDEL_API xiaModifyFirmwareItem(char *alias, unsigned short ptrr, char *name, void *value);
@@ -110,6 +110,7 @@ HANDEL_EXPORT int HANDEL_API xiaGetNumModules(unsigned int *numModules);
 HANDEL_EXPORT int HANDEL_API xiaGetModules(char *modules[]);
 HANDEL_EXPORT int HANDEL_API xiaGetModules_VB(unsigned int index, char *alias);
 HANDEL_EXPORT int HANDEL_API xiaRemoveModule(char *alias);
+  HANDEL_EXPORT int HANDEL_API xiaModuleFromDetChan(int detChan, char *alias);
 HANDEL_EXPORT int HANDEL_API xiaAddChannelSetElem(unsigned int detChanSet, unsigned int newChan);
 HANDEL_EXPORT int HANDEL_API xiaRemoveChannelSetElem(unsigned int detChan, unsigned int chan);
 HANDEL_EXPORT int HANDEL_API xiaRemoveChannelSet(unsigned int detChan);
@@ -149,6 +150,12 @@ HANDEL_EXPORT int HANDEL_API xiaBuildErrorTable(void);
 
   HANDEL_EXPORT void HANDEL_API xiaGetVersionInfo(int *rel, int *min, int *maj,
 												  char *pretty);
+
+  HANDEL_EXPORT int HANDEL_API xiaMemStatistics(unsigned long *total,
+												unsigned long *current,
+												unsigned long *peak);
+  HANDEL_EXPORT void HANDEL_API xiaMemSetCheckpoint(void);
+  HANDEL_EXPORT void HANDEL_API xiaMemLeaks(char *out);
 
 #ifdef __MEM_DBG__
 
@@ -248,6 +255,10 @@ HANDEL_EXPORT int HANDEL_API xiaBuildErrorTable();
 
   HANDEL_EXPORT void HANDEL_API xiaGetVersionInfo();
 
+  HANDEL_EXPORT int HANDEL_API xiaMemStatistics();
+  HANDEL_EXPORT void HANDEL_API xiaMemSetCheckpoint();
+  HANDEL_EXPORT void HANDEL_API xiaMemLeaks();
+
 #ifdef _DEBUG
 
 HANDEL_EXPORT void HANDEL_API xiaDumpDetChanStruct();
@@ -316,7 +327,7 @@ HANDEL_SHARED int HANDEL_API xiaGetAbsoluteChannel(int detChan, Module *module, 
 HANDEL_SHARED int HANDEL_API xiaTagAllRunActive(Module *module, boolean_t state);
 
 
-#include <xerxes_structures.h>
+#include "xerxes_structures.h"
 
 
 /* Create some useful abbreviations here so that I don't have to do utils->funcs->
@@ -332,6 +343,7 @@ DXP_MD_ALLOC         handel_md_alloc;
 DXP_MD_FREE			 	handel_md_free;
 DXP_MD_PUTS			 	handel_md_puts;
 DXP_MD_WAIT			 	handel_md_wait;
+DXP_MD_FGETS         handel_md_fgets;
 
 #define XIA_BEFORE		0
 #define XIA_AFTER			1
@@ -342,6 +354,13 @@ DXP_MD_WAIT			 	handel_md_wait;
 #define xiaLogInfo(x, y)			handel_md_log(MD_INFO, (x), (y), 0, __FILE__, __LINE__)
 #define xiaLogDebug(x, y)			handel_md_log(MD_DEBUG, (x), (y), 0, __FILE__, __LINE__)
 
+
+/* Memory allocation macro wrappers */
+#ifdef USE_XIA_MEM_MANAGER
+#include "xia_mem.h"
+#define handel_md_alloc(n)   xia_mem_malloc((n), __FILE__, __LINE__)
+#define handel_md_free(ptr)  xia_mem_free(ptr)
+#endif /* USE_XIA_MEM_MANAGER */
 
 /* Detector-type constants */
 #define XIA_DET_UNKNOWN	0x0000

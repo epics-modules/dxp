@@ -1,9 +1,8 @@
 /*
  *  xerxes_errors.h
  *
- *  Created 3-17-00:  JW: File to contain Error codes for DXP drivers.
- *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -36,13 +35,16 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
+ *
+ * $Id: xerxes_errors.h,v 1.2 2007-10-22 04:00:39 rivers Exp $
+ *
  */
 
 
 #ifndef XERXES_ERROR_H
 #define XERXES_ERROR_H
 
-#include <xerxesdef.h>
+#include "xerxesdef.h"
 
 /*
  *  some error codes
@@ -63,6 +65,11 @@
 #define DXP_MDNOHANDLE        11
 #define DXP_MDINVALIDPRIORITY 12
 #define DXP_MDPRIORITY        13
+#define DXP_MDINVALIDNAME     14
+#define DXP_MDNOMEM           15
+#define DXP_RW_MISMATCH       16
+#define DXP_REWRITE_FAILURE   17 /** Couldn't set parameter even after n iterations. */
+#define DXP_MD_TARGET_ADDR    18
 
 /*  primitive level error codes (due to mdio failures) 101-200*/
 #define DXP_WRITE_TSAR       101
@@ -91,6 +98,7 @@
 #define DXP_WRITE_MMU        120
 #define DXP_CHECKSUM         121
 #define DXP_BAD_ADDRESS      122
+#define DXP_BAD_BIT          123 /** Requested bit is out-of-range */
 
 /*  DSP/FIPPI level error codes 201-300  */
 #define DXP_MEMERROR         201
@@ -114,6 +122,7 @@
 #define DXP_NOFIPPI			 219
 #define DXP_DSPSLEEP		 220
 #define DXP_TIMEOUT          221
+#define DXP_DSP_RETRY        222 /** DSP failed to download after multiple attempts */
 
 
 /*  configuration errors  301-400  */
@@ -144,6 +153,16 @@
 #define DXP_NULL             325
 #define DXP_BUF_LEN          326
 #define DXP_UNKNOWN_MEM      327
+#define DXP_UNKNOWN_ELEM     328
+#define DXP_UNKNOWN_FPGA     329
+#define DXP_FPGA_TIMEOUT     330
+#define DXP_MALFORMED_FILE   331
+#define DXP_UNKNOWN_CT       332 /** Unknown control task */
+#define DXP_APPLY_STATUS     333
+#define DXP_INVALID_LENGTH   334 /** Specified length is invalid */
+#define DXP_NO_SCA           335 /** No SCAs defined for the specified channel */
+#define DXP_FPGA_CRC         336 /** CRC error after FPGA downloaded */
+#define DXP_UNKNOWN_REG      337 /** Unknown register */
 
 /*  host machine errors codes:  401-500 */
 #define DXP_NOMEM            401
@@ -156,6 +175,8 @@
 #define DXP_MISSING_ESC      409
 #define DXP_MEMORY_OOR       410
 #define DXP_MEMORY_LENGTH    411
+#define DXP_MEMORY_BLK_SIZE  412
+#define DXP_WIN32_API        413
 
 /*  misc error codes:  501-600 */
 #define DXP_LOG_LEVEL		 501	/** Log level invalid */

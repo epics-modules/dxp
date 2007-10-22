@@ -1,9 +1,8 @@
 /*
  *  xia_fdd.h
  *
- *  Created 15-Dec-2001: JEW
- *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -36,6 +35,9 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
+ * $Id: xia_fdd.h,v 1.2 2007-10-22 03:59:43 rivers Exp $
+ *
+ *
  */
 
 
@@ -43,17 +45,17 @@
 #define XIA_FDD_H
 
 /* Define some generic constants for use by FDD */
-#include <handel_generic.h>
-#include <md_generic.h>
+#include "handel_generic.h"
+#include "md_generic.h"
 
 /* Include structure typedefs for exporting of global variables */
-#include <xia_fdd_structures.h>
-#include <xerxes_structures.h>
+#include "xia_fdd_structures.h"
+#include "xerxes_structures.h"
 
 #include "xia_handel_structures.h"
 #include "xia_common.h"
 
-#include <fdddef.h>
+#include "fdddef.h"
 
 #define CODE_VERSION						   0
 #define CODE_REVISION		  			   6
@@ -76,10 +78,13 @@ extern "C" {
  */
 FDD_EXPORT int FDD_API xiaFddInitialize(void);
 FDD_EXPORT int FDD_API xiaFddInitLibrary(void);
-FDD_EXPORT int FDD_API xiaFddGetFirmware(const char *filename, const char *ftype, 
-					 double pt,  unsigned int nother, const char **others, 
-					 const char *detectorType, char newfilename[MAXFILENAME_LEN], 
-					 char rawFilename[MAXFILENAME_LEN]);
+  FDD_EXPORT int FDD_API xiaFddGetFirmware(const char *filename, char *path,
+                                           const char *ftype, 
+                                           double pt,  unsigned int nother,
+                                           const char **others, 
+                                           const char *detectorType,
+                                           char newfilename[MAXFILENAME_LEN], 
+                                           char rawFilename[MAXFILENAME_LEN]);
 FDD_EXPORT int FDD_API xiaFddAddFirmware(const char *filename, const char *ftype, 
 					 double ptmin, double ptmax,
 					 unsigned short nother, char **others, 
@@ -93,7 +98,7 @@ FDD_EXPORT int FDD_API xiaFddGetFilterInfo(const char *filename, double peakingT
 
 /* Routines contained in xia_common.c.  Routines that are used across libraries but not exported */
 static FILE* dxp_find_file(const char *, const char *, char [MAXFILENAME_LEN]);
-FDD_STATIC boolean_t FDD_API xiaFddFindFirmware(const char *filename, const char *ftype, 
+FDD_STATIC boolean_t xiaFddFindFirmware(const char *filename, const char *ftype, 
 					      double ptmin, double ptmax, 
 					      unsigned int nother, char **others,
 					      const char *mode, FILE **fp, boolean_t *exact, char rawFilename[MAXFILENAME_LEN]);
@@ -114,7 +119,7 @@ FDD_EXPORT int FDD_API xiaFddGetFilterInfo();
 
 /* Routines contained in xia_common.c.  Routines that are used across libraries but not exported */
 static FILE* dxp_find_file();
-FDD_STATIC boolean_t FDD_API xiaFddFindFirmware();
+FDD_STATIC boolean_t xiaFddFindFirmware();
 
 FDD_IMPORT int dxp_md_init_util();
 
@@ -145,6 +150,8 @@ DXP_MD_ALLOC fdd_md_alloc;
 DXP_MD_FREE fdd_md_free;
 DXP_MD_PUTS fdd_md_puts;
 DXP_MD_WAIT fdd_md_wait;
+DXP_MD_FGETS fdd_md_fgets;
+DXP_MD_PATH_SEP fdd_md_path_separator;
 
 /* Logging macro wrappers */
 #define xiaFddLogError(x, y, z)	fdd_md_log(MD_ERROR, (x), (y), (z), __FILE__, __LINE__)
@@ -152,5 +159,11 @@ DXP_MD_WAIT fdd_md_wait;
 #define xiaFddLogInfo(x, y)		fdd_md_log(MD_INFO, (x), (y), 0, __FILE__, __LINE__)
 #define xiaFddLogDebug(x, y)		fdd_md_log(MD_DEBUG, (x), (y), 0, __FILE__, __LINE__)
 
+/* Memory allocation macro wrappers */
+#ifdef USE_XIA_MEM_MANAGER
+#include "xia_mem.h"
+#define fdd_md_alloc(n)  xia_mem_malloc((n), __FILE__, __LINE__)
+#define fdd_md_free(ptr) xia_mem_free(ptr)
+#endif /* USE_XIA_MEM_MANAGER */
 
 #endif						/* Endif for XIA_FDD_H */

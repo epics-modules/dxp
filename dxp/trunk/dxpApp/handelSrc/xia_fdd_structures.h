@@ -1,9 +1,8 @@
 /*
  *  xia_fdd_structures.h
  *
- *  Created 12-15-01:  JW: File to contain Data Structures for FDD.
- *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -36,13 +35,16 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
+ * $Id: xia_fdd_structures.h,v 1.2 2007-10-22 03:59:43 rivers Exp $
+ *
+ *
  */
 
 
 #ifndef XIA_FDD_STRUCTURES_H
 #define XIA_FDD_STRUCTURES_H
 
-#include <fdddef.h>
+#include "fdddef.h"
 
 /* 
  * Begin FDD structures 
