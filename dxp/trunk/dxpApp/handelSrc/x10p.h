@@ -1,10 +1,8 @@
 /*
  *  dxp4c2x.h
  *
- *  Modified 2-Feb-97 EO: add prototype for dxp_primitive routines
- *      dxp_read_long and dxp_write_long; added various parameters
- *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -37,6 +35,9 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  * 
+ *
+ * $Id: x10p.h,v 1.2 2007-10-23 02:16:33 rivers Exp $
+ *
  *    Following are prototypes for dxp4c2x.c routines
  */
 
@@ -44,13 +45,8 @@
 #ifndef X10P_H
 #define X10P_H
 
-#ifndef XERXESDEF_H
-#include <xerxesdef.h>
-#endif
-
-#ifndef XERXES_GENERIC_H
-#include <xerxes_generic.h>
-#endif
+#include "xerxesdef.h"
+#include "xerxes_generic.h"
 
 #define LATEST_BOARD_TYPE		  "DXP-X10P"
 #define LATEST_BOARD_VERSION		     "D"
@@ -64,6 +60,7 @@
 #define MAXDSP_LEN       0x8000
 #define MAXFIP_LEN   0x00020000
 #define MAX_FIPPI			  5
+#define XDONE_TIMEOUT  0.050
 
 /*
  * ASC parameters:
@@ -131,7 +128,7 @@
 #define MASK_UNUSED3      0x0008
 #define MASK_DSPRESET     0x0010
 #define MASK_FIPRESET     0x0020
-#define MASK_UNUSED8      0x0100
+#define MASK_FIPERR       0x0100
 #define MASK_UNUSED9      0x0200
 #define MASK_UNUSED10     0x0400
 #define MASK_IGNOREGATE   0x0800
