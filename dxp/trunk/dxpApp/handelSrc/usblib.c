@@ -25,6 +25,7 @@
 #include "dlldefs.h"
 #include "usblib.h"
 
+
 unsigned char inBuffer[262144];
 unsigned char outBuffer[262144];
 
