@@ -25,6 +25,9 @@
 #include "dlldefs.h"
 #include "usblib.h"
 
+unsigned char inBuffer[262144];
+unsigned char outBuffer[262144];
+
 XIA_EXPORT int XIA_API usb_open(char *device, HANDLE *hDevice)
 {
   /* Get handle to USB device */
@@ -66,7 +69,6 @@ XIA_EXPORT int XIA_API usb_read(long address, long nWords, char *device, unsigne
   unsigned long nBytes = 0;
   BOOL bResult = FALSE;
   HANDLE hDevice = NULL;
-  unsigned char inBuffer[262144];
   long inPacketSize, outPacketSize;
   BULK_TRANSFER_CONTROL bulkControl;
 
@@ -162,7 +164,6 @@ XIA_EXPORT int XIA_API usb_write(long address, long nWords, char *device, unsign
   unsigned long nBytes = 0;
   BOOL bResult = FALSE;
   HANDLE hDevice = NULL;
-  unsigned char outBuffer[262144];
   long outPacketSize;
   BULK_TRANSFER_CONTROL bulkControl;
 
