@@ -4,7 +4,8 @@
  *
  * Created 10/12/01 -- PJF
  *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2002,2003,2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -46,7 +47,6 @@
 #include "xia_common.h"
 
 #include "handel_errors.h"
-#include "handel_test.h"
 
 #include "psl.h"
 #include "fdd.h"
@@ -91,6 +91,7 @@ HANDEL_EXPORT int HANDEL_API xiaStartSystem(void)
     int status;
 
     DetChanElement *current = NULL;
+
 
     /* Validate system-wide LLs */
     status = xiaValidateFirmwareSets();
@@ -199,13 +200,14 @@ HANDEL_EXPORT int HANDEL_API xiaDownloadFirmware(int detChan, char *type)
     double peakingTime;
 
     char boardType[MAXITEM_LEN];
-    char fileName[MAXFILENAME_LEN];
+    char fileName[MAX_PATH_LEN];
     char rawFilename[MAXFILENAME_LEN];
     char detType[MAXITEM_LEN];
 
     char *alias;
     char *firmAlias;
     char *defAlias;
+    char *tmpPath = NULL;
 
     FirmwareSet *firmwareSet = NULL;
 
@@ -218,6 +220,8 @@ HANDEL_EXPORT int HANDEL_API xiaDownloadFirmware(int detChan, char *type)
     DetChanSetElem *detChanSetElem = NULL;
 
     CurrentFirmware *currentFirmware = NULL;
+
+    XiaDefaults *defs = NULL;
 
     PSLFuncs localFuncs;
 
@@ -242,6 +246,9 @@ HANDEL_EXPORT int HANDEL_API xiaDownloadFirmware(int detChan, char *type)
 		
 		peakingTime = xiaGetValueFromDefaults("peaking_time", defAlias);
 		
+    defs = xiaGetDefaultFromDetChan(detChan);
+    ASSERT(defs != NULL);
+
 		firmwareSet = xiaFindFirmware(firmAlias);
 		
 		if (firmwareSet->filename == NULL) 
@@ -282,10 +289,18 @@ HANDEL_EXPORT int HANDEL_API xiaDownloadFirmware(int detChan, char *type)
 				break;
 			  }
 			
+      if (firmwareSet->tmpPath) {
+        tmpPath = firmwareSet->tmpPath;
+      } else {
+        tmpPath = utils->funcs->dxp_md_tmp_path();
+      }
+
 	    /* Use the FDD here */
-			status = xiaFddGetFirmware(firmwareSet->filename, type, peakingTime, 
-									   firmwareSet->numKeywords, firmwareSet->keywords,
-									   detType, fileName, rawFilename);
+			status = xiaFddGetFirmware(firmwareSet->filename, tmpPath, type,
+                                 peakingTime, firmwareSet->numKeywords,
+                                 firmwareSet->keywords, detType, fileName,
+                                 rawFilename);
+
 			if (status != XIA_SUCCESS) 
 			  {
 				xiaLogError("xiaDownloadFirmware", "Error getting firmware from FDD", status);
@@ -312,7 +327,8 @@ HANDEL_EXPORT int HANDEL_API xiaDownloadFirmware(int detChan, char *type)
 			return status;
 		  }
 		
-		status = localFuncs.downloadFirmware(detChan, type, fileName, currentFirmware, rawFilename);
+		status = localFuncs.downloadFirmware(detChan, type, fileName, module,
+                                         rawFilename, defs);
 		
 		if (status != XIA_SUCCESS)
 		  {
@@ -322,22 +338,21 @@ HANDEL_EXPORT int HANDEL_API xiaDownloadFirmware(int detChan, char *type)
 		  }
 		
 		/* Sync up the current firmware structure here */
-		if (STREQ(type, "fippi"))
-		  {
-			strcpy(module->currentFirmware[modChan].currentFiPPI, rawFilename);
-			
-		  } else if (STREQ(type, "dsp")) {
-			
-			strcpy(module->currentFirmware[modChan].currentDSP, rawFilename);
-			
-		  } else if (STREQ(type, "user_fippi")) {
-			
-			strcpy(module->currentFirmware[modChan].currentUserFiPPI, rawFilename);
-			
-		  } else if (STREQ(type, "user_dsp")) {
-			
-			strcpy(module->currentFirmware[modChan].currentUserDSP, rawFilename);
-		  }
+		if (STREQ(type, "fippi")) {
+          strcpy(module->currentFirmware[modChan].currentFiPPI, rawFilename);
+
+        } else if (STREQ(type, "dsp")) {
+          strcpy(module->currentFirmware[modChan].currentDSP, rawFilename);
+
+        } else if (STREQ(type, "user_fippi")) {
+          strcpy(module->currentFirmware[modChan].currentUserFiPPI, rawFilename);
+
+        } else if (STREQ(type, "user_dsp")) {
+          strcpy(module->currentFirmware[modChan].currentUserDSP, rawFilename);
+
+        } else if (STREQ(type, "system_fpga")) {
+          strcpy(module->currentFirmware[modChan].currentSysFPGA, rawFilename);
+        }
 		break;
 		
       case SET:
@@ -841,18 +856,6 @@ HANDEL_SHARED int HANDEL_API xiaLoadPSL(char *boardType, PSLFuncs *funcs)
 	status = dxpx10p_PSLInit(funcs);
 #endif /* EXCLUDE_DXPX10P */   
 
-#ifndef EXCLUDE_DGF200
-    } else if (STREQ(boardType, "dgfg200")) {
-	      
-	status = dgfg200_PSLInit(funcs);
-#endif /* EXCLUDE_DGF200 */	      
-
-#ifndef EXCLUDE_POLARIS
-    } else if (STREQ(boardType, "polaris")) {
-	      
-	status = polaris_PSLInit(funcs);
-#endif /* EXCLUDE_POLARIS */	      
-
 #ifndef EXCLUDE_DXP4C2X
     } else if (STREQ(boardType, "dxp4c2x") ||
 	       STREQ(boardType, "dxp2x4c") ||
@@ -872,6 +875,12 @@ HANDEL_SHARED int HANDEL_API xiaLoadPSL(char *boardType, PSLFuncs *funcs)
       
 	status = udxp_PSLInit(funcs);
 #endif /* EXCLUDE_UDXP */   
+
+#ifndef EXCLUDE_XMAP
+	} else if (STREQ(boardType, "xmap")) {
+	  
+	  status = xmap_PSLInit(funcs);
+#endif /* EXCLUDE_XMAP */
 
     } else {
 	      
@@ -909,6 +918,17 @@ HANDEL_EXPORT int HANDEL_API xiaBoardOperation(int detChan, char *name, void *va
 	XiaDefaults *defs = NULL;
 
     PSLFuncs localFuncs;
+
+
+	if (name == NULL) {
+	  xiaLogError("xiaBoardOperation", "'name' can not be NULL", XIA_NULL_NAME);
+	  return XIA_NULL_NAME;
+	}
+
+	if (value == NULL) {
+	  xiaLogError("xiaBoardOperation", "'value' can not be NULL", XIA_NULL_VALUE);
+	  return XIA_NULL_VALUE;
+	}
 
     elemType = xiaGetElemType((unsigned int)detChan);
 
@@ -1220,8 +1240,3 @@ HANDEL_STATIC int HANDEL_API _parseMemoryName(char *name, char *type, boolean_t 
   handel_md_free(n);
   return XIA_SUCCESS;
 }
-
-
-#ifdef _DEBUG
-#include "handel_system_t.c"
-#endif /* _DEBUG */

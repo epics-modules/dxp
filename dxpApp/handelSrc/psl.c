@@ -6,7 +6,8 @@
  *
  * Created 04/04/02 -- PJF
  *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2002,2003,2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -112,6 +113,52 @@ PSL_SHARED int PSL_API pslSetDefault(char *name, void *value,
 }
 
 
+/** @brief Removes the named default.
+ *
+ * This routine does not check if the default is required or not. Removing
+ * required defaults will most certainly cause the library to crash (most likely
+ * on a failed ASSERT).
+ *
+ * Returns a pointer to the pointer of the removed block. The calling function is
+ * responsible for freeing the removed default.
+ */
+PSL_SHARED int pslRemoveDefault(char *name, XiaDefaults *defs,
+								XiaDaqEntry **removed)
+{
+  XiaDaqEntry *e    = NULL;
+  XiaDaqEntry *prev = NULL;
+
+
+  ASSERT(name != NULL);
+  ASSERT(defs != NULL);
+
+
+  for (e = defs->entry; e != NULL; prev = e, e = e->next) {
+
+	if (STREQ(name, e->name)) {
+	  if (!prev) {
+		defs->entry = e->next;
+	  
+	  } else {
+		prev->next = e->next;
+	  }
+
+	  *removed = e;
+
+	  sprintf(info_string, "e = %p", e);
+	  pslLogDebug("pslRemoveDefault", info_string);
+
+	  return XIA_SUCCESS;
+	}
+  }
+
+  sprintf(info_string, "Unable to find acquisition value '%s' in defaults",
+		  name);
+  pslLogError("pslRemoveDefault", info_string, XIA_NOT_FOUND);
+  return XIA_NOT_FOUND;
+}
+
+
 /** @brief Converts a detChan to a modChan
  *
  * Converts a detChan to the modChan for the specified module. \n
@@ -164,9 +211,9 @@ PSL_SHARED int PSL_API pslDestroySCAs(Module *m, unsigned int modChan)
   ASSERT(m != NULL);
 
 
-  utils->funcs->dxp_md_free(m->ch[modChan].sca_lo);
+  FREE(m->ch[modChan].sca_lo);
   m->ch[modChan].sca_lo = NULL;
-  utils->funcs->dxp_md_free(m->ch[modChan].sca_hi);
+  FREE(m->ch[modChan].sca_hi);
   m->ch[modChan].sca_hi = NULL;
 
   m->ch[modChan].n_sca = 0;
@@ -253,4 +300,22 @@ PSL_SHARED void pslDumpDefaults(XiaDefaults *defs)
 
   sprintf(info_string, "...Ending dump of '%s'", defs->alias);
   pslLogDebug("pslDumpDefaults", info_string);
+}
+
+
+/** @brief Converts an array of 2 32-bit unsigned longs to a double.
+ *
+ * It is an unchecked exception to a pass a NULL array into this routine.
+ */
+PSL_SHARED double pslU64ToDouble(unsigned long *u64)
+{
+  double d = 0.0;
+
+
+  ASSERT(u64 != NULL);
+
+
+  d = (double)u64[0] + ((double)u64[1] * pow(2.0, 32.0));
+
+  return d;
 }

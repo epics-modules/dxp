@@ -8,7 +8,8 @@
  * that were once in the (now non-existent) file
  * handel_dynamic_config.c. 
  *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2002,2003,2004 X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -58,6 +59,7 @@
 #include "handel_errors.h"
 #include "xia_handel_structures.h"
 #include "xia_common.h"
+#include "xia_assert.h"
 
 
 HANDEL_STATIC int HANDEL_API xiaSetFirmwareItem(FirmwareSet *fs, Firmware *f, 
@@ -154,6 +156,7 @@ HANDEL_EXPORT int HANDEL_API xiaNewFirmware(char *alias)
     current->filename    = NULL;
     current->keywords    = NULL;
     current->numKeywords = 0;
+    current->tmpPath     = NULL;
     current->mmu         = NULL;
     current->firmware    = NULL;
     current->next        = NULL;
@@ -200,7 +203,7 @@ HANDEL_EXPORT int HANDEL_API xiaAddFirmwareItem(char *alias, char *name, void *v
     if (value == NULL)
     {
 	status = XIA_BAD_VALUE;
-	sprintf(info_string,"Value can not be NULL");
+	sprintf(info_string,"Value for item '%s' can not be NULL", name);
 	xiaLogError("xiaAddFirmwareItem", info_string, status);
 	return status;
     }
@@ -325,17 +328,18 @@ HANDEL_EXPORT int HANDEL_API xiaModifyFirmwareItem(char *alias, unsigned short p
      * which breaks the code if a ptrr check is performed
      */
     if (STREQ(name, "filename") ||
-	STREQ(name, "mmu"))
+        STREQ(name, "mmu") ||
+        STREQ(name, "fdd_tmp_path"))
     {
-	status = xiaSetFirmwareItem(chosen, current, name, value);
-	if (status != XIA_SUCCESS)
-	{
-	    sprintf(info_string, "Failure to set Firmware data: %s", name);
-	    xiaLogError("xiaModifyFirmwareItem", info_string, status);
-	    return status;
-	}
+      status = xiaSetFirmwareItem(chosen, current, name, value);
+      
+      if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Failure to set '%s' for '%s'", name, alias);
+        xiaLogError("xiaModifyFirmwareItem", info_string, status);
+        return status;
+      }
 
-	return status;
+      return status;
     }
 
 
@@ -427,6 +431,25 @@ HANDEL_EXPORT int HANDEL_API xiaGetFirmwareItem(char *alias, unsigned short ptrr
 	} else { 
 	    strcpy((char *)value, chosen->filename);
 	}
+
+    } else if (STREQ(strtemp, "fdd_tmp_path")) {
+
+      if (chosen->filename == NULL) {
+        sprintf(info_string, "No FDD file for '%s'", chosen->alias);
+        xiaLogError("xiaGetFirmwareItem", info_string, XIA_NO_FILENAME);
+        return XIA_NO_FILENAME;
+      }
+
+      if (chosen->tmpPath == NULL) {
+        sprintf(info_string, "FDD temporary file path never defined for '%s'",
+                chosen->alias);
+        xiaLogError("xiaGetFirmwareItem", info_string, XIA_NO_TMP_PATH);
+        return XIA_NO_TMP_PATH;
+      }
+
+      ASSERT((strlen(chosen->tmpPath) + 1) < MAXITEM_LEN);
+
+      strcpy((char *)value, chosen->tmpPath);
 
     } else if (STREQ(strtemp, "mmu")) {
 
@@ -707,7 +730,22 @@ HANDEL_STATIC int HANDEL_API xiaSetFirmwareItem(FirmwareSet *fs, Firmware *f, ch
 	}
 
 	strcpy(fs->filename, (char *)value);
-		
+	
+    } else if (STREQ(name, "fdd_tmp_path")) {
+
+      len = strlen((char *)value);
+
+      fs->tmpPath = handel_md_alloc(len + 1);
+
+      if (!fs->tmpPath) {
+        sprintf(info_string, "Unable to allocated %d bytes for 'fs->tmpPath' with "
+                "alias = '%s'", len + 1, fs->alias);
+        xiaLogError("xiaSetFirmwareItem", info_string, XIA_NOMEM);
+        return XIA_NOMEM;
+      }
+
+      strcpy(fs->tmpPath, (char *)value);
+	
     } else if (STREQ(name, "keyword")) {
 	/* Check to see if the filename exists, because if it doesn't, then there is
 	 * no reason to be entering keywords. N.b. There is no _real_ reason that the

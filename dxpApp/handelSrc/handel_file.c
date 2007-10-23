@@ -6,7 +6,8 @@
  *
  * Created 12/12/01 -- PJF
  *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2002,2003,2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -48,11 +49,13 @@
 #include "handel_generic.h"
 #include "xia_handel.h"
 #include "handel_errors.h"
-#include "xia_file.h"
+#include "handel_file.h"
+
 #include "xia_module.h"
 #include "xia_common.h"
+#include "xia_assert.h"
+#include "xia_file.h"
 
-#include "handel_test.h"
 
 /* For the "xerxes_sav" type.
  * This is not a documented save
@@ -63,7 +66,52 @@
 #include "xerxes_errors.h"
 
 
+typedef int (*interfaceWrite_FP)(FILE *, Module *);
+
+typedef struct _InterfaceWriter {
+
+  unsigned int type;
+  interfaceWrite_FP fn;
+
+} InterfaceWriters_t;
+
+
+static int writePLX(FILE *fp, Module *module);
+static int writeEPP(FILE *fp, Module *module);
+static int writeJ73A(FILE *fp, Module *module);
+static int writeUSB(FILE *fp, Module *module);
+static int writeUSB2(FILE *fp, Module *m);
+static int writeInterface(FILE *fp, Module *m);
+
+static FILE* dxp_find_file(const char *, const char *, char [MAXFILENAME_LEN]);
+
+static char line[132];
+
+
 /** GLOBAL Variables **/
+static InterfaceWriters_t INTERFACE_WRITERS[] = {
+  /* Sentinel */
+  {0, NULL},
+#ifndef EXCLUDE_PLX
+  {PLX,          writePLX},
+#endif /* EXCLUDE_PLX */
+#ifndef EXCLUDE_EPP
+  {EPP,          writeEPP},
+  {GENERIC_EPP,  writeEPP},
+#endif /* EXCLUDE_PLX */
+#ifndef EXCLUDE_CAMAC
+  {JORWAY73A,    writeJ73A},
+  {GENERIC_SCSI, writeJ73A},
+#endif /* EXCLUDE_CAMAC */
+#ifndef EXCLUDE_USB
+  {USB,          writeUSB},
+#endif /* EXCLUDE_USB */
+#ifndef EXCLUDE_USB2
+  {USB2,         writeUSB2},
+#endif /* EXCLUDE_USB2 */
+};
+
+
 SectionInfo sectionInfo[] = 
     {
 	{xiaLoadDetector, "detector definitions"},
@@ -72,36 +120,55 @@ SectionInfo sectionInfo[] =
 	{xiaLoadModule,   "module definitions"}
     };
 
-static FILE* dxp_find_file(const char *, const char *, char [MAXFILENAME_LEN]);
 
-static char line[132];
-
-/*****************************************************************************
+/** @brief Loads in a save file of type @a type.
  *
- * This routine dispatches a file to other routines to be read in. 
- * Eventually, we will be able to handle multiple formats, but for now we 
- * will only load in files that are in the style of the HanDeL ini file.
- *
- *****************************************************************************/
+ * When Handel loads a system it first must clear out the existing configuration
+ * in order to allow the other configuration calls to succeed. If you load a 
+ * file that is malformed, you will also lose the existing configuration.
+ */
 HANDEL_EXPORT int HANDEL_API xiaLoadSystem(char *type, char *filename)
 {
     int status;
 
-    if (STREQ(type, "handel_ini"))
-    {
+
+	if (type == NULL) {
+	  xiaLogError("xiaLoadSystem", ".INI file 'type' string is NULL",
+				  XIA_NULL_TYPE);
+	  return XIA_NULL_TYPE;
+	}
+  
+	if (filename == NULL) {
+	  xiaLogError("xiaLoadSystem", ".INI file 'name' string is NULL",
+				  XIA_NO_FILENAME);
+	  return XIA_NO_FILENAME;
+	}
+
+	/* If we support different output types in the future, we need to change
+	 * this logic around.
+	 */
+	if (!STREQ(type, "handel_ini")) {
+	  sprintf(info_string, "Unknown file type '%s' for target save file '%s'",
+			  type, filename);
+	  xiaLogError("xiaLoadSystem", info_string, XIA_FILE_TYPE);
+	  return XIA_FILE_TYPE;
+	}
+
+	/* We need to clear and re-initialize Handel */
+	status = xiaInitHandel();
+
+	if (status != XIA_SUCCESS) {
+	  xiaLogError("xiaLoadSystem", "Error reinitializing Handel", status);
+	  return status;
+	}
+
 	status = xiaReadIniFile(filename);
 
-    } else {
-		
-	status = XIA_FILE_TYPE;
-    }
-
-    if (status != XIA_SUCCESS)
-    {
-	sprintf(info_string, "Error loading %s", filename);
-	xiaLogError("xiaLoadSystem", info_string, status);
-	return status;
-    }
+	if (status != XIA_SUCCESS) {
+	  sprintf(info_string, "Error reading in .INI file '%s'", filename);
+	  xiaLogError("xiaLoadSystem", info_string, status);
+	  return status;
+	}
 
     return XIA_SUCCESS;
 }
@@ -223,7 +290,7 @@ HANDEL_STATIC int HANDEL_API xiaWriteIniFile(char *filename)
       return status;
     }
   
-  iniFile = fopen(filename, "w");
+  iniFile = xia_file_open(filename, "w");
   if (iniFile == NULL)
     {
       status = XIA_OPEN_FILE;
@@ -253,7 +320,7 @@ HANDEL_STATIC int HANDEL_API xiaWriteIniFile(char *filename)
 
 	  default:
 	  case XIA_DET_UNKNOWN:
-	    fclose(iniFile);
+	    xia_file_close(iniFile);
 	    status = XIA_MISSING_TYPE;
 	    sprintf(info_string, "Unknown detector type for alias %s", detector->alias);
 	    xiaLogError("xiaWriteIniFile", info_string, status);
@@ -279,7 +346,7 @@ HANDEL_STATIC int HANDEL_API xiaWriteIniFile(char *filename)
 		break;
 
 	      default:
-		fclose(iniFile);
+		xia_file_close(iniFile);
 		status = XIA_UNKNOWN;
 		xiaLogError("xiaWriteIniFile", "Impossible polarity error", status);
 		return status;
@@ -305,6 +372,11 @@ HANDEL_STATIC int HANDEL_API xiaWriteIniFile(char *filename)
 	if (firmwareSet->filename != NULL)
 	{
 	    fprintf(iniFile, "filename = %s\n", firmwareSet->filename);
+      
+      if (firmwareSet->tmpPath != NULL) {
+        fprintf(iniFile, "fdd_tmp_path = %s\n", firmwareSet->tmpPath);
+      }
+
 	    fprintf(iniFile, "num_keywords = %u\n", firmwareSet->numKeywords);
 			
 	    for (j = 0; j < firmwareSet->numKeywords; j++)
@@ -378,58 +450,67 @@ HANDEL_STATIC int HANDEL_API xiaWriteIniFile(char *filename)
 	fprintf(iniFile, "START #%d\n", i);
 	fprintf(iniFile, "alias = %s\n", module->alias);
 	fprintf(iniFile, "module_type = %s\n", module->type);
-		
-	switch (module->interface_info->type)
-	{
-#ifndef EXCLUDE_CAMAC
-	  case JORWAY73A:
-	  case GENERIC_SCSI:
-	    fprintf(iniFile, "interface = j73a\n");
-	    fprintf(iniFile, "scsi_bus = %u\n", module->interface_info->info.jorway73a->scsi_bus);
-	    fprintf(iniFile, "crate_number = %u\n", module->interface_info->info.jorway73a->crate_number);
-	    fprintf(iniFile, "slot = %u\n", module->interface_info->info.jorway73a->slot);
-	    break;
-#endif /* EXCLUDE_CAMAC */
 
-#ifndef EXCLUDE_EPP
-	  case EPP:
-	  case GENERIC_EPP:
-	    fprintf(iniFile, "interface = epp\n");
-	    fprintf(iniFile, "epp_address = %#x\n", module->interface_info->info.epp->epp_address);
-		/* Bug #79, the old format for daisy_chain_id was %#x */
-	    fprintf(iniFile, "daisy_chain_id = %u\n", module->interface_info->info.epp->daisy_chain_id);
-	    break;
-#endif /* EXCLUDE_EPP */
+	status = writeInterface(iniFile, module);
 
-#ifndef EXCLUDE_USB
-	  case USB:
-	    fprintf(iniFile, "interface = usb\n");
-	    fprintf(iniFile, "device_number = %i\n", module->interface_info->info.usb->device_number);
-	    break;
-#endif /* EXCLUDE_USB */
-
-#ifndef EXCLUDE_ARCNET
-	  case ARCNET:
-	    fprintf(iniFile, "interface = arcnet\n");
-	    fprintf(iniFile, "node_id = %i\n", module->interface_info->info.arcnet->node_id);
-	    break;
-#endif /* EXCLUDE_ARCNET */
-
-#ifndef EXCLUDE_SERIAL
-	  case SERIAL:
-	    fprintf(iniFile, "interface = serial\n");
-	    fprintf(iniFile, "com_port = %u\n", module->interface_info->info.serial->com_port);
-	    fprintf(iniFile, "baud_rate = %u\n", module->interface_info->info.serial->baud_rate);
-	    break;
-#endif /* EXCLUDE_SERIAL */
-
-	  default:
-	    fclose(iniFile);
-	    status = XIA_UNKNOWN;
-	    xiaLogError("xiaWriteIniFile", "Impossible interface error", status);
-	    return status;
-	    break;
+	if (status != XIA_SUCCESS) {
+	  sprintf(info_string, "Error writing interface information for module "
+			  "'%s'", module->alias);
+	  xiaLogError("xiaWriteIniFile", info_string, status);
+	  return status;
 	}
+
+/* 	switch (module->interface_info->type) */
+/* 	{ */
+/* #ifndef EXCLUDE_CAMAC */
+/* 	  case JORWAY73A: */
+/* 	  case GENERIC_SCSI: */
+/* 	    fprintf(iniFile, "interface = j73a\n"); */
+/* 	    fprintf(iniFile, "scsi_bus = %u\n", module->interface_info->info.jorway73a->scsi_bus); */
+/* 	    fprintf(iniFile, "crate_number = %u\n", module->interface_info->info.jorway73a->crate_number); */
+/* 	    fprintf(iniFile, "slot = %u\n", module->interface_info->info.jorway73a->slot); */
+/* 	    break; */
+/* #endif /\* EXCLUDE_CAMAC *\/ */
+
+/* #ifndef EXCLUDE_EPP */
+/* 	  case EPP: */
+/* 	  case GENERIC_EPP: */
+/* 	    fprintf(iniFile, "interface = epp\n"); */
+/* 	    fprintf(iniFile, "epp_address = %#x\n", module->interface_info->info.epp->epp_address); */
+/* 		/\* Bug #79, the old format for daisy_chain_id was %#x *\/ */
+/* 	    fprintf(iniFile, "daisy_chain_id = %u\n", module->interface_info->info.epp->daisy_chain_id); */
+/* 	    break; */
+/* #endif /\* EXCLUDE_EPP *\/ */
+
+/* #ifndef EXCLUDE_USB */
+/* 	  case USB: */
+/* 	    fprintf(iniFile, "interface = usb\n"); */
+/* 	    fprintf(iniFile, "device_number = %i\n", module->interface_info->info.usb->device_number); */
+/* 	    break; */
+/* #endif /\* EXCLUDE_USB *\/ */
+
+/* #ifndef EXCLUDE_ARCNET */
+/* 	  case ARCNET: */
+/* 	    fprintf(iniFile, "interface = arcnet\n"); */
+/* 	    fprintf(iniFile, "node_id = %i\n", module->interface_info->info.arcnet->node_id); */
+/* 	    break; */
+/* #endif /\* EXCLUDE_ARCNET *\/ */
+
+/* #ifndef EXCLUDE_SERIAL */
+/* 	  case SERIAL: */
+/* 	    fprintf(iniFile, "interface = serial\n"); */
+/* 	    fprintf(iniFile, "com_port = %u\n", module->interface_info->info.serial->com_port); */
+/* 	    fprintf(iniFile, "baud_rate = %u\n", module->interface_info->info.serial->baud_rate); */
+/* 	    break; */
+/* #endif /\* EXCLUDE_SERIAL *\/ */
+
+/* 	  default: */
+/* 	    xia_file_close(iniFile); */
+/* 	    status = XIA_UNKNOWN; */
+/* 	    xiaLogError("xiaWriteIniFile", "Impossible interface error", status); */
+/* 	    return status; */
+/* 	    break; */
+/* 	} */
 
 	fprintf(iniFile, "number_of_channels = %u\n", module->number_of_channels);
 		
@@ -445,7 +526,7 @@ HANDEL_STATIC int HANDEL_API xiaWriteIniFile(char *filename)
 	fprintf(iniFile, "END #%d\n\n", i);
     }
 
-    fclose(iniFile);
+    xia_file_close(iniFile);
 
     return XIA_SUCCESS;
 }
@@ -552,7 +633,7 @@ HANDEL_SHARED int HANDEL_API xiaReadIniFile(char *inifile)
 		status = sectionInfo[i].function_ptr(fp, &local, &local_end);
 
 		if (status != XIA_SUCCESS) {
-		  fclose(fp);
+		  xia_file_close(fp);
 		  xiaLogError("xiaReadIniFile", "Error loading information from ini file", status);
 		  return status;
 		}
@@ -570,13 +651,12 @@ HANDEL_SHARED int HANDEL_API xiaReadIniFile(char *inifile)
 	}
     }
 
-	fclose(fp);
+	xia_file_close(fp);
 
     return XIA_SUCCESS;
 }
 
 
-/*#include <xia_common.c>*/
 
 /******************************************************************************
  *
@@ -587,10 +667,8 @@ HANDEL_SHARED int HANDEL_API xiaReadIniFile(char *inifile)
  * Finally try to open the file as an environment variable.
  *
  ******************************************************************************/
-static FILE* dxp_find_file(const char* filename, const char* mode, char newFile[MAXFILENAME_LEN])
-/* const char *filename;			Input: filename to open			*/
-/* const char *mode;				Input: Mode to use when opening	*/
-/* char *newFile;					Output: Full filename of file (translated env vars)	*/
+static FILE* dxp_find_file(const char* filename, const char* mode,
+						   char newFile[MAXFILENAME_LEN])
 {
     FILE *fp=NULL;
     char *name=NULL, *name2=NULL;
@@ -600,8 +678,10 @@ static FILE* dxp_find_file(const char* filename, const char* mode, char newFile[
 
 	
 
+	ASSERT(filename != NULL);
+
     /* Try to open file directly */
-    if((fp=fopen(filename,mode))!=NULL){
+    if((fp=xia_file_open(filename,mode))!=NULL){
 	len = MAXFILENAME_LEN>(strlen(filename)+1) ? strlen(filename) : MAXFILENAME_LEN;
 	strncpy(newFile, filename, len);
 	newFile[len] = '\0';
@@ -612,7 +692,7 @@ static FILE* dxp_find_file(const char* filename, const char* mode, char newFile[
 	name = (char *) handel_md_alloc(sizeof(char)*
 					(strlen(home)+strlen(filename)+2));
 	sprintf(name, "%s/%s", home, filename);
-	if((fp=fopen(name,mode))!=NULL){
+	if((fp=xia_file_open(name,mode))!=NULL){
 	    len = MAXFILENAME_LEN>(strlen(name)+1) ? strlen(name) : MAXFILENAME_LEN;
 	    strncpy(newFile, name, len);
 	    newFile[len] = '\0';
@@ -627,7 +707,7 @@ static FILE* dxp_find_file(const char* filename, const char* mode, char newFile[
 	name = (char *) handel_md_alloc(sizeof(char)*
 					(strlen(home)+strlen(filename)+2));
 	sprintf(name, "%s/%s", home, filename);
-	if((fp=fopen(name,mode))!=NULL){
+	if((fp=xia_file_open(name,mode))!=NULL){
 	    len = MAXFILENAME_LEN>(strlen(name)+1) ? strlen(name) : MAXFILENAME_LEN;
 	    strncpy(newFile, name, len);
 	    newFile[len] = '\0';
@@ -639,7 +719,7 @@ static FILE* dxp_find_file(const char* filename, const char* mode, char newFile[
     }
     /* Try to open the file as an environment variable */
     if ((name=getenv(filename))!=NULL) {
-	if((fp=fopen(name,mode))!=NULL){
+	if((fp=xia_file_open(name,mode))!=NULL){
 	    len = MAXFILENAME_LEN>(strlen(name)+1) ? strlen(name) : MAXFILENAME_LEN;
 	    strncpy(newFile, name, len);
 	    newFile[len] = '\0';
@@ -655,7 +735,7 @@ static FILE* dxp_find_file(const char* filename, const char* mode, char newFile[
 	    name = (char *) handel_md_alloc(sizeof(char)*
 					    (strlen(home)+strlen(name2)+2));
 	    sprintf(name, "%s/%s", home, name2);
-	    if((fp=fopen(name,mode))!=NULL) {
+	    if((fp=xia_file_open(name,mode))!=NULL) {
 		len = MAXFILENAME_LEN>(strlen(name)+1) ? strlen(name) : MAXFILENAME_LEN;
 		strncpy(newFile, name, len);
 		newFile[len] = '\0';
@@ -674,7 +754,7 @@ static FILE* dxp_find_file(const char* filename, const char* mode, char newFile[
 	    name = (char *) handel_md_alloc(sizeof(char)*
 					    (strlen(home)+strlen(name2)+2));
 	    sprintf(name, "%s/%s", home, name2);
-	    if((fp=fopen(name,mode))!=NULL) {
+	    if((fp=xia_file_open(name,mode))!=NULL) {
 		len = MAXFILENAME_LEN>(strlen(name)+1) ? strlen(name) : MAXFILENAME_LEN;
 		strncpy(newFile, name, len);
 		newFile[len] = '\0';
@@ -810,7 +890,7 @@ HANDEL_STATIC int HANDEL_API xiaGetLine(FILE *fp, char *lline)
     /* Now fine the match to the section entry */
     do 
     {
-	cstatus = fgets(lline, 132, fp); 
+	cstatus = handel_md_fgets(lline, 132, fp); 
 	/* Check for any alphanumeric character in the line */
 	for (j = 0; j < (unsigned int)strlen(lline); j++) 
 	{ 
@@ -849,7 +929,7 @@ HANDEL_STATIC int HANDEL_API xiaFindEntryLimits(FILE *fp, const char *section, f
     /* Now fine the match to the section entry */
     do {
 	do {
-	    cstatus = fgets(line, 132, fp);
+	    cstatus = handel_md_fgets(line, 132, fp);
 	    /* 
 	       sprintf(info_string, "Line read: %s", line);
 	       xiaLogDebug("xiaFindEntryLimits", info_string);
@@ -903,7 +983,7 @@ HANDEL_STATIC int HANDEL_API xiaFindEntryLimits(FILE *fp, const char *section, f
 	 */
 	fgetpos(fp, end);
  
-	cstatus = fgets(line, 132, fp);
+	cstatus = handel_md_fgets(line, 132, fp);
 	/*
 	  sprintf(info_string, "cstatus == %s", (cstatus == NULL) ? "NULL" : cstatus);
 	  xiaLogDebug("xiaFindEntryStart", info_string);
@@ -1109,6 +1189,9 @@ HANDEL_STATIC int xiaLoadModule(FILE *fp, fpos_t *start, fpos_t *end)
     int status;
     int chanAlias;
 
+	byte_t pciSlot;
+	byte_t pciBus;
+	
     unsigned int numChans;
     unsigned int scsiBus;
     unsigned int crate;
@@ -1120,6 +1203,7 @@ HANDEL_STATIC int xiaLoadModule(FILE *fp, fpos_t *start, fpos_t *end)
     unsigned int baudRate;
     unsigned int deviceNumber;
     unsigned int nodeID;
+    unsigned int itemp;
 
     double chanGain;
 
@@ -1337,6 +1421,15 @@ HANDEL_STATIC int xiaLoadModule(FILE *fp, fpos_t *start, fpos_t *end)
 
     } else if (STREQ(interface, "usb")) {
 	  
+      status = xiaAddModuleItem(alias, "interface", interface);
+
+      if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error setting interface to '%s' for module "
+                "with alias '%s'", interface, alias);
+        xiaLogError("xiaLoadModule", info_string, status);
+        return status;
+      }
+
 	  status = xiaFileRA(fp, start, end, "device_number", value);
 	  
 	  if (status != XIA_SUCCESS) {
@@ -1358,7 +1451,84 @@ HANDEL_STATIC int xiaLoadModule(FILE *fp, fpos_t *start, fpos_t *end)
 	    xiaLogError("xiaLoadModule", info_string, status);
 	    return status;
 	  }
+    
+    } else if (STREQ(interface, "usb2")) {
+
+      status = xiaAddModuleItem(alias, "interface", interface);
+
+      if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error setting interface to '%s' for module "
+                "with alias '%s'", interface, alias);
+        xiaLogError("xiaLoadModule", info_string, status);
+        return status;
+      }
 	  
+	  status = xiaFileRA(fp, start, end, "device_number", value);
+	  
+	  if (status != XIA_SUCCESS) {
+		
+	    xiaLogError("xiaLoadModule", "Unable to load device number", status);
+	    return status;
+	  }
+
+	  sscanf(value, "%u", &deviceNumber);
+	  
+	  sprintf(info_string, "Device Number = %u", deviceNumber);
+	  xiaLogDebug("xiaLoadModule", info_string);
+	  
+	  status = xiaAddModuleItem(alias, "device_number", (void *)&deviceNumber);
+	  
+	  if (status != XIA_SUCCESS) {
+		
+	    sprintf(info_string, "Error adding Device Number to module %s", alias);
+	    xiaLogError("xiaLoadModule", info_string, status);
+	    return status;
+	  }
+	 
+	} else if (STREQ(interface, "pxi")) {
+	  
+	  status = xiaFileRA(fp, start, end, "pci_slot", value);
+
+	  if (status != XIA_SUCCESS) {
+		xiaLogError("xiaLoadModule", "Unable to load 'pci_slot'", status);
+		return status;
+	  }
+
+	  sscanf(value, "%u", &itemp);
+	  pciSlot = itemp;
+
+	  sprintf(info_string, "PCI Slot = %u", pciSlot);
+	  xiaLogDebug("xiaLoadModule", info_string);
+
+	  status = xiaAddModuleItem(alias, "pci_slot", (void *)&pciSlot);
+
+	  if (status != XIA_SUCCESS) {
+		sprintf(info_string, "Error adding PCI slot to module %s", alias);
+		xiaLogError("xiaLoadModule", info_string, status);
+		return status;
+	  } 
+
+	  status = xiaFileRA(fp, start, end, "pci_bus", value);
+
+	  if (status != XIA_SUCCESS) {
+		xiaLogError("xiaLoadModule", "Unable to load 'pci_bus'", status);
+		return status;
+	  }
+
+	  sscanf(value, "%u", &itemp);
+	  pciBus = itemp;
+
+	  sprintf(info_string, "PCI Bus = %u", pciBus);
+	  xiaLogDebug("xiaLoadModule", info_string);
+
+	  status = xiaAddModuleItem(alias, "pci_bus", (void *)&pciBus);
+
+	  if (status != XIA_SUCCESS) {
+		sprintf(info_string, "Error adding PCI bus to module %s", alias);
+		xiaLogError("xiaLoadModule", info_string, status);
+		return status;
+	  }
+
     } else if (STREQ(interface, "arcnet")) {
 	  
 	  status = xiaFileRA(fp, start, end, "node_id", value);
@@ -1512,7 +1682,7 @@ HANDEL_STATIC int xiaLoadModule(FILE *fp, fpos_t *start, fpos_t *end)
 
 	    sscanf(value, "%lf", &chanGain);
 
-	    sprintf(info_string, "%s = %f", name, chanGain);
+	    sprintf(info_string, "%s = %.3f", name, chanGain);
 	    xiaLogDebug("xiaLoadModule", info_string);
 
 	    status = xiaAddModuleItem(alias, name, (void *)&chanGain);
@@ -1656,6 +1826,7 @@ HANDEL_STATIC int xiaLoadFirmware(FILE *fp, fpos_t *start, fpos_t *end)
     char alias[MAXALIAS_LEN];
     char file[MAXFILENAME_LEN];
     char mmu[MAXFILENAME_LEN];
+    char path[MAXITEM_LEN];
     /* k-e-y-w-o-r-d + (possibly) 2 numeric digits + \0
      * N.b. Better not be more then 100 keywords 
      */
@@ -1719,6 +1890,20 @@ HANDEL_STATIC int xiaLoadFirmware(FILE *fp, fpos_t *start, fpos_t *end)
 	    xiaLogError("xiaLoadFirmware", info_string, status);
 	    return status;
 	}
+
+  status = xiaFileRA(fp, start, end, "fdd_tmp_path", value);
+
+  if (status == XIA_SUCCESS) {
+    strcpy(path, value);
+    
+    status = xiaAddFirmwareItem(alias, "fdd_tmp_path", (void *)path);
+
+    if (status != XIA_SUCCESS) {
+      sprintf(info_string, "Error adding FDD temporary path to '%s'", alias);
+      xiaLogError("xiaLoadFirmware", info_string, status);
+      return status;
+    }
+  }
 
 	/* Check for keywords, if any...no need to really warn since the most 
 	 * important "keywords" are generated by Handel.
@@ -1846,13 +2031,13 @@ HANDEL_STATIC int xiaLoadDefaults(FILE *fp, fpos_t *start, fpos_t *end)
 		
 		if (status != XIA_SUCCESS)
 		  {
-			sprintf(info_string, "Error adding %s (value = %f) to alias %s", tmpName, defValue, alias);
+			sprintf(info_string, "Error adding %s (value = %.3f) to alias %s", tmpName, defValue, alias);
 			xiaLogError("xiaLoadDefaults", info_string, status);
 			return status;
 		  }
 		
 
-	sprintf(info_string, "Added %s (value = %f) to alias %s", tmpName, defValue, alias);
+	sprintf(info_string, "Added %s (value = %.3f) to alias %s", tmpName, defValue, alias);
 	xiaLogDebug("xiaLoadDefaults", info_string);
 
 	status = xiaGetLine(fp, line);
@@ -2216,6 +2401,129 @@ HANDEL_STATIC int HANDEL_API xiaFileRA(FILE *fp, fpos_t *start, fpos_t *end, cha
 }
 
 
-#ifdef _DEBUG
-#include "handel_file_t.c"
-#endif /* _DEBUG */
+/** @brief Writes the interface portion of the module configuration to the
+ * .ini file.
+ *
+ */
+static int writeInterface(FILE *fp, Module *module)
+{
+  int i;
+  int status;
+
+
+  ASSERT(fp != NULL);
+  ASSERT(module != NULL);
+
+
+  for (i = 0; i < N_ELEMS(INTERFACE_WRITERS); i++) {
+	if (module->interface_info->type == INTERFACE_WRITERS[i].type) {
+	  
+	  status = INTERFACE_WRITERS[i].fn(fp, module);
+
+	  if (status != XIA_SUCCESS) {
+		sprintf(info_string, "Error writing interface data for type '%u'",
+				module->interface_info->type);
+		xiaLogError("writeInterface", info_string, status);
+		return status;
+	  }
+
+	  return XIA_SUCCESS;
+	}
+  }
+
+  sprintf(info_string, "Unknown interface type: '%u'",
+		  module->interface_info->type);
+  xiaLogError("writeInterface", info_string, XIA_BAD_INTERFACE);
+  return XIA_BAD_INTERFACE;
+}
+
+
+/** @brief Writes the PLX interface info to the passed in file pointer.
+ *
+ * Assumes that the file has been advanced to the proper location. Also assumes
+ * that the module is using the PLX communication interface.
+ *
+ */
+static int writePLX(FILE *fp, Module *module)
+{
+  ASSERT(fp != NULL);
+  ASSERT(module != NULL);
+
+
+  fprintf(fp, "interface = pxi\n");
+  fprintf(fp, "pci_bus = %u\n", module->interface_info->info.plx->bus);
+  fprintf(fp, "pci_slot = %u\n", module->interface_info->info.plx->slot);
+
+  return XIA_SUCCESS;
+}
+
+
+/** @brief Writes the EPP interface info to the passed in file pointer.
+ *
+ */
+static int writeEPP(FILE *fp, Module *m)
+{
+  ASSERT(fp != NULL);
+  ASSERT(m != NULL);
+
+  
+  fprintf(fp, "interface = epp\n");
+  fprintf(fp, "epp_address = %#x\n", m->interface_info->info.epp->epp_address);
+  fprintf(fp, "daisy_chain_id = %u\n",
+		  m->interface_info->info.epp->daisy_chain_id);
+
+  return XIA_SUCCESS;
+}
+
+
+/** @brief Writes the Jorway 73A interface info to the passed in file pointer.
+ *
+ */
+static int writeJ73A(FILE *fp, Module *m)
+{
+  ASSERT(fp != NULL);
+  ASSERT(m != NULL);
+
+  
+  fprintf(fp, "interface = j73a\n");
+  fprintf(fp, "scsibus_number = %u\n",
+          m->interface_info->info.jorway73a->scsi_bus);
+  fprintf(fp, "crate_number = %u\n",
+          m->interface_info->info.jorway73a->crate_number);
+  fprintf(fp, "slot = %u\n", m->interface_info->info.jorway73a->slot);
+
+  return XIA_SUCCESS;
+}
+
+
+/** @brief Writes the USB interface info to the passed in file pointer.
+ *
+ */
+static int writeUSB(FILE *fp, Module *m)
+{
+  ASSERT(fp != NULL);
+  ASSERT(m != NULL);
+
+
+  fprintf(fp, "interface = usb\n");
+  fprintf(fp, "device_number = %u\n", m->interface_info->info.usb->device_number);
+
+  return XIA_SUCCESS;
+}
+
+
+#ifndef EXCLUDE_USB2
+static int writeUSB2(FILE *fp, Module *m)
+{
+  ASSERT(fp != NULL);
+  ASSERT(m != NULL);
+  ASSERT(m->interface_info->type == USB2);
+
+
+  fprintf(fp, "interface = usb2\n");
+  fprintf(fp, "device_number = %u\n",
+          m->interface_info->info.usb->device_number);
+
+  return XIA_SUCCESS;
+}
+#endif /* EXCLUDE_USB2 */

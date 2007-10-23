@@ -35,7 +35,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: handel_errors.h,v 1.5 2006-06-21 15:42:51 rivers Exp $
+ * $Id: handel_errors.h,v 1.6 2007-10-23 01:57:22 rivers Exp $
  * 
  *
  */
@@ -102,7 +102,8 @@
 #define XIA_NEEDS_BOARD_TYPE    329 /** Module needs board_type */
 #define XIA_UNKNOWN_ITEM        330 /** Unknown item */
 #define XIA_TYPE_REDIRECT       331 /** Module type can not be redefined once set */
-
+#define XIA_NO_TMP_PATH         332 /** No FDD temporary path defined for this firmware. */
+#define XIA_NULL_PATH           333 /** Specified path was NULL. */
 
 /* Starting at 350 are codes used to represent config errors found by 
  * xiaStartSystem()
@@ -143,6 +144,9 @@
 #define XIA_END				508 /** There are no more instances of the name specified. Pos set to end */
 #define XIA_INVALID_STR     509 /** Invalid string format */
 #define XIA_UNIMPLEMENTED   510 /** The routine is unimplemented in this version */
+#define XIA_PARAM_DEBUG_MISMATCH 511 /** A parameter mismatch was found with
+                                         XIA_PARAM_DEBUG enabled.
+                                     */
 
 /* PSL error 601-700 */
 #define XIA_NOSUPPORT_FIRM	601 /** The specified firmware is not supported by this board type */
@@ -209,6 +213,9 @@
 #define XIA_CLOCK_SPEED     656 /** The hardware is reporting an invalid clock speed. */
 #define XIA_BAD_DECIMATION  657 /** Passed in decimation is invalid. */
 #define XIA_BAD_SYNCH_RUN   658 /** Specified value for synchronous run is bad. */
+#define XIA_PRESET_VALUE_OOR 659 /** Requested preset value is out-of-range. */
+#define XIA_MEMORY_LENGTH    660 /** Memory length is invalid. */
+#define XIA_UNKNOWN_PREAMP_TYPE 661 /** Preamp type is unknown. */
 
 /* XUP errors 701-800 */
 #define XIA_XUP_VERSION     701 /** XUP version is not supported */

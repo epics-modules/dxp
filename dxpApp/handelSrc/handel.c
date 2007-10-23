@@ -1,8 +1,13 @@
+/**
+ *
+ * @file handel.c
+ * @brief Top-level Handel routines: initialization, exit, version, etc.
+ */
+
 /*
  *
- * handel.c
- *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2002,2003,2004 X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -58,11 +63,12 @@
 #include "xia_common.h"
 #include "xia_assert.h"
 #include "xia_version.h"
+#include "xia_handel_structures.h"
+#include "xia_file.h"
 
 #include "handel_generic.h"
 #include "handel_errors.h"
 #include "handeldef.h"
-#include "handel_test.h"
 
 #include "fdd.h"
 
@@ -130,6 +136,8 @@ HANDEL_EXPORT int HANDEL_API xiaInit(char *iniFile)
 {
     int status;
     int status2;
+    int nFilesOpen;
+
 
     status = xiaInitHandel();
 
@@ -138,6 +146,22 @@ HANDEL_EXPORT int HANDEL_API xiaInit(char *iniFile)
 		xiaLogError("xiaInit", "Unable to initialize HanDeL", status);
 		return status;
 	  }
+
+	if (iniFile == NULL) {
+	  xiaLogError("xiaInit", ".INI file name must be non-NULL", XIA_BAD_NAME);
+	  return XIA_BAD_NAME;
+	}
+
+  /* Verify that we currently don't have any file handles open. This is
+   * not a legitimate error condition and indicates that we are not cleaning
+   * up all of our handles somewhere else in the library.
+   */
+  nFilesOpen = xia_num_open_handles();
+  
+  if (nFilesOpen > 0) {
+    xia_print_open_handles(stdout);
+    ASSERT(FALSE_);
+  }
 
     status = xiaReadIniFile(iniFile);
 
@@ -287,6 +311,7 @@ HANDEL_STATIC int HANDEL_API xiaInitMemory()
 
     handel_md_puts          = utils->funcs->dxp_md_puts;
     handel_md_wait          = utils->funcs->dxp_md_wait;
+    handel_md_fgets         = utils->funcs->dxp_md_fgets;
 
     /* Clear the HanDeL data structures */
     status = xiaInitHandelDS();
@@ -769,6 +794,13 @@ HANDEL_SHARED int HANDEL_API xiaFreeModule(Module *module)
 	  handel_md_free(module->interface_info);
 	  break;
 
+#ifndef EXCLUDE_PLX
+	case PLX:
+	  handel_md_free(module->interface_info->info.plx);
+	  handel_md_free(module->interface_info);
+	  break;
+#endif /* EXCLUDE_PLX */
+
 #ifndef EXCLUDE_CAMAC	
 	case JORWAY73A:
 	case GENERIC_SCSI:
@@ -798,6 +830,13 @@ HANDEL_SHARED int HANDEL_API xiaFreeModule(Module *module)
 	  handel_md_free((void *)module->interface_info);
 	  break;
 #endif /* EXCLUDE_USB */
+
+#ifndef EXCLUDE_USB
+	case USB2:
+	  handel_md_free((void *)module->interface_info->info.usb2);
+	  handel_md_free((void *)module->interface_info);
+	  break;
+#endif /* EXCLUDE_USB2 */
 
 #ifndef EXCLUDE_ARCNET
 	case ARCNET:
@@ -1055,8 +1094,4 @@ HANDEL_STATIC int HANDEL_API xiaUnHook(void)
     
     return XIA_SUCCESS;
 }
-
-#ifdef _DEBUG
-#include "handel_t.c"
-#endif
 

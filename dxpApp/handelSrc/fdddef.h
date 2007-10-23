@@ -1,9 +1,8 @@
 /*
  *  fdddef.h
  *
- *  Created 15-Dec-2001 JEW
- *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -35,6 +34,8 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
+ *
+ * $Id: fdddef.h,v 1.2 2007-10-23 02:00:06 rivers Exp $
  *
  */
 

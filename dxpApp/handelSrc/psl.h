@@ -1,10 +1,8 @@
-
 /*
  * psl.h
  *
- * Created 10/12/01 -- PJF
- *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -38,6 +36,8 @@
  * SUCH DAMAGE.
  * 
  *
+ * $Id: psl.h,v 1.2 2007-10-23 02:05:15 rivers Exp $
+ *
  */
 
 
@@ -49,12 +49,6 @@
 #ifndef EXCLUDE_DXPX10P
 PSL_IMPORT int PSL_API dxpx10p_PSLInit(PSLFuncs *funcs);
 #endif /* EXCLUDE_DXPX10P */
-#ifndef EXCLUDE_DGF200
-PSL_IMPORT int PSL_API dgfg200_PSLInit(PSLFuncs *funcs);
-#endif /* EXCLUDE_DGF200 */
-#ifndef EXCLUDE_POLARIS
-PSL_IMPORT int PSL_API polaris_PSLInit(PSLFuncs *funcs);
-#endif /* EXCLUDE_POLARIS */
 #ifndef EXCLUDE_DXP4C2X
 PSL_IMPORT int PSL_API dxp4c2x_PSLInit(PSLFuncs *funcs);
 #endif /* EXCLUDE_DXP4C2X */
@@ -64,5 +58,8 @@ PSL_IMPORT int PSL_API udxps_PSLInit(PSLFuncs *funcs);
 #ifndef EXCLUDE_UDXP
 PSL_IMPORT int PSL_API udxp_PSLInit(PSLFuncs *funcs);
 #endif /* EXCLUDE_UDXP */
+#ifndef EXCLUDE_XMAP
+PSL_IMPORT int PSL_API xmap_PSLInit(PSLFuncs *funcs);
+#endif /* EXCLUDE_XMAP */
 
 #endif /* PSL_H */

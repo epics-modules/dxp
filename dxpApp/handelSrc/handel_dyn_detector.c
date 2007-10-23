@@ -8,7 +8,8 @@
  * that were once in the (now non-existent) file
  * handel_dynamic_config.c.
  *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2002,2003,2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -257,7 +258,22 @@ HANDEL_EXPORT int HANDEL_API xiaAddDetectorItem(char *alias, char *name,
 			return status;
 		}
 
-	} else if (STREQ(strtemp, "type")) {
+		return XIA_SUCCESS;
+	}
+
+
+	/* The number of channels must be set first before we can do any of the
+	 * other values. Why? Because memory is allocated once the number of channels
+	 * is known.
+	 */
+	if (chosen->nchan == 0) {
+	  sprintf(info_string, "Detector '%s' must set its number of channels before "
+			  "setting '%s'", chosen->alias, strtemp);
+	  xiaLogError("xiaAddDetectorItem", info_string, XIA_NO_CHANNELS);
+	  return XIA_NO_CHANNELS;
+	}
+
+	if (STREQ(strtemp, "type")) {
 
 		if (STREQ((char *)value, "reset"))
 		{

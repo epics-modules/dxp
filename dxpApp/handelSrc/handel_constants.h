@@ -39,7 +39,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: handel_constants.h,v 1.6 2006-06-21 15:39:02 rivers Exp $
+ * $Id: handel_constants.h,v 1.7 2007-10-23 01:53:04 rivers Exp $
  *
  */
 
@@ -53,6 +53,10 @@
 #define XIA_PRESET_FIXED_LIVE     2.0
 #define XIA_PRESET_FIXED_EVENTS   3.0
 #define XIA_PRESET_FIXED_TRIGGERS 4.0
+
+/** Preamplifier type **/
+#define XIA_PREAMP_RESET 0.0
+#define XIA_PREAMP_RC    1.0
 
 
 /** Mapping Mode Point Control Types **/

@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *  
  *
- * $Id: md_generic.h,v 1.5 2006-06-21 15:45:45 rivers Exp $
+ * $Id: md_generic.h,v 1.6 2007-10-23 02:01:25 rivers Exp $
  *
  *    Generic constant definitions related to the MD layer
  */
@@ -58,10 +58,12 @@
 #define IO_SNIFF_ON  0x10
 #define IO_SNIFF_OFF 0x20
 
+#define MD_INVALID_ADDR -1
+
 /* I/O Priority flags */
 enum {
   MD_IO_PRI_NORMAL = 0,
-  MD_IO_PRI_HIGH,
+  MD_IO_PRI_HIGH
 
 };
 
