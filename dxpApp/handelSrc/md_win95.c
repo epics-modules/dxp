@@ -5,7 +5,8 @@
  *  Created 06-Oct-1997 Ed Oltman
  *	Add EPP support	01/29/01 JW
  *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2002,2003,2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -48,12 +49,20 @@
 
 #pragma warning(disable : 4115)
 #include <windows.h>
+#pragma warning(default : 4115)
+
+
+/* Disables the warning about "conditional expressions" being "constant".
+ * This is caused by our use of the TRUE_ and FALSE_ macros that evaluate
+ * to statements like (1 == 1).
+ */
+#pragma warning(disable : 4127)
+
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
-#include <ctype.h>
 
 /* XIA include files */
 #include "xerxes_errors.h"
@@ -61,9 +70,6 @@
 #include "md_win95.h"
 #include "md_generic.h"
 #include "xia_md.h"
-#ifndef EXCLUDE_SERIAL
-#include "seriallib.h"
-#endif
 #include "xia_common.h"
 #include "xia_assert.h"
 
@@ -81,6 +87,8 @@ static unsigned int numEPP    = 0;
 static unsigned int numUSB    = 0;
 static unsigned int numSerial = 0;
 static unsigned int numArcnet = 0;
+static unsigned int numPLX    = 0;
+static unsigned int numUSB2   = 0;
 static unsigned int numMod    = 0;
 
 /* error string used as a place holder for calls to dxp_md_error() */
@@ -127,7 +135,26 @@ static long usb_addr=0;
 #endif /* EXCLUDE_USB IO */
 
 
+#ifndef EXCLUDE_USB2
+
+#include "xia_usb2.h"
+#include "xia_usb2_errors.h"
+
+/* A string holding the device number in it. */
+static char *usb2Names[MAXMOD];
+
+/* The OS handle used for communication. */
+static HANDLE usb2Handles[MAXMOD];
+
+/* The cached target address for the next operation. */
+static int usb2AddrCache[MAXMOD];
+
+#endif /* EXCLUDE_USB2 */
+
+
 #ifndef EXCLUDE_SERIAL
+
+#include "seriallib.h"
 
 #define HEADER_SIZE 4
 
@@ -136,7 +163,6 @@ static char *serialName[MAXMOD];
 /* Serial port globals */
 static unsigned short comPort = 0;
 
-static void dxp_md_decode_serial_errors(unsigned short errs);
 static int dxp_md_serial_read_header(unsigned short port, unsigned short *bytes,
 									 unsigned short *buf);
 static int dxp_md_serial_read_data(unsigned short port, unsigned long size,
@@ -153,6 +179,22 @@ static char *arcnetName[MAXMOD];
 
 static unsigned short next_arcnet_addr;
 #endif /* EXCLUDE_ARCNET */
+
+
+#ifndef EXCLUDE_PLX
+
+#include "plxlibapi.h"
+#include "plxlib_errors.h"
+
+static HANDLE pxiHandles[MAXMOD];
+static char * pxiNames[MAXMOD];
+
+#endif /* EXCLUDE_PLX */
+
+
+/* Globals that don't depend on the communication protocol. */
+static char * TMP_PATH = NULL;
+static char * PATH_SEP = "\\";
 
 
 /******************************************************************************
@@ -173,27 +215,34 @@ XIA_MD_EXPORT int XIA_MD_API dxp_md_init_util(Xia_Util_Functions* funcs, char* t
 	if (STREQ(type, "INIT_LIBRARY")) { numMod = 0; }
     }
 
-    funcs->dxp_md_error_control = dxp_md_error_control;
-    funcs->dxp_md_alloc         = dxp_md_alloc;
-    funcs->dxp_md_free          = dxp_md_free;
-    funcs->dxp_md_puts          = dxp_md_puts;
-    funcs->dxp_md_wait          = dxp_md_wait;
+    funcs->dxp_md_error_control  = dxp_md_error_control;
+    funcs->dxp_md_alloc          = dxp_md_alloc;
+    funcs->dxp_md_free           = dxp_md_free;
+    funcs->dxp_md_puts           = dxp_md_puts;
+    funcs->dxp_md_wait           = dxp_md_wait;
 
-    funcs->dxp_md_error         = dxp_md_error;
-    funcs->dxp_md_warning       = dxp_md_warning;
-    funcs->dxp_md_info          = dxp_md_info;
-    funcs->dxp_md_debug         = dxp_md_debug;
-    funcs->dxp_md_output        = dxp_md_output;
-    funcs->dxp_md_suppress_log  = dxp_md_suppress_log;
-    funcs->dxp_md_enable_log    = dxp_md_enable_log;
-    funcs->dxp_md_set_log_level = dxp_md_set_log_level;
-    funcs->dxp_md_log	        = dxp_md_log;
-	funcs->dxp_md_set_priority  = dxp_md_set_priority;
+    funcs->dxp_md_error          = dxp_md_error;
+    funcs->dxp_md_warning        = dxp_md_warning;
+    funcs->dxp_md_info           = dxp_md_info;
+    funcs->dxp_md_debug          = dxp_md_debug;
+    funcs->dxp_md_output         = dxp_md_output;
+    funcs->dxp_md_suppress_log   = dxp_md_suppress_log;
+    funcs->dxp_md_enable_log     = dxp_md_enable_log;
+    funcs->dxp_md_set_log_level  = dxp_md_set_log_level;
+    funcs->dxp_md_log	           = dxp_md_log;
+    funcs->dxp_md_set_priority   = dxp_md_set_priority;
+    funcs->dxp_md_fgets          = dxp_md_fgets;
+    funcs->dxp_md_tmp_path       = dxp_md_tmp_path;
+    funcs->dxp_md_clear_tmp      = dxp_md_clear_tmp;
+    funcs->dxp_md_path_separator = dxp_md_path_separator;
 
     if (out_stream == NULL)
     {
 	out_stream = stdout;
     }
+
+	md_md_alloc = dxp_md_alloc;
+	md_md_free  = dxp_md_free;
 
     return DXP_SUCCESS;
 }
@@ -265,6 +314,27 @@ XIA_MD_EXPORT int XIA_MD_API dxp_md_init_io(Xia_Io_Functions* funcs, char* type)
 	  }
 #endif /* EXCLUDE_UDXP */
 
+#ifndef EXCLUDE_PLX
+	/* Technically, the communications protocol is 'PXI', though the 
+	 * driver is a PLX driver, which is why there are two different names
+	 * used here.
+	 */
+	if (STREQ(type, "pxi")) {
+		funcs->dxp_md_io            = dxp_md_plx_io;
+		funcs->dxp_md_initialize    = dxp_md_plx_initialize;
+		funcs->dxp_md_open          = dxp_md_plx_open;
+		funcs->dxp_md_close         = dxp_md_plx_close;	  
+	}
+#endif /* EXCLUDE_PLX */
+
+#ifndef EXCLUDE_USB2
+  if (STREQ(type, "usb2")) {
+    funcs->dxp_md_io            = dxp_md_usb2_io;
+    funcs->dxp_md_initialize    = dxp_md_usb2_initialize;
+    funcs->dxp_md_open          = dxp_md_usb2_open;
+    funcs->dxp_md_close         = dxp_md_usb2_close;
+  }
+#endif /* EXCLUDE_USB2 */
 
     funcs->dxp_md_get_maxblk = dxp_md_get_maxblk;
     funcs->dxp_md_set_maxblk = dxp_md_set_maxblk;
@@ -358,9 +428,9 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_open(char* ioname, int* camChan)
      * information */
 
     if (camacName[numDXP]!=NULL) {
-	dxp_md_free(camacName[numDXP]);
+	md_md_free(camacName[numDXP]);
     }
-    camacName[numDXP] = (char *) dxp_md_alloc((strlen(ioname)+1)*sizeof(char));
+    camacName[numDXP] = (char *) md_md_alloc((strlen(ioname)+1)*sizeof(char));
     strcpy(camacName[numDXP],ioname);
 
     *camChan = numDXP++;
@@ -378,7 +448,7 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_open(char* ioname, int* camChan)
  * 
  *****************************************************************************/
 XIA_MD_STATIC int XIA_MD_API dxp_md_io(int* camChan, unsigned int* function, 
-				       unsigned int* address, unsigned short* data,
+				       unsigned long *address, void *data,
 				       unsigned int* length)
 /* int *camChan;						Input: pointer to IO channel to access		*/
 /* unsigned int *function;				Input: function number to access (CAMAC F)	*/
@@ -408,7 +478,7 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_io(int* camChan, unsigned int* function,
 
     /* Now perform the read or write operation using the routine */
 
-    lstatus = xia_camxfr(camadr, func, nbytes, mode, (short*) data);
+    lstatus = xia_camxfr(camadr, func, nbytes, mode, (short *)data);
     if ((lstatus!=0)&&(lstatus!=4)){
 	status = DXP_MDIO;
 	sprintf(error_string,"camxfr error: status = 0x%lX",lstatus);
@@ -543,9 +613,9 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_epp_open(char* ioname, int* camChan)
 
     if (eppName[numEPP]!=NULL) 
 	  {
-		dxp_md_free(eppName[numEPP]);
+		md_md_free(eppName[numEPP]);
 	  }
-    eppName[numEPP] = (char *) dxp_md_alloc((strlen(ioname)+1)*sizeof(char));
+    eppName[numEPP] = (char *) md_md_alloc((strlen(ioname)+1)*sizeof(char));
     strcpy(eppName[numEPP],ioname);
 
     /* See if this is a multi-module EPP chain, if not set its ID to -1 */
@@ -613,7 +683,7 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_epp_open(char* ioname, int* camChan)
  * 
  *****************************************************************************/
 XIA_MD_STATIC int XIA_MD_API dxp_md_epp_io(int* camChan, unsigned int* function, 
-					   unsigned int* address, unsigned short* data,
+					   unsigned long *address, void *data,
 					   unsigned int* length)
 /* int *camChan;				Input: pointer to IO channel to access	*/
 /* unsigned int *function;			Input: XIA EPP function definition	*/
@@ -626,7 +696,10 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_epp_io(int* camChan, unsigned int* function,
   
     unsigned int i;
 
+	unsigned short *us_data = (unsigned short *)data;
+
     unsigned long *temp=NULL;
+
 
     if ((currentID != eppID[*camChan]) && (eppID[*camChan] != -1))
 	  {
@@ -645,41 +718,41 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_epp_io(int* camChan, unsigned int* function,
 	if (next_addr>=0x4000) {
 	    if (*length>1) {
 		if (*function == MD_IO_READ) {
-		    rstat = DxpReadBlock(next_addr, data, (int) *length);
+		    rstat = DxpReadBlock(next_addr, us_data, (int) *length);
 		} else {
-		    rstat = DxpWriteBlock(next_addr, data, (int) *length);
+		    rstat = DxpWriteBlock(next_addr, us_data, (int) *length);
 		}
 	    } else {
 		if (*function == MD_IO_READ) {
-		    rstat = DxpReadWord(next_addr, data);
+		    rstat = DxpReadWord(next_addr, us_data);
 		} else {
-		    rstat = DxpWriteWord(next_addr, data[0]);
+		    rstat = DxpWriteWord(next_addr, us_data[0]);
 		}
 	    }
 	} else {
 	    /* Perform long reads and writes if in program address space (24-bit) */
 	    /* Allocate memory */
-	    temp = (unsigned long *) dxp_md_alloc(sizeof(unsigned short)*(*length));
+	    temp = (unsigned long *) md_md_alloc(sizeof(unsigned short)*(*length));
 	    if (*function == MD_IO_READ) {
 		rstat = DxpReadBlocklong(next_addr, temp, (int) *length/2);
 		/* reverse the byte order for the EPPLIB library */
 		for (i=0;i<*length/2;i++) {
-		    data[2*i] = (unsigned short) (temp[i]&0xFFFF);
-		    data[2*i+1] = (unsigned short) ((temp[i]>>16)&0xFFFF);
+		    us_data[2*i] = (unsigned short) (temp[i]&0xFFFF);
+		    us_data[2*i+1] = (unsigned short) ((temp[i]>>16)&0xFFFF);
 		}
 	    } else {
 		/* reverse the byte order for the EPPLIB library */
 		for (i=0;i<*length/2;i++) {
-		    temp[i] = ((data[2*i]<<16) + data[2*i+1]);
+		    temp[i] = ((us_data[2*i]<<16) + us_data[2*i+1]);
 		}
 		rstat = DxpWriteBlocklong(next_addr, temp, (int) *length/2);
 	    }
 	    /* Free the memory */
-	    dxp_md_free(temp);
+	    md_md_free(temp);
 	}
 	/* Address port*/
     } else if (*address==1) {
-	next_addr = (unsigned short) *data;
+	next_addr = (unsigned short) *us_data;
 	/* Control port*/
     } else if (*address==2) {
 	/*		dest = cport;
@@ -797,9 +870,9 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_usb_open(char* ioname, int* camChan)
   
   if (usbName[numUSB]!=NULL) 
 	{
-	  dxp_md_free(usbName[numUSB]);
+	  md_md_free(usbName[numUSB]);
 	}
-  usbName[numUSB] = (char *) dxp_md_alloc((strlen(tempName)+1)*sizeof(char));
+  usbName[numUSB] = (char *) md_md_alloc((strlen(tempName)+1)*sizeof(char));
   strcpy(usbName[numUSB],tempName);
   
   /*  dxp_md_log_info("dxp_md_usb_open", "Attempting to open usb handel");
@@ -826,7 +899,8 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_usb_open(char* ioname, int* camChan)
  * 
  *****************************************************************************/
 XIA_MD_STATIC int XIA_MD_API dxp_md_usb_io(int* camChan, unsigned int* function, 
-										   unsigned int* address, unsigned short* data,
+										   unsigned long *address,
+										   void *data,
 										   unsigned int* length)
 	 /* int *camChan;				Input: pointer to IO channel to access	*/
 	 /* unsigned int *function;		Input: XIA EPP function definition	    */
@@ -837,16 +911,18 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_usb_io(int* camChan, unsigned int* function,
   int rstat = 0; 
   int status;
   
+  unsigned short *us_data = (unsigned short *)data;
+
   if (*address == 0) 
 	{
 	  if (*function == MD_IO_READ) 
 		{
-		  rstat = usb_read(usb_addr, (long) *length, usbName[*camChan], data);
+		  rstat = usb_read(usb_addr, (long) *length, usbName[*camChan], us_data);
 		} else {
-		  rstat = usb_write(usb_addr, (long) *length, usbName[*camChan], data);
+		  rstat = usb_write(usb_addr, (long) *length, usbName[*camChan], us_data);
 		}
 	} else if (*address ==1) {
-	  usb_addr = (long) data[0];
+	  usb_addr = (long) us_data[0];
 	}
 
   if (rstat != 0) 
@@ -967,9 +1043,9 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_serial_open(char* ioname, int* camChan)
   
     /* Got a new one.  Increase the number existing and assign the global 
      * information */
-    if (serialName[numSerial] != NULL) { dxp_md_free(serialName[numSerial]); }
+    if (serialName[numSerial] != NULL) { md_md_free(serialName[numSerial]); }
 
-    serialName[numSerial] = (char *)dxp_md_alloc((strlen(ioname) + 1) * sizeof(char));
+    serialName[numSerial] = (char *)md_md_alloc((strlen(ioname) + 1) * sizeof(char));
     strcpy(serialName[numSerial], ioname);
 
     *camChan = numSerial++;
@@ -985,8 +1061,8 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_serial_open(char* ioname, int* camChan)
  **********/
 XIA_MD_STATIC int XIA_MD_API dxp_md_serial_io(int *camChan,
 					      unsigned int *function,
-					      unsigned int *wait_in_ms,
-					      unsigned short *data,
+					      unsigned long *wait_in_ms,
+					      void *data,
 					      unsigned int *length)
 {
     LARGE_INTEGER freq;
@@ -997,6 +1073,8 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_serial_io(int *camChan,
     unsigned int i;
 
 	unsigned short n_bytes = 0;
+
+	unsigned short *us_data = (unsigned short *)data;
 
     byte_t *buf    = NULL;
 
@@ -1020,13 +1098,13 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_serial_io(int *camChan,
 
 	  if (status != SERIAL_SUCCESS) {
 		sprintf(error_string,
-				"Error setting timeout to %lf milliseconds on COM%u",
+				"Error setting timeout to %.3f milliseconds on COM%u",
 				to, comPort);
 		dxp_md_log_error("dxp_md_serial_io", error_string, DXP_MDIO);
 		return DXP_MDIO;
 	  }
 
-	  status = dxp_md_serial_read_header(comPort, &n_bytes, data);
+	  status = dxp_md_serial_read_header(comPort, &n_bytes, us_data);
 
 	  if (status != DXP_SUCCESS) {
 		dxp_md_log_error("dxp_md_serial_io", "Error reading header", status);
@@ -1047,12 +1125,12 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_serial_io(int *camChan,
 	  status = SetTimeoutInMS(comPort, to);
 
 	  if (status != SERIAL_SUCCESS) {
-		sprintf(error_string, "Error setting timeout to %lf milliseconds", to);
+		sprintf(error_string, "Error setting timeout to %.3f milliseconds", to);
 		dxp_md_log_error("dxp_md_serial_io", error_string, DXP_MDIO);
 		return DXP_MDIO;
 	  }
 
-	  status = dxp_md_serial_read_data(comPort, n_bytes, data + HEADER_SIZE);
+	  status = dxp_md_serial_read_data(comPort, n_bytes, us_data + HEADER_SIZE);
 
 	  if (status != DXP_SUCCESS) {
 		dxp_md_log_error("dxp_md_serial_io", "Error reading data", status);
@@ -1080,7 +1158,7 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_serial_io(int *camChan,
 	    return status;
 	  }
 
-	  buf = (byte_t *)dxp_md_alloc(*length * sizeof(byte_t));
+	  buf = (byte_t *)md_md_alloc(*length * sizeof(byte_t));
 
 	  if (buf == NULL) {
 
@@ -1093,14 +1171,14 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_serial_io(int *camChan,
 
 	  for (i = 0; i < *length; i++) {
 
-	    buf[i] = (char)data[i];
+	    buf[i] = (char)us_data[i];
 	  }
 
 	  status = WriteSerialPort(comPort, *length, buf);
 
 	  if (status != SERIAL_SUCCESS) {
 
-	    dxp_md_free((void *)buf);
+	    md_md_free((void *)buf);
 	    buf = NULL;
 
 	    status = DXP_MDIO;
@@ -1110,7 +1188,7 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_serial_io(int *camChan,
 	    return status;
 	  }
 
-	  dxp_md_free((void *)buf);
+	  md_md_free((void *)buf);
 	  buf = NULL;
 
     } else if (*function == MD_IO_OPEN) {
@@ -1248,7 +1326,7 @@ static int dxp_md_serial_read_data(unsigned short port, unsigned long size,
   ASSERT(buf != NULL);
 
 
-  b = (byte_t *)dxp_md_alloc(size * sizeof(byte_t));
+  b = (byte_t *)md_md_alloc(size * sizeof(byte_t));
 
   if (b == NULL) {
 	sprintf(error_string, "Error allocating %lu bytes for 'b'", size);
@@ -1259,7 +1337,7 @@ static int dxp_md_serial_read_data(unsigned short port, unsigned long size,
   err = ReadSerialPort(port, size, b);
 
   if (err->status != SERIAL_SUCCESS) {
-	dxp_md_free(b);
+	md_md_free(b);
 	sprintf(error_string, "bytes_in_recv_buf = %d, size_recv_buf = %d",
 			err->bytes_in_recv_buf, err->size_recv_buf);
 	dxp_md_log_debug("dxp_md_serial_read_data", error_string);
@@ -1287,41 +1365,9 @@ static int dxp_md_serial_read_data(unsigned short port, unsigned long size,
 	buf[i] = (unsigned short)b[i];
   }
 
-  dxp_md_free(b);
+  md_md_free(b);
 
   return DXP_SUCCESS;
-}
-
-
-static void dxp_md_decode_serial_errors(unsigned short errs)
-{
-    sprintf(error_string, "All data: %s",                    errs & 0x1    ? "transmitted" : "not transmitted");
-    dxp_md_log_debug("dxp_md_decode_serial_errors", error_string);
-    sprintf(error_string, "Break: %s",                       errs & 0x2    ? "detected"    : "not detected");
-    dxp_md_log_debug("dxp_md_decode_serial_errors", error_string);
-    sprintf(error_string, "Carrier: %s",                     errs & 0x4    ? "detected"    : "not detected");
-    dxp_md_log_debug("dxp_md_decode_serial_errors", error_string);
-    sprintf(error_string, "CTS: %s",                         errs & 0x8    ? "high"        : "low");
-    dxp_md_log_debug("dxp_md_decode_serial_errors", error_string);
-    sprintf(error_string, "DSR: %s",                         errs & 0x10   ? "high"        : "low");
-    dxp_md_log_debug("dxp_md_decode_serial_errors", error_string);
-    sprintf(error_string, "Framing Error: %s",               errs & 0x20   ? "yes"         : "no");
-    dxp_md_log_debug("dxp_md_decode_serial_errors", error_string);
-    sprintf(error_string, "Input Overrun (Ring Buffer): %s", errs & 0x40   ? "yes"         : "no");
-    dxp_md_log_debug("dxp_md_decode_serial_errors", error_string);
-    sprintf(error_string, "Input Overrun (UART): %s",        errs & 0x80   ? "yes"         : "no");
-    dxp_md_log_debug("dxp_md_decode_serial_errors", error_string);
-    sprintf(error_string, "Parity Error: %s",                errs & 0x100  ? "yes"         : "no");
-    dxp_md_log_debug("dxp_md_decode_serial_errors", error_string);
-    sprintf(error_string, "Port: %s",                        errs & 0x200  ? "available"   : "in use");
-    dxp_md_log_debug("dxp_md_decode_serial_errors", error_string);
-    sprintf(error_string, "Receive Buffer: %s",              errs & 0x400  ? "empty"       : "not empty");
-    dxp_md_log_debug("dxp_md_decode_serial_errors", error_string);
-    sprintf(error_string, "Ring: %s",                        errs & 0x800  ? "detected"    : "not detected");
-    dxp_md_log_debug("dxp_md_decode_serial_errors", error_string);
-    sprintf(error_string, "Transmit Buffer: %s",             errs & 0x1000 ? "empty"       : "not empty");
-    dxp_md_log_debug("dxp_md_decode_serial_errors", error_string);
-
 }
 
 
@@ -1417,9 +1463,9 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_arcnet_open(char* ioname, int* camChan)
 
     if (arcnetName[numArcnet] != NULL) 
 	  {
-		dxp_md_free(arcnetName[numArcnet]);
+		md_md_free(arcnetName[numArcnet]);
 	  }
-    arcnetName[numArcnet] = (char *) dxp_md_alloc((strlen(ioname)+1)*sizeof(char));
+    arcnetName[numArcnet] = (char *) md_md_alloc((strlen(ioname)+1)*sizeof(char));
     strcpy(arcnetName[numArcnet],ioname);
 
     /* Pull the Arcnet Node ID out of the ioname parameter */
@@ -1472,8 +1518,10 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_arcnet_open(char* ioname, int* camChan)
  * length is specified by length.  And the data itself is stored in data.
  * 
  *****************************************************************************/
-XIA_MD_STATIC int XIA_MD_API dxp_md_arcnet_io(int* camChan, unsigned int* function, 
-											  unsigned int* address, unsigned short* data,
+XIA_MD_STATIC int XIA_MD_API dxp_md_arcnet_io(int* camChan,
+											  unsigned int* function, 
+											  unsigned long *address,
+											  void *data,
 											  unsigned int* length)
 	 /* int *camChan;				    Input: pointer to IO channel to access	*/
 	 /* unsigned int *function;			Input: XIA EPP function definition	*/
@@ -1484,6 +1532,8 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_arcnet_io(int* camChan, unsigned int* functi
   int rstat = 0; 
   int status = DXP_SUCCESS;
   
+  unsigned short *us_data = (unsigned short *)data;
+
   unsigned char nodeID = 0;
   
   /* Pull the Arcnet Node ID out of the ioname parameter */
@@ -1500,13 +1550,13 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_arcnet_io(int* camChan, unsigned int* functi
 	{
 	  if (*function == MD_IO_READ)
 		{
-		  rstat = dxpReadArcnet(nodeID, next_arcnet_addr, data, *length);
+		  rstat = dxpReadArcnet(nodeID, next_arcnet_addr, us_data, *length);
 		} else {
-		  rstat = dxpWriteArcnet(nodeID, next_arcnet_addr, data, *length);
+		  rstat = dxpWriteArcnet(nodeID, next_arcnet_addr, us_data, *length);
 		}
 	  /* Address port*/
 	} else if (*address==1) {
-	  next_arcnet_addr = (unsigned short) *data;
+	  next_arcnet_addr = (unsigned short) *us_data;
 	} else {
 	  sprintf(error_string, "Unknown Arcnet address = %d", *address);
 	  status = DXP_MDIO;
@@ -1665,6 +1715,144 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_puts(char* s)
 }
 
 
+/** @brief Safe version of fgets() that can handle both UNIX and DOS
+ * line-endings.
+ *
+ * If the trailing two characters are '\r' + \n', they are replaced by a
+ * single '\n'.
+ */
+XIA_MD_STATIC char * dxp_md_fgets(char *s, int length, FILE *stream)
+{
+  int buf_len = 0;
+
+  char *buf     = NULL;
+  char *cstatus = NULL;
+
+
+  ASSERT(s != NULL);
+  ASSERT(stream != NULL);
+  ASSERT(length > 0);
+
+
+  buf = dxp_md_alloc(length + 1);
+
+  if (!buf) {
+    return NULL;
+  }
+
+  cstatus = fgets(buf, (length + 1), stream);
+
+  if (!cstatus) {
+    dxp_md_free(buf);
+    return NULL;
+  }
+
+  buf_len = strlen(buf);
+
+  if ((buf_len > 1) &&
+      (buf[buf_len - 2] == '\r') &&
+      (buf[buf_len - 1] == '\n')) {
+    buf[buf_len - 2] = '\n';
+    buf[buf_len - 1] = '\0';
+  }
+
+  ASSERT(strlen(buf) < length);
+
+  strcpy(s, buf);
+
+  free(buf);
+
+  return s;
+}
+
+
+/** @brief Get a safe temporary directory path.
+ *
+ * If the temporary path is greater then the length of that passed in
+ * string, an error is returned.
+ *
+ * The search order is defined at
+ * http://msdn.microsoft.com/library/default.asp? \ 
+ * url=/library/en-us/fileio/fs/gettemppath.asp
+ *
+ * NOTE: The temporary path is only computed once and the result is
+ * cached. If we ever make Handel thread-safe, we won't be able to cache
+ * the data as a global anymore.
+ *
+ */
+XIA_MD_STATIC char * dxp_md_tmp_path(void)
+{
+  DWORD tmp_path_len  = 0;
+  DWORD chars_written = 0;
+
+  LPSTR tmp_path;
+
+
+  if (TMP_PATH) {
+    return TMP_PATH;
+  }
+
+  /* According to the docs for GetTempPath(), if the actual length is longer
+   * then the passed in length, the actual size is returned. We can then
+   * use the actual length to allocate the correct amount of memory.
+   */
+  tmp_path_len = GetTempPathA(0, NULL);
+
+  if (tmp_path_len == 0) {
+    dxp_md_log_error("dxp_md_tmp_path", "Windows returned an error trying to "
+                     "determine the temporary file path.", DXP_WIN32_API);
+    return NULL;
+  }
+
+  tmp_path = dxp_md_alloc(tmp_path_len + 1);
+  
+  if (!tmp_path) {
+    sprintf(error_string, "Unable to allocate %d bytes for 'tmp_path'.",
+            tmp_path_len + 1);
+    dxp_md_log_error("dxp_md_tmp_path", error_string, DXP_MDNOMEM);
+    return NULL;
+  }
+
+  chars_written = GetTempPathA(tmp_path_len, tmp_path);
+
+  if (chars_written == 0) {
+    dxp_md_log_error("dxp_md_tmp_path", "Windows returned an error trying to "
+                     "determine the temporary file path.", DXP_WIN32_API);
+    return NULL;
+  }
+  
+  TMP_PATH = (char *)tmp_path;
+
+  return TMP_PATH;
+}
+
+
+/** @brief Clears the temporary path cache.
+ *
+ * Caution: This will free the cache if it is already allocated. Any pointers
+ * that pointed at the old cache will probably segfault if you access them again
+ * -- if you're lucky. This routine, mainly, exists for testing dxp_md_tmp_path()
+ * and for cleaning up globally allocated resources on exit.
+ */
+XIA_MD_STATIC void dxp_md_clear_tmp(void)
+{
+  if (TMP_PATH) {
+    dxp_md_free(TMP_PATH);
+  }
+
+  TMP_PATH = NULL;
+}
+
+
+/** @brief Returns the path separator for Win32 platform.
+ *
+ */
+XIA_MD_STATIC char * dxp_md_path_separator(void)
+{
+  return PATH_SEP;
+}
+
+
 /** @brief Sets the priority of the current process using the Win32 API
  *
  */
@@ -1712,3 +1900,499 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_set_priority(int *priority)
 
   return DXP_SUCCESS;
 }
+
+
+#ifndef EXCLUDE_PLX
+
+/** @brief Initializes any global strucutures.
+ *
+ * This routine is called once per overall library session and, therefore,
+ * its job is to initialize the global structures used to manage the
+ * PXI handles.
+ *
+ */
+XIA_MD_STATIC int dxp_md_plx_initialize(unsigned int *maxMod, char *dllname)
+{
+  UNUSED(maxMod);
+  UNUSED(dllname);
+
+  /* All of the other routines check maxMod against MAXMOD, but as near
+   * as I can tell it doesn't seem to matter. For now, I will skip this
+   * check.
+   */
+  
+  numPLX = 0;
+
+  /*  plx_set_file_DEBUG("plxlib.log"); */
+
+  return DXP_SUCCESS;
+}
+
+
+/** @brief Binds a PXI module to a PLX driver handle.
+ *
+ * Two unique pieces of information are required to open the PCI device:
+ * The slot number and the bus number. These values are typically found
+ * in the .INI file that comes with the crate (pxisys.ini). @a ioname encodes
+ * these two pieces of information as "[bus]:[slot]".
+ */
+XIA_MD_STATIC int dxp_md_plx_open(char *ioname, int *camChan)
+{
+  int i;
+  int status;
+  int n_scanned  = 0;
+  int len_ioname = 0;
+
+  unsigned short id = 0xFFFF;
+
+  byte_t bus;
+  byte_t slot;
+
+  
+  ASSERT(ioname != NULL);
+  ASSERT(camChan != NULL);
+
+  
+  /* Search for an existing definition */
+  for (i = 0; i < (int)numPLX; i++) {
+	if (STREQ(pxiNames[i], ioname)) {
+	  *camChan = i;
+	  return DXP_SUCCESS;
+	}
+  }
+
+  /* Parse in and open a new slot */
+  n_scanned = sscanf(ioname, "%u:%u", &bus, &slot);
+
+  if (n_scanned != 2) {
+	sprintf(error_string, "Error parsing ioname = '%s'. The proper format is "
+			"'bus:slot'.", ioname);
+	dxp_md_log_error("dxp_md_plx_open", error_string, DXP_MDINVALIDNAME);
+	return DXP_MDINVALIDNAME;
+  }
+
+  *camChan = numPLX++;
+
+  status = plx_open_slot(id, bus, slot, &pxiHandles[*camChan]);
+
+  if (status != PLX_SUCCESS) {
+	sprintf(error_string, "Error opening slot '%u' on bus '%u', where the "
+			"driver reports a status of %d", slot, bus, status);
+	dxp_md_log_error("dxp_md_plx_open", error_string, DXP_MDOPEN);
+	return DXP_MDOPEN;
+  }
+  
+  ASSERT(pxiNames[*camChan] == NULL);
+
+  len_ioname = strlen(ioname) + 1;
+
+  pxiNames[*camChan] = (char *)md_md_alloc(len_ioname);
+
+  if (!pxiNames[*camChan]) {
+	sprintf(error_string, "Unable to allocate %u bytes for pxiNames[%d]",
+			len_ioname, *camChan);
+	dxp_md_log_error("dxp_md_plx_open", error_string, DXP_MDNOMEM);
+	return DXP_MDNOMEM;
+  }
+
+  strncpy(pxiNames[*camChan], ioname, len_ioname);
+
+  numMod++;
+
+  return DXP_SUCCESS;
+}
+
+
+/** @brief Performs the specified I/O operation on the hardware.
+ *
+ * The PLX driver supports 3 different I/O operations: read/write single words
+ * and burst reads. The I/O operation type is controlled via @a function, where
+ * 0 corresponds to a single write, 1 corresponds to a single read and 2
+ * corresponds to a burst read.
+ *
+ */
+static int dxp_md_plx_io(int *camChan, unsigned int *function,
+						 unsigned long *addr, void *data,
+						 unsigned int *length)
+{
+  int status;
+
+  HANDLE h;
+
+  unsigned long *buf = (unsigned long *)data;
+
+  UNUSED(function);
+  UNUSED(length);
+
+  
+  ASSERT(camChan != NULL);
+  ASSERT(data    != NULL);
+
+
+  h = pxiHandles[*camChan];
+
+  /* How do we check if the handle is valid? These aren't pointers... */
+
+  switch (*function) {
+  case 0:
+	/* Single word write */
+#ifdef XIA_PLX_WRITE_DEBUG
+    sprintf(error_string, "XIA_PLX_WRITE_DEBUG: %#x = %#x", *addr, *buf);
+    dxp_md_log_debug("dxp_md_plx_io", error_string);
+#endif /* XIA_PLX_WRITE_DEBUG */  
+
+    status = plx_write_long(h, *addr, *buf);
+	break;
+
+  case 1:
+	/* Single word read */
+	status = plx_read_long(h, *addr, buf);
+	break;
+
+  case 2:
+	/* Burst read, normal, 2 dead words */
+	status = plx_read_block(h, *addr, *length, 2, buf);
+	break;
+
+  default:
+	/* This should never occur */
+	status = DXP_MDUNKNOWN;
+	ASSERT(FALSE_);
+  }
+
+  if (status != PLX_SUCCESS) {
+	sprintf(error_string, "Unable to perform requested I/O: func = %u, addr = "
+			"%#lx, len = %u", *function, *addr, *length);
+	dxp_md_log_error("dxp_md_plx_io", error_string, DXP_MDIO);
+	return DXP_MDIO;
+  }
+
+  return DXP_SUCCESS;
+}
+
+
+/** @brief Closes the port.
+ *
+ */
+static int dxp_md_plx_close(int *camChan)
+{
+  HANDLE h;
+
+  int status;
+
+
+  ASSERT(camChan != NULL);
+
+
+  h = pxiHandles[*camChan];
+
+  if (h) {
+	status = plx_close_slot(h);
+
+	if (status != PLX_SUCCESS) {
+	  sprintf(error_string, "Error closing PXI slot '%s', handle = %p",
+			  pxiNames[*camChan], &h);
+	  dxp_md_log_error("dxp_md_plx_close", error_string, DXP_MDCLOSE);
+	  return DXP_MDCLOSE;
+	}
+
+	ASSERT(pxiNames[*camChan] != NULL);
+
+	md_md_free(pxiNames[*camChan]);
+	pxiNames[*camChan] = NULL;
+
+	numPLX--;
+
+	sprintf(error_string, "Closed the PLX HANDLE at camChan = %d", *camChan);
+	dxp_md_log_debug("dxp_md_plx_close", error_string);
+
+	/* Is there a way to mark the handle as unused now? */
+	pxiHandles[*camChan] = NULL;
+  
+  }  else {
+	sprintf(error_string, "Skipping previously closed camChan = %d", *camChan);
+	dxp_md_log_info("dxp_md_plx_close", error_string);
+  }
+
+  return DXP_SUCCESS;
+}
+
+#endif /* EXCLUDE_PLX */
+
+
+#ifndef EXCLUDE_USB2
+
+/**
+ * @brief Perform any one-time initialization tasks for the USB2 driver.
+ */
+XIA_MD_STATIC int  dxp_md_usb2_initialize(unsigned int *maxMod,
+                                         char *dllname)
+{
+  UNUSED(maxMod);
+  UNUSED(dllname);
+
+
+  numUSB2 = 0;
+
+  return DXP_SUCCESS;
+}
+
+
+/**
+ * @brief Open the requested USB2 device.
+ */
+XIA_MD_STATIC int  dxp_md_usb2_open(char *ioname, int *camChan)
+{
+  int i;
+  int dev;
+  int status;
+  int len;
+
+
+  ASSERT(ioname != NULL);
+  ASSERT(camChan != NULL);
+
+
+  for (i = 0; i < (int)numUSB2; i++) {
+    if (STREQ(usb2Names[i], ioname)) {
+      *camChan = i;
+      return DXP_SUCCESS;
+    }
+  }
+
+  sscanf(ioname, "%d", &dev);
+
+  *camChan = numUSB2++;
+
+  status = xia_usb2_open(dev, &usb2Handles[*camChan]);
+
+  if (status != XIA_USB2_SUCCESS) {
+    sprintf(error_string, "Error opening USB device '%d', where the driver "
+            "reports a status of %d", dev, status);
+    dxp_md_log_error("dxp_md_usb2_open", error_string, DXP_MDOPEN);
+    return DXP_MDOPEN;
+  }
+  
+  ASSERT(usb2Names[*camChan] == NULL);
+
+  len = strlen(ioname) + 1;
+
+  usb2Names[*camChan] = md_md_alloc(len);
+
+  if (usb2Names[*camChan] == NULL) {
+    sprintf(error_string, "Unable to allocate %d bytes for usb2Names[%d]",
+            len, *camChan);
+    dxp_md_log_error("dxp_md_usb2_open", error_string, DXP_MDNOMEM);
+    return DXP_MDNOMEM;
+  }
+
+  strcpy(usb2Names[*camChan], ioname);
+
+  usb2AddrCache[*camChan] = MD_INVALID_ADDR;
+
+  numMod++;
+
+  return DXP_SUCCESS;
+}
+
+
+/**
+ * @brief Wraps both read/write USB2 operations.
+ *
+ * The I/O type (read/write) is specified in @a function. The allowed types
+ * are the same as the USB driver so that we can use USB2 and USB interchangably
+ * as communication protocols.
+ *
+ * 
+ */
+XIA_MD_STATIC int  dxp_md_usb2_io(int *camChan, unsigned int *function,
+                                 unsigned long *addr, void *data,
+                                 unsigned int *len)
+{
+  int status;
+
+  unsigned int i;
+
+  unsigned short cache_addr;
+
+  unsigned short *buf = NULL;
+  
+  byte_t *byte_buf = NULL;
+
+
+  ASSERT(addr != NULL);
+  ASSERT(function != NULL);
+  ASSERT(data != NULL);
+  ASSERT(camChan != NULL);
+
+
+  buf = (unsigned short *)data;
+
+  /* Unlike some of our other communication types, we require that the
+   * target address be set as a separate operation. This value will be saved
+   * until the real I/O is requested. In a perfect world, we wouldn't require
+   * this type of operation anymore, but we have to maintain backwards
+   * compatibility for products that want to use USB2 but originally used
+   * other protocols that did require the address be set separately.
+   */
+  switch (*addr) {
+
+  case 0:
+    if (usb2AddrCache[*camChan] == MD_INVALID_ADDR) {
+      sprintf(error_string, "No target address set for camChan %d", *camChan);
+      dxp_md_log_error("dxp_md_usb2_io", error_string, DXP_MD_TARGET_ADDR);
+      return DXP_MD_TARGET_ADDR;
+    }
+
+    cache_addr = (unsigned short)usb2AddrCache[*camChan];
+
+    switch (*function) {
+    case MD_IO_READ:
+/*       sprintf(error_string, "IO [READ]: addr = %#x, len (bytes) = %u", */
+/*               cache_addr, (*len) * 2); */
+/*       dxp_md_log_debug("dxp_md_usb2_io", error_string); */
+
+      /* The data comes from the calling routine as an unsigned short, so
+       * we need to convert it to a byte array for the USB2 driver.
+       */
+      byte_buf = md_md_alloc((*len) * 2);
+
+      if (byte_buf == NULL) {
+        sprintf(error_string, "Error allocating %d bytes for 'byte_buf' for "
+                "camChan %d", (*len) * 2, *camChan);
+        dxp_md_log_error("dxp_md_usb2_io", error_string, DXP_MDNOMEM);
+        return DXP_MDNOMEM;
+      }
+
+      status = xia_usb2_read(usb2Handles[*camChan], cache_addr,
+                             (unsigned short)(*len) * 2, byte_buf);
+
+      if (status != XIA_USB2_SUCCESS) {
+        md_md_free(byte_buf);
+        sprintf(error_string, "Error reading %u bytes from %#x for "
+                "camChan %d", (*len) * 2, cache_addr, *camChan);
+        dxp_md_log_error("dxp_md_usb2_io", error_string, DXP_MDIO);
+        return DXP_MDIO;
+      }
+
+      for (i = 0; i < *len; i++) {
+        buf[i] = (unsigned short)(byte_buf[i * 2] |
+                                  (byte_buf[(i * 2) + 1] << 8));
+      }
+
+      md_md_free(byte_buf);
+
+      break;
+      
+    case MD_IO_WRITE:
+      sprintf(error_string, "IO [WRITE]: addr = %#x, len (bytes) = %u",
+              cache_addr, (*len) * 2);
+      dxp_md_log_debug("dxp_md_usb2_io", error_string);
+
+      /* The data comes from the calling routine as an unsigned short, so
+       * we need to convert it to a byte array for the USB2 driver.
+       */
+      byte_buf = md_md_alloc((*len) * 2);
+
+      if (byte_buf == NULL) {
+        sprintf(error_string, "Error allocating %d bytes for 'byte_buf' for "
+                "camChan %d", (*len) * 2, *camChan);
+        dxp_md_log_error("dxp_md_usb2_io", error_string, DXP_MDNOMEM);
+        return DXP_MDNOMEM;
+      }
+
+      for (i = 0; i < *len; i++) {
+        byte_buf[i * 2]       = (byte_t)(buf[i] & 0xFF);
+        byte_buf[(i * 2) + 1] = (byte_t)((buf[i] >> 8) & 0xFF);
+      }
+
+      status = xia_usb2_write(usb2Handles[*camChan], cache_addr,
+                              (unsigned short)(*len) * 2, byte_buf);
+
+      md_md_free(byte_buf);
+
+      if (status != XIA_USB2_SUCCESS) {
+        sprintf(error_string, "Error writing %u bytes to %#x for "
+                "camChan %d", (*len) * 2, cache_addr, *camChan);
+        dxp_md_log_error("dxp_md_usb2_io", error_string, DXP_MDIO);
+        return DXP_MDIO;
+      }
+
+      break;
+
+    default:
+      ASSERT(FALSE_);
+      break;
+    }
+
+    break;
+
+  case 1:
+    /* Even though we aren't entirely thread-safe yet, it doesn't hurt to
+     * store the address as a function of camChan, instead of as a global
+     * variable like dxp_md_usb_io().
+     */
+    usb2AddrCache[*camChan] = (int)*((unsigned short *)data);
+
+    sprintf(error_string, "Setting address cache to %#x", 
+            usb2AddrCache[*camChan]);
+    dxp_md_log_debug("dxp_md_usb2_io", error_string);
+
+    break;
+
+  default:
+    ASSERT(FALSE_);
+    break;
+  }
+
+  return DXP_SUCCESS;
+}
+
+
+/**
+ * @brief Closes a device previously opened with dxp_md_usb2_open().
+ */
+XIA_MD_STATIC int  dxp_md_usb2_close(int *camChan)
+{
+  int status;
+
+  HANDLE h;
+
+
+  ASSERT(camChan != NULL);
+
+
+  h = usb2Handles[*camChan];
+
+  if (h == NULL) {
+    sprintf(error_string, "Skipping previously closed camChan = %d", *camChan);
+    dxp_md_log_info("dxp_md_usb2_close", error_string);
+    return DXP_SUCCESS;
+  }
+
+  status = xia_usb2_close(h);
+
+  if (status != XIA_USB2_SUCCESS) {
+    sprintf(error_string, "Error closing camChan (%d) with HANDLE = %#x",
+            *camChan, h);
+    dxp_md_log_error("dxp_md_usb2_close", error_string, DXP_MDCLOSE);
+    return DXP_MDCLOSE;
+  }
+
+  usb2Handles[*camChan] = NULL;
+
+  ASSERT(usb2Names[*camChan] != NULL);
+
+  md_md_free(usb2Names[*camChan]);
+  usb2Names[*camChan] = NULL;
+
+  numUSB2--;
+
+  return DXP_SUCCESS;
+}
+
+
+#endif /* EXCLUDE_USB2 */
+
+
+#pragma warning( default : 4127 )
