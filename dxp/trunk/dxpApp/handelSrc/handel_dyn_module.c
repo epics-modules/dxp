@@ -8,7 +8,8 @@
  * that were once in the (now non-existent) file
  * handel_dynamic_config.c. 
  *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2002,2003,2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -61,9 +62,10 @@
 #include "xia_handel_structures.h"
 #include "xia_module.h"
 #include "xia_common.h"
-#include "handel_test.h"
 #include "xia_assert.h"
 
+
+#define N_KNOWN_MODS (sizeof(KNOWN_MODS) / sizeof(KNOWN_MODS[0]))
 
 HANDEL_STATIC int HANDEL_API xiaProcessInterface(Module *chosen, char *name, void *value);
 HANDEL_STATIC int HANDEL_API xiaProcessFirmware(Module *chosen, char *name, void *value);
@@ -114,30 +116,37 @@ HANDEL_STATIC int  _parseDetectorIdx(char *str, int *idx, char *alias);
  * string should be added and the row size of interfaceStr should increase
  * by one.
  */
-static char *interfaceStr[8] = { "none",
-								 "j73a",
-								 "genericSCSI",
-								 "epp",
-								 "genericEPP",
-                                 "serial",
-								 "usb",
-								 "arcnet"};
+static char *interfaceStr[9] = { 
+  "none",
+  "j73a",
+  "genericSCSI",
+  "epp",
+  "genericEPP",
+  "serial",
+  "usb",
+  "arcnet",
+  "pxi",
+};
 
 /* This array is mainly used to compare names with the possible sub-interface
  * values. This should be update every time a new interface is added.
  */
-static char *subInterfaceStr[9] = { "scsibus_number",
-									"crate_number",
-									"slot",
-									"epp_address",
-									"daisy_chain_id",
-                                    "com_port",
-                                    "baud_rate",
-									"device_number",
-									"node_id"};
+static char *subInterfaceStr[11] = {
+  "scsibus_number",
+  "crate_number",
+  "slot",
+  "epp_address",
+  "daisy_chain_id",
+  "com_port",
+  "baud_rate",
+  "device_number",
+  "node_id",
+  "pci_bus",
+  "pci_slot",
+};
+
 
 static ModItem_t items[] = {
-  
   {"module_type",        _addModuleType, FALSE_},
   {"number_of_channels", _addNumChans,   TRUE_},
   {"channel",            _addChannel,    TRUE_},
@@ -153,6 +162,8 @@ static ModItem_t items[] = {
   {"node_id",            _addInterface,  TRUE_},
   {"com_port",           _addInterface,  TRUE_},
   {"baud_rate",          _addInterface,  TRUE_},
+  {"pci_bus",            _addInterface,  TRUE_},
+  {"pci_slot",           _addInterface,  TRUE_},
 };
 
 #define NUM_ITEMS (sizeof(items) / sizeof(items[0]))
@@ -305,21 +316,24 @@ HANDEL_EXPORT int HANDEL_API xiaAddModuleItem(char *alias, char *name, void *val
 	return status;
   }
   
-  status = XIA_UNKNOWN_ITEM;
-
   for (i = 0; i < nItems; i++) {
 	if (STRNEQ(name, items[i].name)) {
 	  status = _doAddModuleItem(m, value, i, name);
+
+	  if (status != XIA_SUCCESS) {
+		sprintf(info_string, "Error adding item '%s' to module '%s'", name,
+				m->alias);
+		xiaLogError("xiaAddModuleItem", info_string, status);
+		return status;
+	  }
+
+	  return XIA_SUCCESS;
 	}
   }
 
-  if (status != XIA_SUCCESS) {
-	sprintf(info_string, "Error adding item '%s' to module '%s'", name, m->alias);
-	xiaLogError("xiaAddModuleItem", info_string, status);
-	return status;
-  }
-
-  return XIA_SUCCESS;
+  sprintf(info_string, "Unknown item '%s' for module '%s'", name, m->alias);
+  xiaLogError("xiaAddModuleItem", info_string, XIA_UNKNOWN_ITEM);
+  return XIA_UNKNOWN_ITEM;
 }
 
 /*****************************************************************************
@@ -335,6 +349,10 @@ HANDEL_SHARED Module* HANDEL_API xiaFindModule(char *alias)
     char strtemp[MAXALIAS_LEN];
 	
     Module *current = NULL;
+
+	
+	ASSERT(alias != NULL);
+
 
     /* Convert the name to lowercase */
     for (i = 0; i < (unsigned int)strlen(alias); i++) 
@@ -382,6 +400,7 @@ HANDEL_STATIC int HANDEL_API xiaProcessInterface(Module *chosen, char *name, voi
 	ASSERT(chosen != NULL);
 	ASSERT(name != NULL);
 	ASSERT(value != NULL);
+
 
 
 	/* This is a hack to acknowledge the fact that
@@ -498,9 +517,12 @@ HANDEL_STATIC int HANDEL_API xiaProcessInterface(Module *chosen, char *name, voi
 #endif /* EXCLUDE_EPP */
 
 #ifndef EXCLUDE_USB
-		if (STREQ(name, "device_number") ||
-		    STREQ(interface, "usb"))
+      if ((STREQ(name, "device_number") && chosen->interface_info->type == USB)
+          || STREQ(interface, "usb"))
 		  {
+        /* A bit of hack to deal with USB and USB2 both using the
+         * "device_number" module item.
+         */
 		/* Check that the module type is correct */
 		if ((chosen->interface_info->type != USB)           &&
 			(chosen->interface_info->type != NO_INTERFACE))
@@ -534,6 +556,41 @@ HANDEL_STATIC int HANDEL_API xiaProcessInterface(Module *chosen, char *name, voi
 	  
 	  } else 
 #endif /* EXCLUDE_USB */
+
+#ifndef EXCLUDE_USB2
+      if (STREQ(name, "device_number") || STREQ(interface, "usb2")) {
+        /* Check that the module type is correct */
+        if (chosen->interface_info->type != USB2 &&
+            chosen->interface_info->type != NO_INTERFACE)
+          {
+            sprintf(info_string, "Item %s is not a valid element of the "
+                    "current interface", name);
+            xiaLogError("xiaProcessInterface", info_string,
+                        XIA_WRONG_INTERFACE);
+            return XIA_WRONG_INTERFACE;
+          }
+	  
+        /* See if we need to create a new interface */
+        if (chosen->interface_info->type == NO_INTERFACE) {
+          chosen->interface_info->type = USB2;
+          chosen->interface_info->info.usb2 =
+            (Interface_Usb2 *)handel_md_alloc(sizeof(Interface_Usb2));
+
+          if (chosen->interface_info->info.usb2 == NULL) {
+            xiaLogError("xiaProcessInterface", "Unable to allocate memory for "
+                        "chosen->interface_info->info.usb2", XIA_NOMEM);
+            return XIA_NOMEM;
+          }
+		  
+          chosen->interface_info->info.usb2->device_number = 0;
+        }
+	  
+        if (STRNEQ(name, "device_number")) {
+          chosen->interface_info->info.usb2->device_number =
+            *((unsigned int *)value);
+        }
+      } else 
+#endif /* EXCLUDE_USB2 */
 
 #ifndef EXCLUDE_ARCNET
 		if (STREQ(name, "node_id") ||
@@ -617,6 +674,47 @@ HANDEL_STATIC int HANDEL_API xiaProcessInterface(Module *chosen, char *name, voi
 
 	  } else
 #endif /* EXCLUDE_SERIAL */
+
+#ifndef EXCLUDE_PLX
+		if (STREQ(name, "pci_slot") ||
+			STREQ(name, "pci_bus")  ||
+			STREQ(interface, "pxi"))
+		  {
+			if ((chosen->interface_info->type != PLX) &&
+				(chosen->interface_info->type != NO_INTERFACE))
+			  {
+				sprintf(info_string, "'%s' is not a valid element of the "
+						"currently selected interface", name);
+				xiaLogError("xiaProcessInterface", info_string,
+							XIA_WRONG_INTERFACE);
+				return XIA_WRONG_INTERFACE;
+			  }
+
+			if (chosen->interface_info->type == NO_INTERFACE) {
+			  chosen->interface_info->type = PLX;
+			  chosen->interface_info->info.plx = 
+				(Interface_Plx *)handel_md_alloc(sizeof(Interface_Plx));
+
+			  if (!chosen->interface_info->info.plx) {
+				sprintf(info_string, "Error allocating %d bytes for 'chosen->"
+						"interface_info->info.plx'", sizeof(Interface_Plx));
+				xiaLogError("xiaProcessInterface", info_string, XIA_NOMEM);
+				return XIA_NOMEM;
+			  }
+
+			  chosen->interface_info->info.plx->bus  = 0;
+			  chosen->interface_info->info.plx->slot = 0;
+			}
+			
+			if (STREQ(name, "pci_slot")) {
+			  chosen->interface_info->info.plx->slot = *((byte_t *)value);
+			
+			} else if (STREQ(name, "pci_bus")) {
+			  chosen->interface_info->info.plx->bus  = *((byte_t *)value);
+			}
+				
+		  } else
+#endif /* EXCLUDE_PLX */
 		{
 		  status = XIA_MISSING_INTERFACE;
 		  sprintf(info_string, "'%s' is a member of an unknown interface", name);
@@ -1043,7 +1141,7 @@ HANDEL_STATIC int HANDEL_API xiaMergeDefaults(char *output, char *input1, char *
 		  
 		  if (status != XIA_SUCCESS) 
 			{
-			  sprintf(info_string, "Error adding default %s (value = %f) to alias %s", current->name, current->data, output);
+			  sprintf(info_string, "Error adding default %s (value = %.3f) to alias %s", current->name, current->data, output);
 			  xiaLogError("xiaMergeDefaults", info_string, status);
 			  return status;
 			}
@@ -1060,7 +1158,7 @@ HANDEL_STATIC int HANDEL_API xiaMergeDefaults(char *output, char *input1, char *
 	  
 	  if (status != XIA_SUCCESS) 
 		{
-		  sprintf(info_string, "Error adding default %s (value = %f) to alias %s", current->name, current->data, output);
+		  sprintf(info_string, "Error adding default %s (value = %.3f) to alias %s", current->name, current->data, output);
 		  xiaLogError("xiaSetDefaults", info_string, status);
 		  return status;
 		}
@@ -1430,6 +1528,19 @@ HANDEL_STATIC int HANDEL_API xiaGetIFaceInfo(Module *chosen, char *name, void *v
     } else
 #endif /* EXCLUDE_SERIAL */
 
+#ifndef EXCLUDE_PLX
+	  if (chosen->interface_info->type == PLX) {
+		
+		if (STREQ(name, "pci_slot")) {
+		  *((byte_t *)value) = chosen->interface_info->info.plx->slot;
+
+		} else if (STREQ(name, "pci_bus")) {
+		  *((byte_t *)value) = chosen->interface_info->info.plx->bus;
+		}
+
+	  } else
+#endif /* EXCLUDE_PLX */
+
 	  {
 
 	  status = XIA_WRONG_INTERFACE;
@@ -1538,6 +1649,10 @@ HANDEL_STATIC int HANDEL_API xiaGetAlias(Module *chosen, int chan, void *value)
 	xiaLogError("xiaGetAlias", info_string, status);
 	return status;
     }
+
+	sprintf(info_string, "chosen = %p, chan = %d, alias = %d", chosen, chan,
+			chosen->channels[chan]);
+	xiaLogDebug("xiaGetAlias", info_string);
 
     *((int *)value) = chosen->channels[chan];
 
@@ -2044,7 +2159,7 @@ HANDEL_STATIC int HANDEL_API xiaSetDefaults(Module *module)
 			  handel_md_free((void *)defNames);
 			  handel_md_free((void *)defValues);
 			  
-			  sprintf(info_string, "Error adding default %s (value = %f) to alias %s", current->name, current->data, tempAlias);
+			  sprintf(info_string, "Error adding default %s (value = %.3f) to alias %s", current->name, current->data, tempAlias);
 			  xiaLogError("xiaSetDefaults", info_string, status);
 			  return status;
 			}
@@ -2068,7 +2183,7 @@ HANDEL_STATIC int HANDEL_API xiaSetDefaults(Module *module)
 			  handel_md_free((void *)defNames);
 			  handel_md_free((void *)defValues);
 			  
-			  sprintf(info_string, "Error adding default %s (value = %f) to alias %s", defNames[j], defValues[j], alias);
+			  sprintf(info_string, "Error adding default %s (value = %.3f) to alias %s", defNames[j], defValues[j], alias);
 			  xiaLogError("xiaSetDefaults", info_string, status);
 			  return status;
 			}
@@ -2089,7 +2204,7 @@ HANDEL_STATIC int HANDEL_API xiaSetDefaults(Module *module)
 			  handel_md_free((void *)defNames);
 			  handel_md_free((void *)defValues);
 			  
-			  sprintf(info_string, "Error adding default %s (value = %f) to alias %s", current->name, current->data, alias);
+			  sprintf(info_string, "Error adding default %s (value = %.3f) to alias %s", current->name, current->data, alias);
 			  xiaLogError("xiaSetDefaults", info_string, status);
 			  return status;
 			}
@@ -2239,7 +2354,6 @@ HANDEL_STATIC int _addModuleType(Module *module, void *type, char *name)
   int status;
 
   unsigned int i;
-  unsigned int nValidMods = (unsigned int)NUM_VALID_MODS;
 
   size_t n;
 
@@ -2261,10 +2375,10 @@ HANDEL_STATIC int _addModuleType(Module *module, void *type, char *name)
   
   status = XIA_UNKNOWN_BOARD;
   
-  for (i = 0; i < nValidMods; i++) {
-	if (STREQ(validMods[i].alias, requested)) {
+  for (i = 0; i < N_KNOWN_MODS; i++) {
+	if (STREQ(KNOWN_MODS[i].alias, requested)) {
 	  
-	  n = strlen(validMods[i].actual) + 1;
+	  n = strlen(KNOWN_MODS[i].actual) + 1;
 
 	  module->type = (char *)handel_md_alloc(n);
 
@@ -2276,7 +2390,7 @@ HANDEL_STATIC int _addModuleType(Module *module, void *type, char *name)
 		return status;
 	  }
 
-	  strncpy(module->type, validMods[i].actual, n);
+	  strncpy(module->type, KNOWN_MODS[i].actual, n);
 	  status = XIA_SUCCESS;
 	  break;
 	}
@@ -2578,11 +2692,18 @@ HANDEL_STATIC int _initCurrentFirmware(Module *module)
   }
 
   for (i = 0; i < module->number_of_channels; i++) {
-	strncpy(module->currentFirmware[i].currentFiPPI,     XIA_NULL_STRING, XIA_NULL_STRING_LEN);
-	strncpy(module->currentFirmware[i].currentUserFiPPI, XIA_NULL_STRING, XIA_NULL_STRING_LEN);
-	strncpy(module->currentFirmware[i].currentDSP,       XIA_NULL_STRING, XIA_NULL_STRING_LEN);
-	strncpy(module->currentFirmware[i].currentUserDSP,   XIA_NULL_STRING, XIA_NULL_STRING_LEN);
-	strncpy(module->currentFirmware[i].currentMMU,       XIA_NULL_STRING, XIA_NULL_STRING_LEN);
+	strncpy(module->currentFirmware[i].currentFiPPI,     XIA_NULL_STRING,
+			XIA_NULL_STRING_LEN);
+	strncpy(module->currentFirmware[i].currentUserFiPPI, XIA_NULL_STRING,
+			XIA_NULL_STRING_LEN);
+	strncpy(module->currentFirmware[i].currentDSP,       XIA_NULL_STRING,
+			XIA_NULL_STRING_LEN);
+	strncpy(module->currentFirmware[i].currentUserDSP,   XIA_NULL_STRING,
+			XIA_NULL_STRING_LEN);
+	strncpy(module->currentFirmware[i].currentMMU,       XIA_NULL_STRING,
+			XIA_NULL_STRING_LEN);
+    strncpy(module->currentFirmware[i].currentSysFPGA,   XIA_NULL_STRING,
+            XIA_NULL_STRING_LEN);
   }
 
   return XIA_SUCCESS;
@@ -2903,6 +3024,85 @@ HANDEL_STATIC int  _addInterface(Module *module, void *val, char *name)
 }
 
 
-#ifdef _DEBUG
-#include "handel_dyn_module_t.c"
-#endif /* _DEBUG */
+/** @brief Returns the module alias for the specified detChan.
+ *
+ * Assumes that the user has allocated enough memory to hold the entire
+ * module alias. The maximum alias size is MAXALIAS_LEN.
+ *
+ */
+HANDEL_EXPORT int HANDEL_API xiaModuleFromDetChan(int detChan, char *alias)
+{
+  Module *m = xiaGetModuleHead();
+  
+  unsigned int i;
+
+
+  if (!alias) {
+	xiaLogError("xiaModuleFromDetChan", "'alias' may not be NULL.",
+				XIA_NULL_ALIAS);
+	return XIA_NULL_ALIAS;
+  }
+
+  while (m != NULL) {
+
+	for (i = 0; i < m->number_of_channels; i++) {
+	  if (detChan == m->channels[i]) {
+		strncpy(alias, m->alias, MAXALIAS_LEN);
+		return XIA_SUCCESS;
+	  }
+	}
+
+	m = m->next;
+  }
+
+  sprintf(info_string, "detChan %d is not defined in any of the known modules",
+		  detChan);
+  xiaLogError("xiaModuleFromDetChan", info_string, XIA_INVALID_DETCHAN);
+  return XIA_INVALID_DETCHAN;
+}
+
+
+/** @brief Converts the specified detChan into a detector alias.
+ *
+ * Assumes that the user has allocated enough memory to hole the entire
+ * module alias. The maximum alias size if MAXALIAS_LEN.
+ *
+ */
+HANDEL_EXPORT int HANDEL_API xiaDetectorFromDetChan(int detChan, char *alias)
+{
+  Module *m = xiaGetModuleHead();
+
+  unsigned int i;
+
+  char *t = NULL;
+
+
+  if (!alias) {
+	xiaLogError("xiaDetectorFromDetChan", "'alias' may not be NULL.",
+				XIA_NULL_ALIAS);
+	return XIA_NULL_ALIAS;
+  }
+
+  while (m != NULL) {
+	
+	for (i = 0; i < m->number_of_channels; i++) {
+	  if (detChan == m->channels[i]) {
+		/* The detector aliases are stored in the Module structure as
+		 * "alias:{n}", where "n" represents the physical detector preamplifier
+		 * that the detChan is bound to. We need to strip that extra information
+		 * from the alias.
+		 */
+		t = strtok(m->detector[i], ":");
+		strcpy(alias, t);
+		return XIA_SUCCESS;
+	  }
+	}
+
+	m = m->next;
+  }
+
+  sprintf(info_string, "detChan %d is not defined in any of the known modules",
+		  detChan);
+  xiaLogError("xiaDetectorFromDetChan", info_string, XIA_INVALID_DETCHAN);
+  return XIA_INVALID_DETCHAN;
+}

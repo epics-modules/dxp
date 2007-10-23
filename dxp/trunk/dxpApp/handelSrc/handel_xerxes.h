@@ -1,10 +1,8 @@
-
 /*
  * handel_xerxes.h
  *
- * Created 10/26/01 -- PJF
- *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -37,6 +35,9 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
+ *
+ * $Id: handel_xerxes.h,v 1.2 2007-10-23 01:52:22 rivers Exp $
+ *
  */
 
 
@@ -61,31 +62,25 @@
 
 
 
-static char *null[1]                 = { "NULL" };
+static char *SYS_NULL[1]  = { "NULL" };
 
-static char *boardList[] = {
+static char *BOARD_LIST[] = {
 #ifndef EXCLUDE_DXP4C2X
   "dxp2x",
   "dxp4c2x",
 #endif /* EXCLUDE_DXP4C2X */
-#ifndef EXCLUDE_DXP4C
-  "dxp4c",
-#endif /* EXCLUDE_DXP4C */
 #ifndef EXCLUDE_DXPX10P
   "dxpx10p",
 #endif /* EXCLUDE_DXPX10P */
-#ifndef EXCLUDE_DGF200
-  "dgfg200",
-#endif /* EXCLUDE_DGFG200 */
-#ifndef EXCLUDE_POLARIS
-  "polaris",
-#endif /* EXCLUDE_POLARIS */
 #ifndef EXCLUDE_UDXPS
   "udxps",
 #endif /* EXCLUDE_UDXPS */
 #ifndef EXCLUDE_UDXP
   "udxp",
 #endif /* EXCLUDE_UDXP */
+#ifndef EXCLUDE_XMAP
+  "xmap",
+#endif /* EXCLUDE_XMAP */
   };
 
 
@@ -93,36 +88,48 @@ static char *boardList[] = {
  * sync with the EXCLUDES in
  * xia_module.h
  */
-static char *interfList[] = { "bad",
+static char *INTERF_LIST[] = {
+  "bad",
 #ifndef EXCLUDE_CAMAC
-							   "CAMAC",
-							   "CAMAC",
+  "CAMAC",
+  "CAMAC",
 #endif /* EXCLUDE_CAMAC */
 #ifndef EXCLUDE_EPP
-							   "EPP",
-							   "EPP",
+  "EPP",
+  "EPP",
 #endif /* EXCLUDE_EPP */
 #ifndef EXCLUDE_SERIAL
-							   "SERIAL",
+  "SERIAL",
 #endif /* EXCLUDE_SERIAL */
 #ifndef EXCLUDE_USB
-							   "USB",
+  "USB",
 #endif /* EXCLUDE_USB */
+#ifndef EXCLUDE_USB2
+  "USB2",
+#endif /* EXCLUDE_USB2 */
 #ifndef EXCLUDE_ARCNET
-							   "ARCNET",
+  "ARCNET",
 #endif /* EXCLUDE_ARCNET */
+#ifndef EXCLUDE_PLX
+  "PXI",
+#endif /* EXCLUDE_PLX */
 };
 
-#define KNOWN_BOARDS  (sizeof(boardList) / sizeof(boardList[0]))
+#define N_KNOWN_BOARDS  (sizeof(BOARD_LIST) / sizeof(BOARD_LIST[0]))
+
+#define MAX_INTERF_LEN   24
+#define MAX_MD_LEN        6 
+#define MAX_NUM_CHAN_LEN  4
+/* As far as the Xerxes configuration goes, this allows a detChan range of
+ * 0 - 9999, which should be enough for anybody.
+ */
+#define MAX_CHAN_LEN      4
+
 
 /** Prototypes **/
-HANDEL_STATIC void HANDEL_API xiaBuildInterfString(Module *module, char *interfStr[2]);
-HANDEL_STATIC void HANDEL_API xiaBuildMDString(Module *module, char *mdString);
-HANDEL_STATIC int HANDEL_API xiaGetDSPName(Module *module, int channel, 
-					   double peakingTime, char *dspName, 
-					   char *detectorType, char *rawFilename);
-HANDEL_STATIC int HANDEL_API xiaGetFippiName(Module *module, int channel, double peakingTime, 
-					     char *fippiName, char *detectorType, 
-					     char *rawFilename);
+
+
+
+
  
 #endif /* HANDEL_XERXES_H */

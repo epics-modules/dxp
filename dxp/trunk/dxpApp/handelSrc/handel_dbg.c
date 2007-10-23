@@ -8,7 +8,8 @@
  * version. They only have to disappear since
  * they are exported to the DLL!
  *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2002,2003,2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -205,8 +206,8 @@ HANDEL_EXPORT void HANDEL_API xiaDumpFirmwareStruct(char *fileName)
 	  while (firmware != NULL)
 		{
 		  fprintf(file, "\tptrr = %u\n", firmware->ptrr);
-		  fprintf(file, "\tmin_peaking_time = %lf\n", firmware->min_ptime);
-		  fprintf(file, "\tmax_peaking_time = %lf\n", firmware->max_ptime);
+		  fprintf(file, "\tmin_peaking_time = %.3f\n", firmware->min_ptime);
+		  fprintf(file, "\tmax_peaking_time = %.3f\n", firmware->max_ptime);
 		  fprintf(file, "\tfippi = %s\n", firmware->fippi == NULL ? "NULL" : firmware->fippi);
 		  fprintf(file, "\tuser_fippi = %s\n", firmware->user_fippi == NULL ? "NULL" : firmware->user_fippi);
 		  fprintf(file, "\tdsp = %s\n", firmware->dsp == NULL ? "NULL" : firmware->dsp);
@@ -266,7 +267,7 @@ HANDEL_EXPORT void HANDEL_API xiaDumpModuleStruct(char *fileName)
 
 	for (i = 0; i < module->number_of_channels; i++) {
 
-	  fprintf(file, "gain[%u] = %lf\n", i, module->gain[i]);
+	  fprintf(file, "gain[%u] = %.3f\n", i, module->gain[i]);
 	}
 
 	for (i = 0; i < module->number_of_channels; i++) {
@@ -315,7 +316,7 @@ HANDEL_EXPORT void HANDEL_API xiaDumpDefaultsStruct(char *fileName)
 
 	while (entry != NULL) {
 
-	  fprintf(file, "\t%s = %lf\n", entry->name, entry->data);
+	  fprintf(file, "\t%s = %.3f\n", entry->name, entry->data);
 	
 	  entry = entry->next;
 	}

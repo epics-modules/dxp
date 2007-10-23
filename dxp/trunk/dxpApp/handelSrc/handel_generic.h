@@ -37,7 +37,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: handel_generic.h,v 1.5 2006-06-21 15:43:35 rivers Exp $
+ * $Id: handel_generic.h,v 1.6 2007-10-23 01:57:56 rivers Exp $
  *
  */
 
@@ -56,7 +56,8 @@
 #define MAXFILENAME_LEN		  200
 #define MAX_NUM_VALUES		  200
 #define MAXITEM_LEN		      200
-#define MAX_DSP_PARAM_NAME_LEN 15
+#define MAX_DSP_PARAM_NAME_LEN 30
+#define MAX_PATH_LEN        1024
 
 /* This is a little sketchy right now. I only added it to provide _some_
  * mechanism for verifying the gain info. at the PSL layer. Should probably

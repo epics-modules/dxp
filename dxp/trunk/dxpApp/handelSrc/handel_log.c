@@ -8,7 +8,8 @@
  *
  * Major upgrade 12/3/01 -- JEW
  *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2002,2003,2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 

@@ -1,9 +1,8 @@
 /*
- *  xia_fdd.h
+ *  fdd.h
  *
- *  Created 15-Dec-2001: JEW
- *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -36,16 +35,18 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
+ * $Id: fdd.h,v 1.2 2007-10-23 01:44:26 rivers Exp $
+ *
  */
 
 
 #ifndef XIA_FDD_H
 #define XIA_FDD_H
 
-#include <fdddef.h>
+#include "fdddef.h"
 /* Define some generic constants for use by FDD */
-#include <handel_generic.h>
-#include <md_generic.h>
+#include "handel_generic.h"
+#include "md_generic.h"
 
 #include "xia_handel_structures.h"
 
@@ -67,10 +68,12 @@ extern "C" {
  */
 FDD_IMPORT int FDD_API xiaFddInitialize(void);
 FDD_IMPORT int FDD_API xiaFddInitLibrary(void);
-FDD_IMPORT int FDD_API xiaFddGetFirmware(const char *filename, const char *ftype, 
-					 double pt, unsigned int nother, 
-					 char **others, 
-					 const char *detectorType, char newfilename[MAXFILENAME_LEN], 
+  FDD_IMPORT int FDD_API xiaFddGetFirmware(const char *filename, char *path,
+                                           const char *ftype, 
+                                           double pt, unsigned int nother, 
+                                           char **others, 
+                                           const char *detectorType,
+                                           char newfilename[MAXFILENAME_LEN], 
 					 char rawFilename[MAXFILENAME_LEN]);
 FDD_IMPORT int FDD_API xiaFddAddFirmware(const char *filename, const char *ftype, 
 					 double ptmin, double ptmax, 

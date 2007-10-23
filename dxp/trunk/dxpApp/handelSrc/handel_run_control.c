@@ -5,7 +5,8 @@
  *
  * Created 11/28/01 -- PJF
  *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2002,2003,2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -50,7 +51,6 @@
 #include "xia_assert.h"
 
 #include "handel_errors.h"
-#include "handel_test.h"
 
 
 /*****************************************************************************
@@ -136,7 +136,7 @@ HANDEL_EXPORT int HANDEL_API xiaStartRun(int detChan, unsigned short resume)
 		
 		defaults = xiaGetDefaultFromDetChan((unsigned int)detChan);
 		
-		status = localFuncs.startRun(detChan, resume, defaults);
+		status = localFuncs.startRun(detChan, resume, defaults, module);
 		
 		if (status != XIA_SUCCESS)
 		  {
@@ -275,7 +275,7 @@ HANDEL_EXPORT int HANDEL_API xiaStopRun(int detChan)
 			return status;
 		  } 
 		
-		status = localFuncs.stopRun(detChan);
+		status = localFuncs.stopRun(detChan, module);
 		
 		if (status != XIA_SUCCESS)
 		  {
@@ -348,11 +348,15 @@ HANDEL_EXPORT int HANDEL_API xiaGetRunData(int detChan, char *name, void *value)
     int status;
     int elemType;
 
+	char *alias = NULL;
+
     char boardType[MAXITEM_LEN];
 
     PSLFuncs localFuncs;
 
     XiaDefaults *defaults = NULL;
+	
+	Module *m = NULL;
 
 
     elemType = xiaGetElemType((unsigned int)detChan);
@@ -379,8 +383,16 @@ HANDEL_EXPORT int HANDEL_API xiaGetRunData(int detChan, char *name, void *value)
 		  }
 		
 		defaults = xiaGetDefaultFromDetChan((unsigned int)detChan);
+		alias    = xiaGetAliasFromDetChan(detChan);
+		m        = xiaFindModule(alias);
 		
-		status = localFuncs.getRunData(detChan, name, value, defaults);
+		/* A NULL module would indicate that something is broken
+		 * internally since the value returned by xiaGetAliasFromDetChan()
+		 * _must_ be a real alias.
+		 */
+		ASSERT(m != NULL);
+
+		status = localFuncs.getRunData(detChan, name, value, defaults, m);
 		
 		if (status != XIA_SUCCESS)
 		  {
@@ -617,8 +629,3 @@ HANDEL_EXPORT int HANDEL_API xiaGetSpecialRunData(int detChan, char *name, void 
 
     return XIA_SUCCESS;
 }		
-
-
-#ifdef _DEBUG
-#include "handel_run_control_t.c"
-#endif /* _DEBUG */

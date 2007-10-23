@@ -6,7 +6,8 @@
  *
  * Created 12/3/01 -- JEW
  *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2002,2003,2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -194,9 +195,9 @@ XIA_MD_SHARED void dxp_md_error(char* routine, char* message, int* error_code, c
 
 	time_t current = time(NULL);
 	struct tm *localTime = localtime(&current);
-	char logTimeFormat[30];
+	char logTimeFormat[50];
 
-	strftime(logTimeFormat, 30, "%c", localTime);
+	strftime(logTimeFormat, 50, "%c", localTime);
 
 /*	printf("%s [ERROR] [%d] %s: %s\n", logTimeFormat, *error_code, routine, message); */
 	fprintf(out_stream, "[ERROR] [%d] %s %s, line = %d, %s: %s\n", *error_code, logTimeFormat, file, line, routine, message);
@@ -216,9 +217,9 @@ XIA_MD_SHARED void dxp_md_warning(char *routine, char *message, char *file, int 
 {
 	time_t current = time(NULL);
 	struct tm *localTime = localtime(&current);
-	char logTimeFormat[30];
+	char logTimeFormat[50];
 
-	strftime(logTimeFormat, 30, "%c", localTime);
+	strftime(logTimeFormat, 50, "%c", localTime);
 
 	fprintf(out_stream, "[WARN] %s %s, line = %d, %s: %s\n", logTimeFormat, file, line, routine, message);
 	fflush(out_stream);
