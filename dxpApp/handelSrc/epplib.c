@@ -1,6 +1,7 @@
 /******************************************************************************
  *
- *   Copyright 1998 X-ray Instrumentation Associates 
+ *   Copyright 1998-2004, X-ray Instrumentation Associates 
+ *             2005, XIA LLC
  *   All rights reserved 
  *
  *   epplib.cpp
@@ -31,9 +32,9 @@
 #include <math.h>
 #include <stdlib.h>
 
+#ifdef _WIN32
 #pragma warning(disable : 4115)
 #include <windows.h>
-
 #define DLPORTIO 1
 
 #ifdef DLPORTIO
@@ -41,6 +42,17 @@
 #else
 #include <conio.h>
 #endif /* DLPORTIO */
+#endif /* _WIN32 */
+
+#ifdef linux
+#include <sys/io.h>
+#define _inp inb
+#define _outp outb
+#define SLOW
+typedef unsigned char UCHAR;
+typedef unsigned short* PUSHORT;
+typedef unsigned long* PULONG;
+#endif
 
 #include "dlldefs.h"
 #include "epplib.h"
@@ -55,16 +67,16 @@ static unsigned short APORT,SPORT,DPORT;
 
 static int rstat=0;
 static int status;
-static char line[100];
 
 /* Keep track of the last ID set, this is used during init() calls to bypass the setting of Control=4
  * This is a problem since the control=4 call will reset the ID to 0 in our interfaces, then the init()
  * call can not proceed if the correct ID of the box is not 0. */
 static int lastID = -1;
 
+#ifdef DLPORTIO
 #define _inp DlPortReadPortUchar
 #define _outp DlPortWritePortUchar
-
+#endif
 
 /*****************************************************************************
  * 
@@ -337,7 +349,15 @@ XIA_EXPORT int XIA_API DxpWriteBlocklong(unsigned short addr,unsigned long *data
    ****************/
   int i;
 
+#ifdef SLOW
+#ifdef DLPORTIO
+  UCHAR cdata;
+#else
+  int cdata;
+#endif /* DLPORTIO */
+#else
   PUSHORT pData = NULL;
+#endif /* SLOW */
 
   if(addr>=0x4000){
 
@@ -347,18 +367,8 @@ XIA_EXPORT int XIA_API DxpWriteBlocklong(unsigned short addr,unsigned long *data
 
 	return -2;
   }
+
 #ifdef SLOW
-
-#ifdef DLPORTIO
-
-  UCHAR cdata;
-
-#else
-
-  int cdata;
-
-#endif /* DLPORTIO */
-
   for(i=0;i<len;i++)   {
 	cdata=(data[i]>>16)&0x000000FF;
 	_outp(DPORT,cdata);
@@ -522,13 +532,17 @@ XIA_EXPORT int XIA_API DxpReadBlockd(unsigned short addr,double *data,int len)  
    *  -2   error writing address
    *   n   error transferring nth word
    ****************/
+#ifdef SLOW
+  unsigned int cdata,tdata;
+#else
   PUSHORT pData = NULL;
+#endif
 
   int i;
   if(addr<0x4000) return -1;
   if(set_addr(addr)!=0) return -2;
+
 #ifdef SLOW
-  unsigned int cdata,tdata;
   for(i=0;i<len;i++)   {
 	cdata=_inp(DPORT);
 	/*check status (not time out, nByte=1) */
@@ -567,10 +581,13 @@ XIA_EXPORT int XIA_API DxpReadBlocklongd(unsigned short addr,double *data,int le
    ****************/
   int i;
 
+#ifdef SLOW
+  unsigned long cdata0,cdata1,cdata2;
+  unsigned char junk;
+#else
   PULONG pData = NULL; 
+#endif
 
-  /*   unsigned long cdata0,cdata1,cdata2;
-	   unsigned char junk;*/
   if(addr>=0x4000) return -1;
   if(set_addr(addr)!=0) return -2;
 #ifdef SLOW
