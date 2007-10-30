@@ -8,14 +8,9 @@ dxp_registerRecordDeviceDriver(pdbbase)
 # Initialize the XIA software
 # Set logging level (1=ERROR, 2=WARNING, 3=XXX, 4=DEBUG)
 xiaSetLogLevel(2)
-# Execute the following line if you have a Vortex detector or 
-# another detector with a reset pre-amplifier
-#xiaInit("vortex.ini")
-xiaInit("vortex40MHz.ini")
-# Execute the following line if you have a Ketek detector or 
-# another detector with an RC pre-amplifier
-#xiaInit("ketek.ini")
-#xiaInit("ketek40MHz.ini")
+# Edit saturn.ini to match your Saturn speed (20 or 40 MHz), 
+# pre-amp type (reset or RC), and interface type (EPP, USB 1.0, USB 2.0)
+xiaInit("saturn.ini")
 xiaStartSystem
 
 # DXPConfig(serverName, ndetectors, ngroups, pollFrequency)
