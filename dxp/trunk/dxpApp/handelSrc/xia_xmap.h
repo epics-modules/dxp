@@ -37,7 +37,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xia_xmap.h,v 1.1 2007-10-21 21:25:13 rivers Exp $
+ * $Id: xia_xmap.h,v 1.2 2007-11-14 21:07:46 rivers Exp $
  *
  */
 
@@ -178,8 +178,7 @@ extern "C" {
   XERXES_STATIC FILE* XERXES_API dxp_find_file(const char *, const char *);
 
   XERXES_STATIC int XERXES_API dxp_do_cmd(int *ioChan, byte_t cmd, unsigned int lenS,
-										  byte_t *send, unsigned int lenR, byte_t *receive,
-										  byte_t ioFlags);
+										  byte_t *send, unsigned int lenR, byte_t *receive);
 
   XERXES_STATIC int XERXES_API dxp_unhook(Board *board);
 

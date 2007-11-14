@@ -882,6 +882,18 @@ HANDEL_SHARED int HANDEL_API xiaLoadPSL(char *boardType, PSLFuncs *funcs)
 	  status = xmap_PSLInit(funcs);
 #endif /* EXCLUDE_XMAP */
 
+#ifndef EXCLUDE_MERCURY
+  } else if (STREQ(boardType, "mercury")) {
+
+    status = mercury_PSLInit(funcs);
+#endif /* EXCLUDE_MERCURY */
+
+#ifndef EXCLUDE_VEGA
+  } else if (STREQ(boardType, "vega")) {
+
+    status = vega_PSLInit(funcs);
+#endif /* EXCLUDE_VEGA */
+
     } else {
 	      
 	funcs = NULL;
@@ -1092,9 +1104,6 @@ HANDEL_EXPORT int HANDEL_API xiaCommandOperation(int detChan, byte_t cmd,
 {
   int statusX;
 
-  byte_t ioFlags = IO_NORMAL;
-
-
   if (lenS > 0) {
 	ASSERT(send != NULL);
   }
@@ -1103,7 +1112,7 @@ HANDEL_EXPORT int HANDEL_API xiaCommandOperation(int detChan, byte_t cmd,
 	ASSERT(recv != NULL);
   }
 
-  statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, recv, &ioFlags);
+  statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, recv);
 
   if (statusX != DXP_SUCCESS) {
 	xiaLogError("xiaCommandOperation", "Error executing command", XIA_XERXES);

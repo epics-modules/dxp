@@ -576,6 +576,10 @@ HANDEL_SHARED int HANDEL_API xiaFreeFirmwareSet(FirmwareSet *firmwareSet)
     {
 	handel_md_free(firmwareSet->mmu);
     }
+    if (firmwareSet->tmpPath != NULL)
+    {
+    handel_md_free(firmwareSet->tmpPath);
+    }
 
     /* Loop over the Firmware information, deallocating memory */
     current = firmwareSet->firmware;
@@ -599,7 +603,7 @@ HANDEL_SHARED int HANDEL_API xiaFreeFirmwareSet(FirmwareSet *firmwareSet)
     }
 
     handel_md_free((void *)firmwareSet->keywords);
-
+    
     /* Free the FirmwareSet structure */
     handel_md_free(firmwareSet);
     firmwareSet = NULL;
@@ -831,19 +835,13 @@ HANDEL_SHARED int HANDEL_API xiaFreeModule(Module *module)
 	  break;
 #endif /* EXCLUDE_USB */
 
-#ifndef EXCLUDE_USB
+#ifndef EXCLUDE_USB2
 	case USB2:
 	  handel_md_free((void *)module->interface_info->info.usb2);
 	  handel_md_free((void *)module->interface_info);
 	  break;
 #endif /* EXCLUDE_USB2 */
 
-#ifndef EXCLUDE_ARCNET
-	case ARCNET:
-	  handel_md_free((void *)module->interface_info->info.arcnet);
-	  handel_md_free((void *)module->interface_info);
-	  break;
-#endif /* EXCLUDE_ARCNET */
     }
 	module->interface_info = NULL;
 

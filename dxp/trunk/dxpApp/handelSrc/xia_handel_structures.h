@@ -35,7 +35,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xia_handel_structures.h,v 1.2 2007-10-22 03:59:43 rivers Exp $
+ * $Id: xia_handel_structures.h,v 1.3 2007-11-14 21:17:16 rivers Exp $
  *
  */
 
@@ -279,6 +279,9 @@ struct CurrentFirmware
 
   /* Not all products support a system FPGA */
   char currentSysFPGA[MAXFILENAME_LEN];
+
+  /* Not all products support a system FiPPI */
+  char currentSysFiPPI[MAXFILENAME_LEN];
 };
 typedef struct CurrentFirmware CurrentFirmware;
 
@@ -399,7 +402,6 @@ struct HDLInterface {
 	  struct Interface_Serial *serial;
 	  struct Interface_Usb    *usb;
     struct Interface_Usb2   *usb2;
-	  struct Interface_Arcnet *arcnet;
 	  struct Interface_Plx    *plx;
 	  
 	  /* Add other specific interfaces here */
@@ -447,12 +449,6 @@ struct Interface_Usb2 {
     unsigned int device_number;
 };
 typedef struct Interface_Usb2 Interface_Usb2;
-
-struct Interface_Arcnet {
-    /* The device name of the ARCNET port. */
-    unsigned int node_id;
-};
-typedef struct Interface_Arcnet Interface_Arcnet;
 
 struct Interface_Serial {
 

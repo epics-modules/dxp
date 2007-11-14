@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  * 
  *
- * $Id: psl.h,v 1.2 2007-10-23 02:05:15 rivers Exp $
+ * $Id: psl.h,v 1.3 2007-11-14 21:33:26 rivers Exp $
  *
  */
 
@@ -61,5 +61,11 @@ PSL_IMPORT int PSL_API udxp_PSLInit(PSLFuncs *funcs);
 #ifndef EXCLUDE_XMAP
 PSL_IMPORT int PSL_API xmap_PSLInit(PSLFuncs *funcs);
 #endif /* EXCLUDE_XMAP */
+#ifndef EXCLUDE_VEGA
+PSL_IMPORT int PSL_API vega_PSLInit(PSLFuncs *funcs);
+#endif /* EXCLUDE_VEGA */
+#ifndef EXCLUDE_MERCURY
+PSL_IMPORT int PSL_API mercury_PSLInit(PSLFuncs *funcs);
+#endif /* EXCLUDE_MERCURY */
 
 #endif /* PSL_H */

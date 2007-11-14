@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  * 
  *
- * $Id: psl_xmap.h,v 1.1 2007-10-22 02:54:04 rivers Exp $
+ * $Id: psl_xmap.h,v 1.2 2007-11-14 21:36:31 rivers Exp $
  *
  */
 
@@ -168,7 +168,7 @@ typedef struct _BoardOperation {
 #define MIN_MAXWIDTH        1
 #define MAX_MAXWIDTH        255
 
-#define MAX_NUM_INTERNAL_SCA 32
+#define MAX_NUM_INTERNAL_SCA 64
 
 #define DEFAULT_CLOCK_SPEED 50.0e6
 
@@ -176,7 +176,7 @@ typedef struct _BoardOperation {
  * since Handel doesn't support it directly in dxp_get_statisitics().
  */
 #define XMAP_MEMORY_BLOCK_SIZE  256
-
+#define XMAP_SCA_PIXEL_BLOCK_HEADER_SIZE 64
 #define XMAP_32_EXT_MEMORY 0x3000000
 
 static unsigned long XMAP_STATS_CHAN_OFFSET[] = {
@@ -195,8 +195,10 @@ static unsigned long XMAP_STATS_CHAN_OFFSET[] = {
 #define XMAP_STATS_OVERFLOWS_OFFSET  0xC
 
 /* Mapping flag register bit offsets */
+#define XMAP_MFR_BUFFER_A_FULL  1
 #define XMAP_MFR_BUFFER_A_DONE  2
 #define XMAP_MFR_BUFFER_A_EMPTY 3
+#define XMAP_MFR_BUFFER_B_FULL  5
 #define XMAP_MFR_BUFFER_B_DONE  6
 #define XMAP_MFR_BUFFER_B_EMPTY 7
 #define XMAP_MFR_BUFFER_OVERRUN 15

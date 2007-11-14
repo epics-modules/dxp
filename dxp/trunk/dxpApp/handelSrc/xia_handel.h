@@ -35,7 +35,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xia_handel.h,v 1.2 2007-10-22 03:59:43 rivers Exp $
+ * $Id: xia_handel.h,v 1.3 2007-11-14 21:17:45 rivers Exp $
  *
  *
  *    Following are prototypes for HanDeL library routines
@@ -57,10 +57,6 @@
 #include "md_generic.h"
 
 #include "handeldef.h"
-
-#define HANDEL_CODE_VERSION				0
-#define HANDEL_CODE_REVISION			0
-#define HANDEL_CODE_REVISION_MINOR		2
 
 
 /* If this is compiled by a C++ compiler, make it clear that these are C routines */

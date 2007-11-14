@@ -38,7 +38,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xia_module.h,v 1.2 2007-10-22 03:59:43 rivers Exp $
+ * $Id: xia_module.h,v 1.3 2007-11-14 21:12:30 rivers Exp $
  *
  *
  */
@@ -112,7 +112,6 @@ enum {
 #ifndef EXCLUDE_PLX
   PLX,
 #endif /* EXCLUDE_PLX */
-  LAST_INTERFACE
 };
 
 
@@ -155,6 +154,13 @@ static ModName_t KNOWN_MODS[] = {
   {"xmap",    "xmap"},
 #endif /* EXCLUDE_XMAP */
 
+#ifndef EXCLUDE_VEGA
+  {"vega",   "vega"},
+#endif /* EXCLUDE_VEGA */
+
+#ifndef EXCLUDE_MERCURY
+  {"mercury", "mercury"},
+#endif /* EXCLUDE_MERCURY */
 };
 
 #define N_KNOWN_MODS (sizeof(KNOWN_MODS) / sizeof(KNOWN_MODS[0]))
