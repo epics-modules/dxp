@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: handel_xerxes.h,v 1.2 2007-10-23 01:52:22 rivers Exp $
+ * $Id: handel_xerxes.h,v 1.3 2007-11-14 21:39:31 rivers Exp $
  *
  */
 
@@ -81,6 +81,12 @@ static char *BOARD_LIST[] = {
 #ifndef EXCLUDE_XMAP
   "xmap",
 #endif /* EXCLUDE_XMAP */
+#ifndef EXCLUDE_VEGA
+  "vega",
+#endif /* EXCLUDE_VEGA */
+#ifndef EXCLUDE_MERCURY
+  "mercury",
+#endif /* EXCLUDE_MERCURY */
   };
 
 

@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xerxes.h,v 1.2 2007-10-22 04:00:39 rivers Exp $
+ * $Id: xerxes.h,v 1.3 2007-11-14 21:22:29 rivers Exp $
  *
  *    Following are prototypes for dxp driver routines
  */
@@ -160,7 +160,6 @@ XERXES_IMPORT int XERXES_API dxp_mem_dump(int *);
 XERXES_IMPORT int XERXES_API dxp_get_statistics(int *, double *, double *, double *, unsigned long *);
 XERXES_IMPORT int XERXES_API dxp_replace_filesymbol(char *, char *);
 XERXES_IMPORT int XERXES_API dxp_read_filesymbol(char *, char *);
-XERXES_IMPORT void XERXES_API dxp_version(void);
 XERXES_IMPORT int XERXES_API dxp_locate_system_files(unsigned int *, char **);
 XERXES_IMPORT int XERXES_API dxp_locate_channel_files(int *, unsigned int *, char **);
 XERXES_IMPORT int XERXES_API dxp_lock_resource(int *detChan, short *lock);
@@ -174,7 +173,7 @@ XERXES_IMPORT int XERXES_API dxp_setup_command(int *detChan, char *name, unsigne
 					       byte_t *receive, byte_t *ioFlags);
 
 XERXES_IMPORT int XERXES_API dxp_read_memory(int *detChan, char *name, unsigned long *data);
-  XERXES_IMPORT int XERXES_API dxp_write_memory(int *detChan, char *name, unsigned long *data);
+XERXES_IMPORT int XERXES_API dxp_write_memory(int *detChan, char *name, unsigned long *data);
 XERXES_IMPORT int XERXES_API dxp_memory_length(int *detChan, char *name, unsigned long *length);
 
 XERXES_IMPORT int XERXES_API dxp_write_register(int *detChan, char *name,
@@ -183,14 +182,14 @@ XERXES_IMPORT int XERXES_API dxp_read_register(int *detChan, char *name,
 											   unsigned long *data);
 
 XERXES_IMPORT int XERXES_API dxp_cmd(int *detChan, byte_t *cmd, unsigned int *lenS, byte_t *send,
-				     unsigned int *lenR, byte_t *receive, byte_t *ioFlags);
+				     unsigned int *lenR, byte_t *receive);
 
 XERXES_IMPORT int XERXES_API dxp_exit(int *detChan);
 
 
 XERXES_IMPORT int XERXES_API dxp_set_io_priority(int *priority);
 
-  XERXES_IMPORT void XERXES_API dxp_get_version_info(int *rel, int *min,
+XERXES_IMPORT void XERXES_API dxp_get_version_info(int *rel, int *min,
 													 int *maj, char *pretty);
 
 /* Deprecated functions */
@@ -238,7 +237,7 @@ XERXES_IMPORT int XERXES_API dxp_stop_control_task();
 XERXES_IMPORT int XERXES_API dxp_control_task_info();
 XERXES_IMPORT int XERXES_API dxp_get_control_task_data();
 XERXES_IMPORT int XERXES_API dxp_readout_detector_run();
-  XERXES_IMPORT int XERXES_API dxp_readout_sca();
+XERXES_IMPORT int XERXES_API dxp_readout_sca();
 XERXES_IMPORT int XERXES_API dxp_dspconfig();
 XERXES_IMPORT int XERXES_API dxp_dspdefaults();
 XERXES_IMPORT int XERXES_API dxp_fipconfig();
@@ -257,7 +256,7 @@ XERXES_IMPORT int XERXES_API dxp_download_params();
 XERXES_IMPORT int XERXES_API dxp_download_one_params();
 XERXES_IMPORT int XERXES_API dxp_nspec();
 XERXES_IMPORT int XERXES_API dxp_nbase();
-  XERXES_IMPORT int XERXES_API dxp_nsca();
+XERXES_IMPORT int XERXES_API dxp_nsca();
 XERXES_IMPORT int XERXES_API dxp_nevent();
 XERXES_IMPORT int XERXES_API dxp_ndxp();
 XERXES_IMPORT int XERXES_API dxp_ndxpchan();
@@ -284,7 +283,6 @@ XERXES_IMPORT int XERXES_API dxp_mem_dump();
 XERXES_IMPORT int XERXES_API dxp_get_statistics();
 XERXES_IMPORT int XERXES_API dxp_replace_filesymbol();
 XERXES_IMPORT int XERXES_API dxp_read_filesymbol();
-XERXES_IMPORT void XERXES_API dxp_version();
 XERXES_IMPORT int XERXES_API dxp_locate_system_files();
 XERXES_IMPORT int XERXES_API dxp_locate_channel_files();
 XERXES_IMPORT int XERXES_API dxp_lock_resource();
@@ -296,7 +294,7 @@ XERXES_IMPORT int XERXES_API dxp_set_log_output();
 XERXES_IMPORT int XERXES_API dxp_setup_command(); 
 
 XERXES_IMPORT int XERXES_API dxp_read_memory();
-  XERXES_IMPORT int XERXES_API dxp_write_memory();
+XERXES_IMPORT int XERXES_API dxp_write_memory();
 XERXES_IMPORT int XERXES_API dxp_memory_length();
 
 XERXES_IMPORT int XERXES_API dxp_write_register();
@@ -307,7 +305,7 @@ XERXES_IMPORT int XERXES_API dxp_cmd();
 XERXES_IMPORT int XERXES_API dxp_exit();
 
 
-  XERXES_IMPORT void XERXES_API dxp_get_version_info();
+XERXES_IMPORT void XERXES_API dxp_get_version_info();
 
 /* Deprecated functions */
 XERXES_IMPORT int XERXES_API dxp_replace_fipconfig();

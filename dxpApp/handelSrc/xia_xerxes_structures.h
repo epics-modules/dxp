@@ -35,7 +35,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xia_xerxes_structures.h,v 1.2 2007-10-22 03:59:43 rivers Exp $
+ * $Id: xia_xerxes_structures.h,v 1.3 2007-11-14 21:08:17 rivers Exp $
  *
  */
 
@@ -141,6 +141,25 @@ struct Fippi_Info {
   struct Fippi_Info *next;
 };
 typedef struct Fippi_Info Fippi_Info;
+
+
+/* System FiPPI configuration, which is closer to a DSP configuration then
+ * an FPGA but still lives in an FPGA chip.
+ */
+struct System_FiPPI_Info {
+  char *filename;
+
+  unsigned long max_data_len;
+
+  unsigned long data_len;
+  unsigned short *data;
+
+  Dsp_Params *params;
+
+  struct System_FiPPI_Info *next;
+};
+typedef struct System_FiPPI_Info System_FiPPI_Info;
+
 /*
  *	Linked list to contain the Preamp Limits
  */ 
@@ -228,6 +247,8 @@ struct Board {
   struct Dsp_Defaults **defaults;
   /* Pointer to the FiPPi Program file for each channel */
   struct Fippi_Info **fippi;
+  /* Pointer to the System FiPPI. */
+  struct System_FiPPI_Info *system_fippi;
   /* Pointer to the System FPGA for the module (optional) */
   struct Fippi_Info *system_fpga;
   /* Pointer to the FiPPI A program file (optional) */
@@ -257,9 +278,9 @@ typedef int (*DXP_INIT_DRIVER)(Interface *);
 typedef int (*DXP_INIT_UTILS)(Utils *);
 typedef int (*DXP_GET_DSPCONFIG)(Dsp_Info *);
 typedef int (*DXP_GET_DSPINFO)(Dsp_Info *);
-typedef int (*DXP_GET_FIPINFO)(Fippi_Info *);
+typedef int (*DXP_GET_FIPINFO)(void *);
 typedef int (*DXP_GET_DEFAULTSINFO)(Dsp_Defaults *);
-typedef int (*DXP_GET_FPGACONFIG)(Fippi_Info *);
+typedef int (*DXP_GET_FPGACONFIG)(void *);
 typedef int (*DXP_DOWNLOAD_FPGACONFIG)(int *ioChan, int *modChan, char *name, Board *board);
 typedef int (*DXP_DOWNLOAD_FPGA_DONE)(int *modChan, char *name, Board *board);
 typedef int (*DXP_GET_DSPDEFAULTS)(Dsp_Defaults *);

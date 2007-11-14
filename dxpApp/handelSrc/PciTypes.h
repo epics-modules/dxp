@@ -138,8 +138,8 @@ extern "C" {
     typedef unsigned short   U16, *PU16;
     typedef signed long      S32, *PS32;
     typedef unsigned long    U32, *PU32;
-    typedef signed long long    LONGLONG;
-    typedef unsigned long long  ULONGLONG;
+    typedef signed _int64    LONGLONG;
+    typedef unsigned _int64  ULONGLONG;
 
     typedef HANDLE           PLX_DRIVER_HANDLE;     // Windows-specific driver handle
 #endif

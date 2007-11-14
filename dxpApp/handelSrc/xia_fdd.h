@@ -35,7 +35,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xia_fdd.h,v 1.2 2007-10-22 03:59:43 rivers Exp $
+ * $Id: xia_fdd.h,v 1.3 2007-11-14 21:20:52 rivers Exp $
  *
  *
  */
@@ -56,9 +56,6 @@
 #include "xia_common.h"
 
 #include "fdddef.h"
-
-#define CODE_VERSION						   0
-#define CODE_REVISION		  			   6
 
 /*
  *    CAMAC status Register control codes

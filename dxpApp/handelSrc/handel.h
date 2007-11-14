@@ -45,7 +45,7 @@
  *
  *  Following are prototypes for HanDeL library routines
  *
- * $Id: handel.h,v 1.6 2007-10-23 01:48:16 rivers Exp $
+ * $Id: handel.h,v 1.7 2007-11-14 21:26:03 rivers Exp $
  *
  */
 
@@ -58,9 +58,6 @@
 
 #include "handeldef.h"
 
-#define HANDEL_CODE_VERSION				0
-#define HANDEL_CODE_REVISION			0
-#define HANDEL_CODE_REVISION_MINOR		2
 
 #define XIA_RUN_HARDWARE                0x01
 #define XIA_RUN_HANDEL                  0x02
