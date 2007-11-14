@@ -3,7 +3,8 @@
  *
  * Created 10/12/01 -- PJF
  *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2002,2003,2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -38,7 +39,6 @@
  *
  */
 
-
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -51,7 +51,8 @@
 #include "xia_handel_structures.h"
 #include "xia_common.h"
 #include "xia_assert.h"
-#include "handel_test.h"
+
+#include "handel_constants.h"
 
 #include "xerxes.h"
 #include "xerxes_errors.h"
@@ -60,80 +61,76 @@
 
 #include "fdd.h"
 
+#include "psl_x10p.h"
 
 
 #define NUM_BITS_ADC        1024.0f
-
-/* Constants used to set the preset
- * run type.
- */
-enum {
-    PRESET_STD = 0,
-    PRESET_RT,
-    PRESET_LT,
-    PRESET_OUT,
-    PRESET_IN
-};
 
 
 /* Prototypes */
 
 PSL_EXPORT int PSL_API dxpx10p_PSLInit(PSLFuncs *funcs);
 
-PSL_STATIC int PSL_API pslDoPeakingTime(int detChan, void *value, 
-										FirmwareSet *firmwareSet, CurrentFirmware *currentFirmware, 
-										char *detectorType, XiaDefaults *defaults,
-										double preampGain, double gainScale);
-PSL_STATIC int PSL_API pslDoTriggerThreshold(int detChan, void *value, 
-											 XiaDefaults *defaults);
-PSL_STATIC int PSL_API pslDoEnergyThreshold(int detChan, void *value, 
-											XiaDefaults *defaults);
-PSL_STATIC int PSL_API pslDoNumMCAChannels(int detChan, void *value, 
-										   XiaDefaults *defaults);
-PSL_STATIC int PSL_API pslDoMCALowLimit(int detChan, void *value, 
-										XiaDefaults *defaults);
-PSL_STATIC int PSL_API pslDoMCABinWidth(int detChan, void *value, 
-										XiaDefaults *defaults,
-										double preampGain, double gainScale);
-PSL_STATIC int PSL_API pslDoADCPercentRule(int detChan, void *value, 
-										   XiaDefaults *defaults, 
-										   double preampGain, double gainScale);
-PSL_STATIC int PSL_API pslDoEnableGate(int detChan, void *value, 
-									   XiaDefaults *defaults);
-PSL_STATIC int PSL_API pslDoEnableBaselineCut(int detChan, void *value, 
-											  XiaDefaults *defaults);
-PSL_STATIC int PSL_API pslDoBaselineCut(int detChan, void *value, XiaDefaults *defaults);
-PSL_STATIC int PSL_API pslDoBaselineFilterLength(int detChan, void *value, XiaDefaults *defaults);
+PSL_STATIC int pslSynchResetDelay(int detChan, int det_chan, Module *m,
+								  Detector *det, XiaDefaults *defs);
+PSL_STATIC int pslSynchDecayTime(int detChan, int det_chan, Module *m,
+								 Detector *det, XiaDefaults *defs);
+PSL_STATIC int pslSynchPolarity(int detChan, int det_chan, Module *m,
+								Detector *det, XiaDefaults *defs);
+PSL_STATIC int pslSynchPreampGain(int detChan, int det_chan, Module *m,
+								  Detector *det, XiaDefaults *defs);
+
+/* Hide all of the acquisition value prototypes behind this fancy macro. */
+ACQUISITION_VALUE(PeakingTime);
+ACQUISITION_VALUE(TriggerThreshold);
+ACQUISITION_VALUE(EnergyThreshold);
+ACQUISITION_VALUE(NumMCAChannels);
+ACQUISITION_VALUE(MCALowLimit);
+ACQUISITION_VALUE(MCABinWidth);
+ACQUISITION_VALUE(ADCPercentRule);
+ACQUISITION_VALUE(EnableGate);
+ACQUISITION_VALUE(EnableBaselineCut);
+ACQUISITION_VALUE(PreampGain);
+ACQUISITION_VALUE(Polarity);
+ACQUISITION_VALUE(ResetDelay);
+ACQUISITION_VALUE(CalibrationEnergy);
+ACQUISITION_VALUE(GapTime);
+ACQUISITION_VALUE(TriggerPeakingTime);
+ACQUISITION_VALUE(TriggerGapTime);
+ACQUISITION_VALUE(DecayTime);
+ACQUISITION_VALUE(BaselineCut);
+ACQUISITION_VALUE(BaselineFilterLength);
+ACQUISITION_VALUE(ActualGapTime);
+
+PSL_STATIC int psl__SetPresetType(int detChan, void *value, FirmwareSet *fs,
+                                  char *detType, XiaDefaults *defs,
+                                  double preampGain, double gainScale,
+                                  Module *m, Detector *det, int detector_chan);
+PSL_STATIC int psl__SetPresetValue(int detChan, void *value, FirmwareSet *fs,
+                                  char *detType, XiaDefaults *defs,
+                                  double preampGain, double gainScale,
+                                  Module *m, Detector *det, int detector_chan);
+PSL_STATIC int psl__SetMCAStartAddress(int detChan, void *value,
+                                       FirmwareSet *fs, char *detType,
+                                       XiaDefaults *defs, double preampGain,
+                                       double gainScale, Module *m,
+                                       Detector *det, int detector_chan);
+
+
 PSL_STATIC int PSL_API pslDoEnableInterrupt(int detChan, void *value);
-PSL_STATIC int PSL_API pslDoPolarity(int detChan, void *value, XiaDefaults *defaults, 
-									 Detector *detector, int detectorChannel);
-PSL_STATIC int PSL_API pslDoResetDelay(int detChan, void *value, XiaDefaults *defaults, 
-									   Detector *detector, int detectorChannel);
-PSL_STATIC int PSL_API pslDoDecayTime(int detChan, void *value, XiaDefaults *defaults, 
-									  Detector *detector, int detectorChannel);
-PSL_STATIC int PSL_API pslDoPreampGain(int detChan, void *value, XiaDefaults *defaults, 
-									  Detector *detector, int detectorChannel, double gainScale);
-PSL_STATIC int PSL_API pslDoCalibrationEnergy(int detChan, void *value, 
-											  XiaDefaults *defaults, 
-											  double preampGain, double gainScale);
-PSL_STATIC int PSL_API pslDoGapTime(int detChan, void *value, 
-									FirmwareSet *firmwareSet, XiaDefaults *defaults,
-									double preampGain, double gainScale);
-PSL_STATIC int PSL_API pslDoTriggerPeakingTime(int detChan, void *value,
-											   XiaDefaults *defaults);
-PSL_STATIC int PSL_API pslDoTriggerGapTime(int detChan, void *value,
-										   XiaDefaults *defaults);
-PSL_STATIC int PSL_API pslDoFilter(int detChan, char *name, void *value, 
-								   XiaDefaults *defaults, FirmwareSet *firmwareSet,
-								   double preampGain, double gainScale);
+
+
+PSL_STATIC int pslDoFilter(int detChan, char *name, void *value, 
+						   XiaDefaults *defaults, FirmwareSet *firmwareSet,
+						   double preampGain, double gainScale, Module *m);
 PSL_STATIC int PSL_API pslDoParam(int detChan, char *name, void *value, 
 								  XiaDefaults *defaults);
-PSL_STATIC int PSL_API pslDoPreset(int detChan, void *value, unsigned short type);
 PSL_STATIC int PSL_API _pslDoNSca(int detChan, void *value, Module *m);
 PSL_STATIC int PSL_API _pslDoSCA(int detChan, char *name, void *value, Module *m, XiaDefaults *defaults);
-PSL_STATIC int PSL_API pslQuickRun(int detChan, XiaDefaults *defaults);
+PSL_STATIC int pslQuickRun(int detChan, XiaDefaults *defaults, Module *m);
 PSL_STATIC int PSL_API pslGetMCALength(int detChan, void *value);
-PSL_STATIC int PSL_API pslGetMCAData(int detChan, void *value);
+PSL_STATIC int PSL_API pslGetMCAData(int detChan, void *value,
+                                     XiaDefaults *defs);
 PSL_STATIC int PSL_API _pslGetSCAData(int detChan, XiaDefaults *defaults, void *value);
 PSL_STATIC int PSL_API _pslGetSCALen(int detChan, XiaDefaults *defaults, void *value);
 PSL_STATIC int PSL_API pslGetLivetime(int detChan, void *value);
@@ -154,19 +151,20 @@ PSL_STATIC int PSL_API pslGetBaseHistory(int detChan, void *value);
 PSL_STATIC int PSL_API pslDoControlTask(int detChan, short task, unsigned int len, void *info);
 PSL_STATIC int PSL_API pslDoControlTaskWithoutStop(int detChan, short task, unsigned int len,
 												   void *info);
-PSL_STATIC int PSL_API pslCalculateGain(int detChan, double adcPercentRule, double calibEV, 
-                                                     double preampGain, double MCABinWidth, parameter_t SLOWLEN, 
-						     parameter_t *GAINDAC, double gainScale);
-PSL_STATIC int PSL_API pslDoGainSetting(int detChan, XiaDefaults *defaults, double preampGain, 
-										double gainScale);
+PSL_STATIC int PSL_API pslCalculateGain(int detChan, double adcPercentRule, 
+										double calibEV, double preampGain, 
+										double MCABinWidth, parameter_t SLOWLEN, 
+										parameter_t *GAINDAC, double gainScale);
+PSL_STATIC int pslDoGainSetting(int detChan, XiaDefaults *defaults,
+								double preampGain, double gainScale, Module *m);
 PSL_STATIC double PSL_API pslCalculateSysGain(void);
 PSL_STATIC boolean_t PSL_API pslIsUpperCase(char *name);
 
 
 
-PSL_STATIC int PSL_API pslUpdateFilter(int detChan, double peakingTime, 
-									   XiaDefaults *defaults, FirmwareSet *firmwareSet,
-									   double preampGain, double gainScale);
+PSL_STATIC int pslUpdateFilter(int detChan, double peakingTime, 
+							   XiaDefaults *defaults, FirmwareSet *firmwareSet,
+							   double preampGain, double gainScale, Module *m);
 PSL_STATIC int PSL_API pslUpdateTriggerFilter(int detChan, XiaDefaults *defaults); 
 PSL_STATIC boolean_t PSL_API pslIsInterfaceValid(Module *module);
 PSL_STATIC boolean_t PSL_API pslIsEPPAddressValid(Module *module);
@@ -188,6 +186,80 @@ PSL_STATIC void PSL_API pslRandomSwap(unsigned long adcLength, unsigned short* r
 
 /* Clock utility routines */
 PSL_STATIC double pslGetClockSpeed(int detChan);
+
+PSL_STATIC int psl__UpdateMCAAddressCache(int detChan, XiaDefaults *defs);
+
+
+static AcquisitionValue_t ACQ_VALUES[] = {
+  { "peaking_time",           TRUE_, FALSE_, 8.0,    pslDoPeakingTime,
+	NULL },
+
+  { "mca_bin_width",          TRUE_, FALSE_, 20.0,   pslDoMCABinWidth,
+	NULL },
+
+  { "number_mca_channels",    TRUE_, FALSE_, 4096.0, pslDoNumMCAChannels,
+	NULL },
+
+  { "mca_low_limit",          TRUE_, FALSE_, 0.0,    pslDoMCALowLimit,
+	NULL },
+
+  { "energy_threshold",       TRUE_, FALSE_, 0.0,    pslDoEnergyThreshold,
+	NULL },
+
+  { "adc_percent_rule",       TRUE_, FALSE_, 5.0,    pslDoADCPercentRule,
+	NULL },
+
+  { "calibration_energy",     TRUE_, FALSE_, 5900.0, pslDoCalibrationEnergy,
+	NULL },
+
+  { "gap_time",               TRUE_, FALSE_, .150,   pslDoGapTime,
+	NULL },
+
+  { "trigger_peaking_time",   TRUE_, FALSE_, .200,   pslDoTriggerPeakingTime,
+	NULL },
+
+  { "trigger_gap_time",       TRUE_, FALSE_, 0.0,    pslDoTriggerGapTime,
+	NULL },
+
+  { "trigger_threshold",      TRUE_, FALSE_, 1000.0, pslDoTriggerThreshold,
+	NULL },
+
+  { "enable_gate",            TRUE_, FALSE_, 0.0,    pslDoEnableGate,
+	NULL },
+
+  { "enable_baseline_cut",    TRUE_, FALSE_, 1.0,    pslDoEnableBaselineCut,
+	NULL },
+
+  { "reset_delay",            TRUE_, TRUE_,  50.0,   pslDoResetDelay,
+	pslSynchResetDelay },
+
+  { "decay_time",             TRUE_, TRUE_,  50.0,   pslDoDecayTime,
+	pslSynchDecayTime },
+
+  { "detector_polarity",      TRUE_, TRUE_,  1.0,    pslDoPolarity,
+	pslSynchPolarity },
+
+  { "preamp_gain",            TRUE_, TRUE_,  2.0,    pslDoPreampGain,
+	pslSynchPreampGain },
+
+  { "baseline_cut",           TRUE_, FALSE_, 5.0,    pslDoBaselineCut,
+	NULL },
+
+  { "baseline_filter_length", TRUE_, FALSE_,  128.0, pslDoBaselineFilterLength,
+	NULL },
+
+  { "actual_gap_time",        TRUE_, FALSE_,  .150,  pslDoActualGapTime,
+	NULL },
+
+  { "preset_type",            TRUE_, FALSE_, 0.0,    psl__SetPresetType,
+    NULL },
+
+  { "preset_value",           TRUE_, FALSE_, 0.0,    psl__SetPresetValue,
+    NULL },
+
+  { "mca_start_address",      TRUE_, FALSE_, 0.0,    psl__SetMCAStartAddress,
+    NULL },
+};
 
 
 char *defaultNames[] = { 
@@ -213,8 +285,8 @@ char *defaultNames[] = {
   "actual_gap_time" };
 
 double defaultValues[] = { 8.0, 20.0, 4096.0, 0.0, 0.0, 5.0, 5900.0,
-                          .150, .200, 0.0, 1000.0, 0.0, 1.0, 50., 50., 1.0, 
-                           2.0, 5.0, 128., .150};
+						   .150, .200, 0.0, 1000.0, 0.0, 1.0, 50., 50., 1.0, 
+                           2.0, 5.0, 128., .150, 0.0, 0.0};
 
 #define PI 3.1415926535897932
 
@@ -254,6 +326,9 @@ PSL_EXPORT int PSL_API dxpx10p_PSLInit(PSLFuncs *funcs)
 	funcs->boardOperation       = pslBoardOperation;
 	funcs->freeSCAs             = pslDestroySCAs;
 	funcs->unHook               = pslUnHook;
+
+  x10p_psl_md_alloc = utils->funcs->dxp_md_alloc;
+  x10p_psl_md_free  = utils->funcs->dxp_md_free;
 
     return XIA_SUCCESS;
 }
@@ -312,44 +387,47 @@ PSL_STATIC int PSL_API pslValidateDefaults(XiaDefaults *defaults)
 }
 
 
-/*****************************************************************************
- *
- * This routine verifies that the interface for this module is consistient
- * with a dxpx10p.
- *
- *****************************************************************************/
+/**
+ * @brief Checks that the specified module is using a valid communication
+ * interface for the Saturn/X10P product.
+ */
 PSL_STATIC boolean_t PSL_API pslIsInterfaceValid(Module *module)
 {
-  boolean_t isEPP    = FALSE_;
-  boolean_t isARCNET = FALSE_;
-  boolean_t isUSB    = FALSE_;
-
   boolean_t foundValidInterface = FALSE_;
 
 
+  ASSERT(module != NULL);
+
+
 #ifndef EXCLUDE_EPP
-   isEPP = (boolean_t)((module->interface_info->type == EPP) ||
-		       (module->interface_info->type == GENERIC_EPP));
+  foundValidInterface = foundValidInterface ||
+    (module->interface_info->type == EPP ||
+     module->interface_info->type == GENERIC_EPP);
 #endif /* EXCLUDE_EPP */
 
 #ifndef EXCLUDE_ARCNET
-   isARCNET = (boolean_t)(module->interface_info->type == ARCNET);
+  foundValidInterface = foundValidInterface ||
+    (module->interface_info->type == ARCNET);
 #endif
 
 #ifndef EXCLUDE_USB
-   isUSB = (boolean_t)(module->interface_info->type == USB);
+  foundValidInterface = foundValidInterface ||
+    (module->interface_info->type == USB);
 #endif /* EXCLUDE_USB */
 
-   foundValidInterface = (boolean_t)(isEPP || isARCNET || isUSB);
+#ifndef EXCLUDE_USB2
+  foundValidInterface = foundValidInterface ||
+    (module->interface_info->type == USB2);
+#endif /* EXCLUDE_USB2 */
 
-   if (!foundValidInterface) {
-	 sprintf(info_string, "Invalid interface type = %u",
-		 module->interface_info->type);
-	 pslLogError("pslIsInterfaceValid", info_string, XIA_MISSING_INTERFACE);
-	 return FALSE_;
-   }
+  if (!foundValidInterface) {
+    sprintf(info_string, "Invalid interface type = %u",
+            module->interface_info->type);
+    pslLogError("pslIsInterfaceValid", info_string, XIA_MISSING_INTERFACE);
+    return FALSE_;
+  }
 
-    return TRUE_;
+  return TRUE_;
 }
 
 
@@ -468,51 +546,62 @@ PSL_STATIC boolean_t PSL_API pslAreAllDefaultsPresent(XiaDefaults *defaults)
     return TRUE_;
 }
 
+
 /*****************************************************************************
  *
  * This routine handles downloading the requested kind of firmware through
  * XerXes.
  *
  *****************************************************************************/
-PSL_STATIC int PSL_API pslDownloadFirmware(int detChan, char *type, char *file, CurrentFirmware *currentFirmware, char *rawFilename)
+PSL_STATIC int PSL_API pslDownloadFirmware(int detChan, char *type, char *file,
+                                           Module *m, char *rawFilename,
+                                           XiaDefaults *defs)
 {
-    int statusX;
+  int statusX;
+  int status;
 
-    /* Immediately dismiss the types that aren't supported (currently) by the
-     * X10P
-     */
-    if (STREQ(type, "user_fippi") ||
-	STREQ(type, "mmu")) {
+	CurrentFirmware *currentFirmware = NULL;
 
-	return XIA_NOSUPPORT_FIRM;
+	ASSERT(m != NULL);
+
+
+	currentFirmware = m->currentFirmware;
+
+  /* Immediately dismiss the types that aren't supported (currently) by the
+   * X10P
+   */
+  if (STREQ(type, "user_fippi") ||
+      STREQ(type, "mmu")) {
+
+    return XIA_NOSUPPORT_FIRM;
+  }
+
+  if (STREQ(type, "dsp")) {
+
+    if (!STREQ(rawFilename, currentFirmware->currentDSP)) {
+
+      statusX = dxp_replace_dspconfig(&detChan, file);
+
+      if (statusX != DXP_SUCCESS) {
+        sprintf(info_string, "Error changing to DSP '%s' for detChan %d",
+                file, detChan);
+        pslLogError("pslDownloadFirmware", info_string, XIA_XERXES);
+        return XIA_XERXES;
+      }
+
+      strcpy(currentFirmware->currentDSP, rawFilename);
+
+      status = psl__UpdateMCAAddressCache(detChan, defs);
+
+      if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error updating MCA start address cache for "
+                "detChan %d", detChan);
+        pslLogError("pslDownloadFirmware", info_string, status);
+        return status;
+      }
     }
-
-    if (STREQ(type, "dsp")) {
-
-	sprintf(info_string, "currentFirmware->currentDSP = %s", currentFirmware->currentDSP);
-	pslLogDebug("pslDownloadFirmware", info_string);
-	sprintf(info_string, "rawFilename = %s", rawFilename);
-	pslLogDebug("pslDownloadFirmware", info_string);
-	sprintf(info_string, "file = %s", file);
-	pslLogDebug("pslDownloadFirmware", info_string);
-
-
-	if (!STREQ(rawFilename, currentFirmware->currentDSP)) {
-
-	    statusX = dxp_replace_dspconfig(&detChan, file);
-
-	    sprintf(info_string, "dspFile = %s", rawFilename);
-	    pslLogDebug("pslDownloadFirmware", info_string); 
-
-	    if (statusX != DXP_SUCCESS) {
-
-		return XIA_XERXES;
-	    }
-
-	    strcpy(currentFirmware->currentDSP, rawFilename);
-	}
 		
-    } else if (STREQ(type, "fippi")) {
+  } else if (STREQ(type, "fippi")) {
 
 	sprintf(info_string, "currentFirmware->currentFiPPI = %s", currentFirmware->currentFiPPI);
 	pslLogDebug("pslDownloadFirmware", info_string);
@@ -565,16 +654,20 @@ PSL_STATIC int PSL_API pslDownloadFirmware(int detChan, char *type, char *file, 
  * @param m Pointer to the module @a detChan is a member of.
  *
  */
-PSL_STATIC int PSL_API pslSetAcquisitionValues(int detChan, char *name, void *value, 
-                                               XiaDefaults *defaults, 
-                                               FirmwareSet *firmwareSet, 
-                                               CurrentFirmware *currentFirmware, 
-                                               char *detectorType, double gainScale,
-											   Detector *detector, int detector_chan,
-											   Module *m)
+PSL_STATIC int pslSetAcquisitionValues(int detChan, char *name, void *value, 
+									   XiaDefaults *defaults, 
+									   FirmwareSet *firmwareSet, 
+									   CurrentFirmware *currentFirmware, 
+									   char *detectorType, double gainScale,
+									   Detector *detector, int detector_chan,
+									   Module *m, int modChan)
 {
     int status = XIA_SUCCESS;
     int statusX;
+
+    double presetType;
+
+	UNUSED(modChan);
 
 
 	ASSERT(name != NULL);
@@ -594,50 +687,69 @@ PSL_STATIC int PSL_API pslSetAcquisitionValues(int detChan, char *name, void *va
      */
     if (STREQ(name, "peaking_time")) 
 	  {
-		status = pslDoPeakingTime(detChan, value, firmwareSet, currentFirmware, 
-								  detectorType, defaults, detector->gain[detector_chan], gainScale);
+		status = pslDoPeakingTime(detChan, value, firmwareSet, detectorType,
+								  defaults, detector->gain[detector_chan],
+								  gainScale, m, detector, detector_chan);
 		
 	  } else if (STREQ(name, "trigger_threshold")) {
 		
-		status = pslDoTriggerThreshold(detChan, value, defaults);
+	  status = pslDoTriggerThreshold(detChan, value, firmwareSet, detectorType,
+									 defaults, detector->gain[detector_chan],
+									 gainScale, m, detector, detector_chan);
 		
 	  } else if (STREQ(name, "energy_threshold")) {
 		
-		status = pslDoEnergyThreshold(detChan, value, defaults);
+	  status = pslDoEnergyThreshold(detChan, value, firmwareSet, detectorType,
+									defaults, detector->gain[detector_chan],
+									gainScale, m, detector, detector_chan);
 		
 	  } else if (STREQ(name, "number_mca_channels")) {
 		
-		status = pslDoNumMCAChannels(detChan, value, defaults);
+	  status = pslDoNumMCAChannels(detChan, value, firmwareSet, detectorType,
+								   defaults, detector->gain[detector_chan],
+								   gainScale, m, detector, detector_chan);
 		
 	  } else if (STREQ(name, "mca_low_limit")) {
 		
-		status = pslDoMCALowLimit(detChan, value, defaults);
+	  status = pslDoMCALowLimit(detChan, value, firmwareSet, detectorType,
+								defaults, detector->gain[detector_chan],
+								gainScale, m, detector, detector_chan);
 		
 	  } else if (STREQ(name, "mca_bin_width")) {
 		
-		status = pslDoMCABinWidth(detChan, value, defaults, detector->gain[detector_chan],
-								  gainScale);
+	  status = pslDoMCABinWidth(detChan, value, firmwareSet, detectorType,
+								defaults, detector->gain[detector_chan],
+								gainScale, m, detector, detector_chan);
 		
 	  } else if (STREQ(name, "adc_percent_rule")) {
 		
-		status = pslDoADCPercentRule(detChan, value, defaults, detector->gain[detector_chan],
-									 gainScale);
+	  status = pslDoADCPercentRule(detChan, value, firmwareSet, detectorType,
+								   defaults, detector->gain[detector_chan],
+								   gainScale, m, detector, detector_chan);
 		
 	  } else if (STREQ(name, "enable_gate")) {
 		
-		status = pslDoEnableGate(detChan, value, defaults);
+	  status = pslDoEnableGate(detChan, value, firmwareSet, detectorType,
+							   defaults, detector->gain[detector_chan],
+							   gainScale, m, detector, detector_chan);
 		
 	  } else if (STREQ(name, "enable_baseline_cut")) {
 		
-		status = pslDoEnableBaselineCut(detChan, value, defaults);
+	  status = pslDoEnableBaselineCut(detChan, value, firmwareSet, detectorType,
+									  defaults, detector->gain[detector_chan],
+									  gainScale, m, detector, detector_chan);
 
 	  } else if (STREQ(name, "baseline_cut")) {
 		
-		status = pslDoBaselineCut(detChan, value, defaults);
+	  status = pslDoBaselineCut(detChan, value, firmwareSet, detectorType,
+								defaults, detector->gain[detector_chan],
+								gainScale, m, detector, detector_chan);
 
 	  } else if (STREQ(name, "baseline_filter_length")) {
 		
-		status = pslDoBaselineFilterLength(detChan, value, defaults);
+	  status = pslDoBaselineFilterLength(detChan, value, firmwareSet, detectorType,
+										 defaults, detector->gain[detector_chan],
+										 gainScale, m, detector, detector_chan);
 		
 	  } else if (STREQ(name, "enable_interrupt")) {
 		
@@ -645,63 +757,194 @@ PSL_STATIC int PSL_API pslSetAcquisitionValues(int detChan, char *name, void *va
 		
 	  } else if (STREQ(name, "calibration_energy")) {
 		
-		status = pslDoCalibrationEnergy(detChan, value, defaults, detector->gain[detector_chan],
-										gainScale);
+	  status = pslDoCalibrationEnergy(detChan, value, firmwareSet, detectorType,
+									  defaults, detector->gain[detector_chan],
+									  gainScale, m, detector, detector_chan);
 		
 	  } else if (STREQ(name, "gap_time")) {
 		
-		status = pslDoGapTime(detChan, value, firmwareSet, defaults, detector->gain[detector_chan],
-							  gainScale);
+	  status = pslDoGapTime(detChan, value, firmwareSet, detectorType, defaults,
+							detector->gain[detector_chan], gainScale, m,
+							detector, detector_chan);
 		
 	  } else if (STREQ(name, "reset_delay")) {
 		
-		status = pslDoResetDelay(detChan, value, defaults, detector, detector_chan);
+	  status = pslDoResetDelay(detChan, value, firmwareSet, detectorType,
+							   defaults, detector->gain[detector_chan], gainScale,
+							   m, detector, detector_chan);
 		
 	  } else if (STREQ(name, "decay_time")) {
 		
-		status = pslDoDecayTime(detChan, value, defaults, detector, detector_chan);
+	  status = pslDoDecayTime(detChan, value, firmwareSet, detectorType,
+							  defaults, detector->gain[detector_chan], gainScale,
+							  m, detector, detector_chan);
 		
 	  } else if (STREQ(name, "preamp_gain")) {
 		
-		status = pslDoPreampGain(detChan, value, defaults, detector, detector_chan, gainScale);
+	  status = pslDoPreampGain(detChan, value, firmwareSet, detectorType,
+							   defaults, detector->gain[detector_chan], gainScale,
+							   m, detector, detector_chan);
 		
 	  } else if (STREQ(name, "detector_polarity")) {
 		
-		status = pslDoPolarity(detChan, value, defaults, detector, detector_chan);
+	  status = pslDoPolarity(detChan, value, firmwareSet, detectorType,
+							 defaults, detector->gain[detector_chan], gainScale,
+							 m, detector, detector_chan);
 		
 	  } else if (STREQ(name, "trigger_peaking_time")) {
 		
-		status = pslDoTriggerPeakingTime(detChan, value, defaults);
+	  status = pslDoTriggerPeakingTime(detChan, value, firmwareSet, detectorType,
+									   defaults, detector->gain[detector_chan],
+									   gainScale, m, detector, detector_chan);
 		
 	  } else if (STREQ(name, "trigger_gap_time")) {
 		
-		status = pslDoTriggerGapTime(detChan, value, defaults);
+	  status = pslDoTriggerGapTime(detChan, value, firmwareSet, detectorType,
+								   defaults, detector->gain[detector_chan],
+								   gainScale, m, detector, detector_chan);
 		
+    } else if (STREQ(name, "preset_type")) {
+
+      status = psl__SetPresetType(detChan, value, firmwareSet,
+                                  detectorType, defaults,
+                                  detector->gain[detector_chan], gainScale,
+                                  m, detector, detector_chan);
+
+    } else if (STREQ(name, "preset_value")) {
+
+      status = psl__SetPresetValue(detChan, value, firmwareSet,
+                                  detectorType, defaults,
+                                  detector->gain[detector_chan], gainScale,
+                                  m, detector, detector_chan);
+
 	  } else if (STREQ(name, "preset_standard")) {
 		
-		status = pslDoPreset(detChan, value, PRESET_STD);
+      presetType = XIA_PRESET_NONE;
+      status = psl__SetPresetType(detChan, (void *)&presetType, firmwareSet,
+                                  detectorType, defaults,
+                                  detector->gain[detector_chan], gainScale,
+                                  m, detector, detector_chan);
+
+      if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error setting preset type to standard run for "
+                "detChan %d", detChan);
+        pslLogError("pslSetAcquisitionValues", info_string, status);
+        return status;
+      }
 		
 	  } else if (STREQ(name, "preset_runtime")) {
-		
-		status = pslDoPreset(detChan, value, PRESET_RT);
+
+      presetType = XIA_PRESET_FIXED_REAL;
+      status = psl__SetPresetType(detChan, (void *)&presetType, firmwareSet,
+                                  detectorType, defaults,
+                                  detector->gain[detector_chan], gainScale,
+                                  m, detector, detector_chan);
+
+      if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error setting preset type to realtime run for "
+                "detChan %d", detChan);
+        pslLogError("pslSetAcquisitionValues", info_string, status);
+        return status;
+      }
+
+      status = psl__SetPresetValue(detChan, value, firmwareSet,
+                                  detectorType, defaults,
+                                  detector->gain[detector_chan], gainScale,
+                                  m, detector, detector_chan);
+
+      if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error setting preset run length for "
+                "detChan %d", detChan);
+        pslLogError("pslSetAcquisitionValues", info_string, status);
+        return status;
+      }
 		
 	  } else if (STREQ(name, "preset_livetime")) {
-		
-		status = pslDoPreset(detChan, value, PRESET_LT);
+
+      presetType = XIA_PRESET_FIXED_LIVE;
+      status = psl__SetPresetType(detChan, (void *)&presetType, firmwareSet,
+                                  detectorType, defaults,
+                                  detector->gain[detector_chan], gainScale,
+                                  m, detector, detector_chan);
+
+      if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error setting preset type to livetime run for "
+                "detChan %d", detChan);
+        pslLogError("pslSetAcquisitionValues", info_string, status);
+        return status;
+      }
+
+      status = psl__SetPresetValue(detChan, value, firmwareSet,
+                                  detectorType, defaults,
+                                  detector->gain[detector_chan], gainScale,
+                                  m, detector, detector_chan);
+
+      if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error setting preset run length for "
+                "detChan %d", detChan);
+        pslLogError("pslSetAcquisitionValues", info_string, status);
+        return status;
+      }
 		
 	  } else if (STREQ(name, "preset_output")) {
-		
-		status = pslDoPreset(detChan, value, PRESET_OUT);
+
+      presetType = XIA_PRESET_FIXED_EVENTS;
+      status = psl__SetPresetType(detChan, (void *)&presetType, firmwareSet,
+                                  detectorType, defaults,
+                                  detector->gain[detector_chan], gainScale,
+                                  m, detector, detector_chan);
+
+      if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error setting preset type to output events run "
+                "for detChan %d", detChan);
+        pslLogError("pslSetAcquisitionValues", info_string, status);
+        return status;
+      }
+
+      status = psl__SetPresetValue(detChan, value, firmwareSet,
+                                  detectorType, defaults,
+                                  detector->gain[detector_chan], gainScale,
+                                  m, detector, detector_chan);
+
+      if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error setting preset run length for "
+                "detChan %d", detChan);
+        pslLogError("pslSetAcquisitionValues", info_string, status);
+        return status;
+      }
 		
 	  } else if (STREQ(name, "preset_input")) {
-		
-		status = pslDoPreset(detChan, value, PRESET_IN); 
-		
+
+      presetType = XIA_PRESET_FIXED_TRIGGERS;
+      status = psl__SetPresetType(detChan, (void *)&presetType, firmwareSet,
+                                  detectorType, defaults,
+                                  detector->gain[detector_chan], gainScale,
+                                  m, detector, detector_chan);
+
+      if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error setting preset type to input events run "
+                "for detChan %d", detChan);
+        pslLogError("pslSetAcquisitionValues", info_string, status);
+        return status;
+      }
+
+      status = psl__SetPresetValue(detChan, value, firmwareSet,
+                                  detectorType, defaults,
+                                  detector->gain[detector_chan], gainScale,
+                                  m, detector, detector_chan);
+
+      if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error setting preset run length for "
+                "detChan %d", detChan);
+        pslLogError("pslSetAcquisitionValues", info_string, status);
+        return status;
+      }
+      		
 	  } else if ((strncmp(name, "peakint", 7) == 0) ||
-		     (strncmp(name, "peaksam", 7) == 0)) {
+				 (strncmp(name, "peaksam", 7) == 0)) {
 		
 		status = pslDoFilter(detChan, name, value, defaults, firmwareSet,
-							 detector->gain[detector_chan], gainScale);
+							 detector->gain[detector_chan], gainScale, m);
 		
 	  } else if (STRNEQ(name, "number_of_scas")) {
 		status = _pslDoNSca(detChan, value, m);
@@ -713,8 +956,12 @@ PSL_STATIC int PSL_API pslSetAcquisitionValues(int detChan, char *name, void *va
 		
 		status = pslDoParam(detChan, name, value, defaults);
 		
-	  } else if ((STREQ(name,  "actual_gap_time"))) {
-/* Do Nothing, these are read-only acquisition values */
+	  } else if (STREQ(name,  "actual_gap_time") ||
+               STREQ(name, "mca_start_address")) {
+      /* Do Nothing, these are read-only acquisition values */
+      sprintf(info_string, "Attempted to set a read-only acquisition value: "
+              "'%s'", name);
+      pslLogWarning("pslSetAcquisitionValues", info_string);
 
 	  } else {
 		
@@ -750,19 +997,22 @@ PSL_STATIC int PSL_API pslSetAcquisitionValues(int detChan, char *name, void *va
  * 3) Return "calculated" Peaking Time
  *
  *****************************************************************************/
-PSL_STATIC int PSL_API pslDoPeakingTime(int detChan, void *value, FirmwareSet *firmwareSet, 
-										CurrentFirmware *currentFirmware, char *detectorType, 
-										XiaDefaults *defaults, double preampGain, 
-										double gainScale)
+ACQUISITION_VALUE(PeakingTime)
 {
     int status;
 
     double peakingTime;
 
-    char fippi[MAXFILENAME_LEN];
+    char *tmpPath = NULL;
+
+    char fippi[MAX_PATH_LEN];
     char rawFilename[MAXFILENAME_LEN];
 
     Firmware *firmware = NULL;
+
+	UNUSED(det);
+	UNUSED(detector_chan);
+
 
     peakingTime = *((double *)value);
 
@@ -772,9 +1022,9 @@ PSL_STATIC int PSL_API pslDoPeakingTime(int detChan, void *value, FirmwareSet *f
      * All of the comparison code is going to be in pslDownloadFirmware().
      *
      */
-    if (firmwareSet->filename == NULL)
+    if (fs->filename == NULL)
 	  {
-		firmware = firmwareSet->firmware;
+		firmware = fs->firmware;
 		while (firmware != NULL) 
 		  {
 			if ((peakingTime >= firmware->min_ptime) &&
@@ -790,24 +1040,31 @@ PSL_STATIC int PSL_API pslDoPeakingTime(int detChan, void *value, FirmwareSet *f
 		
 	  } else {
 		/* filename is actually defined in this case */
-		sprintf(info_string, "peakingTime = %lf", peakingTime);
+		sprintf(info_string, "peakingTime = %.3f", peakingTime);
 		pslLogDebug("pslDoPeakingTime", info_string);
 		
-		status = xiaFddGetFirmware(firmwareSet->filename, "fippi", peakingTime,
-					   (unsigned short)firmwareSet->numKeywords, 
-					   firmwareSet->keywords, detectorType,
-					   fippi, rawFilename);
+    if (fs->tmpPath) {
+      tmpPath = fs->tmpPath;
+
+    } else {
+      tmpPath = utils->funcs->dxp_md_tmp_path();
+    }
+
+		status = xiaFddGetFirmware(fs->filename, tmpPath, "fippi", peakingTime,
+                               (unsigned short)fs->numKeywords, 
+                               fs->keywords, detectorType,
+                               fippi, rawFilename);
 		
 		if (status != XIA_SUCCESS)
 		  {
-			sprintf(info_string, "Error getting FiPPI file from %s at peaking time = %lf", 
-					firmwareSet->filename, peakingTime);
+			sprintf(info_string, "Error getting FiPPI file from %s at peaking time = %.3f", 
+					fs->filename, peakingTime);
 			pslLogError("pslDoPeakingTime", info_string, status);
 			return status;
 		  }
 	  }
 	
-    status = pslDownloadFirmware(detChan, "fippi", fippi, currentFirmware, rawFilename);
+    status = pslDownloadFirmware(detChan, "fippi", fippi, m, rawFilename, defs);
 	
     if (status != XIA_SUCCESS) 
 	  {
@@ -817,7 +1074,7 @@ PSL_STATIC int PSL_API pslDoPeakingTime(int detChan, void *value, FirmwareSet *f
 	  }
 	
 	/* Now we need to remove the file if it was retrieved from the FDD. */
-	if (firmwareSet->filename != NULL)
+	if (fs->filename != NULL)
 	  {
 		status = xiaFddCleanFirmware(fippi);
 		
@@ -831,7 +1088,8 @@ PSL_STATIC int PSL_API pslDoPeakingTime(int detChan, void *value, FirmwareSet *f
 			
     pslLogDebug("pslDoPeakingTime", "Preparing to call pslUpdateFilter()");
 
-    status = pslUpdateFilter(detChan, peakingTime, defaults, firmwareSet, preampGain, gainScale);
+    status = pslUpdateFilter(detChan, peakingTime, defs, fs,
+							 preampGain, gainScale, m);
     if (status != XIA_SUCCESS) 
 	  {
 		sprintf(info_string, "Error updating filter information for detChan %d", detChan);
@@ -839,7 +1097,7 @@ PSL_STATIC int PSL_API pslDoPeakingTime(int detChan, void *value, FirmwareSet *f
 		return status;
 	  }
  
-    status = pslGetDefault("peaking_time", value, defaults);
+    status = pslGetDefault("peaking_time", value, defs);
     if (status != XIA_SUCCESS) 
 	  {
 		sprintf(info_string, "Error getting peaking_time for detChan %d", detChan);
@@ -847,7 +1105,7 @@ PSL_STATIC int PSL_API pslDoPeakingTime(int detChan, void *value, FirmwareSet *f
 		return status;
 	  }
 
-    sprintf(info_string, "New peaking time = %lf", peakingTime);
+    sprintf(info_string, "New peaking time = %.3f", peakingTime);
     pslLogDebug("pslDoPeakingTime", info_string);
   
     return XIA_SUCCESS;
@@ -861,7 +1119,7 @@ PSL_STATIC int PSL_API pslDoPeakingTime(int detChan, void *value, FirmwareSet *f
  * have been passed in.
  *
  *****************************************************************************/
-PSL_STATIC int PSL_API pslDoTriggerThreshold(int detChan, void *value, XiaDefaults *defaults)
+ACQUISITION_VALUE(TriggerThreshold)
 {
     int statusX;
     int status;
@@ -876,7 +1134,16 @@ PSL_STATIC int PSL_API pslDoTriggerThreshold(int detChan, void *value, XiaDefaul
     parameter_t FASTLEN;
     parameter_t THRESHOLD;
 	
-    status = pslGetDefault("adc_percent_rule", (void *)&adcPercentRule, defaults);
+	UNUSED(fs);
+	UNUSED(detectorType);
+	UNUSED(preampGain);
+	UNUSED(gainScale);
+	UNUSED(m);
+	UNUSED(detector_chan);
+	UNUSED(det);
+
+
+    status = pslGetDefault("adc_percent_rule", (void *)&adcPercentRule, defs);
 
     if (status != XIA_SUCCESS) 
 	  {
@@ -885,7 +1152,7 @@ PSL_STATIC int PSL_API pslDoTriggerThreshold(int detChan, void *value, XiaDefaul
 		return status;
 	  }
 
-    status = pslGetDefault("calibration_energy", (void *)&calibEV, defaults);
+    status = pslGetDefault("calibration_energy", (void *)&calibEV, defs);
 
     if (status != XIA_SUCCESS) 
 	  {
@@ -911,7 +1178,7 @@ PSL_STATIC int PSL_API pslDoTriggerThreshold(int detChan, void *value, XiaDefaul
 	 * we get from the board, then we may have a value for FASTLEN that is not intended 
 	 * to work with the desired trigger threshold as set in the defaults...
 	 */
-    status = pslGetDefault("trigger_peaking_time", (void *)&triggerPeakingTime, defaults);
+    status = pslGetDefault("trigger_peaking_time", (void *)&triggerPeakingTime, defs);
 
     if (status != XIA_SUCCESS) 
 	  {
@@ -959,7 +1226,7 @@ PSL_STATIC int PSL_API pslDoTriggerThreshold(int detChan, void *value, XiaDefaul
     thresholdEV = ((double)THRESHOLD * eVPerADC) / ((double) FASTLEN);
     *((double *)value) = thresholdEV;
 
-    status = pslSetDefault("trigger_threshold", (void *)&thresholdEV, defaults);
+    status = pslSetDefault("trigger_threshold", (void *)&thresholdEV, defs);
 
     if (status != XIA_SUCCESS) 
 	  {
@@ -978,7 +1245,7 @@ PSL_STATIC int PSL_API pslDoTriggerThreshold(int detChan, void *value, XiaDefaul
  * appropriate DSP parameter.
  *
  *****************************************************************************/
-PSL_STATIC int PSL_API pslDoEnergyThreshold(int detChan, void *value, XiaDefaults *defaults)
+ACQUISITION_VALUE(EnergyThreshold)
 {
     int statusX;
     int status;
@@ -991,9 +1258,17 @@ PSL_STATIC int PSL_API pslDoEnergyThreshold(int detChan, void *value, XiaDefault
 
     parameter_t SLOWLEN;
     parameter_t SLOWTHRESH;
+
+	UNUSED(fs);
+	UNUSED(detectorType);
+	UNUSED(preampGain);
+	UNUSED(gainScale);
+	UNUSED(m);
+	UNUSED(detector_chan);
+	UNUSED(det);
 	
 
-    status = pslGetDefault("adc_percent_rule", (void *)&adcPercentRule, defaults);
+    status = pslGetDefault("adc_percent_rule", (void *)&adcPercentRule, defs);
 
     if (status != XIA_SUCCESS) {
 
@@ -1002,7 +1277,7 @@ PSL_STATIC int PSL_API pslDoEnergyThreshold(int detChan, void *value, XiaDefault
 	return status;
     }
 
-    status = pslGetDefault("calibration_energy", (void *)&calibEV, defaults);
+    status = pslGetDefault("calibration_energy", (void *)&calibEV, defs);
 
     if (status != XIA_SUCCESS) {
 
@@ -1044,7 +1319,7 @@ PSL_STATIC int PSL_API pslDoEnergyThreshold(int detChan, void *value, XiaDefault
     slowthreshEV = ((double)SLOWTHRESH * eVPerADC) / ((double)SLOWLEN);
     *((double *)value) = slowthreshEV;
 
-    status = pslSetDefault("energy_threshold", (void *)&slowthreshEV, defaults);
+    status = pslSetDefault("energy_threshold", (void *)&slowthreshEV, defs);
     if (status != XIA_SUCCESS) 
 	  {
 		sprintf(info_string, "Error setting energy_threshold for detChan %d", detChan);
@@ -1061,7 +1336,7 @@ PSL_STATIC int PSL_API pslDoEnergyThreshold(int detChan, void *value, XiaDefault
  * This routine essentially sets the values of MCALIMHI.
  *
  *****************************************************************************/
-PSL_STATIC int PSL_API pslDoNumMCAChannels(int detChan, void *value, XiaDefaults *defaults)
+ACQUISITION_VALUE(NumMCAChannels)
 {
     int statusX;
     int status;
@@ -1076,6 +1351,15 @@ PSL_STATIC int PSL_API pslDoNumMCAChannels(int detChan, void *value, XiaDefaults
 	unsigned short *paramData;
 	unsigned short lowLimit;
 	unsigned short highLimit;
+
+	UNUSED(detector_chan);
+	UNUSED(det);
+	UNUSED(m);
+	UNUSED(gainScale);
+	UNUSED(preampGain);
+	UNUSED(detectorType);
+	UNUSED(fs);
+
 
     numMCAChans = *((double *)value);
 
@@ -1100,13 +1384,14 @@ PSL_STATIC int PSL_API pslDoNumMCAChannels(int detChan, void *value, XiaDefaults
 	  }
 	
 	/* Allocate memory for the parameter data */
-	paramData = (unsigned short *) utils->funcs->dxp_md_alloc(sizeof(unsigned short) * numParams);
+	paramData = (unsigned short *) x10p_psl_md_alloc(sizeof(unsigned short) *
+                                                   numParams);
 
 	/* Retrieve the upper limits */
 	status = pslGetParamData(detChan, "upper_bounds", (void *) paramData);
     if (status != XIA_SUCCESS) 
 	  {
-		utils->funcs->dxp_md_free(paramData);
+		x10p_psl_md_free(paramData);
 		sprintf(info_string, "Unable to retrieve the upper limits for the DSP parameters for detChan %d", detChan);
 		pslLogError("pslDoNumMCAChannels", info_string, status);
 		return status;
@@ -1119,7 +1404,7 @@ PSL_STATIC int PSL_API pslDoNumMCAChannels(int detChan, void *value, XiaDefaults
 	status = pslGetParamData(detChan, "lower_bounds", (void *) paramData);
     if (status != XIA_SUCCESS) 
 	  {
-		utils->funcs->dxp_md_free(paramData);
+		x10p_psl_md_free(paramData);
 		sprintf(info_string, "Unable to retrieve the upper limits for the DSP parameters for detChan %d", detChan);
 		pslLogError("pslDoNumMCAChannels", info_string, status);
 		return status;
@@ -1129,13 +1414,13 @@ PSL_STATIC int PSL_API pslDoNumMCAChannels(int detChan, void *value, XiaDefaults
 	lowLimit = paramData[paramIndex];
 
 	/* Free up the memory */
-	utils->funcs->dxp_md_free(paramData);
+	x10p_psl_md_free(paramData);
 
 	/* do some bounds checking */
     if ((numMCAChans < lowLimit) || (numMCAChans > highLimit)) 
 	  {
 		status = XIA_BINS_OOR;
-		sprintf(info_string, "Too many or too few bins specified: %lf, limits: %u:%u", 
+		sprintf(info_string, "Too many or too few bins specified: %.3f, limits: %u:%u", 
 				numMCAChans, lowLimit, highLimit);
 		pslLogError("pslDoNumMCAChannels", info_string, status);
 		return status;
@@ -1175,7 +1460,7 @@ PSL_STATIC int PSL_API pslDoNumMCAChannels(int detChan, void *value, XiaDefaults
 	  }
 
 	/* Store the number of channels in the defaults list */
-    status = pslSetDefault("number_mca_channels", (void *)&numMCAChans, defaults);
+    status = pslSetDefault("number_mca_channels", (void *)&numMCAChans, defs);
     if (status != XIA_SUCCESS) 
 	  {
 		sprintf(info_string, "Error setting number_mca_channels for detChan %d", detChan);
@@ -1192,7 +1477,7 @@ PSL_STATIC int PSL_API pslDoNumMCAChannels(int detChan, void *value, XiaDefaults
  * This routine sets the low bin for acquisition.
  *
  *****************************************************************************/
-PSL_STATIC int PSL_API pslDoMCALowLimit(int detChan, void *value, XiaDefaults *defaults)
+ACQUISITION_VALUE(MCALowLimit)
 {
     int statusX;
     int status;
@@ -1204,8 +1489,16 @@ PSL_STATIC int PSL_API pslDoMCALowLimit(int detChan, void *value, XiaDefaults *d
     parameter_t MCALIMLO;
     parameter_t MCALIMHI;
 
+	UNUSED(fs);
+	UNUSED(detectorType);
+	UNUSED(preampGain);
+	UNUSED(gainScale);
+	UNUSED(m);
+	UNUSED(detector_chan);
+	UNUSED(det);
+
  
-    status = pslGetDefault("mca_bin_width", (void *)&eVPerBin, defaults);
+    status = pslGetDefault("mca_bin_width", (void *)&eVPerBin, defs);
 
     if (status != XIA_SUCCESS) {
 
@@ -1247,7 +1540,7 @@ PSL_STATIC int PSL_API pslDoMCALowLimit(int detChan, void *value, XiaDefaults *d
 	return status;
     }
 
-    status = pslSetDefault("mca_low_limit", (void *)&dMCALIMLO, defaults);
+    status = pslSetDefault("mca_low_limit", (void *)&dMCALIMLO, defs);
 
     if (status != XIA_SUCCESS) {
 
@@ -1265,10 +1558,18 @@ PSL_STATIC int PSL_API pslDoMCALowLimit(int detChan, void *value, XiaDefaults *d
  * This routine sets the bin width, through the parameter BINFACT.
  *
  *****************************************************************************/
-PSL_STATIC int PSL_API pslDoMCABinWidth(int detChan, void *value, XiaDefaults *defaults,
-										double preampGain, double gainScale)
+PSL_STATIC int pslDoMCABinWidth(int detChan, void *value, FirmwareSet *fs,
+								char *detType, XiaDefaults *defaults,
+								double preampGain, double gainScale, Module *m,
+								Detector *det, int detector_chan)
 {
     int status;
+
+	UNUSED(fs);
+	UNUSED(detType);
+	UNUSED(detector_chan);
+	UNUSED(det);
+
 
     status = pslSetDefault("mca_bin_width", value, defaults);
 
@@ -1279,7 +1580,7 @@ PSL_STATIC int PSL_API pslDoMCABinWidth(int detChan, void *value, XiaDefaults *d
 		return status;
 	  }
 
-    status = pslDoGainSetting(detChan, defaults, preampGain, gainScale); 
+    status = pslDoGainSetting(detChan, defaults, preampGain, gainScale, m); 
 	
     if (status != XIA_SUCCESS) 
 	  {
@@ -1297,8 +1598,8 @@ PSL_STATIC int PSL_API pslDoMCABinWidth(int detChan, void *value, XiaDefaults *d
  * the defaults.  Mainly a convenience routine.
  *
  *****************************************************************************/
-PSL_STATIC int PSL_API pslDoGainSetting(int detChan, XiaDefaults *defaults, 
-										double preampGain, double gainScale)
+PSL_STATIC int pslDoGainSetting(int detChan, XiaDefaults *defaults, 
+								double preampGain, double gainScale, Module *m)
 {
     int status;
     int statusX;
@@ -1386,7 +1687,9 @@ PSL_STATIC int PSL_API pslDoGainSetting(int detChan, XiaDefaults *defaults,
 		return status;
 	  }
 
-    status = pslDoTriggerThreshold(detChan, (void *)&threshold, defaults);
+    status = pslDoTriggerThreshold(detChan, (void *)&threshold, NULL,
+								   NULL, defaults, preampGain, gainScale,
+								   m, NULL, 0);
 
     if (status != XIA_SUCCESS) 
 	  {
@@ -1404,7 +1707,8 @@ PSL_STATIC int PSL_API pslDoGainSetting(int detChan, XiaDefaults *defaults,
 		return status;
 	  }
 
-    status = pslDoEnergyThreshold(detChan, (void *)&slowthresh, defaults);
+    status = pslDoEnergyThreshold(detChan, (void *)&slowthresh, NULL, NULL,
+								  defaults, preampGain, gainScale, m, NULL, 0);
 
     if (status != XIA_SUCCESS) 
 	  {
@@ -1440,7 +1744,7 @@ PSL_STATIC int PSL_API pslDoGainSetting(int detChan, XiaDefaults *defaults,
     /* Start and stop a run to "set" the GAINDAC.
      * Reference: BUG ID #83
      */
-    status = pslQuickRun(detChan, defaults);
+    status = pslQuickRun(detChan, defaults, m);
 
     if (status != XIA_SUCCESS) 
 	  {
@@ -1462,13 +1766,17 @@ PSL_STATIC int PSL_API pslDoGainSetting(int detChan, XiaDefaults *defaults,
  * that doesn't recalculate any of the other acquisition parameters.
  *
  *****************************************************************************/
-PSL_STATIC int PSL_API pslDoADCPercentRule(int detChan, void *value, 
-                                           XiaDefaults *defaults, 
-                                           double preampGain, double gainScale)
+ACQUISITION_VALUE(ADCPercentRule)
 {	
     int status;
 
-    status = pslSetDefault("adc_percent_rule", value, defaults);
+	UNUSED(detector_chan);
+	UNUSED(det);
+	UNUSED(detectorType);
+	UNUSED(fs);
+
+
+    status = pslSetDefault("adc_percent_rule", value, defs);
 
     if (status != XIA_SUCCESS) {
 
@@ -1477,7 +1785,7 @@ PSL_STATIC int PSL_API pslDoADCPercentRule(int detChan, void *value,
 	return status;
     }
 
-    status = pslDoGainSetting(detChan, defaults, preampGain, gainScale); 
+    status = pslDoGainSetting(detChan, defs, preampGain, gainScale, m); 
 	
     if (status != XIA_SUCCESS) 
 	  {
@@ -1497,14 +1805,22 @@ PSL_STATIC int PSL_API pslDoADCPercentRule(int detChan, void *value,
  * so it won't.
  *
  *****************************************************************************/
-PSL_STATIC int PSL_API pslDoEnableGate(int detChan, void *value, XiaDefaults *defaults)
+ACQUISITION_VALUE(EnableGate)
 {
   int status;
 
   UNUSED(detChan);
+  UNUSED(detector_chan);
+  UNUSED(det);
+  UNUSED(m);
+  UNUSED(gainScale);
+  UNUSED(preampGain);
+  UNUSED(detectorType);
+  UNUSED(fs);
+
 	
   /* Set the enable_gate entry */
-  status = pslSetDefault("enable_gate", value, defaults);
+  status = pslSetDefault("enable_gate", value, defs);
   if (status != XIA_SUCCESS)
 	{
 	  pslLogError("pslDoEnableGate", "Error setting enable_gate in the defaults", status);
@@ -1521,16 +1837,22 @@ PSL_STATIC int PSL_API pslDoEnableGate(int detChan, void *value, XiaDefaults *de
  * parameter.
  *
  *****************************************************************************/
-PSL_STATIC int PSL_API pslDoResetDelay(int detChan, void *value, XiaDefaults *defaults, 
-									   Detector *detector, int detectorChannel)
+ACQUISITION_VALUE(ResetDelay)
 {
   int status;
   int statusX;
 
   parameter_t RESETINT;
 
+  UNUSED(m);
+  UNUSED(gainScale);
+  UNUSED(preampGain);
+  UNUSED(detectorType);
+  UNUSED(fs);
+
+
   /* Only set the DSP parameter if the detector type is correct */
-  if (detector->type == XIA_DET_RESET) 
+  if (det->type == XIA_DET_RESET) 
 	{
 	  /* DSP stores the reset interval in 0.25us ticks */
 	  RESETINT = (parameter_t) ROUND(4.0 * *((double *) value));
@@ -1556,11 +1878,11 @@ PSL_STATIC int PSL_API pslDoResetDelay(int detChan, void *value, XiaDefaults *de
 	  *((double *) value) = ((double) RESETINT) * 0.25;
 
 	  /* Modify the detector structure with the new delay time */
-	  detector->typeValue[detectorChannel] = *((double *) value);
+	  det->typeValue[detector_chan] = *((double *) value);
 	}
 
   /* Set the reset_delay entry */
-  status = pslSetDefault("reset_delay", value, defaults);
+  status = pslSetDefault("reset_delay", value, defs);
   if (status != XIA_SUCCESS)
 	{
 	  pslLogError("pslDoResetDelay", "Error setting reset_delay in the defaults", status);
@@ -1576,8 +1898,7 @@ PSL_STATIC int PSL_API pslDoResetDelay(int detChan, void *value, XiaDefaults *de
  * parameter.
  *
  *****************************************************************************/
-PSL_STATIC int PSL_API pslDoDecayTime(int detChan, void *value, XiaDefaults *defaults, 
-									  Detector *detector, int detectorChannel)
+ACQUISITION_VALUE(DecayTime)
 {
   int status;
   int statusX;
@@ -1587,8 +1908,15 @@ PSL_STATIC int PSL_API pslDoDecayTime(int detChan, void *value, XiaDefaults *def
   parameter_t RCTAU;
   parameter_t RCTAUFRAC;
 
+  UNUSED(m);
+  UNUSED(gainScale);
+  UNUSED(preampGain);
+  UNUSED(detectorType);
+  UNUSED(fs);
+
+
   /* Only set the DSP parameter if the detector type is correct */
-  if (detector->type == XIA_DET_RCFEED) 
+  if (det->type == XIA_DET_RCFEED) 
 	{
 	  decayTime = *((double *) value);
 	  /* DSP stores the decay time as microsecond part and fractional part */
@@ -1618,11 +1946,11 @@ PSL_STATIC int PSL_API pslDoDecayTime(int detChan, void *value, XiaDefaults *def
 		}
 	  
 	  /* Modify the detector structure with the new delay time */
-	  detector->typeValue[detectorChannel] = *((double *) value);
+	  det->typeValue[detector_chan] = *((double *) value);
 	}
   
   /* Set the decay_time entry */
-  status = pslSetDefault("decay_time", value, defaults);
+  status = pslSetDefault("decay_time", value, defs);
   if (status != XIA_SUCCESS)
 	{
 	  pslLogError("pslDoDecayTime", "Error setting decay_time in the defaults", status);
@@ -1638,18 +1966,21 @@ PSL_STATIC int PSL_API pslDoDecayTime(int detChan, void *value, XiaDefaults *def
  * parameter.
  *
  *****************************************************************************/
-PSL_STATIC int PSL_API pslDoPreampGain(int detChan, void *value, XiaDefaults *defaults, 
-									   Detector *detector, int detectorChannel, 
-									   double gainScale)
+ACQUISITION_VALUE(PreampGain)
 {
   int status;
 
-  double preampGain;
+  double newGain = 0.0;
 
-  preampGain = *((double *) value);
+  UNUSED(preampGain);
+  UNUSED(detectorType);
+  UNUSED(fs);
+
+
+  newGain = *((double *) value);
 
   /* set the gain with the new preampGain */
-  status = pslDoGainSetting(detChan, defaults, preampGain, gainScale); 
+  status = pslDoGainSetting(detChan, defs, newGain, gainScale, m); 
   
   if (status != XIA_SUCCESS) 
 	{
@@ -1659,10 +1990,10 @@ PSL_STATIC int PSL_API pslDoPreampGain(int detChan, void *value, XiaDefaults *de
 	}
 
   /* Modify the detector structure with the new preamp gain */
-  detector->gain[detectorChannel] = *((double *) value);
+  det->gain[detector_chan] = *((double *) value);
   
   /* Set the preamp_gain entry */
-  status = pslSetDefault("preamp_gain", value, defaults);
+  status = pslSetDefault("preamp_gain", value, defs);
   if (status != XIA_SUCCESS)
 	{
 	  pslLogError("pslDoPreampGain", "Error setting preamp_gain in the defaults", status);
@@ -1678,8 +2009,7 @@ PSL_STATIC int PSL_API pslDoPreampGain(int detChan, void *value, XiaDefaults *de
  * parameter.
  *
  *****************************************************************************/
-PSL_STATIC int PSL_API pslDoPolarity(int detChan, void *value, XiaDefaults *defaults, 
-									 Detector *detector, int detectorChannel)
+ACQUISITION_VALUE(Polarity)
 {
   int statusX;
   int status;
@@ -1687,6 +2017,12 @@ PSL_STATIC int PSL_API pslDoPolarity(int detChan, void *value, XiaDefaults *defa
   double polarity;
   
   parameter_t POLARITY;
+
+  UNUSED(gainScale);
+  UNUSED(preampGain);
+  UNUSED(detectorType);
+  UNUSED(fs);
+
   
   polarity = *((double *) value);
   POLARITY = (parameter_t) polarity;
@@ -1704,7 +2040,7 @@ PSL_STATIC int PSL_API pslDoPolarity(int detChan, void *value, XiaDefaults *defa
   /* Start and stop a run to "set" the polarity value.
    * Reference: BUG ID #17, #84
    */
-  status = pslQuickRun(detChan, defaults);
+  status = pslQuickRun(detChan, defs, m);
   
   if (status != XIA_SUCCESS) 
 	{
@@ -1715,10 +2051,10 @@ PSL_STATIC int PSL_API pslDoPolarity(int detChan, void *value, XiaDefaults *defa
 	}
   
   /* Set the entry in the detector structure for polarity */
-  detector->polarity[detectorChannel] = (unsigned short) polarity;
+  det->polarity[detector_chan] = (unsigned short) polarity;
 
   /* Set the polarity entry in the acquisition value list */
-  status = pslSetDefault("detector_polarity", (void *) &polarity, defaults);
+  status = pslSetDefault("detector_polarity", (void *) &polarity, defs);
   if (status != XIA_SUCCESS)
 	{
 	  pslLogError("pslDoPolarity", "Error setting detector_polarity in the defaults", status);
@@ -1735,12 +2071,21 @@ PSL_STATIC int PSL_API pslDoPolarity(int detChan, void *value, XiaDefaults *defa
  * operation in the DSP.
  *
  *****************************************************************************/
-PSL_STATIC int PSL_API pslDoEnableBaselineCut(int detChan, void *value, XiaDefaults *defaults)
+ACQUISITION_VALUE(EnableBaselineCut)
 {
   int status;
   int statusX;
 
   parameter_t RUNTASKS;
+
+  UNUSED(detector_chan);
+  UNUSED(det);
+  UNUSED(m);
+  UNUSED(gainScale);
+  UNUSED(preampGain);
+  UNUSED(detectorType);
+  UNUSED(fs);
+
 
   /* Set the proper bit of the RUNTASKS DSP parameter */
   /* First retrieve RUNTASKS from the DSP */
@@ -1771,7 +2116,7 @@ PSL_STATIC int PSL_API pslDoEnableBaselineCut(int detChan, void *value, XiaDefau
 	}
 
   /* Set the enable_baseline_cut entry */
-  status = pslSetDefault("enable_baseline_cut", value, defaults);
+  status = pslSetDefault("enable_baseline_cut", value, defs);
   if (status != XIA_SUCCESS)
 	{
 	  pslLogError("pslDoEnableBaselineCut", "Error setting enable_baseline_cut in the defaults", status);
@@ -1787,7 +2132,7 @@ PSL_STATIC int PSL_API pslDoEnableBaselineCut(int detChan, void *value, XiaDefau
  * This routine sets the value of the Baseline Cut in percent
  *
  *****************************************************************************/
-PSL_STATIC int PSL_API pslDoBaselineCut(int detChan, void *value, XiaDefaults *defaults)
+ACQUISITION_VALUE(BaselineCut)
 {
   int status;
   int statusX;
@@ -1795,6 +2140,15 @@ PSL_STATIC int PSL_API pslDoBaselineCut(int detChan, void *value, XiaDefaults *d
   parameter_t BLCUT;
 
   double blcut;
+
+  UNUSED(detector_chan);
+  UNUSED(det);
+  UNUSED(m);
+  UNUSED(gainScale);
+  UNUSED(preampGain);
+  UNUSED(detectorType);
+  UNUSED(fs);
+
 
   /* Calculate the value for the baseline cut in 1.15 notation.  The value stored
    * as the acquisition value is in percent. 
@@ -1813,7 +2167,7 @@ PSL_STATIC int PSL_API pslDoBaselineCut(int detChan, void *value, XiaDefaults *d
 	}
 
   /* Set the baseline_cut entry */
-  status = pslSetDefault("baseline_cut", value, defaults);
+  status = pslSetDefault("baseline_cut", value, defs);
   if (status != XIA_SUCCESS)
 	{
 	  pslLogError("pslDoBaselineCut", "Error setting baseline_cut in the defaults", status);
@@ -1829,7 +2183,7 @@ PSL_STATIC int PSL_API pslDoBaselineCut(int detChan, void *value, XiaDefaults *d
  * This routine sets the value of the Baseline Filter Length 
  *
  *****************************************************************************/
-PSL_STATIC int PSL_API pslDoBaselineFilterLength(int detChan, void *value, XiaDefaults *defaults)
+ACQUISITION_VALUE(BaselineFilterLength)
 {
   int status;
   int statusX;
@@ -1837,6 +2191,15 @@ PSL_STATIC int PSL_API pslDoBaselineFilterLength(int detChan, void *value, XiaDe
   parameter_t BLFILTER;
 
   double blfilter;
+
+  UNUSED(detector_chan);
+  UNUSED(det);
+  UNUSED(m);
+  UNUSED(gainScale);
+  UNUSED(preampGain);
+  UNUSED(detectorType);
+  UNUSED(fs);
+
 
   /* Calculate the value for 1/(baseline filter length)  in 1.15 notation.  The value stored
    * as the acquisition value is just samples. 
@@ -1864,7 +2227,7 @@ PSL_STATIC int PSL_API pslDoBaselineFilterLength(int detChan, void *value, XiaDe
 	}
 
   /* Set the baseline_cut entry */
-  status = pslSetDefault("baseline_filter_length", value, defaults);
+  status = pslSetDefault("baseline_filter_length", value, defs);
   if (status != XIA_SUCCESS)
 	{
 	  pslLogError("pslDoBaselineFilterLength", "Error setting baseline_filter_length in the defaults", status);
@@ -1895,14 +2258,17 @@ PSL_STATIC int PSL_API pslDoEnableInterrupt(int detChan, void *value)
  * calibration energy point of view.
  *
  *****************************************************************************/
-PSL_STATIC int PSL_API pslDoCalibrationEnergy(int detChan, void *value, 
-                                              XiaDefaults *defaults, 
-                                              double preampGain, 
-                                              double gainScale)
+ACQUISITION_VALUE(CalibrationEnergy)
 {
     int status;
 
-    status = pslSetDefault("calibration_energy", value, defaults);
+	UNUSED(detector_chan);
+	UNUSED(det);
+	UNUSED(detectorType);
+	UNUSED(fs);
+
+
+    status = pslSetDefault("calibration_energy", value, defs);
 
     if (status != XIA_SUCCESS) 
 	  {
@@ -1911,7 +2277,7 @@ PSL_STATIC int PSL_API pslDoCalibrationEnergy(int detChan, void *value,
 		return status;
 	  }
 
-    status = pslDoGainSetting(detChan, defaults, preampGain, gainScale); 
+    status = pslDoGainSetting(detChan, defs, preampGain, gainScale, m); 
 	
     if (status != XIA_SUCCESS) 
 	  {
@@ -2044,7 +2410,7 @@ PSL_STATIC int PSL_API pslCalculateGain(int detChan, double adcPercentRule, doub
 		if ((gDB < -6.0) || (gDB > 30.0)) 
 		  {
 			status = XIA_GAIN_OOR;
-			sprintf(info_string, "Gain value %lf (in dB) is out-of-range", gDB);
+			sprintf(info_string, "Gain value %.3f (in dB) is out-of-range", gDB);
 			pslLogError("pslCalculateGain", info_string, status);
 			return status;
 		  }
@@ -2116,6 +2482,13 @@ PSL_STATIC double pslGetClockSpeed(int detChan)
       return DEFAULT_CLOCK_SPEED;
     }
 
+  if ((SYSMICROSEC != 20) && (SYSMICROSEC != 40)) {
+	sprintf(info_string, "The return hardware clock speed is invalid (%u) for "
+			"detChan %d", SYSMICROSEC, detChan);
+	pslLogError("pslGetClockSpeed", info_string, XIA_CLOCK_SPEED);
+	return DEFAULT_CLOCK_SPEED;
+  }
+
   return (double) SYSMICROSEC;
 }
 
@@ -2130,7 +2503,7 @@ PSL_STATIC int PSL_API pslGainChange(int detChan, double deltaGain,
                                      CurrentFirmware *currentFirmware, 
                                      char *detectorType, double gainScale,
 									 Detector *detector, int detector_chan,
-									 Module *m)
+									 Module *m, int modChan)
 {
     int status;
 
@@ -2161,9 +2534,9 @@ PSL_STATIC int PSL_API pslGainChange(int detChan, double deltaGain,
     }
 
     status = pslSetAcquisitionValues(detChan, "adc_percent_rule", 
-									 (void *)&newADCPercentRule, defaults, nullSet, 
+									 (void *)&newADCPercentRule, defaults, nullSet,
 									 currentFirmware, detectorType, gainScale,
-									 detector, detector_chan, m);
+									 detector, detector_chan, m, modChan);
 
     if (status != XIA_SUCCESS) {
 
@@ -2174,9 +2547,10 @@ PSL_STATIC int PSL_API pslGainChange(int detChan, double deltaGain,
 	/* Try to reset the gain. If it doesn't work then you aren't really any
 	 * worse off then you were before.
 	 */
-	pslSetAcquisitionValues(detChan, "adc_percent_rule", (void *)&oldADCPercentRule, 
-							defaults, nullSet, currentFirmware, detectorType, 
-							gainScale, detector, detector_chan, m);
+	pslSetAcquisitionValues(detChan, "adc_percent_rule",
+							(void *)&oldADCPercentRule, defaults, nullSet,
+							currentFirmware, detectorType, gainScale, detector,
+							detector_chan, m, modChan);
 	
 	return status;
     }
@@ -2193,22 +2567,31 @@ PSL_STATIC int PSL_API pslGainChange(int detChan, double deltaGain,
  * full 100%.
  *
  *****************************************************************************/
-PSL_STATIC int PSL_API pslGainCalibrate(int detChan, Detector *detector, 
-					int detector_chan, XiaDefaults *defaults, 
-					double deltaGain, double gainScale)
+PSL_STATIC int pslGainCalibrate(int detChan, Detector *detector, 
+								int modChan, Module *m, XiaDefaults *defaults, 
+								double deltaGain, double gainScale)
 {
     int status;
 
     double preampGain = 0.0;
 
+
+	
+
     /* Calculate scaled preamp gain keeping in mind that it is an inverse
      * relationship.
      */
-    preampGain = detector->gain[detector_chan];
+	status = pslGetDefault("preamp_gain", (void *)&preampGain, defaults);
+	ASSERT(status == XIA_SUCCESS);
+
     preampGain *= 1.0 / deltaGain;
 
-	/* Set the new preamp_gain, this will also set the detector structure entry, defaults, and recalc gain */
-	status = pslDoPreampGain(detChan, (void *) &preampGain, defaults, detector, detector_chan, gainScale);
+	/* Set the new preamp_gain, this will also set the detector structure entry,
+	 * defaults, and recalc gain.
+	 */
+	status = pslDoPreampGain(detChan, (void *)&preampGain, NULL, NULL, defaults,
+							 preampGain, gainScale, m, detector,
+							 m->detector_chan[modChan]);
 
     if (status != XIA_SUCCESS) 
 	  {
@@ -2227,7 +2610,7 @@ PSL_STATIC int PSL_API pslGainCalibrate(int detChan, Detector *detector,
  * hardware configuration changes like polarity and gain
  *
  *****************************************************************************/
-PSL_STATIC int PSL_API pslQuickRun(int detChan, XiaDefaults *defaults)
+PSL_STATIC int pslQuickRun(int detChan, XiaDefaults *defaults, Module *m)
 {
   int status;
   int statusX;
@@ -2238,7 +2621,8 @@ PSL_STATIC int PSL_API pslQuickRun(int detChan, XiaDefaults *defaults)
   parameter_t BUSY = 0;
   parameter_t RUNIDENT = 0;
   parameter_t RUNIDENT2 = 0;
-  
+
+
   /* Check that BUSY=6 or (BUSY=0 and RUNIDENT=RUNIDENT+1) before stopping the run 
    * BUG ID #100
    */
@@ -2255,7 +2639,7 @@ PSL_STATIC int PSL_API pslQuickRun(int detChan, XiaDefaults *defaults)
   /* Increment RUNIDENT now, so that we don't need to in every loop while polling */
   RUNIDENT++;
 
-  status = pslStartRun(detChan, 0, defaults);
+  status = pslStartRun(detChan, 0, defaults, m);
   
   if (status != XIA_SUCCESS) 
 	{
@@ -2296,7 +2680,7 @@ PSL_STATIC int PSL_API pslQuickRun(int detChan, XiaDefaults *defaults)
 	 */
 	if ((BUSY == 6) || ((BUSY == 0) && (RUNIDENT2 == RUNIDENT))) 
 	  {
-		status = pslStopRun(detChan);
+		status = pslStopRun(detChan, m);
 		
 		if (status != XIA_SUCCESS) 
 		  {
@@ -2311,8 +2695,11 @@ PSL_STATIC int PSL_API pslQuickRun(int detChan, XiaDefaults *defaults)
 	timeout--;
   }
 
+  status = pslStopRun(detChan, m);
+
   status = XIA_TIMEOUT;
-  sprintf(info_string, "Timeout waiting to stop a quick run on detChan %d", detChan);
+  sprintf(info_string, "Timeout (BUSY = %u) waiting to stop a quick run "
+		  "on detChan %d", BUSY, detChan);
   pslLogError("pslQuickRun", info_string, status);
   return status;
 }
@@ -2325,7 +2712,8 @@ PSL_STATIC int PSL_API pslQuickRun(int detChan, XiaDefaults *defaults)
  * a way to start runs that takes the "state" of the module into account.
  *
  *****************************************************************************/
-PSL_STATIC int PSL_API pslStartRun(int detChan, unsigned short resume, XiaDefaults *defaults)
+PSL_STATIC int pslStartRun(int detChan, unsigned short resume, XiaDefaults *defs,
+						   Module *m)
 {
     int statusX;
     int status;
@@ -2334,8 +2722,10 @@ PSL_STATIC int PSL_API pslStartRun(int detChan, unsigned short resume, XiaDefaul
 
     unsigned short gate;
 
+	UNUSED(m);
+
   
-    status = pslGetDefault("enable_gate", (void *)&tmpGate, defaults);
+    status = pslGetDefault("enable_gate", (void *)&tmpGate, defs);
 
     if (status != XIA_SUCCESS) {
 
@@ -2370,7 +2760,7 @@ PSL_STATIC int PSL_API pslStartRun(int detChan, unsigned short resume, XiaDefaul
  * iteration procedure will cause problems or not.
  *
  *****************************************************************************/
-PSL_STATIC int PSL_API pslStopRun(int detChan)
+PSL_STATIC int pslStopRun(int detChan, Module *m)
 {
     int statusX;
     int status;
@@ -2379,7 +2769,10 @@ PSL_STATIC int PSL_API pslStopRun(int detChan)
     /* Since dxp_md_wait() wants a time in seconds */
     float wait = 1.0f / 1000.0f;
 
-    parameter_t BUSY;
+    parameter_t BUSY = 0;
+
+	UNUSED(m);
+
 
     statusX = dxp_stop_one_run(&detChan);
 
@@ -2407,6 +2800,9 @@ PSL_STATIC int PSL_API pslStopRun(int detChan)
 	statusX = utils->funcs->dxp_md_wait(&wait);
     }
 
+	sprintf(info_string, "Timeout (BUSY = %u) waiting for a run to end on "
+			"detChan %d", BUSY, detChan);
+	pslLogError("pslStopRun", info_string, XIA_TIMEOUT);
     return XIA_TIMEOUT;
 }
 
@@ -2418,12 +2814,15 @@ PSL_STATIC int PSL_API pslStopRun(int detChan)
  * specified information.
  *
  *****************************************************************************/
-PSL_STATIC int PSL_API pslGetRunData(int detChan, char *name, void *value,
-				     XiaDefaults *defaults)
+PSL_STATIC int pslGetRunData(int detChan, char *name, void *value,
+							 XiaDefaults *defs, Module *m)
 {
     int status = XIA_SUCCESS;
 
-    UNUSED(defaults);
+	UNUSED(m);
+
+
+  ASSERT(defs != NULL);
 
 
     /* This routine just calls other routines as determined by name */
@@ -2433,7 +2832,7 @@ PSL_STATIC int PSL_API pslGetRunData(int detChan, char *name, void *value,
 
     } else if (STREQ(name, "mca")) {
 
-	status = pslGetMCAData(detChan, value);
+      status = pslGetMCAData(detChan, value, defs);
 
     } else if (STREQ(name, "livetime")) {
 
@@ -2473,11 +2872,11 @@ PSL_STATIC int PSL_API pslGetRunData(int detChan, char *name, void *value,
   
 	} else if (STRNEQ(name, "sca_length")) {
 
-	  status = _pslGetSCALen(detChan, defaults, value);
+	  status = _pslGetSCALen(detChan, defs, value);
 
 	} else if (STRNEQ(name, "sca")) {
 	  
-	  status = _pslGetSCAData(detChan, defaults, value);
+	  status = _pslGetSCAData(detChan, defs, value);
 
     } else {
 
@@ -2521,19 +2920,34 @@ PSL_STATIC int PSL_API pslGetMCALength(int detChan, void *value)
  * This routine gets the MCA spectrum through XerXes.
  *
  *****************************************************************************/
-PSL_STATIC int PSL_API pslGetMCAData(int detChan, void *value)
+PSL_STATIC int PSL_API pslGetMCAData(int detChan, void *value,
+                                     XiaDefaults *defs)
 {
     int statusX;
     int status;
 
-    statusX = dxp_readout_detector_run(&detChan, NULL, NULL, (unsigned long *)value);
+    double mcaStartAddress;
+    double mcaLen;
+
+    char memStr[64];
+
+
+    status = pslGetDefault("mca_start_address", &mcaStartAddress, defs);
+    ASSERT(status == XIA_SUCCESS);
+
+    status = pslGetDefault("number_mca_channels", &mcaLen, defs);
+    ASSERT(status == XIA_SUCCESS);
+
+    sprintf(memStr, "spectrum:%#x:%lu", (unsigned short)mcaStartAddress,
+            (unsigned long)mcaLen);
+
+    statusX = dxp_read_memory(&detChan, memStr, (unsigned long *)value);
 
     if (statusX != DXP_SUCCESS) {
-
-	status = XIA_XERXES;
-	sprintf(info_string, "Error getting MCA spectrum for detChan %d", detChan);
-	pslLogError("pslGetMCAData", info_string, status);
-	return status;
+      sprintf(info_string, "Error reading memory '%s' for detChan %d",
+              memStr, detChan);
+      pslLogError("pslGetMCAData", info_string, XIA_XERXES);
+      return XIA_XERXES;
     }
 
     return XIA_SUCCESS;
@@ -2600,7 +3014,7 @@ PSL_STATIC int PSL_API pslGetRuntime(int detChan, void *value)
 	speed = pslGetClockSpeed(detChan);
 	rtTick = 16.0 / (speed * 1.0e6);
 
-	sprintf(info_string, "speed = %lf, rtTick = %.3e", speed, rtTick);
+	sprintf(info_string, "speed = %.3f, rtTick = %.3e", speed, rtTick);
 	pslLogDebug("pslGetRuntime", info_string);
 
     /* If any of these fail then we can
@@ -2806,11 +3220,7 @@ PSL_STATIC int PSL_API pslGetBaseline(int detChan, void *value)
     int status;
 
     unsigned int baseLen;
-    unsigned int i;
 
-    unsigned short *baseline;
-
-    unsigned long *base_temp;
 
     statusX = dxp_nbase(&detChan, &baseLen);
 
@@ -2818,29 +3228,17 @@ PSL_STATIC int PSL_API pslGetBaseline(int detChan, void *value)
 	  {
 		return XIA_XERXES;
 	  }
-	
-    baseline = (unsigned short *)utils->funcs->dxp_md_alloc(sizeof(unsigned short) * baseLen);
 
-    statusX = dxp_readout_detector_run(&detChan, NULL, baseline, NULL);
+    statusX = dxp_readout_detector_run(&detChan, NULL, (unsigned long *)value,
+									   NULL);
  
     if (statusX != DXP_SUCCESS) 
 	  {
-		utils->funcs->dxp_md_free(baseline);
-		
 		status = XIA_XERXES;
 		sprintf(info_string, "Error reading baseline histogram from detChan %d", detChan);
 		pslLogError("pslGetBaseline", info_string, status);
 		return status;
 	  }
-
-    base_temp = (unsigned long *)value;
-
-    for (i = 0; i < baseLen; i++) 
-	  {
-		base_temp[i] = (unsigned long)baseline[i];
-	  }
-	
-    utils->funcs->dxp_md_free(baseline);
 	
     return XIA_SUCCESS;
 }
@@ -2975,7 +3373,7 @@ PSL_STATIC int PSL_API pslDoADCTrace(int detChan, void *info)
 
     if (tracewait < minTracewait) 
 	  {
-		sprintf(info_string, "tracewait of %lf ns is too small. Setting it to %lf ns.", tracewait, minTracewait);
+		sprintf(info_string, "tracewait of %.3f ns is too small. Setting it to %.3f ns.", tracewait, minTracewait);
 		pslLogWarning("pslDoADCTrace", info_string);
 		tracewait = minTracewait;
 	  }
@@ -3447,7 +3845,11 @@ PSL_STATIC int PSL_API pslSetDetectorTypeValue(int detChan, Detector *detector,
 	  {
       case XIA_DET_RESET:
 		
-		status = pslDoResetDelay(detChan, (void *) &(detector->typeValue[detectorChannel]), defaults, detector, detectorChannel);
+		status = pslDoResetDelay(detChan,
+								 (void *)&(detector->typeValue[detectorChannel]),
+								 NULL, NULL, defaults,
+								 detector->gain[detectorChannel], 0.0, NULL,
+								 detector, detectorChannel); 
 		  
 		if (status != XIA_SUCCESS) 
 		  {
@@ -3460,7 +3862,11 @@ PSL_STATIC int PSL_API pslSetDetectorTypeValue(int detChan, Detector *detector,
 		
       case XIA_DET_RCFEED:
 		
-		status = pslDoDecayTime(detChan, (void *) &(detector->typeValue[detectorChannel]), defaults, detector, detectorChannel);
+		status = pslDoDecayTime(detChan,
+								(void *) &(detector->typeValue[detectorChannel]),
+								NULL, NULL, defaults,
+								detector->gain[detectorChannel], 0.0, NULL,
+								detector, detectorChannel);
 		  
 		if (status != XIA_SUCCESS) 
 		  {
@@ -3488,24 +3894,36 @@ PSL_STATIC int PSL_API pslSetDetectorTypeValue(int detChan, Detector *detector,
  * This routine sets the polarity for a detChan. 
  *
  *****************************************************************************/
-PSL_STATIC int PSL_API pslSetPolarity(int detChan, Detector *detector, 
-									  int detectorChannel, XiaDefaults *defaults)
+PSL_STATIC int pslSetPolarity(int detChan, Detector *detector, 
+							  int detectorChannel, XiaDefaults *defaults,
+							  Module *m)
 {
-  int status;
+  UNUSED(detChan);
+  UNUSED(detector);
+  UNUSED(detectorChannel);
+  UNUSED(defaults);
+  UNUSED(m);
 
-  double polarity;
+  /* The polarity is set as an acquisition value anyway, so this routine is
+   * unnecessary.
+   */
 
-  polarity = (double) detector->polarity[detectorChannel];
+/*   int status; */
 
-  status = pslDoPolarity(detChan, (void *) &polarity, defaults, detector, 
-						 detectorChannel);
+/*   double polarity; */
 
-  if (status != XIA_SUCCESS) 
-	{
-	  sprintf(info_string, "Error setting the polarity information for channel %d", detChan);
-	  pslLogError("pslSetPolarity", info_string, status);
-	  return status;
-	}
+
+/*   polarity = (double) detector->polarity[detectorChannel]; */
+
+/*   status = pslDoPolarity(detChan, (void *) &polarity, defaults, detector,  */
+/* 						 detectorChannel, m); */
+
+/*   if (status != XIA_SUCCESS)  */
+/* 	{ */
+/* 	  sprintf(info_string, "Error setting the polarity information for channel %d", detChan); */
+/* 	  pslLogError("pslSetPolarity", info_string, status); */
+/* 	  return status; */
+/* 	} */
 
   return XIA_SUCCESS;
 }
@@ -3515,28 +3933,31 @@ PSL_STATIC int PSL_API pslSetPolarity(int detChan, Detector *detector,
  * This routine creates a default w/ information specific to the x10p in it.
  * 
  *****************************************************************************/
-PSL_STATIC int PSL_API pslGetDefaultAlias(char *alias, char **names, double *values)
+PSL_STATIC int pslGetDefaultAlias(char *alias, char **names, double *values)
 {
-    int len;
-    int i;
+  int i;
+  int def_idx;
 
-    char *aliasName = "defaults_dxpx10p";
+  char *aliasName = "defaults_dxpx10p";
 
-    pslLogDebug("pslGetDefaultAlias", "Preparing to copy default defaults");
-	
-    len = sizeof(defaultValues) / sizeof(defaultValues[0]);
-    for (i = 0; i < len; i++) 
-	  {
-		sprintf(info_string, "defNames[%d] = %s, defValues[%d] = %3.3lf", i, defaultNames[i], i, defaultValues[i]);
-		pslLogDebug("pslGetDefaultAlias", info_string);
-		
-		strcpy(names[i], defaultNames[i]);
-		values[i] = defaultValues[i];
-	  }
-	
-    strcpy(alias, aliasName);
-	
-    return XIA_SUCCESS;
+
+  ASSERT(alias  != NULL);
+  ASSERT(names  != NULL);
+  ASSERT(values != NULL);
+
+
+  for (i = 0, def_idx = 0; i < N_ELEMS(ACQ_VALUES); i++) {
+	if (ACQ_VALUES[i].isDefault) {
+
+	  strcpy(names[def_idx], ACQ_VALUES[i].name);
+	  values[def_idx] = ACQ_VALUES[i].def;
+	  def_idx++;
+	}
+  }
+
+  strcpy(alias, aliasName);
+
+  return XIA_SUCCESS;
 }
 
 
@@ -3553,7 +3974,7 @@ PSL_STATIC int PSL_API pslGetParameter(int detChan, const char *name, unsigned s
     char *noconstName = NULL;
 
 
-    noconstName = (char *)utils->funcs->dxp_md_alloc((strlen(name) + 1) * sizeof(char));
+    noconstName = (char *)x10p_psl_md_alloc((strlen(name) + 1) * sizeof(char));
   
     if (noconstName == NULL) 
 	  {
@@ -3568,7 +3989,7 @@ PSL_STATIC int PSL_API pslGetParameter(int detChan, const char *name, unsigned s
 
     if (statusX != DXP_SUCCESS) 
 	  { 
-		utils->funcs->dxp_md_free((void *)noconstName);
+		x10p_psl_md_free((void *)noconstName);
 		noconstName = NULL;
 
 		status = XIA_XERXES;
@@ -3577,7 +3998,7 @@ PSL_STATIC int PSL_API pslGetParameter(int detChan, const char *name, unsigned s
 		return status;
 	  }
 
-    utils->funcs->dxp_md_free((void *)noconstName);
+    x10p_psl_md_free((void *)noconstName);
     noconstName = NULL;
 
     return XIA_SUCCESS;
@@ -3596,7 +4017,7 @@ PSL_STATIC int PSL_API pslSetParameter(int detChan, const char *name, unsigned s
 
     char *noconstName = NULL;
 
-    noconstName = (char *)utils->funcs->dxp_md_alloc((strlen(name) + 1) * sizeof(char));
+    noconstName = (char *)x10p_psl_md_alloc((strlen(name) + 1) * sizeof(char));
   
     if (noconstName == NULL) 
 	  {
@@ -3611,7 +4032,7 @@ PSL_STATIC int PSL_API pslSetParameter(int detChan, const char *name, unsigned s
 
     if (statusX != DXP_SUCCESS) 
 	  { 
-		utils->funcs->dxp_md_free((void *)noconstName);
+		x10p_psl_md_free((void *)noconstName);
 		noconstName = NULL;
 		
 		status = XIA_XERXES;
@@ -3620,7 +4041,7 @@ PSL_STATIC int PSL_API pslSetParameter(int detChan, const char *name, unsigned s
 		return status;
 	  }
 
-    utils->funcs->dxp_md_free((void *)noconstName);
+    x10p_psl_md_free((void *)noconstName);
     noconstName = NULL;
 
     return XIA_SUCCESS;
@@ -3639,67 +4060,85 @@ PSL_STATIC int PSL_API pslUserSetup(int detChan, XiaDefaults *defaults,
                                     CurrentFirmware *currentFirmware, 
                                     char *detectorType, double gainScale,
 									Detector *detector, int detector_chan,
-									Module *m)
+									Module *m, int modChan)
 {
-    int status;
+  int i;
+  int status;
 
-    double peakingTime = 0.0;
+  XiaDaqEntry *entry = defaults->entry;
 
-	XiaDaqEntry *entry = defaults->entry;
+  
+  ASSERT(defaults != NULL);
+  ASSERT(entry    != NULL);
 
 
-    while (entry != NULL) {
-	  /* skip the setting of a few defaults which are ALWAYS 
-	   * defined from the detector portion of the
-	   * configuration (INI or dynamic):  problem here is 
-	   * that the defaults will then override the 
-	   * values from the configuration information, which is 
-	   * not what you want during UserSetup() 
-	   */
-	  if (!(STREQ(entry->name, "decay_time")  || 
-			STREQ(entry->name, "reset_delay") ||
-			STREQ(entry->name, "preamp_gain") || 
-			STREQ(entry->name, "detector_polarity")))
-		{
-			
-		  sprintf(info_string, "Setting acquisition value %s to %0.3lf", entry->name, entry->data);
-		  pslLogInfo("pslUserSetup", info_string);
-			
-		  status = pslSetAcquisitionValues(detChan, entry->name, (void *)&(entry->data), 
-										   defaults, firmwareSet, currentFirmware, 
-										   detectorType, gainScale, detector, 
-										   detector_chan, m);
-			
-		  if (status != XIA_SUCCESS) {
-			  sprintf(info_string, "Error setting acquisition value %s for detChan %d", entry->name, detChan);
-			  pslLogError("pslUserSetup", info_string, status);
-			  return status;
-			}
-		}
-	  entry = entry->next;
-	}
-	
-    pslLogDebug("pslUserSetup", "Preparing to call pslUpdateFilter()");
-	
-    /* Init filter params here */
-    status = pslGetDefault("peaking_time", (void *)&peakingTime, defaults);
-	
-    if (status != XIA_SUCCESS) {
-		sprintf(info_string, "Error getting peaking_time from detChan %d", detChan);
-		pslLogError("pslUserSetup", info_string, status);
-		return status;
-	}
+  /* Some acquisition values require synchronization with another data
+   * structure in the program prior to setting the initial acquisition
+   * value.
+   */
+  for (i = 0; i < N_ELEMS(ACQ_VALUES); i++) {
+	if (ACQ_VALUES[i].isSynch) {
+	  status = ACQ_VALUES[i].synchFN(detChan, detector_chan, m, detector,
+									 defaults);
 
-    status = pslUpdateFilter(detChan, peakingTime, defaults, firmwareSet, detector->gain[detector_chan], gainScale);
-
-    if (status != XIA_SUCCESS) 
-	  {
-		sprintf(info_string, "Error doing initial update of filter parameters for detChan %d", detChan);
+	  if (status != XIA_SUCCESS) {
+		sprintf(info_string, "Error synchronizing '%s' for detChan %d",
+				ACQ_VALUES[i].name, detChan);
 		pslLogError("pslUserSetup", info_string, status);
 		return status;
 	  }
+	}
+  }
 
-    return XIA_SUCCESS;
+  /* We need to set SYSMICROSEC up properly. */
+  status = pslQuickRun(detChan, defaults, m);
+
+  if (status != XIA_SUCCESS) {
+	sprintf(info_string, "Error applying clock settings for detChan %d",
+			detChan);
+	pslLogError("pslUserSetup", info_string, status);
+	return status;
+  }  
+
+  while (entry != NULL) {
+
+	status = pslSetAcquisitionValues(detChan, entry->name, (void *)&entry->data,
+									 defaults, firmwareSet, currentFirmware,
+									 detectorType, gainScale, detector,
+									 detector_chan, m, modChan);
+
+	if (status != XIA_SUCCESS) {
+	  sprintf(info_string, "Error setting '%s' to %0.3lf for detChan %d",
+			  entry->name, entry->data, detChan);
+	  pslLogError("pslUserSetup", info_string, status);
+	  return status;
+	}
+
+	entry = entry->next;
+  }
+  
+  /* Apply the value. */
+  status = pslQuickRun(detChan, defaults, m);
+
+  if (status != XIA_SUCCESS) {
+	sprintf(info_string, "Error applying acquisition values for detChan %d",
+			detChan);
+	pslLogError("pslUserSetup", info_string, status);
+	return status;
+  }
+
+  status = psl__UpdateMCAAddressCache(detChan, defaults);
+
+  if (status != XIA_SUCCESS) {
+    sprintf(info_string, "Error updating MCA start address cache for "
+            "detChan %d", detChan);
+    pslLogError("pslUserSetup", info_string, status);
+    return status;
+  }
+
+  
+
+  return XIA_SUCCESS;
 }
 
 
@@ -3707,9 +4146,9 @@ PSL_STATIC int PSL_API pslUserSetup(int detChan, XiaDefaults *defaults,
  * This routine updates the filter parameters for the specified detChan using
  * information from the defaults and the firmware.
  */
-PSL_STATIC int PSL_API pslUpdateFilter(int detChan, double peakingTime, 
-									   XiaDefaults *defaults, FirmwareSet *firmwareSet,
-									   double preampGain, double gainScale)
+PSL_STATIC int pslUpdateFilter(int detChan, double peakingTime,
+							   XiaDefaults *defaults, FirmwareSet *firmwareSet,
+							   double preampGain, double gainScale, Module *m)
 {
     int status;
     int statusX;
@@ -3754,7 +4193,7 @@ PSL_STATIC int PSL_API pslUpdateFilter(int detChan, double peakingTime,
 	    return status;
 	}
 
-	filterInfo = (parameter_t *)utils->funcs->dxp_md_alloc(numFilter * sizeof(parameter_t));
+	filterInfo = (parameter_t *)x10p_psl_md_alloc(numFilter * sizeof(parameter_t));
 
 	status = xiaFddGetFilterInfo(firmwareSet->filename, peakingTime, firmwareSet->numKeywords,
 				     firmwareSet->keywords, filterInfo);
@@ -3797,7 +4236,7 @@ PSL_STATIC int PSL_API pslUpdateFilter(int detChan, double peakingTime,
 	    if ((peakingTime >= current->min_ptime) &&
 		(peakingTime <= current->max_ptime))
 	    {
-		filterInfo = (parameter_t *)utils->funcs->dxp_md_alloc(current->numFilter *
+		filterInfo = (parameter_t *)x10p_psl_md_alloc(current->numFilter *
 								     sizeof(parameter_t));
 		for (i = 0; i < current->numFilter; i++) {
 
@@ -3872,7 +4311,7 @@ PSL_STATIC int PSL_API pslUpdateFilter(int detChan, double peakingTime,
 		return status;
 	  }
 	
-    sprintf(info_string, "gap_time for detChan %d = %lf", detChan, gapTime);
+    sprintf(info_string, "gap_time for detChan %d = %.3f", detChan, gapTime);
     pslLogDebug("pslUpdateFilter", info_string);
 	
     dSLOWGAP = (double)(gapTime / ((1.0 / CLOCK_SPEED) * pow(2, (double)newDecimation)));
@@ -3987,10 +4426,12 @@ PSL_STATIC int PSL_API pslUpdateFilter(int detChan, double peakingTime,
 		return status;
 	  }
 	
+    x10p_psl_md_free(filterInfo);
+
 	/* Calculate the gain again.  It actually depends on the SLOWLEN
 	 * via BINFACT1
 	 */
-    status = pslDoGainSetting(detChan, defaults, preampGain, gainScale); 
+    status = pslDoGainSetting(detChan, defaults, preampGain, gainScale, m); 
 	
     if (status != XIA_SUCCESS) 
 	  {
@@ -4020,9 +4461,9 @@ PSL_STATIC int PSL_API pslUpdateFilter(int detChan, double peakingTime,
  * and then calls the update filter routine so that all of the
  * filter parameters will be brought up in sync.
  */
-PSL_STATIC int PSL_API pslDoFilter(int detChan, char *name, void *value, 
-								   XiaDefaults *defaults, FirmwareSet *firmwareSet,
-								   double preampGain, double gainScale)
+PSL_STATIC int pslDoFilter(int detChan, char *name, void *value, 
+						   XiaDefaults *defaults, FirmwareSet *firmwareSet,
+						   double preampGain, double gainScale, Module *m)
 {
     int status;
 
@@ -4047,7 +4488,8 @@ PSL_STATIC int PSL_API pslDoFilter(int detChan, char *name, void *value,
 
     pslLogDebug("pslDoFilter", "Preparing to call pslUpdateFilter()");
 
-    status = pslUpdateFilter(detChan, pt, defaults, firmwareSet, preampGain, gainScale);
+    status = pslUpdateFilter(detChan, pt, defaults, firmwareSet, preampGain,
+							 gainScale, m);
     if (status != XIA_SUCCESS)
 	  {
 		pslLogError("pslDoFilter", "Error updating filter information", status);
@@ -4091,12 +4533,13 @@ PSL_STATIC int PSL_API pslDoParam(int detChan, char *name, void *value, XiaDefau
 {
     int status;
   
-    unsigned short val = 0x0000;
+	unsigned short val = 0x0000;
 
     double dTmp = 0.0;
 
-    dTmp = *(double *)value;
-    val  = (unsigned short)dTmp;
+
+    dTmp = *((double *)value);
+	val  = (unsigned short)dTmp;
 	
     status = pslSetDefault(name, (void *)&dTmp, defaults);
 
@@ -4146,9 +4589,7 @@ PSL_STATIC boolean_t PSL_API pslCanRemoveName(char *name)
  * Sets the gap time for the slow filter which,
  * in turn sets the SLOWGAP.
  */
-PSL_STATIC int PSL_API pslDoGapTime(int detChan, void *value,
-				    FirmwareSet *firmwareSet, XiaDefaults *defaults,
-				    double preampGain, double gainScale)
+ACQUISITION_VALUE(GapTime)
 {
   int statusX;
   int status;
@@ -4159,6 +4600,10 @@ PSL_STATIC int PSL_API pslDoGapTime(int detChan, void *value,
   parameter_t SLOWGAP       = 0;
   
   CLOCK_SPEED = pslGetClockSpeed(detChan);
+
+  UNUSED(detectorType);
+  UNUSED(detector_chan);
+  UNUSED(det);
   
   
   /* Get decimation from the board */
@@ -4172,10 +4617,10 @@ PSL_STATIC int PSL_API pslDoGapTime(int detChan, void *value,
       return status;
     }
   
-  sprintf(info_string, "gap_time = %lf", *((double *)value));
+  sprintf(info_string, "gap_time = %.3f", *((double *)value));
   pslLogDebug("pslDoGapTime", info_string);
   
-  status = pslSetDefault("gap_time", value, defaults);
+  status = pslSetDefault("gap_time", value, defs);
   
   if (status != XIA_SUCCESS) 
     {
@@ -4184,7 +4629,7 @@ PSL_STATIC int PSL_API pslDoGapTime(int detChan, void *value,
       return status;
     }
   
-  status = pslGetDefault("peaking_time", (void *)&peakingTime, defaults);
+  status = pslGetDefault("peaking_time", (void *)&peakingTime, defs);
   
   if (status != XIA_SUCCESS) 
     {
@@ -4199,7 +4644,8 @@ PSL_STATIC int PSL_API pslDoGapTime(int detChan, void *value,
    * pslUpdateFilter() since other filter params depend on
    * it as well.
    */
-  status = pslUpdateFilter(detChan, peakingTime, defaults, firmwareSet, preampGain, gainScale);
+  status = pslUpdateFilter(detChan, peakingTime, defs, fs, preampGain,
+						   gainScale, m);
   if (status != XIA_SUCCESS) 
     {
       sprintf(info_string, "Error updating filter information for detChan %d", detChan);
@@ -4207,7 +4653,7 @@ PSL_STATIC int PSL_API pslDoGapTime(int detChan, void *value,
       return status;
     }
   
-  status = pslGetDefault("actual_gap_time", value, defaults);
+  status = pslGetDefault("actual_gap_time", value, defs);
   if (status != XIA_SUCCESS) 
     {
       sprintf(info_string, "Error getting actual_gap_time for detChan %d", detChan);
@@ -4218,7 +4664,7 @@ PSL_STATIC int PSL_API pslDoGapTime(int detChan, void *value,
   sprintf(info_string, "SLOWGAP = %u", SLOWGAP);
   pslLogDebug("pslDoGapTime", info_string);
   
-  sprintf(info_string, "New (actual) gap_time for detChan %d is %lf microseconds", 
+  sprintf(info_string, "New (actual) gap_time for detChan %d is %.3f microseconds", 
 	  detChan, *((double *)value));
   pslLogDebug("pslDoGapTime", info_string);
   
@@ -4230,13 +4676,20 @@ PSL_STATIC int PSL_API pslDoGapTime(int detChan, void *value,
  * This routine translates the fast filter peaking time
  * to FASTLEN.
  */
-PSL_STATIC int PSL_API pslDoTriggerPeakingTime(int detChan, void *value,
-					       XiaDefaults *defaults)
+ACQUISITION_VALUE(TriggerPeakingTime)
 {
     int status;
 
+	UNUSED(m);
+	UNUSED(gainScale);
+	UNUSED(detector_chan);
+	UNUSED(det);
+	UNUSED(preampGain);
+	UNUSED(detectorType);
+	UNUSED(fs);
+ 
 
-    status = pslSetDefault("trigger_peaking_time", value, defaults);
+    status = pslSetDefault("trigger_peaking_time", value, defs);
 
     if (status != XIA_SUCCESS) {
 
@@ -4245,7 +4698,7 @@ PSL_STATIC int PSL_API pslDoTriggerPeakingTime(int detChan, void *value,
 	return status;
     }
 
-    status = pslUpdateTriggerFilter(detChan, defaults);
+    status = pslUpdateTriggerFilter(detChan, defs);
 
     if (status != XIA_SUCCESS) {
 
@@ -4258,13 +4711,23 @@ PSL_STATIC int PSL_API pslDoTriggerPeakingTime(int detChan, void *value,
 }
 
 
-PSL_STATIC int PSL_API pslDoTriggerGapTime(int detChan, void *value,
-					   XiaDefaults *defaults)
+/** @brief Sets the trigger gap time.
+ *
+ */
+ACQUISITION_VALUE(TriggerGapTime)
 {
     int status;
+	
+	UNUSED(detector_chan);
+	UNUSED(det);
+	UNUSED(m);
+	UNUSED(gainScale);
+	UNUSED(preampGain);
+	UNUSED(fs);
+	UNUSED(detectorType);
 
   
-    status = pslSetDefault("trigger_gap_time", value, defaults);
+    status = pslSetDefault("trigger_gap_time", value, defs);
 
     if (status != XIA_SUCCESS) {
 
@@ -4273,7 +4736,7 @@ PSL_STATIC int PSL_API pslDoTriggerGapTime(int detChan, void *value,
 	return status;
     }
 
-    status = pslUpdateTriggerFilter(detChan, defaults);
+    status = pslUpdateTriggerFilter(detChan, defs);
 
     if (status != XIA_SUCCESS) {
 
@@ -4414,9 +4877,21 @@ PSL_STATIC int PSL_API pslUpdateTriggerFilter(int detChan, XiaDefaults *defaults
     return XIA_SUCCESS;
 }
 
-PSL_STATIC unsigned int PSL_API pslGetNumDefaults(void)
+
+PSL_STATIC unsigned int pslGetNumDefaults(void)
 {
-    return sizeof(defaultNames) / sizeof(defaultNames[0]);
+  int i;
+
+  unsigned int n = 0;
+
+
+  for (i = 0, n = 0; i < N_ELEMS(ACQ_VALUES); i++) {
+	if (ACQ_VALUES[i].isDefault) {
+	  n++;
+	}
+  }
+
+  return n;
 } 
 
 
@@ -4513,94 +4988,6 @@ PSL_STATIC int PSL_API pslGetParamName(int detChan, unsigned short index, char *
 	sprintf(info_string, "Error getting DSP parameter name at index %u for detChan %d",
 		index, detChan);
 	pslLogError("pslGetParamName", info_string, status);
-	return status;
-    }
-
-    return XIA_SUCCESS;
-}
-
-
-/**********
- * This routine sets the correct type of preset run:
- * PRESET_RT, PRESET_LT, PRESET_OUT, PRESET_IN, or
- * PRESET_STD, based on the specified type and value
- * information.
- **********/
-PSL_STATIC int PSL_API pslDoPreset(int detChan, void *value, unsigned short type)
-{
-    int status;
-
-    unsigned long presetLen = 0L;
-
-    double presetTime = 0.0;
-	double presetTick = 16.0 / (pslGetClockSpeed(detChan) * 1.0e6);
-
-    parameter_t PRESETLEN0;
-    parameter_t PRESETLEN1;
-
-
-    switch (type) {
-
-      case PRESET_STD:
-	presetLen = 0;
-	break;
-
-      case PRESET_RT:
-      case PRESET_LT:
-	presetTime = *((double *)value);
-	presetLen  = (unsigned long)(presetTime / presetTick);
-	break;
-
-      case PRESET_OUT:
-      case PRESET_IN:
-	presetLen = (unsigned long)(*((double *)value));
-	break;
-
-      default:
-	status = XIA_UNKNOWN;
-	sprintf(info_string, "PRESET = %u. This is an impossible error", type);
-	pslLogError("pslDoPreset", info_string, status);
-	return status;
-	break;
-    }
-
-    /* PRESETLEN0 = High word
-     * PRESETLEN1 = Low word
-     */
-    PRESETLEN0 = (parameter_t)((presetLen >> 16) & 0xFFFF);
-    PRESETLEN1 = (parameter_t)(presetLen & 0xFFFF);
-
-    sprintf(info_string, "presetLen = %lu, PRESETLEN0 = %u, PRESETLEN1 = %u",
-	    presetLen, PRESETLEN0, PRESETLEN1);
-    pslLogDebug("pslDoPreset", info_string);
-
-    status = pslSetParameter(detChan, "PRESET", type);
-
-    if (status != XIA_SUCCESS) {
-
-	sprintf(info_string, "Error setting PRESET to %u for detChan %d", 
-		type, detChan);
-	pslLogError("pslDoPreset", info_string, status);
-	return status;
-    }
-
-    status = pslSetParameter(detChan, "PRESETLEN0", PRESETLEN0);
-
-    if (status != XIA_SUCCESS) {
-
-	sprintf(info_string, "Error setting PRESETLEN0 to %#x for detChan %d",
-		PRESETLEN0, detChan);
-	pslLogError("pslDoPreset", info_string, status);
-	return status;
-    }
-
-    status = pslSetParameter(detChan, "PRESETLEN1", PRESETLEN1);
-
-    if (status != XIA_SUCCESS) {
-
-	sprintf(info_string, "Error setting PRESETLEN1 to %#x for detChan %d",
-		PRESETLEN1, detChan);
-	pslLogError("pslDoPreset", info_string, status);
 	return status;
     }
 
@@ -4760,7 +5147,7 @@ PSL_STATIC int PSL_API pslTauFinder(int detChan, XiaDefaults* defaults,
   trace = (unsigned int *) utils->funcs ->dxp_md_alloc(adcLength * sizeof(unsigned int));
   trig = (boolean_t *) utils -> funcs->dxp_md_alloc(adcLength * sizeof(boolean_t));
   ff = (double *) utils -> funcs->dxp_md_alloc(adcLength * sizeof(double));
-  randomSet = (unsigned short *) utils->funcs->dxp_md_alloc(adcLength * sizeof(unsigned short));
+  randomSet = (unsigned short *) x10p_psl_md_alloc(adcLength * sizeof(unsigned short));
    
   /* Generate random indices, fills the randomSet list of indices (in random order) */
   pslRandomSwap(adcLength, randomSet);
@@ -4936,7 +5323,8 @@ PSL_STATIC int PSL_API pslTauFinder(int detChan, XiaDefaults* defaults,
   dInfo[2] = tau;
   
   /* Update the defaults list with the new value */
-  status = pslDoDecayTime(detChan, &tau, defaults, detector, detector_chan);
+  status = pslDoDecayTime(detChan, &tau, NULL, NULL, defaults,
+						  0.0, 0.0, NULL, detector, detector_chan);
   if (status != XIA_SUCCESS) 
 	{
 	  sprintf(info_string, "Unable to set the Decay Time for detchan %i", detChan);
@@ -5348,7 +5736,7 @@ PSL_STATIC int PSL_API _pslDoNSca(int detChan, void *value, Module *m)
   /* Initialize the SCA memory */
   nBytes = m->ch[modChan].n_sca * sizeof(unsigned short);
 
-  m->ch[modChan].sca_lo = (unsigned short *)utils->funcs->dxp_md_alloc(nBytes);
+  m->ch[modChan].sca_lo = (unsigned short *)x10p_psl_md_alloc(nBytes);
   
   if (m->ch[modChan].sca_lo == NULL) {
 	/* Should n_sca be reset to 0 on failure? */
@@ -5359,10 +5747,10 @@ PSL_STATIC int PSL_API _pslDoNSca(int detChan, void *value, Module *m)
 
   memset(m->ch[modChan].sca_lo, 0, nBytes); 
 
-  m->ch[modChan].sca_hi = (unsigned short *)utils->funcs->dxp_md_alloc(nBytes);
+  m->ch[modChan].sca_hi = (unsigned short *)x10p_psl_md_alloc(nBytes);
 
   if (m->ch[modChan].sca_hi == NULL) {
-	utils->funcs->dxp_md_free(m->ch[modChan].sca_lo);
+	x10p_psl_md_free(m->ch[modChan].sca_lo);
 	sprintf(info_string, "Error allocating %d bytes for m->ch[modChan].sca_hi", nBytes);
 	pslLogError("_pslDoNSca", info_string, XIA_NOMEM);
 	return XIA_NOMEM;
@@ -5479,7 +5867,7 @@ PSL_STATIC int PSL_API _pslDoSCA(int detChan, char *name, void *value, Module *m
   status = pslSetDefault(name, value, defaults);
 
   if (status != XIA_SUCCESS) {
-	sprintf(info_string, "Error setting default for '%s' to '%lf'", name, *((double *)value));
+	sprintf(info_string, "Error setting default for '%s' to '%.3f'", name, *((double *)value));
 	pslLogError("_pslDoSCA", info_string, status);
 	return status;
   }
@@ -5555,7 +5943,7 @@ PSL_STATIC int PSL_API _pslGetSCAData(int detChan, XiaDefaults *defaults, void *
   }
 
   nBytes = maxNSCA * sizeof(unsigned long);
-  sca = (unsigned long *)utils->funcs->dxp_md_alloc(nBytes);
+  sca = (unsigned long *)x10p_psl_md_alloc(nBytes);
   
   if (sca == NULL) {
 	sprintf(info_string, "Error allocating '%lu' bytes for 'sca'", nBytes);
@@ -5566,7 +5954,7 @@ PSL_STATIC int PSL_API _pslGetSCAData(int detChan, XiaDefaults *defaults, void *
   statusX = dxp_readout_sca(&detChan, sca);
 
   if (statusX != DXP_SUCCESS) {
-	utils->funcs->dxp_md_free(sca);
+	x10p_psl_md_free(sca);
 	sprintf(info_string, "Error reading SCA data buffer for detChan '%d'",
 			detChan);
 	pslLogError("_pslGetSCAData", info_string, XIA_XERXES);
@@ -5577,7 +5965,7 @@ PSL_STATIC int PSL_API _pslGetSCAData(int detChan, XiaDefaults *defaults, void *
   status = pslGetDefault("number_of_scas", (void *)&nSCA, defaults);
 
   if (status != XIA_SUCCESS) {
-	utils->funcs->dxp_md_free(sca);
+	x10p_psl_md_free(sca);
 	sprintf(info_string, "Error finding 'number_of_scas' for detChan '%d'", detChan);
 	pslLogError("_pslGetSCAData", info_string, status);
 	return status;
@@ -5587,6 +5975,360 @@ PSL_STATIC int PSL_API _pslGetSCAData(int detChan, XiaDefaults *defaults, void *
 	userSCA[i] = sca[i];
   }
 
-  utils->funcs->dxp_md_free(sca);
+  x10p_psl_md_free(sca);
+
+  return XIA_SUCCESS;
+}
+
+
+/** @brief Synchronize the reset delay acquisition value with the
+ * Detector structure.
+ *
+ */
+PSL_STATIC int pslSynchResetDelay(int detChan, int det_chan, Module *m,
+								  Detector *det, XiaDefaults *defs)
+{
+  int status;
+
+  double resetDelay = 0.0;
+
+  UNUSED(m);
+  UNUSED(detChan);
+
+
+  ASSERT(det != NULL);
+  ASSERT(defs != NULL);
+
+
+  if (det->type == XIA_DET_RESET) {
+	resetDelay = det->typeValue[det_chan];
+
+	status = pslSetDefault("reset_delay", (void *)&resetDelay, defs);
+	ASSERT(status == XIA_SUCCESS);
+  }
+
+  return XIA_SUCCESS;
+}
+
+
+/** @brief Synchronize the decay time acquisition value with the Detector
+ * structure.
+ *
+ */
+PSL_STATIC int pslSynchDecayTime(int detChan, int det_chan, Module *m,
+								 Detector *det, XiaDefaults *defs)
+{
+  int status;
+
+  double decayTime = 0.0;
+
+  UNUSED(m);
+  UNUSED(detChan);
+
+  
+  ASSERT(det != NULL);
+  ASSERT(defs != NULL);
+
+
+  if (det->type == XIA_DET_RCFEED) {
+	decayTime = det->typeValue[det_chan];
+
+	status = pslSetDefault("decay_time", (void *)&decayTime, defs);
+	ASSERT(status == XIA_SUCCESS);
+  }
+
+  return XIA_SUCCESS;
+}
+
+
+/** @brief Synchronize the polarity acquisition value with the Detector
+ * structure.
+ *
+ */
+PSL_STATIC int pslSynchPolarity(int detChan, int det_chan, Module *m,
+								Detector *det, XiaDefaults *defs)
+{
+  int status;
+
+  double pol = 0.0;
+
+  UNUSED(m);
+  UNUSED(detChan);
+
+
+  ASSERT(det != NULL);
+  ASSERT(defs != NULL);
+
+  pol = (double)det->polarity[det_chan];
+
+  status = pslSetDefault("detector_polarity", (void *)&pol, defs);
+  ASSERT(status == XIA_SUCCESS);
+
+  return XIA_SUCCESS;
+}
+
+
+/** @brief Synchronize the preamplifier gain acquistion value with the
+ * Detector structure.
+ *
+ */
+PSL_STATIC int pslSynchPreampGain(int detChan, int det_chan, Module *m,
+								  Detector *det, XiaDefaults *defs)
+{
+  int status;
+
+  double gain = 0.0;
+
+  UNUSED(m);
+  UNUSED(detChan);
+
+
+  ASSERT(det != NULL);
+  ASSERT(defs != NULL);
+
+
+  gain = det->gain[det_chan];
+
+  status = pslSetDefault("preamp_gain", (void *)&gain, defs);
+  ASSERT(status == XIA_SUCCESS);
+
+  return XIA_SUCCESS;
+}
+
+
+/** @brief This routine is provided fro compatibility with the acquisition
+ * values list ACQ_VALUES.
+ *
+ */
+ACQUISITION_VALUE(ActualGapTime)
+{
+  UNUSED(detector_chan);
+  UNUSED(det);
+  UNUSED(m);
+  UNUSED(gainScale);
+  UNUSED(preampGain);
+  UNUSED(defs);
+  UNUSED(detectorType);
+  UNUSED(fs);
+  UNUSED(value);
+  UNUSED(detChan);
+
+
+  /* Do Nothing */
+
+  return XIA_SUCCESS;
+}
+
+
+/**
+ * @brief Set a preset run of the specified type.
+ * To set the value that the preset run should use to determine when the
+ * run is over, see psl__SetPresetValue().
+ */
+PSL_STATIC int psl__SetPresetType(int detChan, void *value, FirmwareSet *fs,
+                                  char *detType, XiaDefaults *defs,
+                                  double preampGain, double gainScale,
+                                  Module *m, Detector *det, int detector_chan)
+{
+  int status;
+
+  parameter_t PRESET;
+
+  UNUSED(fs);
+  UNUSED(detType);
+  UNUSED(preampGain);
+  UNUSED(gainScale);
+  UNUSED(m);
+  UNUSED(det);
+  UNUSED(detector_chan);
+
+
+  ASSERT(value != NULL);
+
+
+  PRESET = (parameter_t)(*((double *)value));
+
+  if (PRESET > (parameter_t)XIA_PRESET_FIXED_TRIGGERS) {
+    sprintf(info_string, "Preset type '%u' is not a valid run type for "
+            "detChan %d", PRESET, detChan);
+    pslLogError("psl__SetPresetType", info_string, XIA_UNKNOWN_PRESET);
+    return XIA_UNKNOWN_PRESET;
+  }
+
+  status = pslSetParameter(detChan, "PRESET", PRESET);
+
+  if (status != XIA_SUCCESS) {
+    sprintf(info_string, "Error setting preset type to '%u' for detChan %d",
+            PRESET, detChan);
+    pslLogError("psl__SetPresetType", info_string, status);
+    return status;
+  }
+
+  status = pslSetDefault("preset_type", value, defs);
+  ASSERT(status == XIA_SUCCESS);
+
+  return XIA_SUCCESS;
+}
+
+
+/**
+ * @brief Set the run length based on the current preset run type defined.
+ */
+PSL_STATIC int psl__SetPresetValue(int detChan, void *value, FirmwareSet *fs,
+                                  char *detType, XiaDefaults *defs,
+                                  double preampGain, double gainScale,
+                                  Module *m, Detector *det, int detector_chan)
+{
+  int status;
+  
+  parameter_t PRESET;
+  parameter_t PRESETLEN0;
+  parameter_t PRESETLEN1;
+
+  unsigned long len=0;
+
+  double presetTick = 16.0 / (pslGetClockSpeed(detChan) * 1.0e6);
+
+  UNUSED(fs);
+  UNUSED(detType);
+  UNUSED(preampGain);
+  UNUSED(gainScale);
+  UNUSED(m);
+  UNUSED(det);
+  UNUSED(detector_chan);
+
+
+  ASSERT(value != NULL);
+
+  
+  /* The preset length is stored in a 32-bit value (2 x 16-bit words). */
+  if (*((double *)value) > (ldexp(1.0, 32) - 1)) {
+    sprintf(info_string, "Requested preset time/counts (%0.1f) is greater then "
+            "the maximum allowed value for detChan %d", *((double *)value),
+            detChan);
+    pslLogError("psl__SetPresetValue", info_string, XIA_PRESET_VALUE_OOR);
+    return XIA_PRESET_VALUE_OOR;
+  }
+
+  status = pslGetParameter(detChan, "PRESET", &PRESET);
+
+  if (status != XIA_SUCCESS) {
+    sprintf(info_string, "Error getting current preset run type for detChan %d",
+            detChan);
+    pslLogError("psl__SetPresetValue", info_string, status);
+    return status;
+  }
+
+  switch (PRESET) {
+  case (parameter_t)XIA_PRESET_NONE:
+    /* There is nothing to set if we are doing a standard run. */
+    return XIA_SUCCESS;
+
+  case (parameter_t)XIA_PRESET_FIXED_REAL:
+  case (parameter_t)XIA_PRESET_FIXED_LIVE:
+    len = (unsigned long)(*((double *)value) / presetTick);
+    break;
+
+  case (parameter_t)XIA_PRESET_FIXED_EVENTS:
+  case (parameter_t)XIA_PRESET_FIXED_TRIGGERS:
+    len = (unsigned long)(*((double *)value));
+    break;
+    
+  default:
+    ASSERT(FALSE_);
+    break;
+  }
+
+  /* On the Saturn, PRESETLEN0 is actually the high word. */
+  PRESETLEN1 = (parameter_t)(len & 0xFFFF);
+  PRESETLEN0 = (parameter_t)((len >> 16) & 0xFFFF);
+
+  status = pslSetParameter(detChan, "PRESETLEN0", PRESETLEN0);
+
+  if (status != XIA_SUCCESS) {
+    sprintf(info_string, "Error setting high-word for preset run length on "
+            "detChan %d", detChan);
+    pslLogError("psl__SetPresetValue", info_string, status);
+    return status;
+  }
+
+  status = pslSetParameter(detChan, "PRESETLEN1", PRESETLEN1);
+
+  if (status != XIA_SUCCESS) {
+    sprintf(info_string, "Error setting low-word for preset run length on "
+            "detChan %d", detChan);
+    pslLogError("psl__SetPresetValue", info_string, status);
+    return status;
+  }
+
+  status = pslSetDefault("preset_value", value, defs);
+  ASSERT(status == XIA_SUCCESS);
+
+  return XIA_SUCCESS;
+}
+
+
+/**
+ * @brief The start address in the DSP of the MCA spectrum buffer.
+ *
+ * Note: This acquisition values is read-only and is completely managed by
+ * Handel. Setting this value manually will have no effect. It is stored in
+ * the acquisition values list merely to speed up the MCA readout times.
+ */
+PSL_STATIC int psl__SetMCAStartAddress(int detChan, void *value,
+                                       FirmwareSet *fs, char *detType,
+                                       XiaDefaults *defs, double preampGain,
+                                       double gainScale, Module *m,
+                                       Detector *det, int detector_chan)
+{
+  UNUSED(detChan);
+  UNUSED(value);
+  UNUSED(fs);
+  UNUSED(detType);
+  UNUSED(defs);
+  UNUSED(preampGain);
+  UNUSED(gainScale);
+  UNUSED(m);
+  UNUSED(det);
+  UNUSED(detector_chan);
+
+
+  return XIA_SUCCESS;
+}
+
+
+/**
+ * @brief Updates the MCA start address cache.
+ */
+PSL_STATIC int psl__UpdateMCAAddressCache(int detChan, XiaDefaults *defs)
+{
+  int status;
+
+  parameter_t SPECTSTART;
+
+  double spectStart;
+
+
+  ASSERT(defs != NULL);
+
+
+  status = pslGetParameter(detChan, "SPECTSTART", &SPECTSTART);
+
+  if (status != XIA_SUCCESS) {
+    sprintf(info_string, "Error getting MCA buffer start address for "
+            "detChan %d", detChan);
+    pslLogError("psl__UpdateMCAAddressCache", info_string, status);
+    return status;
+  }
+
+  spectStart = (double)SPECTSTART;
+
+  status = pslSetDefault("mca_start_address", &spectStart, defs);
+  ASSERT(status == XIA_SUCCESS);
+
+  sprintf(info_string, "Updated MCA start address cache to %#x for detChan %d",
+          SPECTSTART, detChan);
+  pslLogInfo("psl__UpdateMCAAddressCache", info_string);
+
   return XIA_SUCCESS;
 }
