@@ -34,7 +34,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_file.h,v 1.2 2007-10-22 02:50:16 rivers Exp $
+ * $Id: xia_file.h,v 1.3 2007-11-14 21:19:38 rivers Exp $
  */
 
 #ifndef __XIA_FILE_H__
@@ -42,7 +42,7 @@
 
 #include <stdio.h>
 
-#include "dlldefs.h"
+#include "Dlldefs.h"
 
 
 #ifdef __cplusplus
@@ -51,9 +51,9 @@ extern "C" {
 
   XIA_EXPORT FILE *xia_fopen(const char *name, const char *mode, char *file,
                              int line);
-  XIA_IMPORT int   xia_fclose(FILE *fp);
-  XIA_IMPORT int   xia_num_open_handles(void);
-  XIA_IMPORT void  xia_print_open_handles(FILE *stream);
+  XIA_EXPORT int   xia_fclose(FILE *fp);
+  XIA_EXPORT int   xia_num_open_handles(void);
+  XIA_EXPORT void  xia_print_open_handles(FILE *stream);
 
 #ifdef __cplusplus
 }
