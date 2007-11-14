@@ -10,7 +10,7 @@
 
 
 
-#include "dlldefs.h"
+#include "Dlldefs.h"
 
 #ifdef __cplusplus
 extern "C" {

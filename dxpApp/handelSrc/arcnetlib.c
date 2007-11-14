@@ -20,7 +20,7 @@
 
 #include "20020sys.h"
 
-#include "dlldefs.h"
+#include "Dlldefs.h"
 #include "arcnetlib.h"
 
 COM20020_TRANSMIT_BUFFER ctb;
