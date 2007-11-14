@@ -22,12 +22,11 @@
 #include <stdlib.h>
 #include <conio.h>
 
-#include "dlldefs.h"
+#include "Dlldefs.h"
 #include "usblib.h"
 
-
-unsigned char inBuffer[262144];
-unsigned char outBuffer[262144];
+static unsigned char inBuffer[262144];
+static unsigned char outBuffer[262144];
 
 XIA_EXPORT int XIA_API usb_open(char *device, HANDLE *hDevice)
 {
