@@ -380,8 +380,6 @@ HANDEL_EXPORT int HANDEL_API xiaRemoveAcquisitionValues(int detChan, char *name)
 
   FirmwareSet *fs = NULL;
 
-  /* CurrentFirmware *cf = NULL; */
-
   Module *m = NULL;
 
   Detector *det = NULL;
