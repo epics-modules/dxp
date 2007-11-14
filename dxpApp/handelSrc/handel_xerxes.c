@@ -82,6 +82,10 @@ HANDEL_STATIC int xia__GetFiPPIAName(Module *module, char *detType,
 HANDEL_STATIC int xia__GetFiPPIName(Module *module, int channel,
 									double peakingTime, char *fippiName,
 									char *detectorType, char *rawFilename);
+HANDEL_STATIC int xia__GetSystemFiPPIName(Module *module, char *detType,
+										 char *sysFipName, char *rawFilename,
+										 boolean_t *found);
+
 
 HANDEL_STATIC int xia__CopyInterfString(Module *m, char *interf);
 HANDEL_STATIC int xia__CopyMDString(Module *m, char *md);
@@ -99,6 +103,8 @@ HANDEL_STATIC int xia__AddSystemDSP(Module *module, char *sysDSPName,
 									char *rawFilename);
 HANDEL_STATIC int xia__AddFiPPIA(Module *module, char *sysDSPName,
 								 char *rawFilename);
+HANDEL_STATIC int xia__AddSystemFiPPI(Module *module, char *sysFipName,
+                                      char *rawFilename);
 
 HANDEL_STATIC int xia__DoMMUConfig(Module *m);
 HANDEL_STATIC int xia__DoSystemFPGA(Module *m);
@@ -106,6 +112,7 @@ HANDEL_STATIC int xia__DoSystemDSP(Module *m, boolean_t *found);
 HANDEL_STATIC int xia__DoDSP(Module *m);
 HANDEL_STATIC int xia__DoFiPPIA(Module *m, boolean_t *found);
 HANDEL_STATIC int xia__DoFiPPI(Module *m);
+HANDEL_STATIC int xia__DoSystemFiPPI(Module *m, boolean_t *found);
 
 HANDEL_STATIC int xia__GetDetStringFromDetChan(int detChan, Module *m,
 											   char *type);
@@ -164,6 +171,7 @@ HANDEL_SHARED int HANDEL_API xiaBuildXerxesConfig(void)
   int status;
 
   boolean_t found;
+  boolean_t isSysFip;
 
   Module *current = NULL;
 
@@ -230,6 +238,15 @@ HANDEL_SHARED int HANDEL_API xiaBuildXerxesConfig(void)
 	  return status;
 	}
 
+  status = xia__DoSystemFiPPI(current, &isSysFip);
+
+  if (status != XIA_SUCCESS) {
+    sprintf(info_string, "Error adding System FiPPI for alias = '%s'",
+            current->alias);
+    xiaLogError("xiaBuildXerxesConfig", info_string, status);
+    return status;
+  }
+
 	status = xia__DoSystemFPGA(current);
 
 	if (status != XIA_SUCCESS) {
@@ -251,7 +268,7 @@ HANDEL_SHARED int HANDEL_API xiaBuildXerxesConfig(void)
 	/* If we didn't find a system DSP then we assume that the hardware supports
 	 * a single DSP for each channel.
 	 */
-	if (!found) {
+	if (!found && !isSysFip) {
 	  status = xia__DoDSP(current);
 
 	  if (status != XIA_SUCCESS) {
@@ -271,7 +288,7 @@ HANDEL_SHARED int HANDEL_API xiaBuildXerxesConfig(void)
 	  return status;
 	}
 
-	if (!found) {
+	if (!found && !isSysFip) {
 	  status = xia__DoFiPPI(current);
 
 	  if (status != XIA_SUCCESS) {
@@ -596,7 +613,7 @@ HANDEL_STATIC int xia__CopyMDString(Module *m, char *md)
 	break;
 #endif /* EXCLUDE_USB */
 
-#ifndef EXCLUDE_USB
+#ifndef EXCLUDE_USB2
   case USB2:
     sprintf(md, "%d", m->interface_info->info.usb2->device_number);
     break;
@@ -739,6 +756,13 @@ HANDEL_STATIC int xia__GetFiPPIName(Module *module, int channel,
                                rawFilename);
 
 
+	  if (status != XIA_SUCCESS)
+		{
+		  sprintf(info_string, "Error getting FiPPI code from FDD file %s @ peaking time = %f", firmwareSet->filename, peakingTime);
+		  xiaLogError("xia__GetFiPPIName", info_string, status);
+		  return status;
+		}
+
 	  /* !!DEBUG!! sequence...used to test FDD stuff */
 	  xiaLogDebug("xia__GetFiPPIName", "***** Dump of data sent to FDD *****");
 	  sprintf(info_string, "firmwareSet->filename = %s", firmwareSet->filename);
@@ -749,14 +773,6 @@ HANDEL_STATIC int xia__GetFiPPIName(Module *module, int channel,
 	  xiaLogDebug("xia__GetFiPPIName", info_string);
 	  sprintf(info_string, "Returned fippiName = %s", fippiName);
 	  xiaLogDebug("xia__GetFiPPIName", info_string);
-
-
-	  if (status != XIA_SUCCESS)
-		{
-		  sprintf(info_string, "Error getting FiPPI code from FDD file %s @ peaking time = %f", firmwareSet->filename, peakingTime);
-		  xiaLogError("xia__GetFiPPIName", info_string, status);
-		  return status;
-		}
 	}
 
   return XIA_SUCCESS;
@@ -1900,5 +1916,193 @@ HANDEL_STATIC int xia__AddXerxesParams(Module *m)
 	return XIA_XERXES;
   }
   
+  return XIA_SUCCESS;
+}
+
+
+/**
+ * @brief Checks for the presence of a System FiPPI and adds it to the
+ * configuration.
+ */
+HANDEL_STATIC int xia__DoSystemFiPPI(Module *m, boolean_t *found)
+{
+  int detChan=0;
+  int status;
+
+  unsigned int i;
+
+  char detType[MAXITEM_LEN];
+  char sysFipName[MAX_PATH_LEN];
+  char rawName[MAXFILENAME_LEN];
+
+
+  ASSERT(m != NULL);
+
+
+  *found = FALSE_;
+
+  /* Find the first enabled channel and use that to get the detector type. */
+  for (i = 0; i < m->number_of_channels; i++) {
+    detChan = m->channels[i];
+
+    if (detChan != -1) {
+      break;
+    }
+  }
+
+  status = xia__GetDetStringFromDetChan(detChan, m, detType);
+
+  if (status != XIA_SUCCESS) {
+    sprintf(info_string, "Error getting detector type string for alias '%s'",
+            m->alias);
+    xiaLogError("xia__DoSystemFiPPI", info_string, status);
+    return status;
+  }
+
+  status = xia__GetSystemFiPPIName(m, detType, sysFipName, rawName, found);
+
+  if ((status != XIA_SUCCESS) && *found) {
+    sprintf(info_string, "Error getting System FiPPI for alias '%s'",
+            m->alias);
+    xiaLogError("xia__DoSystemFiPPI", info_string, status);
+    return status;
+  }
+
+  if (*found) {
+    for (i = 0; i < m->number_of_channels; i++) {
+      strcpy(m->currentFirmware[i].currentSysFiPPI, rawName);
+    }
+    
+    status = xia__AddSystemFiPPI(m, sysFipName, rawName);
+
+    if (status != XIA_SUCCESS) {
+      sprintf(info_string, "Error adding System FiPPI '%s' to Xerxes",
+              sysFipName);
+      xiaLogError("xia__DoSystemFiPPI", info_string, status);
+      return status;
+    }
+  }
+
+  return XIA_SUCCESS;
+}
+
+
+/**
+ * @brief Retrieves the System FiPPI name from the firmware, if it exists.
+ *
+ * @a found is only set to TRUE if a System FiPPI is defined in the FDD file. If
+ * the module does not use an FDD file, FALSE will be returned.
+ *
+ * System FiPPIs are used on hardware that only have a single FPGA and no
+ * DSP. We use a fake peaking time since the System FiPPI will be defined over
+ * the entire peaking time range of the product.
+ */
+HANDEL_STATIC int xia__GetSystemFiPPIName(Module *m, char *detType,
+                                          char *sysFipName, char *rawFilename,
+                                          boolean_t *found)
+{
+  int status;
+
+  double fakePT = 1.0;
+
+  char *tmpPath = NULL;
+
+  FirmwareSet *fs = NULL;
+
+
+  ASSERT(m != NULL);
+  ASSERT(detType != NULL);
+  ASSERT(sysFipName != NULL);
+  ASSERT(rawFilename != NULL);
+  ASSERT(found != NULL);
+  ASSERT(m->firmware[0] != NULL);
+
+
+  *found = FALSE_;
+
+  fs = xiaFindFirmware(m->firmware[0]);
+  ASSERT(fs != NULL);
+
+  if (fs->filename == NULL) {
+    sprintf(info_string, "No FDD defined in the firmware set '%s'",
+            m->firmware[0]);
+    xiaLogError("xia__GetSystemFiPPIName", info_string, XIA_NO_FDD);
+    return XIA_NO_FDD;
+  }
+
+  if (fs->tmpPath != NULL) {
+    tmpPath = fs->tmpPath;
+  } else {
+    tmpPath = utils->funcs->dxp_md_tmp_path();
+  }
+
+  status = xiaFddGetFirmware(fs->filename, tmpPath, "system_fippi", fakePT, 0,
+                             NULL, detType, sysFipName, rawFilename);
+
+  /* This is not necessarily an error. We will still pass the error value
+   * up to the top-level but only use an informational message. For products
+   * without system_fippis defined in their FDD files this message will always
+   * appear and we don't want them to be confused by spurious ERRORs.
+   */
+  if (status == XIA_FILEERR) {
+    sprintf(info_string, "Unable to locate system_fippi in '%s'",
+            fs->filename);
+    xiaLogInfo("xia__GetSystemFiPPIName", info_string);
+    return status;
+  }
+  
+  /* These are "real" errors, not just missing file problems. */
+  if (status != XIA_SUCCESS) {
+    sprintf(info_string, "Error finding system_fippi in '%s'",
+            fs->filename);
+    xiaLogError("xia__GetSystemFiPPIName", info_string, status);
+    return status;
+  }
+
+  *found = TRUE_;
+  return XIA_SUCCESS;
+}
+
+
+/**
+ * @brief Adds a System FiPPI to the Xerxes configuration.
+ */
+HANDEL_STATIC int xia__AddSystemFiPPI(Module *m, char *sysFipName,
+                                      char *rawFilename)
+{
+  int statusX;
+  
+  /* Xerxes requires items as lists of strings. */
+  char *sysFipStr[1];
+
+
+  ASSERT(m != NULL);
+  ASSERT(sysFipName != NULL);
+  ASSERT(rawFilename != NULL);
+
+
+  sysFipStr[0] = handel_md_alloc(strlen(sysFipName) + 1);
+
+  if (sysFipStr[0] == NULL) {
+    sprintf(info_string, "Unable to allocated %d bytes for 'sysFipStr[0]'",
+            strlen(sysFipName) + 1);
+    xiaLogError("xia__AddSystemFiPPI", info_string, XIA_NOMEM);
+    return XIA_NOMEM;
+  }
+
+  strcpy(sysFipStr[0], sysFipName);
+
+  statusX = dxp_add_board_item("system_fippi", (char **)sysFipStr);
+
+  handel_md_free(sysFipStr[0]);
+
+  if (statusX != DXP_SUCCESS) {
+    sprintf(info_string, "Error adding 'system_fippi', '%s', board item to "
+            "Xerxes configuration",
+            sysFipName);
+    xiaLogError("xia__AddSystemFiPPI", info_string, XIA_XERXES);
+    return XIA_XERXES;
+  }
+
   return XIA_SUCCESS;
 }
