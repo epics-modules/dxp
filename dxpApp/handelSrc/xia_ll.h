@@ -38,13 +38,13 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_ll.h,v 1.1 2007-10-22 02:45:29 rivers Exp $
+ * $Id: xia_ll.h,v 1.2 2007-11-14 21:14:41 rivers Exp $
  */
 
 #ifndef __XIA_LL_H__
 #define __XIA_LL_H__
 
-#include "dlldefs.h"
+#include "Dlldefs.h"
 
 /**
  * Opaque pointer to linked list structure.
