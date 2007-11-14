@@ -28,6 +28,7 @@
 #include        "mca.h"
 #include        "handel.h"
 #include        "handel_generic.h"
+#include        "xerxes_generic.h"
 #include        "epicsHandelUtils.h"
 #include        "devDxp.h"
 
