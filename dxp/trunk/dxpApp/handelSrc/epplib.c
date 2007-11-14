@@ -46,15 +46,15 @@
 
 #ifdef linux
 #include <sys/io.h>
-#define _inp inb
-#define _outp outb
+#define _inp(PORT) inb(PORT)
+#define _outp(PORT, DATA) outb(DATA, PORT)
 #define SLOW
 typedef unsigned char UCHAR;
 typedef unsigned short* PUSHORT;
 typedef unsigned long* PULONG;
 #endif
 
-#include "dlldefs.h"
+#include "Dlldefs.h"
 #include "epplib.h"
 
 #ifdef DLPORTIO
