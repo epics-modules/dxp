@@ -815,7 +815,6 @@ XERXES_STATIC int dxp_load_symbols_from_file(char *file, Dsp_Params *params)
   unsigned long offset        = 0;
 
   char line[82];
-  /* char debug_filename[100]; */
 
   static int call_count = 0;
 
@@ -2376,8 +2375,7 @@ XERXES_STATIC int dxp_read_reg(int *ioChan, int *modChan, char *name,
  *
  */
 XERXES_STATIC int dxp_do_cmd(int *ioChan, byte_t cmd, unsigned int lenS,
-							 byte_t *send, unsigned int lenR, byte_t *receive,
-							 byte_t ioFlags)
+							 byte_t *send, unsigned int lenR, byte_t *receive)
 {
   UNUSED(ioChan);
   UNUSED(cmd);
@@ -2385,7 +2383,6 @@ XERXES_STATIC int dxp_do_cmd(int *ioChan, byte_t cmd, unsigned int lenS,
   UNUSED(send);
   UNUSED(lenR);
   UNUSED(receive);
-  UNUSED(ioFlags);
     
   return DXP_SUCCESS;
 }
