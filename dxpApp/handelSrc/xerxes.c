@@ -84,76 +84,42 @@
 #include "xia_file.h"
 
 
-/** Static Xerxes Prototypes **/
+/* Private routines */
+XERXES_STATIC int dxp_get_btype(char *name, Board_Info **current);
+XERXES_STATIC int dxp_add_btype_library(Board_Info *current);
+XERXES_STATIC int dxp_init_iface_ds(void);
+XERXES_STATIC int dxp_init_dsp_ds(void);
+XERXES_STATIC int dxp_init_fippi_ds(void);
+XERXES_STATIC int dxp_init_defaults_ds(void);
+XERXES_STATIC int dxp_init_system_fippi_ds(void);
+XERXES_STATIC int dxp_read_modules(FILE *);
+XERXES_STATIC int dxp_free_board(Board *board);
+XERXES_STATIC int dxp_free_iface(Interface *iface);
+XERXES_STATIC int dxp_free_dsp(Dsp_Info *dsp);
+XERXES_STATIC int dxp_free_fippi(Fippi_Info *fippi);
+XERXES_STATIC int dxp_free_params(Dsp_Params *params);
+XERXES_STATIC int dxp_free_defaults(Dsp_Defaults *defaults);
+XERXES_STATIC int dxp_free_binfo(Board_Info *binfo);
+XERXES_STATIC int dxp_free_system_fippi(System_FiPPI_Info *fippi);
+XERXES_STATIC int dxp_add_fippi(char *, Board_Info *, Fippi_Info **);
+XERXES_STATIC int dxp_add_dsp(char *, Board_Info *, Dsp_Info **);
+XERXES_STATIC int dxp_add_defaults(char *, Board_Info *, Dsp_Defaults **);
+XERXES_STATIC int dxp_add_system_fippi(char *filename, Board_Info *b,
+                                       System_FiPPI_Info **fippi);
+XERXES_STATIC int dxp_add_iface(char *dllname, char *iolib, Interface **iface);
+XERXES_STATIC int dxp_pick_filename(unsigned int, char *, char *);
+XERXES_STATIC int dxp_strnstrm(char *, char *, unsigned int *, unsigned int *);
+XERXES_STATIC int dxp_readout_run(Board *board, int *modChan,
+                                  unsigned short params[],
+                                  unsigned long baseline[],
+                                  unsigned long spectrum[]);
+XERXES_STATIC int dxp_do_readout(Board *board, int *modchan,
+                                 unsigned short params[],
+                                 unsigned long baseline[],
+                                 unsigned long spectrum[]);
+XERXES_STATIC int dxp_parse_memory_str(char *name, char *type, unsigned long *base, unsigned long *offset);
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
-#ifdef _XERXES_PROTO_
-  XERXES_STATIC int XERXES_API dxp_get_btype(char *name, Board_Info **current);
-  XERXES_STATIC int XERXES_API dxp_add_btype_library(Board_Info *current);
-  XERXES_STATIC int XERXES_API dxp_init_iface_ds(void);
-  XERXES_STATIC int XERXES_API dxp_init_dsp_ds(void);
-  XERXES_STATIC int XERXES_API dxp_init_fippi_ds(void);
-  XERXES_STATIC int XERXES_API dxp_init_defaults_ds(void);
-  XERXES_STATIC int XERXES_API dxp_read_modules(FILE *);
-  XERXES_STATIC int XERXES_API dxp_free_board(Board *board);
-  XERXES_STATIC int XERXES_API dxp_free_iface(Interface *iface);
-  XERXES_STATIC int XERXES_API dxp_free_dsp(Dsp_Info *dsp);
-  XERXES_STATIC int XERXES_API dxp_free_fippi(Fippi_Info *fippi);
-  XERXES_STATIC int XERXES_API dxp_free_params(Dsp_Params *params);
-  XERXES_STATIC int XERXES_API dxp_free_defaults(Dsp_Defaults *defaults);
-  XERXES_STATIC int XERXES_API dxp_free_binfo(Board_Info *binfo);
-  XERXES_STATIC int XERXES_API dxp_add_fippi(char *, Board_Info *, Fippi_Info **);
-  XERXES_STATIC int XERXES_API dxp_add_dsp(char *, Board_Info *, Dsp_Info **);
-  XERXES_STATIC int XERXES_API dxp_add_defaults(char *, Board_Info *, Dsp_Defaults **);
-  XERXES_STATIC int XERXES_API dxp_add_iface(char *dllname, char *iolib, Interface **iface);
-  XERXES_STATIC int XERXES_API dxp_pick_filename(unsigned int, char *, char *);
-  XERXES_STATIC int XERXES_API dxp_strnstrm(char *, char *, unsigned int *, unsigned int *);
-  XERXES_STATIC int dxp_readout_run(Board *board, int *modChan,
-									unsigned short params[],
-									unsigned long baseline[],
-									unsigned long spectrum[]);
-  XERXES_STATIC int dxp_do_readout(Board *board, int *modchan,
-								   unsigned short params[],
-								   unsigned long baseline[],
-								   unsigned long spectrum[]);
-  XERXES_STATIC int XERXES_API dxp_parse_memory_str(char *name, char *type, unsigned long *base, unsigned long *offset);
-
-  static FILE* dxp_find_file(const char *, const char *, char [MAXFILENAME_LEN]);
-
-#else /* _XERXES_PROTO_ */
-
-  XERXES_STATIC int XERXES_API dxp_get_btype();
-  XERXES_STATIC int XERXES_API dxp_add_btype_library();
-  XERXES_STATIC int XERXES_API dxp_read_modules();
-  XERXES_STATIC int XERXES_API dxp_init_iface_ds();
-  XERXES_STATIC int XERXES_API dxp_init_dsp_ds();
-  XERXES_STATIC int XERXES_API dxp_init_fippi_ds();
-  XERXES_STATIC int XERXES_API dxp_init_defaults_ds();
-  XERXES_STATIC int XERXES_API dxp_free_board();
-  XERXES_STATIC int XERXES_API dxp_free_iface();
-  XERXES_STATIC int XERXES_API dxp_free_dsp();
-  XERXES_STATIC int XERXES_API dxp_free_fippi();
-  XERXES_STATIC int XERXES_API dxp_free_params();
-  XERXES_STATIC int XERXES_API dxp_free_defaults();
-  XERXES_STATIC int XERXES_API dxp_free_binfo();
-  XERXES_STATIC int XERXES_API dxp_add_fippi();
-  XERXES_STATIC int XERXES_API dxp_add_dsp();
-  XERXES_STATIC int XERXES_API dxp_add_defaults();
-  XERXES_STATIC int XERXES_API dxp_pick_filename();
-  XERXES_STATIC int XERXES_API dxp_strnstrm();
-  XERXES_STATIC int XERXES_API dxp_readout_run();
-
-  static FILE* dxp_find_file();
-#endif /* _XERXES_PROTO_ */
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
-
+static FILE* dxp_find_file(const char *, const char *, char [MAXFILENAME_LEN]);
 
 
 /* Define the length of the error reporting string info_string */
@@ -216,21 +182,25 @@ Fippi_Info *fippi_head = NULL;
  */
 Dsp_Defaults *defaults_head = NULL;  
 
+/* The head of the System FiPPI linked-list. */
+System_FiPPI_Info *system_fippi_head = NULL;
+
 /*
  * Define global static variables to hold the information 
  * used to assign new board information.
  */
-static Board_Info   *working_btype       = NULL;  
-static Board        *working_board       = NULL;  
-static Interface    *working_iface       = NULL;  
-static Dsp_Info     *working_dsp         = NULL;  
-static Fippi_Info   *working_fippi       = NULL;  
-static Fippi_Info   *working_mmu         = NULL;  
-static Fippi_Info   *working_user_fippi  = NULL;  
-static Fippi_Info   *working_system_fpga = NULL;
-static Fippi_Info   *working_fippi_a     = NULL;
-static Dsp_Defaults *working_defaults    = NULL;  
-static Dsp_Info     *working_system_dsp  = NULL;
+static Board_Info        *working_btype        = NULL;  
+static Board             *working_board        = NULL;  
+static Interface         *working_iface        = NULL;  
+static Dsp_Info          *working_dsp          = NULL;  
+static Fippi_Info        *working_fippi        = NULL;  
+static Fippi_Info        *working_mmu          = NULL;  
+static Fippi_Info        *working_user_fippi   = NULL;  
+static Fippi_Info        *working_system_fpga  = NULL;
+static Fippi_Info        *working_fippi_a      = NULL;
+static Dsp_Defaults      *working_defaults     = NULL;  
+static Dsp_Info          *working_system_dsp   = NULL;
+static System_FiPPI_Info *working_system_fippi = NULL;
 
 
 /********------******------*****------******-------******-------******------*****
@@ -521,6 +491,14 @@ XERXES_EXPORT int XERXES_API dxp_init_boards_ds(void)
 	return status;
   }
 
+  status = dxp_init_system_fippi_ds();
+
+  if (status != DXP_SUCCESS) {
+    dxp_log_error("dxp_init_boards_ds", "Failed to initialize System FiPPI "
+                  "list", status);
+    return status;
+  }
+
   /* CLEAR DEFAULTS LINK LIST */
   if((status=dxp_init_defaults_ds())!=DXP_SUCCESS){
 	sprintf(info_string,"Failed to initialize the defaults structures");
@@ -615,6 +593,29 @@ static int XERXES_API dxp_init_fippi_ds(void)
 
   return DXP_SUCCESS;
 }
+
+
+/**
+ * @brief Initialize the System FiPPI list to an empty state.
+ */
+static int dxp_init_system_fippi_ds(void)
+{
+  System_FiPPI_Info *next;
+  System_FiPPI_Info *current = system_fippi_head;
+
+
+  while (current != NULL) {
+    next = current->next;
+    dxp_free_system_fippi(current);
+    current = next;
+  }
+
+  system_fippi_head    = NULL;
+  working_system_fippi = NULL;
+
+  return DXP_SUCCESS;
+}
+
 
 /******************************************************************************
  *
@@ -762,7 +763,9 @@ int XERXES_API dxp_add_system_item(char *ltoken, char **values)
   }
 
   if ((strncmp(strTmp, "dxp",3)==0) || 
-	  (STREQ(strTmp,   "xmap"))     ||
+	  (STREQ(strTmp,   "xmap"))       ||
+      (STREQ(strTmp, "vega"))       ||
+      (STREQ(strTmp, "mercury"))    ||
 	  (strncmp(strTmp, "udxp", 4) == 0)) {
 	/* Load function pointers for local use */
 	if ((status=dxp_add_btype(strTmp, values[0], NULL))!=DXP_SUCCESS) {
@@ -1015,10 +1018,11 @@ int dxp_add_board_item(char *ltoken, char **values)
 	working_board->preamp =
 	  (Preamp_Info *)xerxes_md_alloc(nchan * sizeof(Preamp_Info));
 
-	working_board->mmu         = working_mmu;
-	working_board->system_dsp  = working_system_dsp;
-	working_board->fippi_a     = working_fippi_a;
-	working_board->system_fpga = working_system_fpga;
+	working_board->mmu          = working_mmu;
+	working_board->system_dsp   = working_system_dsp;
+	working_board->fippi_a      = working_fippi_a;
+	working_board->system_fpga  = working_system_fpga;
+  working_board->system_fippi = working_system_fippi;
 
 	/* Fill in some default information */
 	for (j = 0; j < working_board->nchan; j++) {
@@ -1179,6 +1183,26 @@ int dxp_add_board_item(char *ltoken, char **values)
 	  dxp_log_error("dxp_add_board_item", info_string, status);
 	  return status;
 	}
+
+  } else if (STREQ(ltoken, "system_fippi")) {
+
+    if (working_btype == NULL) {
+      dxp_log_error("dxp_add_board_item", "Unable to process 'system_fippi' "
+                    "unless a board type has been defined", DXP_UNKNOWN_BTYPE);
+      return DXP_UNKNOWN_BTYPE;
+    }
+
+    status = dxp_add_system_fippi(values[0], working_btype,
+                                  &(working_board->system_fippi));
+
+    if (status != DXP_SUCCESS) {
+      sprintf(info_string, "Unable to add System FiPPI: '%s'",
+              PRINT_NON_NULL(values[0]));
+      dxp_log_error("dxp_add_board_item", info_string, status);
+      return status;
+    }
+
+    working_system_fippi = working_board->system_fippi;
 
   } else if (STREQ(ltoken, "system_fpga")) {
 
@@ -1378,15 +1402,16 @@ int dxp_add_board_item(char *ltoken, char **values)
 
   } else if (STREQ(ltoken, "end")) {
 
-	working_board       = NULL;
-	working_btype       = NULL;
-	working_dsp         = NULL;
-	working_fippi       = NULL;
-	working_iface       = NULL;
-	working_defaults    = NULL;
-	working_system_fpga = NULL;
-	working_fippi_a     = NULL;
-	working_system_dsp  = NULL;
+	working_board        = NULL;
+	working_btype        = NULL;
+	working_dsp          = NULL;
+	working_fippi        = NULL;
+	working_iface        = NULL;
+	working_defaults     = NULL;
+	working_system_fpga  = NULL;
+	working_fippi_a      = NULL;
+	working_system_dsp   = NULL;
+  working_system_fippi = NULL;
 
   } else {
 	sprintf(info_string, "Unknown board item '%s' to add",
@@ -2387,6 +2412,33 @@ static int XERXES_API dxp_free_fippi(Fippi_Info *fippi)
   return status;
 }
 
+
+/**
+ * @brief Frees a System FiPPI structure previously allocated.
+ */
+XERXES_STATIC int dxp_free_system_fippi(System_FiPPI_Info *fippi)
+{
+  ASSERT(fippi != NULL);
+
+
+  if (fippi->filename != NULL) {
+    xerxes_md_free(fippi->filename);
+  }
+
+  if (fippi->data != NULL) {
+    xerxes_md_free(fippi->data);
+  }
+
+  if (fippi->params != NULL) {
+    dxp_free_params(fippi->params);
+  }
+
+  xerxes_md_free(fippi);
+
+  return DXP_SUCCESS;
+}
+
+
 /******************************************************************************
  *
  * Routine to free the memory allocated to an Fippi Structure
@@ -2420,6 +2472,10 @@ static int XERXES_API dxp_free_params(Dsp_Params *params)
       }
     }
 
+  if (params->chan_offsets != NULL) {  
+    xerxes_md_free(params->chan_offsets);
+    }
+    
     xerxes_md_free(params->per_chan_parameters);
   }
 
@@ -2984,6 +3040,16 @@ static int XERXES_API dxp_add_btype_library(Board_Info* current)
 				  dxp_init_xmap(current->funcs);
 				} else
 #endif /* EXCLUDE_XMAP */
+#ifndef EXCLUDE_MERCURY
+          if (STREQ(current->name, "mercury")) {
+            dxp_init_mercury(current->funcs);
+          } else
+#endif /* EXCLUDE_MERCURY */
+#ifndef EXCLUDE_VEGA
+          if (STREQ(current->name, "vega")) {
+            dxp_init_vega(current->funcs);
+          } else
+#endif /* EXCLUDE_VEGA */
 				{
 				  status = DXP_UNKNOWN_BTYPE;
 				  sprintf(info_string, "Unknown board type %s: unable to "
@@ -3151,6 +3217,10 @@ XERXES_STATIC int dxp_add_dsp(char* filename, Board_Info* board,
 
   }
 
+  /* Initialize pointers not used by all devices */
+  new_dsp->params->chan_offsets = NULL;
+  new_dsp->params->n_per_chan_symbols = 0;
+
   sprintf(info_string, "Preparing to get DSP configuration: %s",
 		  new_dsp->filename);
   dxp_log_debug("dxp_add_dsp", info_string);
@@ -3312,6 +3382,141 @@ static int XERXES_API dxp_add_fippi(char* filename, Board_Info* board, Fippi_Inf
   /* All done */
   return DXP_SUCCESS;
 }
+
+
+/**
+ * @brief Allocates memory for a new System FiPPI and returns it.
+ */
+XERXES_STATIC int dxp_add_system_fippi(char *filename, Board_Info *b,
+                                       System_FiPPI_Info **fippi)
+{
+  int status;
+
+  unsigned short i;
+
+  System_FiPPI_Info *current = system_fippi_head;
+  System_FiPPI_Info *prev    = NULL;
+
+  char info_string[INFO_LEN];
+
+
+  ASSERT(filename != NULL);
+  ASSERT(b != NULL);
+  ASSERT(fippi != NULL);
+
+  
+  while (current != NULL) {
+    if (STREQ(current->filename, filename)) {
+      *fippi = current;
+      return DXP_SUCCESS;
+    }
+
+    prev    = current;
+    current = current->next;
+  }
+
+  /* Create new System FiPPI. */
+  *fippi = xerxes_md_alloc(sizeof(System_FiPPI_Info));
+
+  if (*fippi == NULL) {
+    sprintf(info_string, "Error allocating %d bytes for '*fippi'",
+            sizeof(System_FiPPI_Info));
+    dxp_log_error("dxp_add_system_fippi", info_string, DXP_NOMEM);
+    return DXP_NOMEM;
+  }
+
+  (*fippi)->next = NULL;
+
+  (*fippi)->filename = xerxes_md_alloc(strlen(filename) + 1);
+  
+  if ((*fippi)->filename == NULL) {
+    sprintf(info_string, "Error allocating %d bytes for '*fippi->filename'",
+            strlen(filename) + 1);
+    dxp_log_error("dxp_add_system_fippi", info_string, DXP_NOMEM);
+    return DXP_NOMEM;
+  }
+  
+  strcpy((*fippi)->filename, filename);
+
+  (*fippi)->params = xerxes_md_alloc(sizeof(Dsp_Params));
+
+  if ((*fippi)->params == NULL) {
+    dxp_free_system_fippi(*fippi);
+    sprintf(info_string, "Error allocating %d bytes for '*fippi->params'",
+            sizeof(Dsp_Params));
+    dxp_log_error("dxp_add_system_fippi", info_string, DXP_NOMEM);
+    return DXP_NOMEM;
+  }
+
+  (*fippi)->params->per_chan_parameters = NULL;
+  (*fippi)->params->n_per_chan_symbols  = 0;
+
+  status = b->funcs->dxp_get_fipinfo(*fippi);
+
+  if (status != DXP_SUCCESS) {
+    dxp_free_system_fippi(*fippi);
+    dxp_log_error("dxp_add_system_fippi", "Error getting basic FiPPI "
+                  "parameters for the device", status);
+    return status;
+  }
+  
+  (*fippi)->data = xerxes_md_alloc((*fippi)->max_data_len);
+
+  if ((*fippi)->data == NULL) {
+    dxp_free_system_fippi(*fippi);
+    sprintf(info_string, "Error allocating %ld bytes for '*fippi->data'",
+            (*fippi)->max_data_len);
+    dxp_log_error("dxp_add_system_fippi", info_string, DXP_NOMEM);
+    return DXP_NOMEM;
+  }
+
+  (*fippi)->params->parameters = xerxes_md_alloc((*fippi)->params->maxsym *
+                                                 sizeof(Parameter));
+
+  if ((*fippi)->params->parameters == NULL) {
+    dxp_free_system_fippi(*fippi);
+    sprintf(info_string, "Error allocating %d bytes for "
+            "'*fippi->params->parameters'", (*fippi)->params->maxsym *
+            sizeof(Parameter));
+    dxp_log_error("dxp_add_system_fippi", info_string, DXP_NOMEM);
+    return DXP_NOMEM;
+  }
+
+  for (i = 0; i < (*fippi)->params->maxsym; i++) {
+    (*fippi)->params->parameters[i].pname =
+      xerxes_md_alloc((*fippi)->params->maxsymlen);
+
+    if ((*fippi)->params->parameters[i].pname == NULL) {
+      dxp_free_system_fippi(*fippi);
+      sprintf(info_string, "Error allocating %d bytes for "
+              "'*fippi->params->parameters[%d].pname'",
+              (*fippi)->params->maxsymlen, i);
+      dxp_log_error("dxp_add_system_fippi", info_string, DXP_NOMEM);
+      return DXP_NOMEM;
+    }
+  }
+                                                 
+  status = b->funcs->dxp_get_fpgaconfig(*fippi);
+
+  if (status != DXP_SUCCESS) {
+    dxp_free_system_fippi(*fippi);
+    sprintf(info_string, "Error adding '%s' as a System FiPPI to the system",
+            filename);
+    dxp_log_error("dxp_add_system_fippi", info_string, status);
+    return status;
+  }
+
+  /* Update global linked list with the new System FiPPI. */
+  if (system_fippi_head == NULL) {
+    system_fippi_head = *fippi;
+  } else {
+    prev->next = *fippi;
+  }
+
+  return DXP_SUCCESS;
+}
+
+
 /******************************************************************************
  *
  * Routine to Load a DSP parameter defaults file into the Dsp_Defaults linked 
@@ -3611,9 +3816,6 @@ XERXES_EXPORT int XERXES_API dxp_user_setup(void)
   int chan;
   int detChan;
 
-  float adcRule;
-  float energy;
-
   char info_string[INFO_LEN];
 
 
@@ -3682,130 +3884,6 @@ XERXES_EXPORT int XERXES_API dxp_user_setup(void)
 	current = current->next;
   }
 
-
-  /* XXX Not sure if this code is really necessary anymore. It exposes a lot
-   * of hardware-specific information in a way that isn't appropriate given
-   * the variety of products Xerxes supports now. Of particular concern is the
-   * use of the ADC percent rule in this context.
-   */
-  adcRule = (float) 0.05;
-
-  status = dxp_initialize_ASC(&adcRule, &energy);
-
-  if (status != DXP_SUCCESS) {
-	dxp_log_error("dxp_user_setup", "Unable to initialize ASC", status);
-	return status;
-  }
-
-  return status; 
-
-}
-
-/******************************************************************************
- *
- *  This routine loads the FIPPI, DSP and dsp default parameters to the 
- *  specified channel.  Finally calibrations are performed on this 
- *  channel.
- *
- ******************************************************************************/
-int XERXES_API dxp_reset_channel(int* detChan)
-	 /* int *detChan;					*/
-{
-  int status=DXP_SUCCESS, i, len;
-  char info_string[INFO_LEN];
-  int modChan, ioChan;
-  unsigned short used;
-  /* Temporary holding for the preamp file name */
-  char strtmp[5];
-
-  Board *chosen = NULL;
-
-  /* Get the ioChan and dxpChan matching the detChan */
-
-  if((status=dxp_det_to_elec(detChan, &chosen, &modChan))!=DXP_SUCCESS){
-	sprintf(info_string,"Unknown Detector Channel %d",*detChan);
-	dxp_log_error("dxp_reset_channel",info_string,status);
-	return status;
-  }
-  ioChan = chosen->ioChan;
-  /*
-   *  Download the FiPPI firmware
-   */
-  dxp_log_info("dxp_reset_channel","Downloading FPGA");
-  if((status=dxp_reset_fpgaconfig(detChan, "all"))!=DXP_SUCCESS){
-	dxp_log_error("dxp_reset_channel","Unable to load FPGA",status);
-	return status;
-  }
-
-  /*
-   *  Download the DSP firmware
-   */
-  dxp_log_info("dxp_reset_channel","calling dxp_dspconfig");
-  if((status=dxp_reset_dspconfig(detChan))!=DXP_SUCCESS){
-	dxp_log_error("dxp_reset_channel","Unable to load DSP",status);
-	return status;
-  }
-  /*
-   * Load the library memory with the defaults at startup.
-   */
-  if ((status=dxp_upload_dspparams(detChan))!=DXP_SUCCESS){
-	status = DXP_DSPPARAMS;
-	dxp_log_error("dxp_reset_channel",
-				  "Could not load parameters from detector channel",status);
-	return status;
-  }
-  /* 
-   * Now transfer the default DSP parameter values to library memory.
-   */
-  if ((status=dxp_dspdefaults(detChan))!=DXP_SUCCESS){
-	status = DXP_DSPPARAMS;
-	dxp_log_error("dxp_reset_channel",
-				  "Could not load default parameters",status);
-	return status;
-  }
-  /*
-   * Download the defaults
-   * It is necc to wait till after downloading the FiPPi config
-   */
-  dxp_log_info("dxp_reset_channel","downloading parameters");
-  if((status=dxp_replace_dspparams(detChan))!=DXP_SUCCESS){
-	dxp_log_error("dxp_reset_channel","Unable to download DSP parameters",status);
-	return status;
-  }
-
-  /*
-   *  Perform initialization of the ASC
-   */
-  /* Convert 1st 4 characters to upper for comparison */
-  if (info->preamp==NULL) {
-	strcpy(strtmp,"NULL");
-  } else {
-	len = strlen(info->preamp)<4 ? strlen(info->preamp)+1 : 5;
-	for (i=0;i<len;i++) strtmp[i] = (char) toupper(info->preamp[i]);
-  }
-  if ((info->preamp != NULL) || (!STREQ(strtmp,"NULL"))) {
-	if ((status=chosen->btype->funcs->dxp_setup_asc(&ioChan, &modChan, &(chosen->mod), 
-													&(chosen->preamp[modChan].adcrule), &(chosen->preamp[modChan].gainmod), 
-													&(chosen->preamp[modChan].polarity), &(chosen->preamp[modChan].vmin),
-													&(chosen->preamp[modChan].vmax), &(chosen->preamp[modChan].vstep), 
-													chosen))!=DXP_SUCCESS) {
-	  sprintf(info_string, 
-			  "Error setting up the ASC for Detector %d", *detChan);
-	  dxp_log_error("dxp_reset_channel",info_string,status);
-	  return status;
-	}
-  }
-  /*
-   *  Perform calibrations neccessary to setup the ASC
-   */
-  /* Fake the routine into thinking only one channel is in use */
-  used = (unsigned short) (1<<modChan);
-  if((status=chosen->btype->funcs->dxp_calibrate_asc(&(chosen->mod), 
-													 &ioChan, &used, chosen))!=DXP_SUCCESS){
-	dxp_log_error("dxp_reset_channel",
-				  "Unable to calibrate the ASC",status);
-	return status;
-  }
 
   return status; 
 }
@@ -3967,13 +4045,16 @@ int XERXES_API dxp_replace_fpgaconfig(int* detChan, char *name, char* filename)
    * then we need to pass in a different Fippi_Info structure.
    */
   if (chosen->fippi_a || chosen->system_fpga) {
-    if (STRNEQ(name, "a_and_b")) {
+    if (STRNEQ(name, "a_and_b") || STREQ(name, "a")) {
       status = dxp_add_fippi(filename, chosen->btype, &(chosen->fippi_a));
     } else if (STREQ(name, "system_fpga")) {
       status = dxp_add_fippi(filename, chosen->btype, &(chosen->system_fpga));
     }
+  } else if (chosen->system_fippi != NULL) {
+    status = dxp_add_system_fippi(filename, chosen->btype,
+                                  &(chosen->system_fippi));
   } else {
-	status = dxp_add_fippi(filename, chosen->btype, &(chosen->fippi[modChan]));
+    status = dxp_add_fippi(filename, chosen->btype, &(chosen->fippi[modChan]));
   }
 
   if (status != DXP_SUCCESS) {
@@ -4075,8 +4156,7 @@ int XERXES_API dxp_reset_fpgaconfig(int* detChan, char *name)
 
 /******************************************************************************
  *
- * Download DSP firmware to a single channel.  Test download with calls to 
- * dxp_test_spectrum_memory().
+ * Download DSP firmware to a single channel.
  *
  ******************************************************************************/
 int XERXES_API dxp_reset_dspconfig(int* detChan)
@@ -4117,13 +4197,6 @@ int XERXES_API dxp_reset_dspconfig(int* detChan)
 							chosen, chosen->params[modChan]))!=DXP_SUCCESS){
 
 	sprintf(info_string,"Error reading parameters from module %d channel %d",chosen->mod,modChan);
-	dxp_log_error("dxp_reset_dspconfig",info_string,status);
-	return status;
-  }
-  /* Test some DSP memory to make sure the download worked */
-  if((status=chosen->btype->funcs->dxp_test_spectrum_memory(&ioChan, &modChan, &zero,
-															chosen)) !=DXP_SUCCESS){
-	sprintf(info_string, "Failure testing memory of mod %d channel %d", chosen->mod, modChan);
 	dxp_log_error("dxp_reset_dspconfig",info_string,status);
 	return status;
   }
@@ -4924,6 +4997,9 @@ int XERXES_API dxp_stop_run(VOID)
 	current = current->next;
   }
 
+	sprintf(info_string, "Stopped run on all channels");
+	dxp_log_debug("dxp_stop_run", info_string);
+  
   return status;
 
 }
@@ -5076,6 +5152,9 @@ int XERXES_API dxp_stop_one_run(int *detChan)
     }
   }
 
+  sprintf(info_string, "Stopped a run on ioChan = %d", ioChan);
+	dxp_log_debug("dxp_stop_one_run", info_string);
+
   return DXP_SUCCESS;
 }
 
@@ -5120,9 +5199,9 @@ int XERXES_API dxp_isrunning(int *detChan, int *ret)
   /* Query the hardware for its status */
 
   if((status=chosen->btype->funcs->dxp_run_active(&ioChan, &modChan, &runactive))!=DXP_SUCCESS){
-	sprintf(info_string,"Error checking run status for module %d",chosen->mod);
-	dxp_log_error("dxp_isrunning",info_string,status);
-	return status;
+    sprintf(info_string,"Error checking run status for module %d",chosen->mod);
+    dxp_log_error("dxp_isrunning",info_string,status);
+    return status;
   }
 
   if (runactive == 1) *ret |= 1;
@@ -5903,42 +5982,6 @@ XERXES_EXPORT int XERXES_API dxp_max_symbols(int* detChan,
 
 
 /******************************************************************************
- * Routine to dump the memory contents of the DSP.
- * 
- * This routine prints the memory contents of the DSP in detector 
- * channel detChan
- *
- ******************************************************************************/
-int XERXES_API dxp_mem_dump(int* detChan)
-	 /* int *detChan;						Input: detector channel of to dump        */
-{
-  int status;
-  char info_string[INFO_LEN];
-  int ioChan, modChan;		/* IO channel and module channel numbers */
-  /* Pointer to the Chosen Board */
-  Board *chosen=NULL;
-
-  /* Translate the detector channel number to IO and channel numbers for writing. */
-
-  if ((status  = dxp_det_to_elec(detChan, &chosen, &modChan))!=DXP_SUCCESS) {
-	sprintf(info_string, "Failed to locate detector channel %d", *detChan);
-	dxp_log_error("dxp_mem_dump", info_string, status);
-	return status;
-  }
-  ioChan = chosen->ioChan;
-
-  /* Write the value of the symbol into DSP memory */
-
-  if((status=chosen->btype->funcs->dxp_dspparam_dump(&ioChan, &modChan, chosen->dsp[modChan]))!=DXP_SUCCESS){
-	sprintf(info_string, "Error dumping DSP memory of detector %d", *detChan);
-	dxp_log_error("dxp_mem_dump",info_string,status);
-	return status;
-  }
-
-  return status;
-
-}
-/******************************************************************************
  *
  * This routine reads out the paramter memory, the baseline memory and the
  * MCA spectrum for a single DXP channel.  The error words in the parameter
@@ -6161,91 +6204,6 @@ static int dxp_do_readout(Board* board, int* modChan, unsigned short params[],
   
   return status;
 }
-
-/******************************************************************************
- * 
- * Preform internal gain calibration or internal TRACKDAC reset point 
- * for all DXP channels:
- *    o save the current value of RUNTASKS for each channel
- *    o start run
- *    o wait
- *    o stop run
- *    o readout parameter memory
- *    o check for errors, clear errors if set
- *    o check calibration results..
- *    o restore RUNTASKS for each channel
- *
- ******************************************************************************/
-int XERXES_API dxp_calibrate(int* calibtask)
-	 /* int *calibtask;							Input: which calibration function */
-{
-  int status=DXP_SUCCESS;
-  char info_string[INFO_LEN];
-  /* Pointer to the Current Board */
-  Board *current=system_head;
-
-  /* Perform Calibration on each module in the system */
-  while (current!=NULL) {
-	if ((status=current->btype->funcs->dxp_calibrate_channel(&(current->mod), 
-															 &(current->ioChan), &(current->used), calibtask, current))!=DXP_SUCCESS) {
-	  sprintf(info_string,"Failed to calibrate module %d",current->mod);
-	  dxp_log_error("dxp_calibrate",info_string,status);
-	  return status;
-	}
-	current = current->next;
-  }
-
-  return status;
-}
-
-/******************************************************************************
- * 
- * Preform internal gain calibration or internal TRACKDAC reset point 
- * for a single DXP channels (module):
- *    o save the current value of RUNTASKS for each channel
- *    o start run
- *    o wait
- *    o stop run
- *    o readout parameter memory
- *    o check for errors, clear errors if set
- *    o check calibration results..
- *    o restore RUNTASKS for each channel
- *
- ******************************************************************************/
-int XERXES_API dxp_calibrate_one_channel(int *detChan, int* calibtask)
-	 /* int *detChan;							Input: which channel to perform calibration */
-	 /* int *calibtask;							Input: which calibration function */
-{
-  int status=DXP_SUCCESS;
-  char info_string[INFO_LEN];
-  int modChan;
-  /* Pointer to the Chosen Board */
-  Board *chosen=NULL;
-
-  /* Get the ioChan and modChan number that matches the detChan */
-
-  if((status=dxp_det_to_elec(detChan, &chosen, &modChan))!=DXP_SUCCESS){
-	sprintf(info_string,"Error finding detector number %d",*detChan);
-	dxp_log_error("dxp_calibrate_one_channel",info_string,status);
-	return status;
-  }
-
-  /* Perform the calibration on this board */
-  if ((status=chosen->btype->funcs->dxp_calibrate_channel(&(chosen->mod), 
-														  &(chosen->ioChan), &(chosen->used), calibtask, chosen))!=DXP_SUCCESS) {
-	sprintf(info_string,"Failed to calibrate module %d",chosen->mod);
-	dxp_log_error("dxp_calibrate_one_channel",info_string,status);
-	return status;
-  }
-
-  return status;
-}
-
-/********------******------*****------******-------******-------******------*****
- * Routines to save and restore data.  This involves writing spectra to files, 
- * opening and closing of files, etc...
- *
- ********------******------*****------******-------******-------******------*****/
 
 
 /******************************************************************************
@@ -7307,256 +7265,6 @@ int XERXES_API dxp_fitgauss0(long spectrum[], int* lower, int* upper, float* pos
   return DXP_SUCCESS;
 }
 
-/******************************************************************************
- *
- * This routine changes all DXP channel gains:
- *
- *            initial         final
- *            gain_i -> gain_i*gainchange
- *  
- * THRESHOLD is also modified to keep the energy threshold fixed.
- * Note: DACPERADC must be modified -- this can be done via calibration
- *       run or by scaling DACPERADC --> DACPERADC/gainchange.  This routine
- *       does not do either!
- *  
- ******************************************************************************/
-int XERXES_API dxp_modify_gains(float* gainchange)
-	 /* float *gainchange;			Input: desired gain change    */
-{
-
-  unsigned int chan;
-  int status=DXP_SUCCESS;
-  char info_string[INFO_LEN];
-  int ichan;
-  /* Pointer to the current Board */
-  Board *current=system_head;
-
-  /* Now loop over all modules and channels in use */
-
-  while (current!=NULL) {
-	for(chan=0;chan<current->nchan;chan++){
-	  if(((current->used)&(1<<chan))==0) continue;
-
-	  ichan = (int) chan;
-	  if ((status=current->btype->funcs->dxp_change_gains(&(current->ioChan), &ichan, 
-														  &(current->mod), gainchange, current))!=DXP_SUCCESS) {
-		sprintf(info_string, 
-				"Error modifying Gain for Detector %d", current->detChan[chan]);
-		dxp_log_error("dxp_modify_gains",info_string,status);
-		return status;
-	  }
-	}
-	current = current->next;
-  }
-
-  return status;
-}
-
-/******************************************************************************
- *
- * This routine changes gains in one DXP channel :
- *
- *            initial         final
- *            gain_i -> gain_i*gainchange
- *  
- * THRESHOLD is also modified to keep the energy threshold fixed.
- * Note: DACPERADC must be modified -- this can be done via calibration
- *       run or by scaling DACPERADC --> DACPERADC/gainchange.  This routine
- *       does not do either!
- *  
- ******************************************************************************/
-int XERXES_API dxp_modify_one_gains(int* detChan, float* gainchange)
-	 /* int *detChan;					Input: channel to modify		*/
-	 /* float *gainchange;				Input: desired gain change	*/
-{
-
-  int modChan;
-  int status=DXP_SUCCESS;
-  char info_string[INFO_LEN];
-  /* Pointer to the chosen Board */
-  Board *chosen=NULL;
-
-  /* Get the IO channel number and module channel number that matches the detChan */
-
-  if ((status=dxp_det_to_elec(detChan, &chosen, &modChan))!=DXP_SUCCESS) {
-	sprintf(info_string, "Unknown detector element: %d", *detChan);
-	dxp_log_error("dxp_modify_one_gains", info_string, status);
-	return status;
-  }
-
-  /* Now modify the gain on this channel */
-
-  if ((status=chosen->btype->funcs->dxp_change_gains(&(chosen->ioChan), &modChan, 
-													 &(chosen->mod), gainchange, chosen))!=DXP_SUCCESS) {
-	sprintf(info_string, 
-			"Error modifying Gain for Detector %d", chosen->detChan[modChan]);
-	dxp_log_error("dxp_modify_one_gains",info_string,status);
-	return status;
-  }
-
-  return status;
-}
-
-/******************************************************************************
- *
- * Read file pointed to by PREAMP_CONFIG and adjust each DXP channel's gain 
- *    parameters to achieve the desired ADC rule.  The ADC rule is the fraction
- *    of the ADC full scale that a single x-ray step of energy *energy contributes.
- *    PREAMP_CONFIG has measurements taken for each detector channel at the 
- *    specified energy:
- *
- *     channel number (same as in DXP_MODULE file)
- *     gainmod (=1.0 for standard model) front end gain factor
- *     polarity (0 for negative, 1 for positive)
- *     vmin = minimum voltage of preamp in volts
- *     vmax = maximum voltage of preamp in volts
- *     vstep= voltage step size (in mV)
- *
- * set following, detector specific parameters for all DXP channels:
- *       COARSEGAIN
- *       FINEGAIN
- *       VRYFINGAIN (default:128)
- *       POLARITY
- *       OFFDACVAL
- *
- * apply internal gain calibrations (TRACKDAC and RESET)
- *
- ******************************************************************************/
-int XERXES_API dxp_initialize_ASC(float* adcRule, float* energy)
-	 /* float *adcRule;							Input: desired ADC rule           */
-	 /* float *energy;							Output: energy from PREAMP_CONFIG */
-	 /*          in eV                     */
-{
-
-  int status, i, len;
-  char info_string[INFO_LEN];
-  char line[LINE_LEN],*token;
-  int detChan,ioChan,dxpChan;
-  char *fstatus=" ";
-  FILE *fp;
-  unsigned short polarity;
-  float vstep,vmin,vmax,gainmod;
-  /* Pointer to the chosen and current Board */
-  Board *chosen=NULL;
-  Board *current = system_head;
-  /* Temporary holding for the preamp file name */
-  char strtmp[5];
-  char newFile[MAXFILENAME_LEN];
-
-  /* Check that preamp was never defined */
-  if (info->preamp==NULL) { 
-	strcpy(strtmp, "NULL");
-  } else {
-	/* Convert 1st 4 characters to upper for comparison */   
-	len = strlen(info->preamp)<4 ? strlen(info->preamp)+1 : 5;
-	for (i=0;i<len;i++) strtmp[i] = (char) toupper(info->preamp[i]);
-  }
-  /* If preamp is undefined on purpose, then return with no changes */
-  if (STREQ(strtmp,"NULL")) {
-	status = DXP_SUCCESS;
-	return status;
-  }
-  /* Else try to open the file pointed to by info->preamp */
-  if((fp=dxp_find_file(info->preamp,"r",newFile))==NULL){
-	status = DXP_OPEN_FILE;
-	sprintf(info_string,"could not open preamp configuration file : %s",
-			PRINT_NON_NULL(info->preamp));
-	dxp_log_error("dxp_initialize_ASC",info_string,status);
-	return status;
-  }
-
-
-  while(fstatus!=NULL){
-	/* Read lines in the file until we get a non comment or EOF line */
-
-	do
-	  fstatus = xerxes_md_fgets(line,132,fp);
-	while((line[0]=='*')&&(fstatus!=NULL));
-	if(fstatus==NULL) continue;
-
-	/* Pull out the information from the file.  If there is a label called ENERGY, then
-	 * echo that information back to the caller, else continue with the detector channel
-	 * number as the first entry in the file. */
-
-	token=strtok(line, delim);
-	if(STREQ(token,"ENERGY")){
-	  token=strtok(NULL, delim);
-	  *energy = (float) strtod(token,NULL);
-	  continue;
-	}
-
-	/* Get the detector channel number.  This is the same number stored in the detchan array
-	 * and represents the user defined number associated with a given detector in the system.
-	 * It also points to a member of the camChan array that allows communication. */
-        
-	detChan= (int) strtol(token,NULL,10);
-
-	/* Confirm that this detchan is in the system configuration. And return the CAMAC access
-	 * path for that channel. */
-
-	if((status=dxp_det_to_elec(&detChan, &chosen, &dxpChan))!=DXP_SUCCESS){
-	  dxp_log_error("dxp_initialize_ASC","no action taken",status);
-	  continue;
-	}
-	ioChan = chosen->ioChan;
-
-	/* Now pull the rest of the information in order:  GAINMOD, POLARITY, VMIN, VMAX, VSTEP */
-
-	chosen->preamp[dxpChan].energy  = *energy;
-	chosen->preamp[dxpChan].adcrule = *adcRule;
-
-	token=strtok(NULL,delim);
-	gainmod = (float) strtod(token,NULL);
-	chosen->preamp[dxpChan].gainmod = gainmod;
-
-	token=strtok(NULL,delim);
-	polarity = (short) strtol(token,NULL,10);
-	chosen->preamp[dxpChan].polarity = polarity;
-
-	token=strtok(NULL,delim);
-	vmin = gainmod*((float) strtod(token,NULL));
-	chosen->preamp[dxpChan].vmin = vmin;
-
-	token=strtok(NULL,delim);
-	vmax = gainmod*((float) strtod(token,NULL));
-	chosen->preamp[dxpChan].vmax = vmax;
-
-	token=strtok(NULL,delim);
-	vstep = gainmod*((float) strtod(token,NULL));
-	chosen->preamp[dxpChan].vstep = vstep;
-
-	/* Now perform the ASC initialization on this detector channel */
-
-	if ((status=chosen->btype->funcs->dxp_setup_asc(&ioChan, &dxpChan, &(chosen->mod), 
-													adcRule, &gainmod, &polarity, &vmin,
-													&vmax, &vstep, chosen))!=DXP_SUCCESS) {
-	  /* Close the preamp file */
-	  xia_file_close(fp);
-	  sprintf(info_string, 
-			  "Error setting up the ASC for Detector %d", detChan);
-	  dxp_log_error("dxp_initialize_ASC",info_string,status);
-	  return status;
-	}
-  }
-
-  /* Close the preamp file */
-  xia_file_close(fp);
-	
-  /*
-   *  Perform calibrations neccessary to setup the ASC
-   */
-  while (current!=NULL) {
-	if((status=current->btype->funcs->dxp_calibrate_asc(&(current->mod), 
-														&(current->ioChan), &(current->used),current))!=DXP_SUCCESS){
-	  dxp_log_error("dxp_initialize_ASC",
-					"Unable to calibrate the ASC",status);
-	  return status;
-	}
-	current = current->next;
-  }
-
-  return DXP_SUCCESS;
-}
 
 /******************************************************************************
  * 
@@ -7640,29 +7348,6 @@ int XERXES_API dxp_elec_to_det(int* ioChan, int* dxpChan, int* detChan)
   status=DXP_NOIOCHAN;
   dxp_log_error("dxp_elec_to_det",info_string,status);
   return status;
-}
-
-/******************************************************************************
- *
- * Routine to report the software version number
- *
- ******************************************************************************/
-void XERXES_API dxp_version(VOID)
-{
-  char info_string[INFO_LEN];
-  int version=CODE_VERSION;
-  int revision = CODE_REVISION;
-  /*	char type[20] = LATEST_BOARD_TYPE;
-		char brevision[5] = LATEST_BOARD_VERSION;
-  */
-  sprintf(info_string, "\nCode version %d.%d\n", version, revision);
-  xerxes_md_puts(info_string);
-  /*	sprintf(info_string, "Works with board type %s\n", PRINT_NON_NULL(type));
-		xerxes_md_puts(info_string);
-		sprintf(info_string, "Works with board revision %s\n", PRINT_NON_NULL(brevision));
-		xerxes_md_puts(info_string);
-  */
-  return;
 }
 
 /******************************************************************************
@@ -7954,8 +7639,7 @@ int dxp_read_register(int *detChan, char *name, unsigned long *data)
  * of the command routine.
  **********/
 XERXES_EXPORT int XERXES_API dxp_cmd(int *detChan, byte_t *cmd, unsigned int *lenS,
-									 byte_t *send, unsigned int *lenR, byte_t *receive,
-									 byte_t *ioFlags)
+									 byte_t *send, unsigned int *lenR, byte_t *receive)
 {
   /*    DWORD before, after;
    */
@@ -7964,7 +7648,8 @@ XERXES_EXPORT int XERXES_API dxp_cmd(int *detChan, byte_t *cmd, unsigned int *le
   int modChan;
     
   char info_string[INFO_LEN];
-    
+  byte_t ioFlags = IO_NORMAL;    
+  
   Board *chosen = NULL;
     
 
@@ -7979,7 +7664,7 @@ XERXES_EXPORT int XERXES_API dxp_cmd(int *detChan, byte_t *cmd, unsigned int *le
   /*before = GetTickCount();*/
 
   status = chosen->btype->funcs->dxp_do_cmd(&(chosen->ioChan), *cmd, *lenS,
-											send, *lenR, receive, *ioFlags);
+											send, *lenR, receive, ioFlags);
     
   /*    after = GetTickCount();*/
 
