@@ -86,7 +86,6 @@ static unsigned int numDXP    = 0;
 static unsigned int numEPP    = 0;
 static unsigned int numUSB    = 0;
 static unsigned int numSerial = 0;
-static unsigned int numArcnet = 0;
 static unsigned int numPLX    = 0;
 static unsigned int numUSB2   = 0;
 static unsigned int numMod    = 0;
@@ -147,7 +146,7 @@ static char *usb2Names[MAXMOD];
 static HANDLE usb2Handles[MAXMOD];
 
 /* The cached target address for the next operation. */
-static int usb2AddrCache[MAXMOD];
+static unsigned long usb2AddrCache[MAXMOD];
 
 #endif /* EXCLUDE_USB2 */
 
@@ -169,16 +168,6 @@ static int dxp_md_serial_read_data(unsigned short port, unsigned long size,
 								   unsigned short *buf);
 static int dxp_md_serial_reset(unsigned short port);
 #endif /* EXCLUDE_SERIAL */
-
-
-#ifndef EXCLUDE_ARCNET
-/* arcnet definitions */
-static int arcnetID[MAXMOD];
-/* variables to store the IO channel information */
-static char *arcnetName[MAXMOD];
-
-static unsigned short next_arcnet_addr;
-#endif /* EXCLUDE_ARCNET */
 
 
 #ifndef EXCLUDE_PLX
@@ -303,16 +292,6 @@ XIA_MD_EXPORT int XIA_MD_API dxp_md_init_io(Xia_Io_Functions* funcs, char* type)
 		funcs->dxp_md_close         = dxp_md_serial_close;
 	  }
 #endif /* EXCLUDE_SERIAL */
-
-#ifndef EXCLUDE_ARCNET
-    if (STREQ(type, "arcnet")) 
-	  {
-		funcs->dxp_md_io            = dxp_md_arcnet_io;
-		funcs->dxp_md_initialize    = dxp_md_arcnet_initialize;
-		funcs->dxp_md_open          = dxp_md_arcnet_open;
-		funcs->dxp_md_close         = dxp_md_arcnet_close;
-	  }
-#endif /* EXCLUDE_UDXP */
 
 #ifndef EXCLUDE_PLX
 	/* Technically, the communications protocol is 'PXI', though the 
@@ -1394,201 +1373,6 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_serial_close(int *camChan)
 
 #endif /* EXCLUDE_SERIAL */  
  
- 
-#ifndef EXCLUDE_ARCNET
-/*****************************************************************************
- * 
- * Initialize the arcnet system
- * 
- *****************************************************************************/
-XIA_MD_STATIC int XIA_MD_API dxp_md_arcnet_initialize(unsigned int* maxMod, char* dllname)
-/* unsigned int *maxMod;					Input: maximum number of dxp modules allowed */
-/* char *dllname;							Input: name of the DLL						*/
-{
-    int status = DXP_SUCCESS;
-
-	UNUSED(dllname);
-
-    /* check if all the memory was allocated */
-    if (*maxMod>MAXMOD)
-	  {
-		status = DXP_NOMEM;
-		sprintf(error_string,"Calling routine requests %d maximum modules: only %d available.", 
-				*maxMod, MAXMOD);
-		dxp_md_log_error("dxp_md_arcnet_initialize", error_string, status);
-		return status;
-	  }
-
-    /* Zero out the number of modules currently in the system */
-    numArcnet = 0;
-
-    return status;
-}
-/*****************************************************************************
- * 
- * Routine is passed the user defined configuration string *name.  This string
- * contains the Arcnet Node ID
- * 
- *****************************************************************************/
-XIA_MD_STATIC int XIA_MD_API dxp_md_arcnet_open(char* ioname, int* camChan)
-/* char *ioname;							Input:  string used to specify this IO 
-   channel */
-/* int *camChan;						Output: returns a reference number for
-   this module */
-{
-    unsigned int i;
-    int status=DXP_SUCCESS;
-    int rstat = 0;
-
-	unsigned char nodeID = 0;
-
-    sprintf(error_string, "ioname = %s", ioname);
-    dxp_md_log_debug("dxp_md_arcnet_open", error_string);
-
-    /* First loop over the existing names to make sure this module 
-     * was not already configured?  Don't want/need to perform
-     * this operation 2 times. */
-	for(i=0;i<numArcnet;i++)
-	  {
-		if(STREQ(arcnetName[i],ioname)) 
-		  {
-			status=DXP_SUCCESS;
-			*camChan = i;
-			return status;
-		  }
-	  }
-
-    /* Got a new one.  Increase the number existing and assign the global 
-     * information */
-
-    if (arcnetName[numArcnet] != NULL) 
-	  {
-		md_md_free(arcnetName[numArcnet]);
-	  }
-    arcnetName[numArcnet] = (char *) md_md_alloc((strlen(ioname)+1)*sizeof(char));
-    strcpy(arcnetName[numArcnet],ioname);
-
-    /* Pull the Arcnet Node ID out of the ioname parameter */
-    rstat = sscanf(ioname, "%uc", &nodeID);
-    if (rstat != 1) 
-	  {
-		status = DXP_NOMATCH;
-		dxp_md_log_error("DXP_MD_ARCNET_OPEN", "Unable to read the Arcnet Node ID", status);
-		return status;
-	  }
- 	
-	/* Call the initialize routine */
-	rstat = dxpInitializeArcnet(nodeID);
-	switch (rstat) 
-	  {
-	  case 1:
-		status = DXP_MDNOHANDLE;
-		dxp_md_log_error("dxp_md_arcnet_open", "Failed to get a valid Handle", status);
-		break;
-	  case 2:
-		status = DXP_INITIALIZE;
-		dxp_md_log_error("dxp_md_arcnet_open", "Failed to initialize COMM20020", status);
-		break;
-	  case 3:
-		status = DXP_INITIALIZE;
-		dxp_md_log_error("dxp_md_arcnet_open", "Unable to initialize the Arcnet RX Event", status);
-		break;
-	  case 4:
-		status = DXP_INITIALIZE;
-		dxp_md_log_error("dxp_md_arcnet_open", "Unable to initialize the Arcnet TX Event", status);
-		break;
-	  }
-	if (rstat != 0) 
-	  {
-		return status;
-	  }
-	
-    *camChan = numArcnet++;
-    numMod++;
-	
-    return status;
-}
-
-
-/*****************************************************************************
- * 
- * This routine performs the IO call to read or write data to/from the Arcnet
- * connection.  The pointer to the desired IO channel is passed as camChan.  
- * The address to write to is specified by function and address.  The 
- * length is specified by length.  And the data itself is stored in data.
- * 
- *****************************************************************************/
-XIA_MD_STATIC int XIA_MD_API dxp_md_arcnet_io(int* camChan,
-											  unsigned int* function, 
-											  unsigned long *address,
-											  void *data,
-											  unsigned int* length)
-	 /* int *camChan;				    Input: pointer to IO channel to access	*/
-	 /* unsigned int *function;			Input: XIA EPP function definition	*/
-	 /* unsigned int *address;			Input: XIA EPP address definition	*/
-	 /* unsigned short *data;			I/O:  data read or written		*/
-	 /* unsigned int *length;			Input: how much data to read or write	*/
-{
-  int rstat = 0; 
-  int status = DXP_SUCCESS;
-  
-  unsigned short *us_data = (unsigned short *)data;
-
-  unsigned char nodeID = 0;
-  
-  /* Pull the Arcnet Node ID out of the ioname parameter */
-  rstat = sscanf(arcnetName[*camChan], "%uc", &nodeID);
-  if (rstat != 1) 
-	{
-	  status = DXP_NOMATCH;
-	  dxp_md_log_error("dxp_md_arcnet_open", "Unable to read the Arcnet Node ID", status);
-	  return status;
-	}
-  
-  /* Data*/
-  if (*address==0) 
-	{
-	  if (*function == MD_IO_READ)
-		{
-		  rstat = dxpReadArcnet(nodeID, next_arcnet_addr, us_data, *length);
-		} else {
-		  rstat = dxpWriteArcnet(nodeID, next_arcnet_addr, us_data, *length);
-		}
-	  /* Address port*/
-	} else if (*address==1) {
-	  next_arcnet_addr = (unsigned short) *us_data;
-	} else {
-	  sprintf(error_string, "Unknown Arcnet address = %d", *address);
-	  status = DXP_MDIO;
-	  dxp_md_log_error("dxp_md_arcnet_io", error_string, status);
-	  return status;
-	}
-  
-  if (rstat!=0) 
-	{
-	  status = DXP_MDIO;
-	  sprintf(error_string, "Problem Performing I/O to Function: %d, address: %#hx", *function, *address);
-	  dxp_md_log_error("dxp_md_arcnet_io", error_string, status);
-	  sprintf(error_string, "Trying to write to internal address: %d, length %d", next_addr, *length);
-	  dxp_md_log_error("dxp_md_arcnet_io", error_string, status);
-	  return status;
-	}
-  
-  return status;
-}
-
-
-/**********
- * "Closes" the Arcnet connection, which means that it does nothing.
- **********/
-XIA_MD_STATIC int XIA_MD_API dxp_md_arcnet_close(int *camChan)
-{
-  UNUSED(camChan);
-  
-  return DXP_SUCCESS;
-}
-
-#endif /* EXCLUDE_ARCNET */
 
 /*****************************************************************************
  * 
@@ -2213,20 +1997,25 @@ XIA_MD_STATIC int  dxp_md_usb2_io(int *camChan, unsigned int *function,
 
   unsigned int i;
 
-  unsigned short cache_addr;
+  unsigned long cache_addr;
 
   unsigned short *buf = NULL;
   
   byte_t *byte_buf = NULL;
+
+  unsigned long n_bytes = 0;
 
 
   ASSERT(addr != NULL);
   ASSERT(function != NULL);
   ASSERT(data != NULL);
   ASSERT(camChan != NULL);
+  ASSERT(len != NULL);
 
 
   buf = (unsigned short *)data;
+
+  n_bytes = (unsigned long)(*len) * 2;
 
   /* Unlike some of our other communication types, we require that the
    * target address be set as a separate operation. This value will be saved
@@ -2244,33 +2033,29 @@ XIA_MD_STATIC int  dxp_md_usb2_io(int *camChan, unsigned int *function,
       return DXP_MD_TARGET_ADDR;
     }
 
-    cache_addr = (unsigned short)usb2AddrCache[*camChan];
+    cache_addr = (unsigned long)usb2AddrCache[*camChan];
 
     switch (*function) {
     case MD_IO_READ:
-/*       sprintf(error_string, "IO [READ]: addr = %#x, len (bytes) = %u", */
-/*               cache_addr, (*len) * 2); */
-/*       dxp_md_log_debug("dxp_md_usb2_io", error_string); */
-
       /* The data comes from the calling routine as an unsigned short, so
        * we need to convert it to a byte array for the USB2 driver.
        */
-      byte_buf = md_md_alloc((*len) * 2);
+      byte_buf = md_md_alloc(n_bytes);
 
       if (byte_buf == NULL) {
         sprintf(error_string, "Error allocating %d bytes for 'byte_buf' for "
-                "camChan %d", (*len) * 2, *camChan);
+                "camChan %d", n_bytes, *camChan);
         dxp_md_log_error("dxp_md_usb2_io", error_string, DXP_MDNOMEM);
         return DXP_MDNOMEM;
       }
 
-      status = xia_usb2_read(usb2Handles[*camChan], cache_addr,
-                             (unsigned short)(*len) * 2, byte_buf);
+      status = xia_usb2_read(usb2Handles[*camChan], cache_addr, n_bytes,
+                             byte_buf);
 
       if (status != XIA_USB2_SUCCESS) {
         md_md_free(byte_buf);
         sprintf(error_string, "Error reading %u bytes from %#x for "
-                "camChan %d", (*len) * 2, cache_addr, *camChan);
+                "camChan %d", n_bytes, cache_addr, *camChan);
         dxp_md_log_error("dxp_md_usb2_io", error_string, DXP_MDIO);
         return DXP_MDIO;
       }
@@ -2285,18 +2070,14 @@ XIA_MD_STATIC int  dxp_md_usb2_io(int *camChan, unsigned int *function,
       break;
       
     case MD_IO_WRITE:
-      sprintf(error_string, "IO [WRITE]: addr = %#x, len (bytes) = %u",
-              cache_addr, (*len) * 2);
-      dxp_md_log_debug("dxp_md_usb2_io", error_string);
-
       /* The data comes from the calling routine as an unsigned short, so
        * we need to convert it to a byte array for the USB2 driver.
        */
-      byte_buf = md_md_alloc((*len) * 2);
+      byte_buf = md_md_alloc(n_bytes);
 
       if (byte_buf == NULL) {
-        sprintf(error_string, "Error allocating %d bytes for 'byte_buf' for "
-                "camChan %d", (*len) * 2, *camChan);
+        sprintf(error_string, "Error allocating %u bytes for 'byte_buf' for "
+                "camChan %d", n_bytes, *camChan);
         dxp_md_log_error("dxp_md_usb2_io", error_string, DXP_MDNOMEM);
         return DXP_MDNOMEM;
       }
@@ -2306,14 +2087,14 @@ XIA_MD_STATIC int  dxp_md_usb2_io(int *camChan, unsigned int *function,
         byte_buf[(i * 2) + 1] = (byte_t)((buf[i] >> 8) & 0xFF);
       }
 
-      status = xia_usb2_write(usb2Handles[*camChan], cache_addr,
-                              (unsigned short)(*len) * 2, byte_buf);
+      status = xia_usb2_write(usb2Handles[*camChan], cache_addr, n_bytes,
+                              byte_buf);
 
       md_md_free(byte_buf);
 
       if (status != XIA_USB2_SUCCESS) {
         sprintf(error_string, "Error writing %u bytes to %#x for "
-                "camChan %d", (*len) * 2, cache_addr, *camChan);
+                "camChan %d", n_bytes, cache_addr, *camChan);
         dxp_md_log_error("dxp_md_usb2_io", error_string, DXP_MDIO);
         return DXP_MDIO;
       }
@@ -2332,12 +2113,7 @@ XIA_MD_STATIC int  dxp_md_usb2_io(int *camChan, unsigned int *function,
      * store the address as a function of camChan, instead of as a global
      * variable like dxp_md_usb_io().
      */
-    usb2AddrCache[*camChan] = (int)*((unsigned short *)data);
-
-    sprintf(error_string, "Setting address cache to %#x", 
-            usb2AddrCache[*camChan]);
-    dxp_md_log_debug("dxp_md_usb2_io", error_string);
-
+    usb2AddrCache[*camChan] = *((unsigned long *)data);
     break;
 
   default:
