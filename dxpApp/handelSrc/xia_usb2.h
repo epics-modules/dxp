@@ -38,15 +38,21 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_usb2.h,v 1.1 2007-10-22 02:36:19 rivers Exp $
+ * $Id: xia_usb2.h,v 1.2 2007-11-14 21:11:45 rivers Exp $
  */
 
 #ifndef __XIA_USB2_H__
 #define __XIA_USB2_H__
 
+#ifdef WIN32
 #include "windows.h"
+#endif
 
-#include "dlldefs.h"
+#ifdef LINUX
+#include "xia_linux.h"
+#endif
+
+#include "Dlldefs.h"
 
 #include "xia_usb2_cb.h"
 #include "xia_common.h"
