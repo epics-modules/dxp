@@ -45,6 +45,7 @@ set_pass1_restoreFile("auto_settings.sav")
 dbLoadRecords("$(SSCAN)/sscanApp/Db/scan.db","P=dxpSaturn:,MAXPTS1=2000,MAXPTS2=1000,MAXPTS3=10,MAXPTS4=10,MAXPTSH=2048")
 
 # Debugging flags
+#xiaSetLogLevel(4)
 #asynSetTraceMask DXP1 0 255
 #var mcaRecordDebug 10
 #var dxpRecordDebug 10
