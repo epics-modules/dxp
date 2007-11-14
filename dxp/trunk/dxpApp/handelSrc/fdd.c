@@ -213,7 +213,11 @@ FDD_EXPORT int FDD_API xiaFddGetFirmware(const char *filename, char *path,
 	  sprintf(info_string,"Error finding '%s' in '%s': pt = %f, det = '%s'",
 			  ftype, filename, pt, detectorType);
 	  xiaFddLogError("xiaFddGetFirmware", info_string, XIA_FILEERR);
-    xia_file_close(fp);
+
+    if (fp != NULL) {
+      xia_file_close(fp);
+    }
+
 	  return XIA_FILEERR;
 	}
 
