@@ -39,7 +39,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: plxlibapi.h,v 1.1 2007-10-22 02:56:04 rivers Exp $
+ * $Id: plxlibapi.h,v 1.2 2007-11-14 21:47:24 rivers Exp $
  *
  * API for plxlib
  */
@@ -47,7 +47,7 @@
 #ifndef __PLXLIBAPI_H__
 #define __PLXLIBAPI_H__
 
-#include "dlldefs.h"
+#include "Dlldefs.h"
 #include "xia_common.h"
 
 /* Headers from PLX SDK */
@@ -57,7 +57,7 @@
 extern "C" {
 #endif
 
-  XIA_EXPORT int XIA_API plx_open_slot(unsigned short dev_id, byte_t bus,
+  XIA_IMPORT int XIA_API plx_open_slot(unsigned short dev_id, byte_t bus,
 									   byte_t slot, HANDLE *h);
   XIA_IMPORT int XIA_API plx_close_slot(HANDLE h);
   XIA_IMPORT int XIA_API plx_read_long(HANDLE h, unsigned long addr, 
