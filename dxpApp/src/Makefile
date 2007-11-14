@@ -32,7 +32,7 @@ dxp_SRCS += devDxp.c
 dxp_SRCS += drvDxp.c
 dxp_SRCS += dxpMED.st
 
-dxp_LIBS += handelSrc
+dxp_LIBS += handel
 dxp_LIBS += mca 
 dxp_LIBS += calc sscan autosave
 dxp_LIBS += asyn
@@ -54,37 +54,18 @@ dxpApp_SRCS_vxWorks += dxpVX_registerRecordDeviceDriver.cpp
 # The following adds support from base/src/vxWorks
 dxpApp_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary
 
-dxpApp_LIBS += dxp handelSrc
+dxpApp_LIBS += dxp handel
 dxpApp_LIBS += mca
 dxpApp_LIBS += calc sscan autosave
 dxpApp_LIBS_vxWorks += camac
 dxpApp_LIBS += asyn
-dxpApp_SYS_LIBS_cygwin32 += DLPORTIO
-dxpApp_LIBS_WIN32 += DLPORTIO
+dxpApp_SYS_LIBS_Linux += usb
+dxpApp_SYS_LIBS_cygwin32 += DLPORTIO PlxApi
+dxpApp_LIBS_WIN32 += DLPORTIO PlxApi
 dxpApp_SYS_LIBS_cygwin32 += rpc
 dxpApp_LIBS += seq pv
 dxpApp_LIBS += $(EPICS_BASE_IOC_LIBS)
-
-# xMAP application for cygwin32 and win32
-
-PROD_IOC_cygwin32 += xmapApp
-PROD_IOC_WIN32    += xmapApp
-
-# <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
-xmapApp_SRCS += dxpMain.cpp dxp_registerRecordDeviceDriver.cpp
-
-xmapApp_LIBS += dxp
-xmapApp_LIBS += mca
-xmapApp_LIBS += calc sscan autosave
-xmapApp_LIBS += asyn
-xmapApp_SYS_LIBS_cygwin32 += handel
-xmapApp_LIBS_WIN32    += handel
-xmapApp_SYS_LIBS_cygwin32 += DLPORTIO
-xmapApp_LIBS_WIN32    += DLPORTIO
-xmapApp_SYS_LIBS_cygwin32 += rpc
-xmapApp_LIBS += seq pv
-xmapApp_LIBS += $(EPICS_BASE_IOC_LIBS)
-
+dxpApp_SYS_LIBS_WIN32 += setupapi
 
 # Test applications
 PROD_IOC_cygwin32 += test_sets
