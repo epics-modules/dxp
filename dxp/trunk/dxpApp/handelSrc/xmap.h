@@ -37,7 +37,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xmap.h,v 1.1 2007-10-21 21:25:13 rivers Exp $
+ * $Id: xmap.h,v 1.2 2007-11-14 20:47:44 rivers Exp $
  *
  */
 
