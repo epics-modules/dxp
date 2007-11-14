@@ -39,7 +39,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: plxlib.h,v 1.1 2007-10-22 02:56:04 rivers Exp $
+ * $Id: plxlib.h,v 1.2 2007-11-14 21:32:53 rivers Exp $
  *
  * This driver serves as the interface between the MD layer and the PLX
  * chip on our PXI/cPCI hardware.
@@ -48,7 +48,7 @@
 #ifndef __PLXLIB_H__
 #define __PLXLIB_H__
 
-#include "dlldefs.h"
+#include "Dlldefs.h"
 #include "xia_common.h"
 
 /* Headers from PLX SDK */
