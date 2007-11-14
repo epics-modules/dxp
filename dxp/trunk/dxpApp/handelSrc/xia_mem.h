@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_mem.h,v 1.1 2007-10-22 02:42:53 rivers Exp $
+ * $Id: xia_mem.h,v 1.2 2007-11-14 21:13:50 rivers Exp $
  */
 
 #ifndef __XIA_MEM_H__
@@ -44,7 +44,7 @@
 
 #include <stdlib.h>
 
-#include "dlldefs.h"
+#include "Dlldefs.h"
 
 /* Opaque pointer to the mem_point_t struct */
 typedef struct _mem_point *mem_check_pt_t;

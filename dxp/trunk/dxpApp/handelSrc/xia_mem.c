@@ -36,13 +36,13 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_mem.c,v 1.1 2007-10-22 02:42:53 rivers Exp $
+ * $Id: xia_mem.c,v 1.2 2007-11-14 21:14:03 rivers Exp $
  */
 
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "dlldefs.h"
+#include "Dlldefs.h"
 
 #include "xia_mem_private.h"
 #include "xia_common.h"

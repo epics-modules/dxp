@@ -34,13 +34,13 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_file.c,v 1.1 2007-10-22 02:50:15 rivers Exp $
+ * $Id: xia_file.c,v 1.2 2007-11-14 21:19:58 rivers Exp $
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "dlldefs.h"
+#include "Dlldefs.h"
 
 #include "xia_file_private.h"
 #include "xia_common.h"

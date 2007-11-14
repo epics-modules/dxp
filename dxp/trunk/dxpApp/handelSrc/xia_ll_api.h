@@ -38,13 +38,13 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_ll_api.h,v 1.1 2007-10-22 02:45:29 rivers Exp $
+ * $Id: xia_ll_api.h,v 1.2 2007-11-14 21:14:28 rivers Exp $
  */
 
 #ifndef __XIA_LL_API_H__
 #define __XIA_LL_API_H__
 
-#include "dlldefs.h"
+#include "Dlldefs.h"
 
 #include "xia_ll_private.h"
 
