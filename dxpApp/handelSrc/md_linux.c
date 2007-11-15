@@ -123,13 +123,8 @@ static int currentID = -1;
 /* The id variable stores an optional ID number associated with each module 
  */
 static unsigned int numUSB    = 0;
-static int usbID[MAXMOD];
 /* variables to store the IO channel information */
 static char *usbName[MAXMOD];
-/* variables to store the USB Device Name */
-static char *usbDevice[MAXMOD];
-
-static unsigned int usbHandle[MAXMOD];
 
 static long usb_addr=0;
 #endif /* EXCLUDE_USB IO */
@@ -1698,13 +1693,9 @@ XIA_MD_STATIC int  dxp_md_usb2_open(char *ioname, int *camChan)
   
   ASSERT(usb2Names[*camChan] == NULL);
 
-printf("md_usb2_open, ioname=%s, strlen(ioname)=%d\n", ioname, strlen(ioname));
   len = strlen(ioname) + 1;
 
-printf("*camChan=%d, usb2Names=%p\n", *camChan, usb2Names);
-printf("len=%d\n", len);
   usb2Names[*camChan] = dxp_md_alloc(len);
-printf("usb2Names[*camChan]=%p\n", usb2Names[*camChan]);
 
   if (usb2Names[*camChan] == NULL) {
     sprintf(error_string, "Unable to allocate %d bytes for usb2Names[%d]",
@@ -1713,7 +1704,6 @@ printf("usb2Names[*camChan]=%p\n", usb2Names[*camChan]);
     return DXP_MDNOMEM;
   }
 
-printf("md_usb2_open, calling strcpy\n");
   strcpy(usb2Names[*camChan], ioname);
 
   usb2AddrCache[*camChan] = MD_INVALID_ADDR;
@@ -1737,7 +1727,134 @@ XIA_MD_STATIC int  dxp_md_usb2_io(int *camChan, unsigned int *function,
                                  unsigned long *addr, void *data,
                                  unsigned int *len)
 {
-    return(dxp_md_usb_io(camChan, function, addr, data, len));
+  int status;
+
+  unsigned int i;
+
+  unsigned long cache_addr;
+
+  unsigned short *buf = NULL;
+  
+  byte_t *byte_buf = NULL;
+
+  unsigned long n_bytes = 0;
+
+
+  ASSERT(addr != NULL);
+  ASSERT(function != NULL);
+  ASSERT(data != NULL);
+  ASSERT(camChan != NULL);
+  ASSERT(len != NULL);
+
+  buf = (unsigned short *)data;
+
+  n_bytes = (unsigned long)(*len) * 2;
+
+  /* Unlike some of our other communication types, we require that the
+   * target address be set as a separate operation. This value will be saved
+   * until the real I/O is requested. In a perfect world, we wouldn't require
+   * this type of operation anymore, but we have to maintain backwards
+   * compatibility for products that want to use USB2 but originally used
+   * other protocols that did require the address be set separately.
+   */
+  switch (*addr) {
+
+  case 0:
+    if (usb2AddrCache[*camChan] == MD_INVALID_ADDR) {
+      sprintf(error_string, "No target address set for camChan %d", *camChan);
+      dxp_md_log_error("dxp_md_usb2_io", error_string, DXP_MD_TARGET_ADDR);
+      return DXP_MD_TARGET_ADDR;
+    }
+
+    cache_addr = (unsigned long)usb2AddrCache[*camChan];
+
+    switch (*function) {
+    case MD_IO_READ:
+      /* The data comes from the calling routine as an unsigned short, so
+       * we need to convert it to a byte array for the USB2 driver.
+       */
+      byte_buf = dxp_md_alloc(n_bytes);
+
+      if (byte_buf == NULL) {
+        sprintf(error_string, "Error allocating %ld bytes for 'byte_buf' for "
+                "camChan %d", n_bytes, *camChan);
+        dxp_md_log_error("dxp_md_usb2_io", error_string, DXP_MDNOMEM);
+        return DXP_MDNOMEM;
+      }
+
+      status = xia_usb2_read(usb2Handles[*camChan], cache_addr, n_bytes,
+                             byte_buf);
+
+      if (status != XIA_USB2_SUCCESS) {
+        dxp_md_free(byte_buf);
+        sprintf(error_string, "Error reading %ld bytes from %#lx for "
+                "camChan %d", n_bytes, cache_addr, *camChan);
+        dxp_md_log_error("dxp_md_usb2_io", error_string, DXP_MDIO);
+        return DXP_MDIO;
+      }
+
+      for (i = 0; i < *len; i++) {
+        buf[i] = (unsigned short)(byte_buf[i * 2] |
+                                  (byte_buf[(i * 2) + 1] << 8));
+      }
+
+      dxp_md_free(byte_buf);
+
+      break;
+      
+    case MD_IO_WRITE:
+      /* The data comes from the calling routine as an unsigned short, so
+       * we need to convert it to a byte array for the USB2 driver.
+       */
+      byte_buf = dxp_md_alloc(n_bytes);
+
+      if (byte_buf == NULL) {
+        sprintf(error_string, "Error allocating %ld bytes for 'byte_buf' for "
+                "camChan %d", n_bytes, *camChan);
+        dxp_md_log_error("dxp_md_usb2_io", error_string, DXP_MDNOMEM);
+        return DXP_MDNOMEM;
+      }
+
+      for (i = 0; i < *len; i++) {
+        byte_buf[i * 2]       = (byte_t)(buf[i] & 0xFF);
+        byte_buf[(i * 2) + 1] = (byte_t)((buf[i] >> 8) & 0xFF);
+      }
+
+      status = xia_usb2_write(usb2Handles[*camChan], cache_addr, n_bytes,
+                              byte_buf);
+
+      dxp_md_free(byte_buf);
+
+      if (status != XIA_USB2_SUCCESS) {
+        sprintf(error_string, "Error writing %ld bytes to %#lx for "
+                "camChan %d", n_bytes, cache_addr, *camChan);
+        dxp_md_log_error("dxp_md_usb2_io", error_string, DXP_MDIO);
+        return DXP_MDIO;
+      }
+
+      break;
+
+    default:
+      ASSERT(FALSE_);
+      break;
+    }
+
+    break;
+
+  case 1:
+    /* Even though we aren't entirely thread-safe yet, it doesn't hurt to
+     * store the address as a function of camChan, instead of as a global
+     * variable like dxp_md_usb_io().
+     */
+    usb2AddrCache[*camChan] = *((unsigned long *)data);
+    break;
+
+  default:
+    ASSERT(FALSE_);
+    break;
+  }
+
+  return DXP_SUCCESS;
 }
 
 /**
@@ -1755,13 +1872,13 @@ XIA_MD_STATIC int  dxp_md_usb2_close(int *camChan)
 
   h = usb2Handles[*camChan];
 
-  if (h == 0) {
+  if (h == (HANDLE)NULL) {
     sprintf(error_string, "Skipping previously closed camChan = %d", *camChan);
     dxp_md_log_info("dxp_md_usb2_close", error_string);
     return DXP_SUCCESS;
   }
 
-  status = xia_usb_close(h);
+  status = xia_usb2_close(h);
 
   if (status != XIA_USB2_SUCCESS) {
     sprintf(error_string, "Error closing camChan (%d) with HANDLE = %#x",
@@ -1770,17 +1887,18 @@ XIA_MD_STATIC int  dxp_md_usb2_close(int *camChan)
     return DXP_MDCLOSE;
   }
 
-  usb2Handles[*camChan] = 0;
+  usb2Handles[*camChan] = (HANDLE)NULL;
 
   ASSERT(usb2Names[*camChan] != NULL);
 
-  md_md_free(usb2Names[*camChan]);
+  dxp_md_free(usb2Names[*camChan]);
   usb2Names[*camChan] = NULL;
 
   numUSB2--;
 
   return DXP_SUCCESS;
 }
+
 
 #endif /* EXCLUDE_USB2 */
 
