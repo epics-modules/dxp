@@ -42,7 +42,7 @@
 /**********************************************
 *       Automatic selection for Windows
 **********************************************/
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(CYGWIN32)
     #if !defined(PCI_CODE)
         #define PCI_CODE
     #endif

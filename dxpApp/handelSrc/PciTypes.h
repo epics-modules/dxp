@@ -144,6 +144,23 @@ extern "C" {
     typedef HANDLE           PLX_DRIVER_HANDLE;     // Windows-specific driver handle
 #endif
 
+/******************************************
+ *      Cygwin Type Definitions
+ ******************************************/
+#if defined(CYGWIN32)
+#include <windows.h>
+    typedef signed char      S8,  *PS8;
+    typedef unsigned char    U8,  *PU8;
+    typedef signed short     S16, *PS16;
+    typedef unsigned short   U16, *PU16;
+    typedef signed long      S32, *PS32;
+    typedef unsigned long    U32, *PU32;
+    typedef signed long long    LONGLONG;
+    typedef unsigned long long  ULONGLONG;
+
+    typedef int           PLX_DRIVER_HANDLE;     // Windows-specific driver handle
+#endif
+
 
 
 /******************************************
