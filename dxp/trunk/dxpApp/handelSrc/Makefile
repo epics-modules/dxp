@@ -14,11 +14,11 @@ LIBRARY_IOC_vxWorks  += handel
 LIBRARY_IOC_cygwin32 += handel
 LIBRARY_IOC_WIN32    += handel
 
-USR_CFLAGS_Linux    += -DEXCLUDE_CAMAC -DEXCLUDE_DXP4C -DEXCLUDE_DXP4C2X -DEXCLUDE_XMAP  -DLINUX
+USR_CFLAGS_Linux    += -DEXCLUDE_CAMAC -DEXCLUDE_DXP4C -DEXCLUDE_DXP4C2X -DEXCLUDE_XMAP -DEXCLUDE_PLX -DLINUX
 USR_CFLAGS_cygwin32 += -DEXCLUDE_CAMAC -DEXCLUDE_DXP4C -DEXCLUDE_DXP4C2X
 USR_CFLAGS_WIN32    += -DEXCLUDE_CAMAC -DEXCLUDE_DXP4C -DEXCLUDE_DXP4C2X
-USR_CFLAGS_vxWorks  += -DEXCLUDE_DXPX10P -DEXCLUDE_USB
-USR_CFLAGS +=          -DEXCLUDE_UDXP -DEXCLUDE_UDXPS -DEXCLUDE_DGF200 -DEXCLUDE_POLARIS  -DEXCLUDE_MERCURY -DEXCLUDE_PLX
+USR_CFLAGS_vxWorks  += -DEXCLUDE_DXPX10P -DEXCLUDE_USB -DEXCLUDE_XMAP -DEXCLUDE_PLX
+USR_CFLAGS +=          -DEXCLUDE_UDXP -DEXCLUDE_UDXPS -DEXCLUDE_DGF200 -DEXCLUDE_POLARIS  -DEXCLUDE_MERCURY
 USR_CFLAGS +=          -DEXCLUDE_SERIAL -DEXCLUDE_ARCNET -DEXCLUDE_VEGA
 USR_CFLAGS_WIN32    += -DHANDEL_USE_DLL -DHANDEL_MAKE_DLL -DWIN32
 
@@ -26,7 +26,7 @@ USR_CFLAGS_WIN32    += -DHANDEL_USE_DLL -DHANDEL_MAKE_DLL -DWIN32
 #handel_SRCS_vxWorks  += dxp4c2x.c dxp4c2x_psl.c
 #handel_SRCS_vxWorks  += dxp4c.c md_vxWorks.c
 handel_SRCS_Linux    += x10p.c x10p_psl.c md_linux.c epplib.c usblib_linux.c
-handel_SRCS_cygwin32 += x10p.c x10p_psl.c xmap.c xmap_psl.c md_win95.c xia_usb2.c epplib.c
+handel_SRCS_cygwin32 += x10p.c x10p_psl.c xmap.c xmap_psl.c md_win95.c xia_usb2.c epplib.c plxlib.c usblib.c
 handel_SRCS_WIN32    += x10p.c x10p_psl.c xmap.c xmap_psl.c md_win95.c xia_usb2.c epplib.c plxlib.c usblib.c
 handel_SRCS += xerxes.c
 handel_SRCS += xerxes_log.c
