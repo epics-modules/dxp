@@ -148,7 +148,7 @@ extern "C" {
  *      Cygwin Type Definitions
  ******************************************/
 #if defined(CYGWIN32)
-#include <windows.h>
+#include <windows.h>  /* This is needed so that HANDLE is defined in Plx code */
     typedef signed char      S8,  *PS8;
     typedef unsigned char    U8,  *PU8;
     typedef signed short     S16, *PS16;
