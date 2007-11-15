@@ -172,7 +172,7 @@ static int dxp_md_serial_reset(unsigned short port);
 
 #ifndef EXCLUDE_PLX
 
-#include "plxlibapi.h"
+#include "plxlib.h"
 #include "plxlib_errors.h"
 
 static HANDLE pxiHandles[MAXMOD];
