@@ -33,26 +33,35 @@
 #include <stdlib.h>
 
 #ifdef _WIN32
-#pragma warning(disable : 4115)
-#include <windows.h>
-#define DLPORTIO 1
+  #pragma warning(disable : 4115)
+  #include <windows.h>
+  #define DLPORTIO 1
 
-#ifdef DLPORTIO
-#include "dlportio.h"
-#else
-#include <conio.h>
-#endif /* DLPORTIO */
+  #ifdef DLPORTIO
+    #include "dlportio.h"
+  #else
+    #include <conio.h>
+  #endif /* DLPORTIO */
 #endif /* _WIN32 */
 
-#ifdef linux
-#include <sys/io.h>
-#define _inp(PORT) inb(PORT)
-#define _outp(PORT, DATA) outb(DATA, PORT)
-#define SLOW
-typedef unsigned char UCHAR;
-typedef unsigned short* PUSHORT;
-typedef unsigned long* PULONG;
-#endif
+#ifdef CYGWIN32 
+  #include "windows.h"
+  #define DLPORTIO 1
+
+  #ifdef DLPORTIO
+    #include "dlportio.h"
+  #else
+    #include <conio.h>
+  #endif /* DLPORTIO */
+#endif  /* CYGWIN32 */
+
+#ifdef LINUX
+  #include "xia_linux.h"
+  #include <sys/io.h>
+  #define _inp(PORT) inb(PORT)
+  #define _outp(PORT, DATA) outb(DATA, PORT)
+  #define SLOW
+#endif /* LINUX */
 
 #include "Dlldefs.h"
 #include "epplib.h"
