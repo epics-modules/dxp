@@ -38,7 +38,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_usb2.h,v 1.2 2007-11-14 21:11:45 rivers Exp $
+ * $Id: xia_usb2.h,v 1.3 2007-11-15 23:11:15 rivers Exp $
  */
 
 #ifndef __XIA_USB2_H__
@@ -62,11 +62,11 @@ extern "C" {
 #endif
 
   XIA_EXPORT int XIA_API xia_usb2_open(int dev, HANDLE *h);
-  XIA_IMPORT int XIA_API xia_usb2_close(HANDLE h);
-  XIA_IMPORT int XIA_API xia_usb2_read(HANDLE h, unsigned short addr,
+  XIA_EXPORT int XIA_API xia_usb2_close(HANDLE h);
+  XIA_EXPORT int XIA_API xia_usb2_read(HANDLE h, unsigned short addr,
                                        unsigned long n_bytes,
                                        byte_t *buf);
-  XIA_IMPORT int XIA_API xia_usb2_write(HANDLE h, unsigned short addr,
+  XIA_EXPORT int XIA_API xia_usb2_write(HANDLE h, unsigned short addr,
                                         unsigned long n_bytes,
                                         byte_t *buf);
 
