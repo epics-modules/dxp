@@ -12,15 +12,17 @@
  * by bugs in the Microsoft headers.
  */
 
-#pragma warning( disable : 4115 )
+#ifdef WIN32
+  #pragma warning( disable : 4115 )
+  #pragma warning( disable : 4201 )
+  #include <conio.h>
+#endif
 #include <windows.h>
 
-#pragma warning( disable : 4201 )
 #include <winioctl.h>
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <conio.h>
 
 #include "Dlldefs.h"
 #include "usblib.h"
@@ -58,7 +60,7 @@ XIA_EXPORT int XIA_API usb_close(HANDLE hDevice)
 XIA_EXPORT int XIA_API usb_read(long address, long nWords, char *device, unsigned short *buffer)
 {	
   /*
-  /* Declare variables
+  * Declare variables
   */
 
   unsigned char* pData = (unsigned char*)buffer;
