@@ -59,21 +59,23 @@ dxpApp_LIBS += mca
 dxpApp_LIBS += calc sscan autosave
 dxpApp_LIBS_vxWorks += camac
 dxpApp_LIBS += asyn
-dxpApp_SYS_LIBS_Linux += usb
-dxpApp_SYS_LIBS_cygwin32 += DLPORTIO PlxApi
-dxpApp_LIBS_WIN32 += DLPORTIO PlxApi
-dxpApp_SYS_LIBS_cygwin32 += rpc
 dxpApp_LIBS += seq pv
 dxpApp_LIBS += $(EPICS_BASE_IOC_LIBS)
+dxpApp_LIBS_WIN32 += DLPORTIO PlxApi
+dxpApp_SYS_LIBS_Linux += usb
+dxpApp_SYS_LIBS_cygwin32 += DLPORTIO PlxApi
+dxpApp_SYS_LIBS_cygwin32 += setupapi
+dxpApp_SYS_LIBS_cygwin32 += rpc
 dxpApp_SYS_LIBS_WIN32 += setupapi
 
 # Test applications
 PROD_IOC_cygwin32 += test_sets
 test_sets_SRCS += test_sets.c
-test_sets_SYS_LIBS += handel
-test_sets_SYS_LIBS += DLPORTIO
 test_sets_LIBS += dxp
+test_sets_LIBS += handel
+test_sets_SYS_LIBS_cygwin32 += DLPORTIO PlxApi
 test_sets_LIBS += $(EPICS_BASE_IOC_LIBS)
+test_sets_SYS_LIBS += setupapi
 
 #===========================
 #===========================
