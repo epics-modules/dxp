@@ -44,27 +44,27 @@
 
 
 #if defined(WDM_DRIVER)
-    #include <wdm.h>            // WDM Driver types
+    #include <wdm.h>            /* WDM Driver types */
 #endif
 
 #if defined(NT_DRIVER)
-    #include <ntddk.h>          // NT Kernel Mode Driver types
+    #include <ntddk.h>          /* NT Kernel Mode Driver types */
 #endif
 
 #if defined(PLX_VXD_DRIVER)
-    #include <basedef.h>        // Win9x/Me VxD Driver types
+    #include <basedef.h>        /* Win9x/Me VxD Driver types */
 #endif
 
 #if defined(_WIN32) && !defined(PLX_DRIVER)
-    #include <wtypes.h>         // Windows application level types
+    #include <wtypes.h>         /* Windows application level types */
 #endif
 
 #if defined(PLX_LINUX)
-    #include <memory.h>         // To prevent application compile errors in Linux
+    #include <memory.h>         /* To prevent application compile errors in Linux */
 #endif
 
 #if defined(PLX_LINUX) || defined(PLX_LINUX_DRIVER)
-    #include <linux/types.h>    // Linux types
+    #include <linux/types.h>    /* Linux types */
 #endif
 
 
@@ -88,7 +88,7 @@ extern "C" {
     typedef __u64            ULONGLONG;
 
     typedef void            *HANDLE;
-    typedef int              PLX_DRIVER_HANDLE;     // Linux-specific driver handle
+    typedef int              PLX_DRIVER_HANDLE;     /* Linux-specific driver handle */
 
     #define INVALID_HANDLE_VALUE    (HANDLE)-1
 #endif
@@ -108,7 +108,7 @@ extern "C" {
     typedef s64              LONGLONG;
     typedef u64              ULONGLONG;
 
-    // For 64-bit physical address
+    /* For 64-bit physical address */
     typedef union _PHYSICAL_ADDRESS
     {
         struct
@@ -141,7 +141,7 @@ extern "C" {
     typedef signed _int64    LONGLONG;
     typedef unsigned _int64  ULONGLONG;
 
-    typedef HANDLE           PLX_DRIVER_HANDLE;     // Windows-specific driver handle
+    typedef HANDLE           PLX_DRIVER_HANDLE;     /* Windows-specific driver handle */
 #endif
 
 /******************************************
@@ -158,7 +158,7 @@ extern "C" {
     typedef signed long long    LONGLONG;
     typedef unsigned long long  ULONGLONG;
 
-    typedef int           PLX_DRIVER_HANDLE;     // Windows-specific driver handle
+    typedef int           PLX_DRIVER_HANDLE;     /* Windows-specific driver handle */
 #endif
 
 
@@ -188,7 +188,7 @@ typedef volatile U32          VU32, *PVU32;
 
 typedef U8                    BOOLEAN;
 
-#if !defined(_WIN32)
+#if !defined(_WIN32) && !defined(CYGWIN32)
     typedef U8                BOOL;
 #endif
 
@@ -219,7 +219,7 @@ typedef U32                 UDATA;
  * PCI SDK Defined Structures
  ******************************************/
 
-// Device Location Structure
+/* Device Location Structure */
 typedef struct _DEVICE_LOCATION
 {
     U8  BusNumber;
@@ -230,7 +230,7 @@ typedef struct _DEVICE_LOCATION
 } DEVICE_LOCATION;
 
 
-// PCI Memory Structure
+/* PCI Memory Structure */
 typedef struct _PCI_MEMORY
 {
     U32 UserAddr;
@@ -239,53 +239,53 @@ typedef struct _PCI_MEMORY
 } PCI_MEMORY;
 
 
-// Used for PCI BAR user-mode virtual address mapping
+/* Used for PCI BAR user-mode virtual address mapping */
 typedef struct _PLX_PCI_BAR_SPACE
 {
-    U32     va;                      // Virtual address of space
-    U32     size;                    // Size of mapped region
-    U32     offset;                  // Actual starting offset from virtual base
-    BOOLEAN bMapAttempted;           // Flag to specify if mapping was attempted 
+    U32     va;                      /* Virtual address of space */
+    U32     size;                    /* Size of mapped region */
+    U32     offset;                  /* Actual starting offset from virtual base */
+    BOOLEAN bMapAttempted;           /* Flag to specify if mapping was attempted */
 } PLX_PCI_BAR_SPACE;
 
 
-// PCI Device Key Identifier
+/* PCI Device Key Identifier */
 typedef struct _PLX_DEVICE_KEY
 {
-    U32 IsValidTag;                  // Magic number to determine validity
-    U8  bus;                         // Physical device location
+    U32 IsValidTag;                  /* Magic number to determine validity */
+    U8  bus;                         /* Physical device location */
     U8  slot;
     U8  function;
-    U16 VendorId;                    // Device Identifier
+    U16 VendorId;                    /* Device Identifier */
     U16 DeviceId;
     U16 SubVendorId;
     U16 SubDeviceId;
     U8  Revision;
-    U8  ApiIndex;                    // Index used internally by the API
-    U8  DeviceNumber;                // Number used internally by the device driver
+    U8  ApiIndex;                    /* Index used internally by the API */
+    U8  DeviceNumber;                /* Number used internally by the device driver */
 } PLX_DEVICE_KEY;
 
 
 #if !defined(PLX_DRIVER) && !defined(PLX_LINUX_DRIVER)
-// PLX Device Object Structure
+/* PLX Device Object Structure */
 typedef struct _PLX_DEVICE_OBJECT
 {
-    U32                IsValidTag;   // Magic number to determine validity
-    PLX_DEVICE_KEY     Key;          // Device location key identifier
-    PLX_DRIVER_HANDLE  hDevice;      // Handle to driver
-    PLX_PCI_BAR_SPACE  PciBar[6];    // Used for PCI BAR user-mode virtual address mapping
+    U32                IsValidTag;   /* Magic number to determine validity */
+    PLX_DEVICE_KEY     Key;          /* Device location key identifier */
+    PLX_DRIVER_HANDLE  hDevice;      /* Handle to driver */
+    PLX_PCI_BAR_SPACE  PciBar[6];    /* Used for PCI BAR user-mode virtual address mapping */
 } PLX_DEVICE_OBJECT;
 #endif
 
 
-// PLX Notification Object
+/* PLX Notification Object */
 typedef struct _PLX_NOTIFY_OBJECT
 {
-    U32     IsValidTag;              // Magic number to determine validity
+    U32     IsValidTag;              /* Magic number to determine validity */
  #if defined(_WIN32)
-    HANDLE  hEvent;                  // Handle to notification event
+    HANDLE  hEvent;                  /* Handle to notification event */
  #endif
-    VOID   *pWaitObject;             // -- INTERNAL -- Wait object used by the driver
+    VOID   *pWaitObject;             /* -- INTERNAL -- Wait object used by the driver */
 } PLX_NOTIFY_OBJECT;
 
 
