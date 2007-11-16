@@ -56,12 +56,12 @@ extern "C" {
 
 
 
-// Assertion constants
+/* Assertion constants */
 #define AssertBLAST          0
 #define EOTAsserted          1
 
 
-// Access Size Type
+/* Access Size Type */
 typedef enum _ACCESS_TYPE
 {
     BitSize8,
@@ -71,7 +71,7 @@ typedef enum _ACCESS_TYPE
 } ACCESS_TYPE;
 
 
-// Various DMA states
+/* Various DMA states */
 typedef enum _DMA_STATE
 {
     DmaStateClosed,
@@ -81,7 +81,7 @@ typedef enum _DMA_STATE
 } DMA_STATE;
 
 
-// DMA Channel Definitions
+/* DMA Channel Definitions */
 typedef enum _DMA_CHANNEL
 {
     IopChannel0,
@@ -94,7 +94,7 @@ typedef enum _DMA_CHANNEL
 } DMA_CHANNEL;
 
 
-// DMA Command Definitions
+/* DMA Command Definitions */
 typedef enum _DMA_COMMAND
 {
     DmaStart,
@@ -104,7 +104,7 @@ typedef enum _DMA_COMMAND
 } DMA_COMMAND;
 
 
-// DMA Channel Priority Definitions
+/* DMA Channel Priority Definitions */
 typedef enum _DMA_CHANNEL_PRIORITY
 {
     Channel0Highest,
@@ -115,7 +115,7 @@ typedef enum _DMA_CHANNEL_PRIORITY
 } DMA_CHANNEL_PRIORITY;
 
 
-// Power State Definitions
+/* Power State Definitions */
 typedef enum _PLX_POWER_LEVEL
 {
     D0Uninitialized,
@@ -127,7 +127,7 @@ typedef enum _PLX_POWER_LEVEL
 } PLX_POWER_LEVEL;
 
 
-// EEPROM Type Definitions
+/* EEPROM Type Definitions */
 typedef enum _EEPROM_TYPE
 {
     Eeprom93CS46,
@@ -141,7 +141,7 @@ typedef enum _EEPROM_TYPE
 } EEPROM_TYPE;
 
 
-// FLASH Device Definitions
+/* FLASH Device Definitions */
 typedef enum _FLASH_TYPE
 {
     AM29F040,
@@ -152,7 +152,7 @@ typedef enum _FLASH_TYPE
 } FLASH_TYPE;
 
 
-// PCI Space Definitions
+/* PCI Space Definitions */
 typedef enum _PCI_SPACE
 {
     PciMemSpace,
@@ -160,7 +160,7 @@ typedef enum _PCI_SPACE
 } PCI_SPACE;
 
 
-// Local Space Types
+/* Local Space Types */
 typedef enum _IOP_SPACE
 {
     IopSpace0,
@@ -171,7 +171,7 @@ typedef enum _IOP_SPACE
 } IOP_SPACE;
 
 
-// Bus Index Types
+/* Bus Index Types */
 typedef enum _BUS_INDEX
 {
     PrimaryPciBus,
@@ -179,7 +179,7 @@ typedef enum _BUS_INDEX
 } BUS_INDEX;
 
 
-// Mailbox ID Definitions
+/* Mailbox ID Definitions */
 typedef enum _MAILBOX_ID
 {
     MailBox0,
@@ -193,7 +193,7 @@ typedef enum _MAILBOX_ID
 } MAILBOX_ID;
 
 
-// Power Management Data Definitions
+/* Power Management Data Definitions */
 typedef enum _POWER_DATA_SELECT
 {
     D0PowerConsumed,
@@ -207,7 +207,7 @@ typedef enum _POWER_DATA_SELECT
 } POWER_DATA_SELECT;
 
 
-// Power Scale definitions
+/* Power Scale definitions */
 typedef enum _POWER_DATA_SCALE
 {
     PowerScaleUnknown,
@@ -217,7 +217,7 @@ typedef enum _POWER_DATA_SCALE
 } POWER_DATA_SCALE;
 
 
-// DMA Channel Descriptor Structure
+/* DMA Channel Descriptor Structure */
 typedef struct _DMA_CHANNEL_DESC 
 {
     unsigned int EnableReadyInput         :1;
@@ -244,22 +244,22 @@ typedef struct _DMA_CHANNEL_DESC
 } DMA_CHANNEL_DESC;
 
 
-// DMA Transfer Element
+/* DMA Transfer Element */
 #if defined(PCI_CODE)
 typedef struct _DMA_TRANSFER_ELEMENT
 {
     union
     {
-        U32 UserVa;                // User space virtual address
-        U32 PciAddrLow;            // Lower 32-bits of PCI address
+        U32 UserVa;                /* User space virtual address */
+        U32 PciAddrLow;            /* Lower 32-bits of PCI address */
     } u;
-    U32     PciAddrHigh;           // Upper 32-bits of PCI address
-    U32     LocalAddr;             // Local bus address
-    U32     TransferCount;         // Number of bytes to transfer
+    U32     PciAddrHigh;           /* Upper 32-bits of PCI address */
+    U32     LocalAddr;             /* Local bus address */
+    U32     TransferCount;         /* Number of bytes to transfer */
     U32     TerminalCountIntr :1;
     U32     LocalToPciDma     :1;
 } DMA_TRANSFER_ELEMENT;
-#endif   // PCI_CODE
+#endif   /* PCI_CODE */
 
 
 #if defined(IOP_CODE)
@@ -313,14 +313,14 @@ typedef union _DMA_TRANSFER_ELEMENT
     U32 Reserved[12];
 
 } DMA_TRANSFER_ELEMENT;
-#endif  // IOP_CODE
+#endif  /* IOP_CODE */
 
 
-// DMA SGL Address Data Type
+/* DMA SGL Address Data Type */
 typedef DMA_TRANSFER_ELEMENT          *SGL_ADDR, *PSGL_ADDR;
 
 
-// DMA Manager initialization Parameters Structure
+/* DMA Manager initialization Parameters Structure */
 typedef struct _DMA_PARMS
 {
     DMA_CHANNEL           DmaChannel;
@@ -330,7 +330,7 @@ typedef struct _DMA_PARMS
 } DMA_PARMS;
 
 
-// PLX Interrupt Structure 
+/* PLX Interrupt Structure */
 typedef struct _PLX_INTR
 {
     unsigned int InboundPost      :1;
@@ -377,7 +377,7 @@ typedef struct _PLX_INTR
 } PLX_INTR;
 
 
-// PCI bus properties structure
+/* PCI bus properties structure */
 typedef struct _PCI_BUS_PROP
 {
     unsigned int PciRequestMode           :1;
@@ -399,7 +399,7 @@ typedef struct _PCI_BUS_PROP
 } PCI_BUS_PROP;
 
 
-// IOP Bus Properties Structure
+/* IOP Bus Properties Structure */
 typedef struct _IOP_BUS_PROP
 {
     unsigned int EnableReadyRecover       :1;
@@ -420,7 +420,7 @@ typedef struct _IOP_BUS_PROP
 } IOP_BUS_PROP;
 
 
-// IOP Arbitration Descriptor Structure
+/* IOP Arbitration Descriptor Structure */
 typedef struct _IOP_ARBIT_DESC
 {
     unsigned int IopBusDSGiveUpBusMode    :1;
@@ -442,7 +442,7 @@ typedef struct _IOP_ARBIT_DESC
 } IOP_ARBIT_DESC;
 
 
-// IOP Endian Descriptor Structure
+/* IOP Endian Descriptor Structure */
 typedef struct _IOP_ENDIAN_DESC
 {
     unsigned int BigEIopSpace0            :1;
@@ -456,7 +456,7 @@ typedef struct _IOP_ENDIAN_DESC
 } IOP_ENDIAN_DESC;
 
 
-// Power Management Properties
+/* Power Management Properties */
 typedef struct _PM_PROP
 {
     unsigned int Version            :3;
@@ -478,7 +478,7 @@ typedef struct _PM_PROP
 } PM_PROP;
 
 
-// Local API Initialization Parameters Structure
+/* Local API Initialization Parameters Structure */
 typedef struct _API_PARMS
 {
     ADDRESS          PlxChipBaseAddr;
