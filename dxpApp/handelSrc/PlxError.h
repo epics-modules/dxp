@@ -125,7 +125,7 @@ typedef enum _RETURN_CODE
     ApiInvalidDriverVersion,
     ApiWaitTimeout,
     ApiWaitCanceled,
-    ApiLastError               // Do not add API errors below this line
+    ApiLastError               /* Do not add API errors below this line */
 } RETURN_CODE;
 
 

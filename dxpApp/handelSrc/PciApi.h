@@ -48,7 +48,7 @@ extern "C" {
 #endif
 
 
-// DLL support
+/* DLL support */
 #ifndef EXPORT
     #if defined(_WIN32)
         #define EXPORT __declspec(dllexport)
