@@ -149,6 +149,7 @@ extern "C" {
  ******************************************/
 #if defined(CYGWIN32)
 #include <windows.h>  /* This is needed so that HANDLE is defined in Plx code */
+#undef _WIN32         /* Need to undefine _WIN32 which windows.h defined or it screws things up */
     typedef signed char      S8,  *PS8;
     typedef unsigned char    U8,  *PU8;
     typedef signed short     S16, *PS16;
