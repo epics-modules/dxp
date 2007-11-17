@@ -1754,7 +1754,7 @@ XIA_MD_STATIC int dxp_md_plx_open(char *ioname, int *camChan)
   /* Parse in and open a new slot */
   n_scanned = sscanf(ioname, "%d:%d", &itemp1, &itemp2);
   bus = itemp1;
-  slot = itemp1;
+  slot = itemp2;
 
   if (n_scanned != 2) {
 	sprintf(error_string, "Error parsing ioname = '%s'. The proper format is "
