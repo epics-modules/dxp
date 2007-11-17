@@ -54,7 +54,7 @@
 #endif /* _WIN32 */
 
 /* Headers from PLX SDK */
-#include "plxapi.h"
+#include "PlxApi.h"
 
 #ifdef _WIN32
 #pragma warning( default: 4115 )
