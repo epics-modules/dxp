@@ -38,7 +38,7 @@
 * SUCH DAMAGE.
 *
 *
-* $Id: xmap_psl.c,v 1.2 2007-11-14 20:46:51 rivers Exp $
+* $Id: xmap_psl.c,v 1.3 2007-11-20 03:10:45 rivers Exp $
 */
 
 #include <math.h>
@@ -88,7 +88,7 @@ PSL_STATIC int psl__GetFiPPIName(int modChan, double pt, FirmwareSet *fs,
                                  char *detType, char *name, char *rawName);
 PSL_STATIC int psl__GetDSPName(int modChan, double pt, FirmwareSet *fs,
                                char *detType, char *name, char *rawName);
-PSL_STATIC int psl__GetDetectorTypeName(Detector *d, char *name);
+/*PSL_STATIC int psl__GetDetectorTypeName(Detector *d, char *name); */
 PSL_STATIC int psl__UpdateFilterParams(int detChan, int modChan, double pt,
                                        XiaDefaults *defs, FirmwareSet *fs,
                                        Module *m, Detector *det);
@@ -1428,7 +1428,7 @@ PSL_STATIC int pslUserSetup(int detChan, XiaDefaults *defaults,
                                      detector_chan, m, modChan);
 
     if (status != XIA_SUCCESS) {
-      sprintf(info_string, "Error setting '%s' to %0.3lf for detChan %d",
+      sprintf(info_string, "Error setting '%s' to %0.3f for detChan %d",
               entry->name, entry->data, detChan);
       pslLogError("pslUserSetup", info_string, status);
       return status;
@@ -2346,7 +2346,7 @@ PSL_STATIC int psl__CalculateGain(XiaDefaults *defs, double preampGain,
   */
   for (i = 0; i < MAX_BINFACT_ITERS; i++) {
 
-    sprintf(info_string, "binscale = %0.3lf, BINSCALE = %#x", binscale,
+    sprintf(info_string, "binscale = %0.3f, BINSCALE = %#x", binscale,
             *BINSCALE);
     pslLogDebug("psl__CalculateGain", info_string);
 
@@ -2354,7 +2354,7 @@ PSL_STATIC int psl__CalculateGain(XiaDefaults *defs, double preampGain,
 
     scaledTotGain = totGain * binScale;
 
-    sprintf(info_string, "Scaled Total gain = %.3lf", scaledTotGain);
+    sprintf(info_string, "Scaled Total gain = %.3f", scaledTotGain);
     pslLogDebug("psl__CalculateGain", info_string);
 
     /* The scale factor corresponds to the setting of the JPn00 jumper.
@@ -2362,7 +2362,7 @@ PSL_STATIC int psl__CalculateGain(XiaDefaults *defs, double preampGain,
     * the (-12 dB) setting.
     */
     if (scale != 1.0 && scale != 0.25) {
-      sprintf(info_string, "Specified gain scale factor (%0.3lf) is not allowed",
+      sprintf(info_string, "Specified gain scale factor (%0.3f) is not allowed",
               scale);
       pslLogError("psl__CalculateGain", info_string, XIA_GAIN_SCALE);
       return XIA_GAIN_SCALE;
@@ -2370,17 +2370,17 @@ PSL_STATIC int psl__CalculateGain(XiaDefaults *defs, double preampGain,
 
     sysGain *= scale;
 
-    sprintf(info_string, "System gain = %0.3lf", sysGain);
+    sprintf(info_string, "System gain = %0.3f", sysGain);
     pslLogDebug("psl__CalculateGain", info_string);
 
     varGain = scaledTotGain / sysGain;
 
-    sprintf(info_string, "Variable gain = %0.3lf", varGain);
+    sprintf(info_string, "Variable gain = %0.3f", varGain);
     pslLogDebug("psl__CalculateGain", info_string);
 
     varGainDB = 20.0 * log10(varGain);
 
-    sprintf(info_string, "Variable gain = %0.3lf dB", varGainDB);
+    sprintf(info_string, "Variable gain = %0.3f dB", varGainDB);
     pslLogDebug("psl__CalculateGain", info_string);
 
     if (varGainDB < -6.0 || varGainDB > 30.0) {
@@ -2396,7 +2396,7 @@ PSL_STATIC int psl__CalculateGain(XiaDefaults *defs, double preampGain,
   }
 
   if (varGainDB < -6.0 || varGainDB > 30.0) {
-    sprintf(info_string, "Variable gain of %0.3lf dB is out-of-range",
+    sprintf(info_string, "Variable gain of %0.3f dB is out-of-range",
             varGainDB);
     pslLogError("psl__CalculateGain", info_string, XIA_GAIN_OOR);
     return XIA_GAIN_OOR;
@@ -2407,7 +2407,7 @@ PSL_STATIC int psl__CalculateGain(XiaDefaults *defs, double preampGain,
   gaindac  = varGainDB * ((double)(0x1 << GAINDAC_BITS) / GAINDAC_DB_RANGE);
   *GAINDAC = (parameter_t)ROUND(gaindac);
 
-  sprintf(info_string, "gaindac = %0.3lf, GAINDAC = %#x", gaindac, *GAINDAC);
+  sprintf(info_string, "gaindac = %0.3f, GAINDAC = %#x", gaindac, *GAINDAC);
   pslLogDebug("psl__CalculateGain", info_string);
 
   return XIA_SUCCESS;
@@ -3060,7 +3060,7 @@ PSL_STATIC int psl__SetResetDelay(int detChan, int modChan, char *name, void *va
 
   if (status != XIA_SUCCESS) {
     sprintf(info_string, "Error setting reset delay to %f microseconds for "
-            "detChan %d", resetDelay, detChan);
+            "detChan %d", *resetDelay, detChan);
     pslLogError("psl__SetResetDelay", info_string, status);
     return status;
   }
@@ -4533,7 +4533,7 @@ PSL_STATIC int psl__SetPresetValue(int detChan, int modChan, char *name, void *v
   hiLen = (unsigned long)floor(len / ldexp(1.0, 32));
   loLen = (unsigned long)ROUND(len - ((double)hiLen * ldexp(1.0, 32)));
 
-  sprintf(info_string, "len = %0.0lf, hiLen = %#x, loLen = %#x",
+  sprintf(info_string, "len = %0.0f, hiLen = %#lx, loLen = %#lx",
           len, hiLen, loLen);
   pslLogDebug("psl__SetPresetValue", info_string);
 
@@ -4791,7 +4791,7 @@ PSL_STATIC int psl__SetSCA(int detChan, int modChan, char *name,
   ASSERT(STRNEQ(name, "sca"));
 
 
-  sscanf(name, "sca%u_%s", &scaNum, limit);
+  sscanf(name, "sca%hu_%s", &scaNum, limit);
 
   if (!(STREQ(limit, "lo") || STREQ(limit, "hi"))) {
     sprintf(info_string, "Malformed SCA string '%s': missing 'lo' or 'hi' "
@@ -4829,17 +4829,17 @@ PSL_STATIC int psl__SetSCA(int detChan, int modChan, char *name,
 
   addr = SCALIM + scaNum;
 
-  sprintf(info_string, "SCA limit pointer value '%s' = %#x", limParam, addr);
+  sprintf(info_string, "SCA limit pointer value '%s' = %#lx", limParam, addr);
   pslLogDebug("psl__SetSCA", info_string);
-  sprintf(info_string, "Preparing to set SCA limit: addr = %#x", addr);
+  sprintf(info_string, "Preparing to set SCA limit: addr = %#lx", addr);
   pslLogDebug("psl__SetSCA", info_string);
 
-  sprintf(memory, "data:%#x:1", addr);
+  sprintf(memory, "data:%#lx:1", addr);
 
   statusX = dxp_write_memory(&detChan, memory, &data);
 
   if (statusX != DXP_SUCCESS) {
-    sprintf(info_string, "Error writing SCA limit (%u) for detChan %d",
+    sprintf(info_string, "Error writing SCA limit (%lu) for detChan %d",
             data, detChan);
     pslLogError("psl__SetSCA", info_string, XIA_XERXES);
     return XIA_XERXES;
@@ -5197,7 +5197,7 @@ PSL_STATIC int psl__SetNumMapPixels(int detChan, int modChan, char *name,
                            (parameter_t)(NUMPIXELS & 0xFFFF));
 
   if (status != XIA_SUCCESS) {
-    sprintf(info_string, "Error setting the total number of scan points (%u) for "
+    sprintf(info_string, "Error setting the total number of scan points (%lu) for "
             "detChan %d", NUMPIXELS, detChan);
     pslLogError("psl__SetNumMapPixels", info_string, status);
     return status;
@@ -5207,7 +5207,7 @@ PSL_STATIC int psl__SetNumMapPixels(int detChan, int modChan, char *name,
                            (parameter_t)((NUMPIXELS >> 16) & 0xFFFF));
 
   if (status != XIA_SUCCESS) {
-    sprintf(info_string, "Error setting the total number of scan points (%u) for "
+    sprintf(info_string, "Error setting the total number of scan points (%lu) for "
             "detChan %d", NUMPIXELS, detChan);
     pslLogError("psl__SetNumMapPixels", info_string, status);
     return status;
@@ -5623,7 +5623,7 @@ PSL_STATIC int psl__GetBuffer(int detChan, char buf, unsigned long *data,
     return status;
   }
 
-  sprintf(memoryStr, "burst_map:%#x:%u", base, len);
+  sprintf(memoryStr, "burst_map:%#lx:%lu", base, len);
 
   statusX = dxp_read_memory(&detChan, memoryStr, data);
 
@@ -5695,7 +5695,7 @@ PSL_STATIC int psl__GetCurrentPixel(int detChan, void *value, XiaDefaults *defs,
 
   *((unsigned long *)value) = WORD_TO_LONG(PIXELNUM, PIXELNUMA);
 
-  sprintf(info_string, "Current pixel = %u for detChan %d",
+  sprintf(info_string, "Current pixel = %lu for detChan %d",
           *((unsigned long *)value), detChan);
   pslLogDebug("psl__GetCurrentPixel", info_string);
 
@@ -5778,7 +5778,7 @@ PSL_STATIC int psl__SetRegisterBit(int detChan, char *reg, int bit,
 
     if (statusX != DXP_SUCCESS) {
       sprintf(info_string, "Error reading the '%s' for detChan %d",
-              bit, reg, detChan);
+              reg, detChan);
       pslLogError("psl__SetRegisterBit", info_string, XIA_XERXES);
       return XIA_XERXES;
     }
@@ -5789,7 +5789,7 @@ PSL_STATIC int psl__SetRegisterBit(int detChan, char *reg, int bit,
   statusX = dxp_write_register(&detChan, reg, &val);
 
   if (statusX != DXP_SUCCESS) {
-    sprintf(info_string, "Error writing %#x to the '%s' after setting bit %d "
+    sprintf(info_string, "Error writing %#lx to the '%s' after setting bit %d "
             "for detChan %d", val, reg, bit, detChan);
     pslLogError("psl__SetRegisterBit", info_string, XIA_XERXES);
     return XIA_XERXES;
@@ -5826,7 +5826,7 @@ PSL_STATIC int psl__ClearRegisterBit(int detChan, char *reg, int bit)
   statusX = dxp_write_register(&detChan, reg, &val);
 
   if (statusX != DXP_SUCCESS) {
-    sprintf(info_string, "Error writing %#x to the '%s' after clearing bit %d "
+    sprintf(info_string, "Error writing %#lx to the '%s' after clearing bit %d "
             "for detChan %d", val, reg, bit, detChan);
     pslLogError("psl__ClearRegisterBit", info_string, XIA_XERXES);
     return XIA_XERXES;
@@ -6083,7 +6083,7 @@ PSL_STATIC int psl__SetSyncCount(int detChan, int modChan, char *name,
   statusX = dxp_write_register(&detChan, "SYNCCNT", &count);
 
   if (statusX != DXP_SUCCESS) {
-    sprintf(info_string, "Error setting the number of SYNC counts to %u "
+    sprintf(info_string, "Error setting the number of SYNC counts to %lu "
             "for detChan %d", count, detChan);
     pslLogError("psl__SetSyncCount", info_string, XIA_XERXES);
     return XIA_XERXES;
@@ -6326,7 +6326,7 @@ PSL_STATIC int psl__CheckBit(int detChan, char *reg, int bit, boolean_t *isSet)
 
   if (statusX != DXP_SUCCESS) {
     sprintf(info_string, "Error reading the '%s' for detChan %d",
-            bit, reg, detChan);
+            reg, detChan);
     pslLogError("psl__ClearRegisterBit", info_string, XIA_XERXES);
     return XIA_XERXES;
   }
@@ -6988,7 +6988,7 @@ PSL_STATIC int psl__GetMCR(int detChan, char *name, XiaDefaults *defs,
 
   statusX = dxp_read_register(&detChan, "MCR", (unsigned long *)value);
 
-  sprintf(info_string, "MCR = %#x", *((unsigned long *)value));
+  sprintf(info_string, "MCR = %#lx", *((unsigned long *)value));
   pslLogDebug("psl__GetMCR", info_string);
 
   if (statusX != DXP_SUCCESS) {
@@ -7164,7 +7164,7 @@ PSL_STATIC int psl__GetMFR(int detChan, char *name, XiaDefaults *defs,
 
   statusX = dxp_read_register(&detChan, "MFR", (unsigned long *)value);
 
-  sprintf(info_string, "MFR = %#x", *((unsigned long *)value));
+  sprintf(info_string, "MFR = %#lx", *((unsigned long *)value));
   pslLogDebug("psl__GetMFR", info_string);
 
   if (statusX != DXP_SUCCESS) {
@@ -7325,7 +7325,7 @@ PSL_STATIC int psl__GetCSR(int detChan, char *name, XiaDefaults *defs,
 
   statusX = dxp_read_register(&detChan, "CSR", (unsigned long *)value);
 
-  sprintf(info_string, "CSR = %#x", *((unsigned long *)value));
+  sprintf(info_string, "CSR = %#lx", *((unsigned long *)value));
   pslLogDebug("psl__GetCSR", info_string);
 
   if (statusX != DXP_SUCCESS) {
@@ -7915,7 +7915,7 @@ PSL_STATIC int psl__GetModuleMCA(int detChan, void *value,
   len = (unsigned long)(nBins * 4);
   ASSERT((len % XMAP_MEMORY_BLOCK_SIZE) == 0);
 
-  sprintf(memStr, "burst:%#x:%u", addr, len);
+  sprintf(memStr, "burst:%#lx:%lu", addr, len);
 
   statusX = dxp_read_memory(&detChan, memStr, value);
 
