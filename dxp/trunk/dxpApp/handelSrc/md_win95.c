@@ -2157,7 +2157,7 @@ XIA_MD_STATIC int  dxp_md_usb2_close(int *camChan)
   status = xia_usb2_close(h);
 
   if (status != XIA_USB2_SUCCESS) {
-    sprintf(error_string, "Error closing camChan (%d) with HANDLE = %#x",
+    sprintf(error_string, "Error closing camChan (%d) with HANDLE = %p",
             *camChan, h);
     dxp_md_log_error("dxp_md_usb2_close", error_string, DXP_MDCLOSE);
     return DXP_MDCLOSE;
