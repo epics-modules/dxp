@@ -240,6 +240,14 @@ static void _plx_print_more(int err)
                    "descriptors\n");
     break;
 
+  case ApiDmaChannelUnavailable:
+    _plx_log_DEBUG("DMA channel unavailable\n");
+    break;
+
+  case ApiFailed:
+    _plx_log_DEBUG("API failed\n");
+    break;
+
   default:
     _plx_log_DEBUG("UNKNOWN ERROR (%d) caught in the 'default' case "
                    "statement\n", err);
