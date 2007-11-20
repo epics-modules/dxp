@@ -17,8 +17,8 @@ typedef enum _USB_DEVICE_TYPE {
     Usb20Device
 } USB_DEVICE_TYPE;
 
-// standard definiions for the port status
-// word of the HUB port register
+/* standard definiions for the port status */
+/* word of the HUB port register */
 
 #define USB_PORT_STATUS_CONNECT         0x0001
 #define USB_PORT_STATUS_ENABLE          0x0002
@@ -30,12 +30,12 @@ typedef enum _USB_DEVICE_TYPE {
 #define USB_PORT_STATUS_HIGH_SPEED      0x0400
 
 typedef union _BM_REQUEST_TYPE {
-    struct _BM {
+    struct {
         UCHAR   Recipient:2;
         UCHAR   Reserved:3;
         UCHAR   Type:2;
         UCHAR   Dir:1;
-    };        
+    } _BM ;        
     UCHAR B;        
 } BM_REQUEST_TYPE, *PBM_REQUEST_TYPE;
 
@@ -47,7 +47,7 @@ typedef struct _USB_DEFAULT_PIPE_SETUP_PACKET {
         struct {
             UCHAR LowByte;
             UCHAR HiByte;
-        };
+        } MBYTE;
         USHORT W;
     } wValue;
 
@@ -55,14 +55,14 @@ typedef struct _USB_DEFAULT_PIPE_SETUP_PACKET {
         struct {
             UCHAR LowByte;
             UCHAR HiByte;
-        };
+        } MBYTE;
         USHORT W;
     } wIndex;
     USHORT wLength;
 } USB_DEFAULT_PIPE_SETUP_PACKET, *PUSB_DEFAULT_PIPE_SETUP_PACKET;
 
-// setup packet is eight bytes -- defined by spec
-//C_ASSERT(sizeof(USB_DEFAULT_PIPE_SETUP_PACKET) == 8);
+/* setup packet is eight bytes -- defined by spec */
+/* C_ASSERT(sizeof(USB_DEFAULT_PIPE_SETUP_PACKET) == 8); */
 
 
 #define USB_DEVICE_QUALIFIER_DESCRIPTOR_TYPE        0x06
@@ -85,7 +85,7 @@ typedef union _USB_HIGH_SPEED_MAXPACKET {
         USHORT   MaxPacket:11;  /* 0..10 */
         USHORT   HSmux:2;        /* 11..12 */
         USHORT   Reserved:3;    /* 13..15 */
-    };        
+    } _MP;        
     USHORT us;     
   } USB_HIGH_SPEED_MAXPACKET, *PUSB_HIGH_SPEED_MAXPACKET;
 
@@ -107,5 +107,5 @@ typedef struct _USB_INTERFACE_ASSOCIATION_DESCRIPTOR {
 
 #include <POPPACK.H>
 
-#endif __USB200_H__
+#endif /* __USB200_H__ */
 
