@@ -38,7 +38,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_usb2.c,v 1.1 2007-10-22 02:40:33 rivers Exp $
+ * $Id: xia_usb2.c,v 1.2 2007-11-20 03:09:07 rivers Exp $
  */
 
 #include <stdlib.h>
@@ -64,8 +64,8 @@ static int xia_usb2__small_read_xfer(HANDLE h, DWORD n_bytes, byte_t *buf);
 
 
 /* This is the Cypress GUID. We may need to generate our own. */
-static GUID CYPRESS_GUID = {0xae18aa60, 0x7f6a, 0x11d4, 0x97, 0xdd, 0x0, 0x1,
-                            0x2, 0x29, 0xb9, 0x59};
+static GUID CYPRESS_GUID = {0xae18aa60, 0x7f6a, 0x11d4, {0x97, 0xdd, 0x0, 0x1,
+                            0x2, 0x29, 0xb9, 0x59}};
 
 
 /**
@@ -147,7 +147,7 @@ XIA_EXPORT int XIA_API xia_usb2_open(int dev, HANDLE *h)
     free(intfc_detail_data);
     SetupDiDestroyDeviceInfoList(dev_info);
     err = GetLastError();
-    printf("Last Error = %#x\n", err);
+    printf("Last Error = %#lx\n", err);
     return XIA_USB2_DEV_INTFC_DETAIL;
   }
 
@@ -176,7 +176,7 @@ XIA_EXPORT int XIA_API xia_usb2_close(HANDLE h)
 
   if (!status) {
     err = GetLastError();
-    printf("Close Error = %u\n", err);
+    printf("Close Error = %lu\n", err);
     return XIA_USB2_CLOSE_HANDLE;
   }
 
@@ -334,7 +334,7 @@ static int xia_usb2__xfer(HANDLE h, byte_t ep, DWORD n_bytes, byte_t *buf)
   
   if (!success) {
     err = GetLastError();
-    printf("Xfer Error = %u\n", err);
+    printf("Xfer Error = %lu\n", err);
     return XIA_USB2_XFER;
   }
 
@@ -376,7 +376,7 @@ static int xia_usb2__small_read_xfer(HANDLE h, DWORD n_bytes, byte_t *buf)
 
   if (!success) {
     err = GetLastError();
-    printf("Xfer Error = %u\n", err);
+    printf("Xfer Error = %lu\n", err);
     return XIA_USB2_XFER;
   }
 
