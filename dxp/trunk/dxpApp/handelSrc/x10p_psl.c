@@ -4108,7 +4108,7 @@ PSL_STATIC int PSL_API pslUserSetup(int detChan, XiaDefaults *defaults,
 									 detector_chan, m, modChan);
 
 	if (status != XIA_SUCCESS) {
-	  sprintf(info_string, "Error setting '%s' to %0.3lf for detChan %d",
+	  sprintf(info_string, "Error setting '%s' to %0.3f for detChan %d",
 			  entry->name, entry->data, detChan);
 	  pslLogError("pslUserSetup", info_string, status);
 	  return status;
