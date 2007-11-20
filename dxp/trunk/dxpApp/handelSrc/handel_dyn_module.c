@@ -64,6 +64,45 @@
 #include "xia_common.h"
 #include "xia_assert.h"
 
+static ModName_t KNOWN_MODS[] = {
+
+#ifndef EXCLUDE_DXPX10P
+  {"dxpx10p", "dxpx10p"},
+  {"saturn",  "dxpx10p"},
+  {"x10p",    "dxpx10p"},
+#endif /* EXCLUDE_DXPX10P */
+
+#ifndef EXCLUDE_DXP4C2X
+  {"dxp4c2x", "dxp4c2x"},
+  {"dxp2x4x", "dxp4c2x"},
+  {"dxp2x",   "dxp4c2x"},
+#endif /* EXCLUDE_DXP4C2X */
+
+#ifndef EXCLUDE_UDXP
+  {"udxps",   "udxps"},
+#endif /* EXCLUDE_UDXP */
+
+#ifndef EXCLUDE_UDXP
+  {"udxp",    "udxp"},
+#endif /* EXCLUDE_UDXP */
+
+#ifndef EXCLUDE_XMAP
+  {"xmap",    "xmap"},
+#endif /* EXCLUDE_XMAP */
+
+#ifndef EXCLUDE_VEGA
+  {"vega",   "vega"},
+#endif /* EXCLUDE_VEGA */
+
+#ifndef EXCLUDE_MERCURY
+  {"mercury", "mercury"},
+#endif /* EXCLUDE_MERCURY */
+};
+
+#define N_KNOWN_MODS (sizeof(KNOWN_MODS) / sizeof(KNOWN_MODS[0]))
+
+static char *XIA_NULL_STRING = "null";
+#define XIA_NULL_STRING_LEN  (strlen(XIA_NULL_STRING) + 1)
 
 HANDEL_STATIC int HANDEL_API xiaProcessInterface(Module *chosen, char *name, void *value);
 HANDEL_STATIC int HANDEL_API xiaProcessFirmware(Module *chosen, char *name, void *value);
