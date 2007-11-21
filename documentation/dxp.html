@@ -20,7 +20,7 @@
 <ul>
   <li>DXP digital-signal processing spectroscopy systems.&nbsp; These include 
   the xMAP PXI module, the DXP2X4C CAMAC module, and the Saturn module that uses the 
-  enhanced parallel port interface, </li>
+  enhanced parallel port interface (EPP), USB 1.0, or USB 2.0 </li>
 </ul>
 
 <p>Prior to EPICS 3.14 this support was in the <b>camac</b> module of synApps. Starting 
@@ -43,6 +43,16 @@ below:</p>
     <th>Release Notes</td>
     <th>Known Problems</td>
   </tr>
+
+  <tr valign=top>
+    <td>2-7</td>
+    <td>15-Nov-2007</td>
+    <td><a href="http://cars.uchicago.edu/software/pub/dxpR2-7.tgz">dxpR2-7.tgz</a></td>
+    <td><a href="dxpDoc.html">dxpDoc.html</a><br>
+        <a href="dxpRecord.html">dxpRecord.html</a></td>
+    <td><a href="dxpReleaseNotes.html">Release notes</a></td>
+    <td><a href="dxpKnownProblems.html">Known Problems</a></td>
+ </tr>
 
   <tr valign=top>
     <td>2-6</td>
@@ -136,6 +146,43 @@ below:</p>
     <th>Required for</td>
   </tr>
 
+  <tr>
+    <td rowspan=7>2-7</td>
+    <td>EPICS base</td>
+    <td>3.14.8.2</td>
+    <td>Base support</td>
+  </tr>
+  <tr>
+    <td>calc</td>
+    <td>2-6-3</td>
+    <td>Record support</td>
+  </tr>
+  <tr>
+    <td>sscan</td>
+    <td>2-5-6</td>
+    <td>Record support</td>
+  </tr>
+  <tr>
+    <td>autosave</td>
+    <td>4-3</td>
+    <td>Save/restore support</td>
+  </tr>
+  <tr>
+    <td>asyn</td>
+    <td>4-9</td>
+    <td>Driver support</td>
+  </tr>
+  <tr>
+    <td>mca</td>
+    <td>6-9</td>
+    <td>MCA support</td>
+  </tr>
+  <tr>
+    <td>camac</td>
+    <td>2-5</td>
+    <td>CAMAC support</td>
+  </tr>
+  
   <tr>
     <td rowspan=7>2-6</td>
     <td>EPICS base</td>
