@@ -2372,7 +2372,7 @@ XERXES_STATIC int dxp_read_reg(int *ioChan, int *modChan, char *name,
  *
  */
 XERXES_STATIC int dxp_do_cmd(int *ioChan, byte_t cmd, unsigned int lenS,
-							 byte_t *send, unsigned int lenR, byte_t *receive)
+							 byte_t *send, unsigned int lenR, byte_t *receive, byte_t ioFlags)
 {
   UNUSED(ioChan);
   UNUSED(cmd);
