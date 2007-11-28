@@ -3,6 +3,8 @@ mca/6-10beta/mcaApp/Db/ \
 mca/6-10beta/mcaApp/op/adl/ \
 autosave/4-3/asApp/Db/ \
 autosave/4-3/asApp/op/adl/ \
+sscan/2-5-6beta/sscanApp/Db/ \
+sscan/2-5-6beta/sscanApp/op/adl/ \
 dxp/2-7beta/documentation \
 dxp/2-7beta/dxpApp/Db \
 dxp/2-7beta/dxpApp/firmware \
