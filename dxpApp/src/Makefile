@@ -69,13 +69,13 @@ dxpApp_SYS_LIBS_cygwin32 += rpc
 dxpApp_SYS_LIBS_WIN32 += setupapi
 
 # Test applications
-PROD_IOC_cygwin32 += test_sets
-test_sets_SRCS += test_sets.c
-test_sets_LIBS += dxp
-test_sets_LIBS += handel
-test_sets_SYS_LIBS_cygwin32 += DLPORTIO PlxApi
-test_sets_LIBS += $(EPICS_BASE_IOC_LIBS)
-test_sets_SYS_LIBS += setupapi
+PROD_IOC_cygwin32 += test_scas2
+test_scas2_SRCS += test_scas2.c
+test_scas2_LIBS += dxp
+test_scas2_LIBS += handel
+test_scas2_SYS_LIBS_cygwin32 += DLPORTIO PlxApi
+test_scas2_LIBS += $(EPICS_BASE_IOC_LIBS)
+test_scas2_SYS_LIBS += setupapi
 
 #===========================
 #===========================
