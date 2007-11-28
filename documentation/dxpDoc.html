@@ -1136,11 +1136,13 @@ Tests were done with R2-5 of the dxp module to measure the performance of the Sa
 rapidly collecting complete spectra in a scan.  
 The tests were done with the following conditions:
 <ul>
-  <li>2048 channel spectra
+  <li> Cygwin architecture on Windows.  This is currently required for the saveData software.
+  <li> 2048 channel spectra
   <li>0.01 second acquisition time, in order to attain real data but with minimal overhead.
   <li>EPICS scan records.  
   <ul>
-    <li>The inner scan was the scanH record, which had its detector trigger configured to EraseStart on the mca/dxp
+    <li>The inner scan was the scanH record, which had its detector trigger configured to .mca.ERST (Saturn)
+        or EraseStart (xMAP) in the mca/dxp
         database.  Its detectors were configured to collect spectra from the MCA records. The Saturn collected 1 MCA
         spectrum at each scan point, the xMAP collected 4, 8, 12 or 16 spectra at each scan point.
     <li>The outer scan was the scan1 record.  It had no positioner drive PV to minimize overhead.  
@@ -1179,34 +1181,34 @@ at the end.  The EPICS software does not yet support this feature, but will in a
   </tr>
 
   <tr valign=top>
-    <td>Saturn on Windows (EPP)</td>
+    <td>Saturn (EPP)</td>
     <td>1</td>
-    <td>30</td>
-    <td>33</td>
-    <td>33</a></td>
+    <td>30.1</td>
+    <td>33.2</td>
+    <td>33.2</a></td>
     <td>0.27</a></td>
   </tr>
 
   <tr valign=top>
-    <td>Saturn on Windows (USB 1.0)</td>
+    <td>Saturn (USB 1.0)</td>
     <td>1</td>
-    <td>69</td>
-    <td>14</td>
-    <td>14</a></td>
-    <td>0.12</a></td>
+    <td>80.5</td>
+    <td>12.4</td>
+    <td>12.4</a></td>
+    <td>0.10</a></td>
   </tr>
 
   <tr valign=top>
-    <td>Saturn on Windows (USB 2.0)</td>
+    <td>Saturn (USB 2.0)</td>
     <td>1</td>
-    <td>14</td>
-    <td>71</td>
-    <td>71</a></td>
-    <td>0.59</a></td>
+    <td>23.5</td>
+    <td>42.6</td>
+    <td>42.6</a></td>
+    <td>0.35</a></td>
   </tr>
 
   <tr valign=top>
-    <td>xMAP on Windows</td>
+    <td>xMAP</td>
     <td>4 (1 xMAP)</td>
     <td>45</td>
     <td>22.2</td>
@@ -1215,7 +1217,7 @@ at the end.  The EPICS software does not yet support this feature, but will in a
   </tr>
 
   <tr valign=top>
-    <td>xMAP on Windows</td>
+    <td>xMAP</td>
     <td>8 (2 xMAPs)</td>
     <td>53</td>
     <td>18.9</td>
@@ -1224,7 +1226,7 @@ at the end.  The EPICS software does not yet support this feature, but will in a
   </tr>
 
   <tr valign=top>
-    <td>xMAP on Windows</td>
+    <td>xMAP</td>
     <td>12 (3 xMAPs)</td>
     <td>60</td>
     <td>16.7</td>
@@ -1233,7 +1235,7 @@ at the end.  The EPICS software does not yet support this feature, but will in a
   </tr>
 
   <tr valign=top>
-    <td>xMAP on Windows</td>
+    <td>xMAP</td>
     <td>16 (4 xMAPs)</td>
     <td>67</td>
     <td>14.9</td>
