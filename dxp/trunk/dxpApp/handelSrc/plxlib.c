@@ -671,16 +671,12 @@ XIA_EXPORT int XIA_API plx_read_block(HANDLE h, unsigned long addr,
                      "HANDLE %#p\n", h);
       _plx_print_more(status);
       return PLX_API;
-    } else {
-      /* Print some message here to make sure that the event is register */
-      _plx_log_DEBUG("Registered for notification of PCI DMA channel 0: "
-                     "HANDLE %#p\n", h);    
     }
 
     V_MAP.registered[idx] = TRUE_;
   }
 
-  ACCESS_VADDR(idx, 0x50) = addr;
+  *((unsigned long *)(V_MAP.addr[idx] + (0x50))) = addr;
 
   memset(&dma_data, 0, sizeof(DMA_TRANSFER_ELEMENT));
 
@@ -709,11 +705,11 @@ XIA_EXPORT int XIA_API plx_read_block(HANDLE h, unsigned long addr,
     return PLX_API;
   }
 
-  ASSERT((V_MAP.events[idx]).IsValidTag == PLX_TAG_VALID);
+  /* ASSERT((V_MAP.events[idx]).IsValidTag == PLX_TAG_VALID); */
   status = PlxNotificationWait(h, &(V_MAP.events[idx]), 10000);
 
   if (status != ApiSuccess) {
-    free(local);
+    free(local);    
     ignored_status = PlxDmaSglChannelClose(h, PrimaryPciChannel0);
     _plx_log_DEBUG("Error waiting for 'burst' read to complete: HANDLE %#p\n", h);
     _plx_print_more(status);
@@ -734,21 +730,3 @@ XIA_EXPORT int XIA_API plx_read_block(HANDLE h, unsigned long addr,
   return PLX_SUCCESS;
 }
 
-
-/** @brief Dump out the virtual map.
-*
-*/
-XIA_EXPORT void XIA_API plx_dump_vmap_DEBUG(void)
-{
-  unsigned long i = 0;
-
-
-  _plx_log_DEBUG("Starting virtual map dump.\n");
-
-  for (i = 0; i < V_MAP.n; i++) {
-    _plx_log_DEBUG("\t%u: addr = %#x, HANDLE = %p\n", i, V_MAP.addr[i],
-                   V_MAP.h[i]);
-  }
-
-  _plx_log_DEBUG("Virtual map dump complete.\n");
-}
