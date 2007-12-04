@@ -283,7 +283,7 @@ typedef struct _PLX_DEVICE_OBJECT
 typedef struct _PLX_NOTIFY_OBJECT
 {
     U32     IsValidTag;              /* Magic number to determine validity */
- #if defined(_WIN32)
+ #if defined(_WIN32) || defined(CYGWIN32)
     HANDLE  hEvent;                  /* Handle to notification event */
  #endif
     VOID   *pWaitObject;             /* -- INTERNAL -- Wait object used by the driver */
