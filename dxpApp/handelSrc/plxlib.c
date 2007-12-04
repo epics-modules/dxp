@@ -240,14 +240,6 @@ static void _plx_print_more(int err)
                    "descriptors\n");
     break;
 
-  case ApiDmaChannelUnavailable:
-    _plx_log_DEBUG("DMA channel unavailable\n");
-    break;
-
-  case ApiFailed:
-    _plx_log_DEBUG("API failed\n");
-    break;
-
   default:
     _plx_log_DEBUG("UNKNOWN ERROR (%d) caught in the 'default' case "
                    "statement\n", err);
@@ -416,6 +408,7 @@ static int _plx_remove_slot_from_map(HANDLE h)
 
   PLX_INTR *new_intrs = NULL;
 
+  boolean_t *new_registered = NULL;
 
   status = _plx_find_handle_index(h, &idx);
 
@@ -468,6 +461,13 @@ static int _plx_remove_slot_from_map(HANDLE h)
     return PLX_MEM;
   }
 
+  new_registered = (boolean_t *)malloc((V_MAP.n - 1) * sizeof(boolean_t));
+
+  if (!new_registered) {
+    _plx_log_DEBUG("Unable to allocated %d bytes for 'new_registered'\n",
+                   (V_MAP.n - 1) * sizeof(boolean_t));
+    return PLX_MEM;
+  }
   /* Transfer the old addr/h contents over, skipping the unmapped index */
   for (i = 0, j = 0; i < V_MAP.n; i++) {
     if (i != idx) {
@@ -475,6 +475,7 @@ static int _plx_remove_slot_from_map(HANDLE h)
       new_h[j]      = V_MAP.h[i];
       new_events[j] = V_MAP.events[i];
       new_intrs[j]  = V_MAP.intrs[i];
+      new_registered[j]  = V_MAP.registered[i];
       j++;
     }
   }
@@ -483,6 +484,7 @@ static int _plx_remove_slot_from_map(HANDLE h)
   free(V_MAP.h);
   free(V_MAP.events);
   free(V_MAP.intrs);
+  free(V_MAP.registered);
 
   V_MAP.n--;
 
@@ -492,16 +494,19 @@ static int _plx_remove_slot_from_map(HANDLE h)
     free(new_h);
     free(new_events);
     free(new_intrs);
-
+    free(new_registered);
+    
     V_MAP.addr = NULL;
     V_MAP.h = NULL;
     V_MAP.events = NULL;
     V_MAP.intrs = NULL;
+    V_MAP.registered = NULL;    
   } else {
     V_MAP.addr   = new_addr;
     V_MAP.h      = new_h;
     V_MAP.events = new_events;
     V_MAP.intrs  = new_intrs;
+    V_MAP.registered  = new_registered;
   }
 
   return PLX_SUCCESS;
@@ -666,6 +671,10 @@ XIA_EXPORT int XIA_API plx_read_block(HANDLE h, unsigned long addr,
                      "HANDLE %#p\n", h);
       _plx_print_more(status);
       return PLX_API;
+    } else {
+      /* Print some message here to make sure that the event is register */
+      _plx_log_DEBUG("Registered for notification of PCI DMA channel 0: "
+                     "HANDLE %#p\n", h);    
     }
 
     V_MAP.registered[idx] = TRUE_;
@@ -700,6 +709,7 @@ XIA_EXPORT int XIA_API plx_read_block(HANDLE h, unsigned long addr,
     return PLX_API;
   }
 
+  ASSERT((V_MAP.events[idx]).IsValidTag == PLX_TAG_VALID);
   status = PlxNotificationWait(h, &(V_MAP.events[idx]), 10000);
 
   if (status != ApiSuccess) {
