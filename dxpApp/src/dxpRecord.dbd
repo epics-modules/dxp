@@ -422,7 +422,7 @@ recordtype(dxp) {
         special(SPC_MOD)
         pp(TRUE)
         asl(ASL0)
-        initial(20.)
+        initial(4.)
     }
     field(MAXWIDTH_RBV,DBF_DOUBLE) {
         prompt("Maxwidth readback")
