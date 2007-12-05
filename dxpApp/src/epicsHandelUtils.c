@@ -101,16 +101,6 @@ static void xiaStartSystemCallFunc(const iocshArgBuf *args)
     epicsHandelUnlock();
 }
 
-static const iocshArg dxp_mem_dumpArg0 = { "channel",iocshArgInt};
-static const iocshArg * const dxp_mem_dumpArgs[1] = {&dxp_mem_dumpArg0};
-static const iocshFuncDef dxp_mem_dumpFuncDef = {"dxp_mem_dump",1,dxp_mem_dumpArgs};
-static void dxp_mem_dumpCallFunc(const iocshArgBuf *args)
-{
-    int channel = args[0].ival;
-
-/*    dxp_mem_dump(&channel); */
-}
-
 static const iocshArg xiaSaveSystemArg0 = { "ini file",iocshArgString};
 static const iocshArg * const xiaSaveSystemArgs[1] = {&xiaSaveSystemArg0};
 static const iocshFuncDef xiaSaveSystemFuncDef = {"xiaSaveSystem",1,xiaSaveSystemArgs};
@@ -128,7 +118,6 @@ void dxpRegister(void)
     iocshRegister(&xiaLogOutputFuncDef,xiaLogOutputCallFunc);
     iocshRegister(&xiaStartSystemFuncDef,xiaStartSystemCallFunc);
     iocshRegister(&xiaSaveSystemFuncDef,xiaSaveSystemCallFunc);
-    iocshRegister(&dxp_mem_dumpFuncDef,dxp_mem_dumpCallFunc);
     iocshRegister(&DXPConfigFuncDef,DXPConfigCallFunc);
 }
 
