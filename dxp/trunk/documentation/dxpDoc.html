@@ -403,13 +403,12 @@ digital signal processor based multichannel analyzers from
       works correctly, you can then begin to collect and display spectra.
 </ul>
 <p>After verifying that you can control the Saturn from medm there are some things you should do to
-customize your installation.  First, you should edit one of the supplied example .ini files, 
-vortex.ini file (for reset pre-amps) or ketek.ini (for RC pre-amps). You need to set the polarity, 
+customize your installation.  First, you should edit saturn.ini to set the polarity, 
 the pre-amp gain, and the time after reset (for reset pre-amps) or the 
 RC time constant (for RC pre-amps). Consult the
 <a href="http://www.xia.com/Manuals/Kepler_Saturn_Manual_4.0.1.pdf" target="_blank">Saturn User's Manual</a>
 for information on how to determine and set these parameters.  
-<p>The .ini files will contain lines like the following:
+<p>The saturn.ini file will contain lines like the following:
 <ul>
   <pre>
   type_value = 10.
@@ -422,7 +421,7 @@ for information on how to determine and set these parameters.
   <li>The gain is specified in mV/keV, and is used so that the energy units in the DXP software
       are correct. Most pre-amps are in the 1-4 mV/keV range.  The best way to set this value is to
       set the EMAX parameter (energy of last channel) in EPICS, and see how well it agrees with reality
-      when you calibrate the spectrum with a known source.  Then iteratively edit the .ini file and restart
+      when you calibrate the spectrum with a known source.  Then iteratively edit the saturn.ini file and restart
       EPICS until the actual EMAX matches the requested one.  Getting it to within a few
       percent is fine, since you will do accurate calibration of the EPICS MCA spectra when you collect
       data. 
