@@ -9,6 +9,16 @@
 See <a href="dxpKnownProblems.html">known problems</a> for information
 on problems each release.
 
+<h2 align="center">Release 2-8 (xx-Jan-2008) </h2>
+<ul>
+  <li>Changes in Handel code for Saturn to be compatible with Handel version 0.6.47.  These are mostly
+      minor.  
+      The most important changes are that the Saturn now supports "maxwidth" and "baseline_threshold"
+      as acquisition parameters, so these are now specified in calibrated units (keV), rather than
+      device units.  The dxp record device support (devDxp.c) has been changed to take advantage of this.
+      This change makes the Saturn compatible with the xMAP.
+</ul>
+
 <h2 align="center">Release 2-7 (4-Dec-2007) </h2>
 <ul>
   <li>This is the first release that builds the xMAP support from source code, rather
