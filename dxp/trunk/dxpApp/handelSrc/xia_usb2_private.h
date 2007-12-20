@@ -39,14 +39,15 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_usb2_private.h,v 1.2 2007-11-14 21:10:20 rivers Exp $
+ * $Id: xia_usb2_private.h,v 1.3 2007-12-20 20:04:18 rivers Exp $
  */
 
 #ifndef __XIA_USB2_API_PRIVATE_H__
 #define __XIA_USB2_API_PRIVATE_H__
 
-/*#include <windows.h>*/
-
+#ifdef WIN32
+#include <windows.h>
+#endif
 
 /* Custom messages */
 #define WM_CLOSE_DEVICE  (WM_USER + 1)
@@ -61,7 +62,7 @@
 #define XIA_USB2_WRITE_EP 0x6
 
 /* XIA USB2 protocol constants */
-#define XIA_USB2_SETUP_PACKET_SIZE      7
+#define XIA_USB2_SETUP_PACKET_SIZE      9
 #define XIA_USB2_SMALL_READ_PACKET_SIZE 512
 
 #define XIA_USB2_SETUP_FLAG_WRITE   0x0
