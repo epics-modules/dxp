@@ -1625,7 +1625,7 @@ static int dxp_load_dspsymbol_table(FILE* fp, Dsp_Info* dsp)
    */
   while (x10p_md_fgets(line,132,fp)!=NULL) {
     if (line[0]=='*') continue;
-    sscanf(line,"%hd",&(dsp->params->nsymbol));
+    sscanf(line,"%hu",&(dsp->params->nsymbol));
     break;
   }
   if (dsp->params->nsymbol>0) {
@@ -1651,7 +1651,7 @@ static int dxp_load_dspsymbol_table(FILE* fp, Dsp_Info* dsp)
                       "Error in SYMBOL format of DSP file",status);
         return status;
       }
-      retval = sscanf(line, "%s %1s %hd %hd", dsp->params->parameters[i].pname, atype,
+      retval = sscanf(line, "%s %1s %hu %hu", dsp->params->parameters[i].pname, atype,
                       &(dsp->params->parameters[i].lbound), &(dsp->params->parameters[i].ubound));
       dsp->params->parameters[i].address = i;
       dsp->params->parameters[i].access = 1;
