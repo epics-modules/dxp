@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  * 
  *
- * $Id: x10p.h,v 1.2 2007-10-23 02:16:33 rivers Exp $
+ * $Id: x10p.h,v 1.3 2007-12-20 17:01:31 rivers Exp $
  *
  *    Following are prototypes for dxp4c2x.c routines
  */
@@ -87,6 +87,7 @@
 #define USE_FIR			  0x004
 #define ACQUIRE_BASELINE  0x008
 #define ADJUST_FAST_FILT  0x010
+#define DISABLE_AUTOT   0x00D
 #define BASELINE_SHIFT	  0x020
 #define RESIDUAL_BASE	  0x040
 #define STOP_BASELINE	  0x080
