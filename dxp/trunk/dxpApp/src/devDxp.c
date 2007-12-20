@@ -361,13 +361,7 @@ void asynCallback(asynUser *pasynUser)
                  "devDxp::asynCallback, MSG_DXP_SET_DOUBLE_PARAM"
                  " setting maxwidth=%f\n",
                  pmsg->dvalue);
-             if (minfo->moduleType == DXP_XMAP) {
-                /* On the xMAP maxwidth is an acquisition parameter in microseconds */
-                xiaSetAcquisitionValues(detChan, "maxwidth", &pmsg->dvalue);
-             } else {
-                /* On Saturn and DXP2X we need to use the raw parameter */
-                xiaSetAcquisitionValues(detChan, "MAXWIDTH", &pmsg->dvalue);
-             }
+             xiaSetAcquisitionValues(detChan, "maxwidth", &pmsg->dvalue);
              XMAP_APPLY(detChan);
          }
          else if (pfield == &pdxp->pgain) {
@@ -420,13 +414,9 @@ void asynCallback(asynUser *pasynUser)
                  "devDxp::asynCallback, MSG_DXP_SET_DOUBLE_PARAM"
                  " setting baseline threshold=%f\n",
                  pmsg->dvalue);
-             if (minfo->moduleType == DXP_XMAP) {
-                 dvalue = pmsg->dvalue * 1000.;    /* Convert to eV */
-                 xiaSetAcquisitionValues(detChan, "baseline_threshold", &dvalue);
-                 XMAP_APPLY(detChan);
-             } else {
-                 xiaSetAcquisitionValues(detChan, "BASETHRESH", &pmsg->dvalue);
-             }
+              dvalue = pmsg->dvalue * 1000.;    /* Convert to eV */
+              xiaSetAcquisitionValues(detChan, "baseline_threshold", &dvalue);
+              XMAP_APPLY(detChan);
          }
          else if (pfield == &pdxp->emax) {
              if (pdxpReadbacks->number_mca_channels <= 0.)
@@ -599,18 +589,11 @@ static void readDxpParams(asynUser *pasynUser)
            xiaGetAcquisitionValues(detChan, "baseline_filter_length",
                                    &pdxpReadbacks->base_len);
         }
-        if (minfo->moduleType == DXP_XMAP) {
-           xiaGetAcquisitionValues(detChan, "baseline_threshold",
-                                   &pdxpReadbacks->base_thresh);
-           pdxpReadbacks->base_thresh /= 1000.;  /* Convert to keV */
-           xiaGetAcquisitionValues(detChan, "maxwidth",
-                                   &pdxpReadbacks->maxwidth);
-        } else {
-           /* Cannot read the BASETHRESH aquisition parameter, because this does
-            * not update to reflect automatic baseline threshold adjustment */
-           pdxpReadbacks->base_thresh = pdxp->pptr[minfo->offsets.basethresh];
-           pdxpReadbacks->maxwidth = pdxp->pptr[minfo->offsets.maxwidth];
-        }
+        xiaGetAcquisitionValues(detChan, "baseline_threshold",
+                                &pdxpReadbacks->base_thresh);
+        pdxpReadbacks->base_thresh /= 1000.;  /* Convert to keV */
+        xiaGetAcquisitionValues(detChan, "maxwidth",
+                                &pdxpReadbacks->maxwidth);
         if (minfo->moduleType != DXP_XMAP) {
            xiaGetAcquisitionValues(detChan, "baseline_cut",
                                    &pdxpReadbacks->base_cut_pct);
