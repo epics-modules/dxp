@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_mem.c,v 1.2 2007-11-14 21:14:03 rivers Exp $
+ * $Id:
  */
 
 #include <stdlib.h>
