@@ -35,7 +35,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xia_x10p.h,v 1.2 2007-10-22 03:59:43 rivers Exp $
+ * $Id: xia_x10p.h,v 1.3 2007-12-20 20:04:54 rivers Exp $
  *
  *
  *    Following are prototypes for dxp4c2x.c and xerxes.c routines
@@ -167,8 +167,7 @@ XERXES_STATIC int dxp_read_reg(int *ioChan, int *modChan, char *name,
 XERXES_STATIC FILE* XERXES_API dxp_find_file(const char *, const char *);
 
 XERXES_STATIC int XERXES_API dxp_do_cmd(int *ioChan, byte_t cmd, unsigned int lenS,
-					byte_t *send, unsigned int lenR, byte_t *receive,
-					byte_t ioFlags);
+					byte_t *send, unsigned int lenR, byte_t *receive);
 
 XERXES_STATIC int XERXES_API dxp_unhook(Board *board);
 
