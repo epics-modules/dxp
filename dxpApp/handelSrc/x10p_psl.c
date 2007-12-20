@@ -2886,7 +2886,7 @@ PSL_STATIC int PSL_API pslGetMCAData(int detChan, void *value,
   status = pslGetDefault("number_mca_channels", &mcaLen, defs);
   ASSERT(status == XIA_SUCCESS);
 
-  sprintf(memStr, "spectrum:%#x:%u", (unsigned short)mcaStartAddress,
+  sprintf(memStr, "spectrum:%#x:%lu", (unsigned short)mcaStartAddress,
           (unsigned long)mcaLen);
 
   statusX = dxp_read_memory(&detChan, memStr, (unsigned long *)value);
@@ -4015,7 +4015,7 @@ PSL_STATIC int PSL_API pslUserSetup(int detChan, XiaDefaults *defaults,
                                      detector_chan, m, modChan);
 
     if (status != XIA_SUCCESS) {
-      sprintf(info_string, "Error setting '%s' to %0.3lf for detChan %d",
+      sprintf(info_string, "Error setting '%s' to %0.3f for detChan %d",
               entry->name, entry->data, detChan);
       pslLogError("pslUserSetup", info_string, status);
       return status;
@@ -6039,7 +6039,7 @@ PSL_STATIC int psl__SetPresetValue(int detChan, void *value, FirmwareSet *fs,
   parameter_t PRESETLEN0;
   parameter_t PRESETLEN1;
 
-  unsigned long len;
+  unsigned long len=0;
 
   double presetTick = 16.0 / (pslGetClockSpeed(detChan) * 1.0e6);
 
@@ -6218,7 +6218,7 @@ PSL_STATIC int psl__SetBThresh(int detChan, void *value,
   ASSERT(value != NULL);
   ASSERT(defs != NULL);
 
-  // Revert RUNTASK bit if the value passed in is 0.
+  /* Revert RUNTASK bit if the value passed in is 0. */
   basethreshEV = *((double *)value);
 
   if (basethreshEV  == 0.0) {
