@@ -257,7 +257,7 @@ XIA_EXPORT int XIA_API xia_usb_read(long address, long nWords, char *device, uns
 
 
 /*---------------------------------------------------------------------------------------*/
-XIA_EXPORT int XIA_API xia_usb2_read(HANDLE h, unsigned short addr,
+XIA_EXPORT int XIA_API xia_usb2_read(HANDLE h, unsigned long addr,
                                      unsigned long n_bytes,
                                      byte_t *buf)
 {
@@ -366,7 +366,7 @@ XIA_EXPORT int XIA_API xia_usb_write(long address, long nWords, char *device, un
     
     
 /*---------------------------------------------------------------------------------------*/
-XIA_EXPORT int XIA_API xia_usb2_write(HANDLE h, unsigned short addr,
+XIA_EXPORT int XIA_API xia_usb2_write(HANDLE h, unsigned long addr,
                                       unsigned long n_bytes,
                                       byte_t *buf)
 {    
