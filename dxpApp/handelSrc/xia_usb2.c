@@ -38,7 +38,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_usb2.c,v 1.2 2007-11-20 03:09:07 rivers Exp $
+ * $Id: xia_usb2.c,v 1.3 2007-12-20 20:02:26 rivers Exp $
  */
 
 #include <stdlib.h>
@@ -57,7 +57,7 @@
 
 
 /* Prototypes */
-static int xia_usb2__send_setup_packet(HANDLE h, unsigned short addr,
+static int xia_usb2__send_setup_packet(HANDLE h, unsigned long addr,
                                        unsigned long n_bytes, byte_t rw_flag);
 static int xia_usb2__xfer(HANDLE h, byte_t ep, DWORD n_bytes, byte_t *buf);
 static int xia_usb2__small_read_xfer(HANDLE h, DWORD n_bytes, byte_t *buf);
@@ -190,7 +190,7 @@ XIA_EXPORT int XIA_API xia_usb2_close(HANDLE h)
  *
  * @a buf is expected to be allocated by the calling routine.
  */
-XIA_EXPORT int XIA_API xia_usb2_read(HANDLE h, unsigned short addr,
+XIA_EXPORT int XIA_API xia_usb2_read(HANDLE h, unsigned long addr,
                                      unsigned long n_bytes, byte_t *buf)
 {
   int status;
@@ -237,7 +237,7 @@ XIA_EXPORT int XIA_API xia_usb2_read(HANDLE h, unsigned short addr,
 /**
  * @brief Writes the requested buffer to the requested address.
  */
-XIA_EXPORT int XIA_API xia_usb2_write(HANDLE h, unsigned short addr,
+XIA_EXPORT int XIA_API xia_usb2_write(HANDLE h, unsigned long addr,
                                       unsigned long n_bytes, byte_t *buf)
 {
   int status;
@@ -273,7 +273,7 @@ XIA_EXPORT int XIA_API xia_usb2_write(HANDLE h, unsigned short addr,
  * is the first stage of our two-part process for transferring data to
  * and from the board.
  */
-static int xia_usb2__send_setup_packet(HANDLE h, unsigned short addr,
+static int xia_usb2__send_setup_packet(HANDLE h, unsigned long addr,
                                        unsigned long n_bytes, byte_t rw_flag)
 {
   int status;
@@ -292,6 +292,8 @@ static int xia_usb2__send_setup_packet(HANDLE h, unsigned short addr,
   pkt[4] = (byte_t)((n_bytes >> 16) & 0xFF);
   pkt[5] = (byte_t)((n_bytes >> 24) & 0xFF);
   pkt[6] = rw_flag;
+  pkt[7] = (byte_t)((addr >> 16) & 0xFF);
+  pkt[8] = (byte_t)((addr >> 24) & 0xFF);
 
   status = xia_usb2__xfer(h, XIA_USB2_SETUP_EP, XIA_USB2_SETUP_PACKET_SIZE,
                           pkt);
@@ -371,7 +373,7 @@ static int xia_usb2__small_read_xfer(HANDLE h, DWORD n_bytes, byte_t *buf)
 
 
   success = DeviceIoControl(h, IOCTL_ADAPT_SEND_NON_EP0_DIRECT,
-                            &st, sizeof(st), &big_packet,
+                            &st, sizeof(st), &big_packet[0],
                             XIA_USB2_SMALL_READ_PACKET_SIZE, &bytes_ret, NULL);
 
   if (!success) {
@@ -380,7 +382,7 @@ static int xia_usb2__small_read_xfer(HANDLE h, DWORD n_bytes, byte_t *buf)
     return XIA_USB2_XFER;
   }
 
-  memcpy(buf, &big_packet, n_bytes);
+  memcpy(buf, &big_packet[0], n_bytes);
 
   return XIA_USB2_SUCCESS;
 }
