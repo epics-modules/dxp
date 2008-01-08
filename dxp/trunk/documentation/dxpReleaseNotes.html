@@ -17,6 +17,9 @@ on problems each release.
       as acquisition parameters, so these are now specified in calibrated units (keV), rather than
       device units.  The dxp record device support (devDxp.c) has been changed to take advantage of this.
       This change makes the Saturn compatible with the xMAP.
+  <li>Updated documentation to explain how to use udev or hotplug to run the USB Saturn on Linux without
+      root privilege.  Added USB_DEVFS_PATH environment variable to iocSaturn/st.cmd to fix problem with
+      libusb using /proc/bus/usb when it should be using /dev/bus/usb, and thus not getting permissions right.
 </ul>
 
 <h2 align="center">Release 2-7 (4-Dec-2007) </h2>
@@ -211,7 +214,6 @@ module.&nbsp; This version runs only on EPICS 3.14.</p>
     Suggestions and Comments to: <br>
     <a href="mailto:rivers@cars.uchicago.edu">Mark Rivers </a>:
     (rivers@cars.uchicago.edu) <br>
-    Last modified: March 29, 2005 
 </address>
 </body>
 </html>
