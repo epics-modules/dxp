@@ -254,14 +254,15 @@ digital signal processor based multichannel analyzers from
 <h3 align="center"><a name="Installing the Saturn on Linux">
                             Installing the Saturn on Linux</a></h3>
 <p>To use the EPICS DXP software with a Saturn on a Linux computer do the following:
+<ul>
   <li>To use the USB 1.0 or USB 2.0 interface:
+  <ul>
     <li>Install the latest version (0.1.12 or later) of  
         <a href="http://libusb.sourceforge.net"target="_blank">libusb from SourceForge</a>.
         This software must be installed using the root account.  The version of libusb
         that comes with most Linux systems is older, and often will not work, so install
         this more recent version.</li>
   </ul>
-<ul>
   <li>Download 
       <a href="http://cars.uchicago.edu/software/pub/dxpStandalone_2-7.tgz">dxpStandalone_2-7.tgz</a>,
       which is the latest release of the EPICS DXP software, containing binaries for Linux.</li>
@@ -271,7 +272,7 @@ digital signal processor based multichannel analyzers from
       This can be done by typing
       <pre>
       > cd iocBoot/iocSaturn
-      > dos2unix *.fdd *ini
+      > dos2unix *.fdd *.ini
       </pre>
       This is necessary because these files may have Windows line
       terminators, depending on how they were unpacked from the distribution.</li>
@@ -330,34 +331,78 @@ digital signal processor based multichannel analyzers from
           </pre>
       </li>
     </ol>
-  <li> Access to Saturn via USB via usblib on Linux requires root privilege.  In principle the USB devices can be given
-       world access, but because these devices are created dynamically when the Saturn is connected, it is difficult to
-       do this before starting EPICS.
-       This can be done in any of following 2 ways:
-    <ol>
-      <li>Install the dxpApp application as suid root.  Do this as follows:
-          <pre>
-          > cd bin/linux-x86
-          > su root
-          (password)
-          > chmod +s /bin/linux-x86/dxpApp
-          > exit
-          </pre>
-          The dxpApp application can then be run without root priviledge as follows:
-          <pre>
-          > cd iocBoot/iocSaturn
-          > ../../bin/linux-x86/dxpApp st.cmd
-          </pre>
-      </li>
-      <li>Run dxpApp as root:
-          <pre>
-          > cd iocBoot/iocSaturn
-          > su root
-          (password)
-          > ../../bin/linux-x86/dxpApp st.cmd
-          </pre>
-      </li>
-    </ol>
+  <li> USB devices on Linux are automatically created with read-only permission for non-root users by default.  In order to
+       run the dxpApp application without root privilege it is necessary to change the device permissions.  
+       Because these devices are created dynamically when the Saturn is connected, this cannot just be done once statically.
+       Rather it requires using the "hotplug" or "udev" facilities on Linux to have the device permissions set correctly each time
+       the Saturn connects.  More recent Linux kernels use the "udev" facility, older kernels use the "hotplug" facility.
+       I do not know exactly which kernel version the switch to udev was done, but I do know from my systems that 2.6.9 uses
+       hotplug while 2.6.22 uses udev.  If the directory /etc/hotplug exists then the system is presumably using hotplug.
+       In that case the directory /dev/bus/usb will probably not exist, only /proc/bus/usb will exist.
+       <P>
+       Here is a recipe for older systems using hotplug.
+       <ol>
+        <li>Add the following 3 lines to the file /etc/hotplug/usb.usermap  
+        <pre>
+          # XIA Saturn
+          usbsaturn            0x0003      0x10e9   0x0700    0x0000       0x0000      0x00         0x00            0x00            0x00            0x00               0x00               0x00000000
+          usbsaturn            0x0003      0x10e9   0x0701    0x0000       0x0000      0x00         0x00            0x00            0x00            0x00               0x00               0x00000000
+        </pre>
+        These lines instruct the hotplug facility to run the script /etc/hotplug/usb/usbsaturn
+        whenever the Saturn is added to the system.  
+        10e9 is the vendor ID for the Saturn, and 0700 and 0701 are the product IDs for the USB 1.1 and USB 2.0
+        versions of the Saturn.
+        <li> Create the file /etc/hotplug/usb/usbsaturn containing the following lines:
+        <pre>
+          #!/bin/bash
+
+          if [ "${ACTION}" = "add" ] && [ -f "${DEVICE}" ]
+          then
+                  chmod 666 "${DEVICE}"
+          fi
+       </pre>
+       </ol>
+       This script tells hotplug to set the permissions on the Saturn USB device to 666 (owner, group, and world read/write):
+       <pre>
+         [root@vincent usb]# ls -lt /proc/bus/usb/001/021
+         -rw-rw-rw-  1 root root 134 Jan  8 12:20 /proc/bus/usb/001/021
+       </pre>
+       <P>
+       Here is a recipe for newer systems using udev.
+       <ol>
+         <li>Create a file in /etc/udev/rules.d called, for example, "80-saturn.rules".  
+            Put the following 2 lines in this file.
+         <pre>
+           SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}=="0700",MODE="0666"
+           SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}=="0701",MODE="0666"
+         </pre>
+         These rules instruct the udev facility to set the permissions on the USB device to 666 (owner, group and world read/write)
+         for the Saturn whenever it is added to the system.  
+         10e9 is the vendor ID for the Saturn, and 0700 and 0701 are the product IDs for the USB 1.1 and USB 2.0
+         versions of the Saturn.  Note that the 10e9 ID is case sensitive!
+         <li> Force the udevd daemon to reload its rules:
+         <pre>
+           $ /sbin/udevcontrol reload_rules
+         </pre>
+       </ol>
+       These changes for udev should cause the Saturn USB device to have the correct permissions:
+       <pre>
+         baja:/etc/udev/rules.d>ls -lt /dev/bus/usb/005/021
+         crw-rw-rw- 1 root root 189, 532 2008-01-07 16:08 /dev/bus/usb/005/021
+       </pre>
+      However, on some Linux versions libusb uses /proc/bus/usb by default, rather than /dev/bus/usb, so
+      the permissions set by udev will not have the desired affect.  This can be fixed by defining the
+      environment variable USB_DEVFS_PATH to be /dev/bus/usb.  In fact I now add the following command
+      to the EPICS IOC startup script (st.cmd) on Linux when using USB, just before the xiaInit command:
+      <pre>
+        # On Linux execute the following command so that libusb uses /dev/bus/usb
+        # as the file system for the USB device.  
+        # On some Linux systems it uses /proc/bus/usb instead, but udev
+        # sets the permissions on /dev, not /proc.
+        epicsEnvSet USB_DEVFS_PATH /dev/bus/usb
+      </pre>
+      This could obviously be done in the shell startup script instead if desired.
+
   <li>Make sure that the script files in iocBoot/iocSaturn/ have execute permission.
       This can be done by running the Cygwin bash shell and typing
       <pre>
@@ -471,6 +516,12 @@ The following is a typical startup script for the Saturn.
 dbLoadDatabase("../../dbd/dxp.dbd")
 dxp_registerRecordDeviceDriver(pdbbase)
 
+# On Linux execute the following command so that libusb uses /dev/bus/usb
+# as the file system for the USB device.  
+# On some Linux systems it uses /proc/bus/usb instead, but udev
+# sets the permissions on /dev, not /proc.
+epicsEnvSet USB_DEVFS_PATH /dev/bus/usb
+
 # Initialize the XIA software
 # Set logging level (1=ERROR, 2=WARNING, 3=XXX, 4=DEBUG)
 xiaSetLogLevel(2)
@@ -525,7 +576,6 @@ create_monitor_set("auto_settings.req", 30, P=dxpSaturn:)
 
 ### Start the saveData task.
 saveData_Init("saveData.req", "P=dxpSaturn:")
-
 #########################################
 </pre>
 
@@ -547,6 +597,18 @@ dxp_registerRecordDeviceDriver(pdbbase)
 </pre>
 
 These commands load the EPICS database definition files.
+
+<pre>
+# On Linux execute the following command so that libusb uses /dev/bus/usb
+# as the file system for the USB device.  
+# On some Linux systems it uses /proc/bus/usb instead, but udev
+# sets the permissions on /dev, not /proc.
+epicsEnvSet USB_DEVFS_PATH /dev/bus/usb
+</pre>
+
+This command forces libusb to use the /dev/bus/usb filesystem, rather than
+/proc/bus/usb, which some kernels use by default.  This is needed because udev
+sets permissions on /dev/bus/usb, not /proc/bus/usb.
 
 <pre>
 #########################################
