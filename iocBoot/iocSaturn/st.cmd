@@ -5,6 +5,12 @@
 dbLoadDatabase("../../dbd/dxp.dbd")
 dxp_registerRecordDeviceDriver(pdbbase)
 
+# On Linux execute the following command so that libusb uses /dev/bus/usb
+# as the file system for the USB device.  
+# On some Linux systems it uses /proc/bus/usb instead, but udev
+# sets the permissions on /dev, not /proc.
+epicsEnvSet USB_DEVFS_PATH /dev/bus/usb
+
 # Initialize the XIA software
 # Set logging level (1=ERROR, 2=WARNING, 3=XXX, 4=DEBUG)
 xiaSetLogLevel(2)
