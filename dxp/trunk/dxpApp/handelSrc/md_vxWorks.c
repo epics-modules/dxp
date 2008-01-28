@@ -20,7 +20,7 @@
 /* XIA include files */
 #include "xerxes_errors.h"
 #include "xerxes_structures.h"
-#include "md_epics.h"
+#include "md_vxWorks.h"
 #include "md_generic.h"
 #include "xia_md.h"
 /* #include "seriallib.h" */
