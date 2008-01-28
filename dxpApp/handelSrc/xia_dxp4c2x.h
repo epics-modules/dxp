@@ -1,10 +1,8 @@
 /*
  *  xia_dxp4c2x.h
  *
- *  Created 11/30/99 JEW: internal include file.  define here, what we
- *						don't want the user to see.
- *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -37,6 +35,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
+ *
  *    Following are prototypes for dxp4c2x.c and xerxes.c routines
  */
 
@@ -45,8 +44,6 @@
 #define XIA_DXP4C2X_H
 
 #include "xerxesdef.h"
-#include "xia_common.h"
-
 
 /* If this is compiled by a C++ compiler, make it clear that these are C routines */
 #ifdef __cplusplus
@@ -60,8 +57,6 @@ XERXES_STATIC int XERXES_API dxp_init_utils(Utils *);
 XERXES_STATIC int XERXES_API dxp_write_tsar(int *, unsigned short *);
 XERXES_STATIC int XERXES_API dxp_write_csr(int *, unsigned short *);
 XERXES_STATIC int XERXES_API dxp_read_csr(int *, unsigned short *);
-XERXES_STATIC int XERXES_API dxp_read_gsr(int *, unsigned short *);
-XERXES_STATIC int XERXES_API dxp_write_channel_gcr(int *, unsigned short *);
 XERXES_STATIC int XERXES_API dxp_write_data(int *, unsigned short *, unsigned int);
 XERXES_STATIC int XERXES_API dxp_read_data(int *, unsigned short *, unsigned int);
 XERXES_STATIC int XERXES_API dxp_write_fippi(int *, unsigned short *, unsigned int);
@@ -76,9 +71,9 @@ XERXES_STATIC int XERXES_API dxp_ignore_me(int *ioChan, int *modChan);
 XERXES_STATIC int XERXES_API dxp_clear_LAM(int *ioChan, int *modChan);
 XERXES_STATIC int XERXES_API dxp_prep_for_readout(int *, int *);
 XERXES_STATIC int XERXES_API dxp_done_with_readout(int *, int *, Board *board);
-XERXES_STATIC int XERXES_API dxp_begin_run(int *, int *,unsigned short *,unsigned short *, 
-					   Board *board);
-XERXES_STATIC int XERXES_API dxp_end_run(int *, int *);
+XERXES_STATIC int dxp_begin_run(int *ioChan, int *modChan, unsigned short *gate,
+								unsigned short *resume, Board *board, int *id);
+  XERXES_STATIC int dxp_end_run(int *ioChan, int *modChan, Board *board);
 XERXES_STATIC int XERXES_API dxp_run_active(int *, int *, int*);
 XERXES_STATIC int XERXES_API dxp_begin_control_task(int* ioChan, int* modChan, short *type, 
 						    unsigned int *length, int *info, Board *board);
@@ -89,22 +84,22 @@ XERXES_STATIC int XERXES_API dxp_control_task_data(int* ioChan, int* modChan, sh
 						   Board *board, void *data);
 XERXES_STATIC int XERXES_API dxp_loc(char *, Dsp_Info *, unsigned short *);
 XERXES_STATIC int XERXES_API dxp_dspparam_dump(int *,int *, Dsp_Info *);
-XERXES_STATIC int XERXES_API dxp_begin_calibrate(int *, int *, int *, Board *board);
+XERXES_STATIC int XERXES_API dxp_begin_calibrate(int *, int *, int *, Board *);
 XERXES_STATIC int XERXES_API dxp_test_mem(int *,int *,int *,unsigned int *,unsigned short *);
-XERXES_STATIC int XERXES_API dxp_test_spectrum_memory(int *,int *,int *, Board *board);
-XERXES_STATIC int XERXES_API dxp_test_baseline_memory(int *,int *,int *, Board *board);
-XERXES_STATIC int XERXES_API dxp_test_event_memory(int *,int *,int *, Board *board);
+XERXES_STATIC int XERXES_API dxp_test_spectrum_memory(int *,int *,int *, Board *);
+XERXES_STATIC int XERXES_API dxp_test_baseline_memory(int *,int *,int *, Board *);
+XERXES_STATIC int XERXES_API dxp_test_event_memory(int *,int *,int *, Board *);
 
 XERXES_STATIC int XERXES_API dxp_get_dspinfo(Dsp_Info *);
 XERXES_STATIC int XERXES_API dxp_get_fipinfo(Fippi_Info *);
 XERXES_STATIC int XERXES_API dxp_get_defaultsinfo(Dsp_Defaults *);
-XERXES_STATIC int XERXES_API dxp_get_fpgaconfig(Fippi_Info *);
-XERXES_STATIC int XERXES_API dxp_download_fpga_done(int *modChan, char *name, Board *board);
+XERXES_STATIC int XERXES_API dxp_get_fpgaconfig(Fippi_Info *fippi);
+XERXES_STATIC int XERXES_API dxp_download_fpga_done(int *modChan, char *name, Board *board); 
 XERXES_STATIC int XERXES_API dxp_download_fpgaconfig(int *ioChan, int *modChan, char *name, 
 						     Board *board);
 
-XERXES_STATIC int XERXES_API dxp_download_dspconfig(int *,int *, Dsp_Info *);
-XERXES_STATIC int XERXES_API dxp_download_dsp_done(int *, int *, int*, Dsp_Info *, 
+XERXES_STATIC int XERXES_API dxp_download_dspconfig(int *,int *, Board *);
+XERXES_STATIC int XERXES_API dxp_download_dsp_done(int *, int *, int*, Board *, 
 						   unsigned short *, float *);
 XERXES_STATIC int XERXES_API dxp_get_dspconfig(Dsp_Info *);
 XERXES_STATIC int XERXES_API dxp_get_dspdefaults(Dsp_Defaults *);
@@ -114,33 +109,42 @@ XERXES_STATIC int XERXES_API dxp_load_dspconfig(FILE *, Dsp_Info *);
 
 XERXES_STATIC int XERXES_API dxp_decode_error(unsigned short [], Dsp_Info *, unsigned short *, 
 					      unsigned short *);
-XERXES_STATIC int XERXES_API dxp_clear_error(int *, int *, Dsp_Info *);
+XERXES_STATIC int XERXES_API dxp_clear_error(int *, int *, Board *);
 XERXES_STATIC int XERXES_API dxp_check_calibration(int *, unsigned short *, Dsp_Info *);
-XERXES_STATIC int XERXES_API dxp_get_runstats(unsigned short [],Dsp_Info *, unsigned int *,
-					      unsigned int *, unsigned int *,unsigned int *,
-					      unsigned int *,double *, double *, double *);
+  XERXES_STATIC int dxp_get_runstats(int *ioChan, int *modChan, Board *b,
+									 unsigned long *evts, unsigned long *under,
+									 unsigned long *over, unsigned long *fast,
+									 unsigned long *base, double *live,
+									 double *icr, double *ocr);
 XERXES_STATIC int XERXES_API dxp_symbolname(unsigned short *, Dsp_Info *, char *);
 
-XERXES_STATIC int XERXES_API dxp_modify_dspsymbol(int *, int *, char *, unsigned short *, Dsp_Info *);
+XERXES_STATIC int XERXES_API dxp_modify_dspsymbol(int *, int *, char *, unsigned short *, Board *);
 XERXES_STATIC int XERXES_API dxp_write_dsp_param_addr(int *, int *, unsigned int *, unsigned short *);
-XERXES_STATIC int XERXES_API dxp_read_dspsymbol(int *, int *, char *, Dsp_Info *, double *);
-  XERXES_STATIC int XERXES_API dxp_read_one_dspsymbol(int *, int *, char *, Dsp_Info *, unsigned short *);
-XERXES_STATIC int XERXES_API dxp_read_dspparams(int *, int *, Dsp_Info *, unsigned short *);
+XERXES_STATIC int XERXES_API dxp_read_dspsymbol(int *, int *, char *, Board *, double *);
+XERXES_STATIC int dxp_read_dspparams(int *ioChan, int *modchan, Board *b,
+									 unsigned short *params);
 XERXES_STATIC int XERXES_API dxp_write_dspparams(int *, int *, Dsp_Info *, unsigned short *);
 
-XERXES_STATIC unsigned int XERXES_API dxp_get_spectrum_length(Dsp_Info *, unsigned short *);
-  XERXES_STATIC unsigned int XERXES_API dxp_get_sca_length(Dsp_Info *, unsigned short *); 
-XERXES_STATIC unsigned int XERXES_API dxp_get_baseline_length(Dsp_Info *, unsigned short *);
+  XERXES_STATIC int dxp_get_spectrum_length(int *ioChan, int *modChan,
+											Board *board, unsigned int *len);
+  XERXES_STATIC unsigned int XERXES_API dxp_get_sca_length(Dsp_Info *, unsigned short *);
+XERXES_STATIC int dxp_get_baseline_length(int *modChan, Board *b,
+										  unsigned int *len);
 XERXES_STATIC unsigned int XERXES_API dxp_get_event_length(Dsp_Info *, unsigned short *);
 XERXES_STATIC unsigned int XERXES_API dxp_get_history_length(Dsp_Info *, unsigned short *);
 XERXES_STATIC int XERXES_API dxp_read_spectrum(int *, int *, Board *, unsigned long *);
-  XERXES_STATIC int XERXES_API dxp_read_sca(int *ioChan, int *modChan, Board *chosen, unsigned long *sca);
-XERXES_STATIC int XERXES_API dxp_read_baseline(int *, int *, Board *, unsigned short *);
+XERXES_STATIC int dxp_read_baseline(int *ioChan, int *modChan, Board *board,
+									unsigned long *baseline);
+  XERXES_STATIC int XERXES_API dxp_read_sca(int *ioChan, int *modChan, Board *board, unsigned long *sca);
+/*XERXES_STATIC int XERXES_API dxp_read_event(int *, int *, Board *, unsigned short *);*/
 XERXES_STATIC int XERXES_API dxp_read_history(int *, int *, Board *, unsigned short *);
+XERXES_STATIC int XERXES_API dxp_write_history(int *, int *, Board *, unsigned int *length, 
+											  unsigned short *buffer);
 XERXES_STATIC int XERXES_API dxp_perform_gaincalc(float *,unsigned short *,short *);
-XERXES_STATIC int XERXES_API dxp_change_gains(int *, int *, int *, float *,Dsp_Info *);
+XERXES_STATIC int XERXES_API dxp_change_gains(int *, int *, int *, float *,
+											  Board *);
 XERXES_STATIC int XERXES_API dxp_setup_asc(int *, int *, int *, float *, float *, unsigned short *, 
-					   float *, float *, float *, Dsp_Info *);
+					   float *, float *, float *, Board *);
 XERXES_STATIC int XERXES_API dxp_calibrate_asc(int *, int *, unsigned short *, Board *);
 XERXES_STATIC int XERXES_API dxp_calibrate_channel(int *, int *, unsigned short *, int *, Board *);
 
@@ -148,39 +152,35 @@ XERXES_STATIC int XERXES_API dxp_setup_cmd(Board *board, char *name, unsigned in
 					   byte_t *send, unsigned int *lenR, byte_t *receive,
 					   byte_t ioFlags);
 
-XERXES_STATIC int XERXES_API dxp_read_mem(int *ioChan, int *modChan, Board *board, 
-											 char *name, unsigned long *base, unsigned long *offset, 
-											 unsigned long *data);
-XERXES_STATIC int XERXES_API dxp_write_mem(int *ioChan, int *modChan, Board *board, 
-											 char *name, unsigned long *base, unsigned long *offset, 
-											 unsigned long *data);
+XERXES_STATIC int XERXES_API dxp_read_mem(int *ioChan, int *modChan, Board *board,
+					     char *name, unsigned long *base, unsigned long *offset, unsigned long *data);
+XERXES_STATIC int XERXES_API dxp_write_mem(int *ioChan, int *modChan, Board *board,
+					     char *name, unsigned long *base, unsigned long *offset, unsigned long *data);
 
-XERXES_STATIC int XERXES_API dxp_internal_multisca(int *ioChan, int *modChan, 
-						   Board *board, unsigned long *data);
-
-XERXES_STATIC int XERXES_API dxp_write_reg(int *ioChan, int *modChan, char *name,
-					   unsigned short *data);
-XERXES_STATIC int XERXES_API dxp_read_reg(int *ioChan, int *modChan, char *name,
-					  unsigned short *data);
-
-XERXES_STATIC int XERXES_API dxp_do_cmd(int *ioChan, byte_t cmd, unsigned int lenS,
-					byte_t *send, unsigned int lenR, byte_t *receive,
-					byte_t ioFlags);
-
-XERXES_STATIC int XERXES_API dxp_unhook(Board *board);
+XERXES_STATIC int dxp_write_reg(int *ioChan, int *modChan, char *name, 
+								unsigned long *data);
+XERXES_STATIC int dxp_read_reg(int *ioChan, int *modChan, char *name,
+							   unsigned long *data);
 
 XERXES_STATIC FILE* XERXES_API dxp_find_file(const char *, const char *);
 
-#else									/* Begin old style C prototypes */
+XERXES_STATIC int XERXES_API dxp_do_cmd(int *ioChan, byte_t cmd, unsigned int lenS,
+					byte_t *send, unsigned int lenR, byte_t *receive);
 
+XERXES_STATIC int XERXES_API dxp_unhook(Board *board);
+
+  XERXES_STATIC int dxp_get_symbol_by_index(int modChan, unsigned short index,
+											Board *board, char *name);
+  XERXES_STATIC int dxp_get_num_params(int modChan, Board *b,
+									   unsigned short *n_params);
+
+#else									/* Begin old style C prototypes */
 XERXES_EXPORT int XERXES_API dxp_init_dxp4c2x();
 XERXES_STATIC int XERXES_API dxp_init_driver();
 XERXES_STATIC int XERXES_API dxp_init_utils();
 XERXES_STATIC int XERXES_API dxp_write_tsar();
 XERXES_STATIC int XERXES_API dxp_write_csr();
 XERXES_STATIC int XERXES_API dxp_read_csr();
-XERXES_STATIC int XERXES_API dxp_read_gsr();
-XERXES_STATIC int XERXES_API dxp_write_channel_gcr();
 XERXES_STATIC int XERXES_API dxp_write_data();
 XERXES_STATIC int XERXES_API dxp_read_data();
 XERXES_STATIC int XERXES_API dxp_write_fippi();
@@ -191,10 +191,11 @@ XERXES_STATIC int XERXES_API dxp_write_block();
 XERXES_STATIC int XERXES_API dxp_disable_LAM();
 XERXES_STATIC int XERXES_API dxp_enable_LAM();
 XERXES_STATIC int XERXES_API dxp_clear_LAM();
-XERXES_STATIC int XERXES_API dxp_download_fipconfig();
+XERXES_STATIC int XERXES_API dxp_download_fpgaconfig();
 XERXES_STATIC int XERXES_API dxp_download_dspconfig();
 XERXES_STATIC int XERXES_API dxp_download_dsp_done();
 XERXES_STATIC int XERXES_API dxp_get_spectrum_length();
+  XERXES_STATIC unsigned int XERXES_API dxp_get_sca_length();
 XERXES_STATIC int XERXES_API dxp_get_baseline_length();
 XERXES_STATIC int XERXES_API dxp_get_event_length();
 XERXES_STATIC int XERXES_API dxp_get_history_length();
@@ -215,8 +216,8 @@ XERXES_STATIC int XERXES_API dxp_test_spectrum_memory();
 XERXES_STATIC int XERXES_API dxp_test_baseline_memory();
 XERXES_STATIC int XERXES_API dxp_test_event_memory();
 
-XERXES_STATIC int XERXES_API dxp_get_fipconfig();
-XERXES_STATIC int XERXES_API dxp_download_fippi_done();
+XERXES_STATIC int XERXES_API dxp_get_fpgaconfig();
+XERXES_STATIC int XERXES_API dxp_download_fpga_done();
 
 XERXES_STATIC int XERXES_API dxp_get_dspconfig();
 XERXES_STATIC int XERXES_API dxp_get_dspdefaults();
@@ -232,13 +233,14 @@ XERXES_STATIC int XERXES_API dxp_symbolname();
 XERXES_STATIC int XERXES_API dxp_modify_dspsymbol();
 XERXES_STATIC int XERXES_API dxp_write_dsp_param_addr();
 XERXES_STATIC int XERXES_API dxp_read_dspsymbol();
-  XERXES_STATIC int XERXES_API dxp_read_one_dspsymbol();
 XERXES_STATIC int XERXES_API dxp_read_dspparams();
 XERXES_STATIC int XERXES_API dxp_write_dspparams();
 XERXES_STATIC int XERXES_API dxp_read_spectrum();
-  XERXES_STATIC int XERXES_API dxp_read_sca();
 XERXES_STATIC int XERXES_API dxp_read_baseline();
+  XERXES_STATIC int XERXES_API dxp_read_sca();
+/*XERXES_STATIC int XERXES_API dxp_read_event();*/
 XERXES_STATIC int XERXES_API dxp_read_history();
+XERXES_STATIC int XERXES_API dxp_write_history();
 XERXES_STATIC int XERXES_API dxp_perform_gaincalc();
 XERXES_STATIC int XERXES_API dxp_change_gains();
 XERXES_STATIC int XERXES_API dxp_setup_asc();
@@ -249,8 +251,6 @@ XERXES_STATIC int XERXES_API dxp_setup_cmd();
 
 XERXES_STATIC int XERXES_API dxp_read_mem();
   XERXES_STATIC int XERXES_API dxp_write_mem();
-
-XERXES_STATIC int XERXES_API dxp_internal_multisca();
 
 XERXES_STATIC int XERXES_API dxp_write_reg();
 XERXES_STATIC int XERXES_API dxp_read_reg();
@@ -268,11 +268,10 @@ XERXES_STATIC int XERXES_API dxp_unhook();
 #endif
 
 /* Logging macro wrappers */
-#define dxp_log_error(x, y, z)	    dxp4c2x_md_log(MD_ERROR,   (x), (y), (z), __FILE__, __LINE__)
-#define dxp_log_warning(x, y)		dxp4c2x_md_log(MD_WARNING, (x), (y), 0,   __FILE__, __LINE__)
-#define dxp_log_info(x, y)			dxp4c2x_md_log(MD_INFO,    (x), (y), 0,   __FILE__, __LINE__)
-#define dxp_log_debug(x, y)		    dxp4c2x_md_log(MD_DEBUG,   (x), (y), 0,   __FILE__, __LINE__)
-
+#define dxp_log_error(x, y, z)  dxp4c2x_md_log(MD_ERROR, (x), (y), (z), __FILE__, __LINE__)
+#define dxp_log_warning(x, y)	dxp4c2x_md_log(MD_WARNING, (x), (y), 0, __FILE__, __LINE__)
+#define dxp_log_info(x, y)	dxp4c2x_md_log(MD_INFO, (x), (y), 0, __FILE__, __LINE__)
+#define dxp_log_debug(x, y)	dxp4c2x_md_log(MD_DEBUG, (x), (y), 0, __FILE__, __LINE__)
 
 /** Constants **/
 static unsigned short DSP_DATA_MEM_OFFSET = 0x4000;
@@ -287,16 +286,5 @@ static unsigned short DSP_DATA_MEM_OFFSET = 0x4000;
 
 /* BUSY values that can be passed into dxp_wait_for_busy() or used elsewhere */
 #define BUSY_READ_EXT_MEM        99
-
-/** Typedefs **/
-typedef int (*memory_func_t)(int *, int *, Board *, unsigned long, unsigned long,
-							 unsigned long *);
-
-/** Structures **/
-typedef struct Mem_Op {
-  char *name;
-  memory_func_t f;
-
-} Mem_Op_t;
 
 #endif						/* Endif for XIA_DXP4C2X_H */
