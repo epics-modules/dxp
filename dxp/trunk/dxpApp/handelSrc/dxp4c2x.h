@@ -1,11 +1,8 @@
-
 /*
  *  dxp4c2x.h
  *
- *  Modified 2-Feb-97 EO: add prototype for dxp_primitive routines
- *      dxp_read_long and dxp_write_long; added various parameters
- *
- * Copyright (c) 2002, X-ray Instrumentation Associates
+ * Copyright (c) 2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -37,8 +34,8 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
- *
- *
+ * 
+ * *
  *    Following are prototypes for dxp4c2x.c routines
  */
 
@@ -46,16 +43,9 @@
 #ifndef DXP4C2X_H
 #define DXP4C2X_H
 
-#ifndef XERXESDEF_H
-#include <xerxesdef.h>
-#endif
+#include "xerxesdef.h"
+#include "xerxes_generic.h"
 
-#ifndef XERXES_GENERIC_H
-#include <xerxes_generic.h>
-#endif
-
-#define CODE_VERSION					   0
-#define CODE_REVISION		  			   1
 #define LATEST_BOARD_TYPE		  "DXP-4C2X"
 #define LATEST_BOARD_VERSION		     "C"
 /*
@@ -68,6 +58,26 @@
 #define MAXDSP_LEN       0x8000
 #define MAXFIP_LEN   0x00020000
 #define MAX_FIPPI			  5
+#define XDONE_TIMEOUT  0.050
+
+/*
+ * ASC parameters:
+ */
+#define ADC_RANGE		 1000.0
+#define ADC_BITS			 12
+#define GINPUT              1.0		/* Input attenuator Gain	*/
+#define GINPUT_BUFF	        1.0		/* Input buffer Gain		*/
+#define GINVERTING_AMP 3240./499.	/* Inverting Amp Gain		*/
+#define GV_DIVIDER  124.9/498.9		/* Voltage Divider after 
+									   Inverting AMP */
+#define GGAINDAC_BUFF       1.0		/* GainDAC buffer Gain		*/
+#define GNYQUIST      422./613.		/* Nyquist Filter Gain		*/
+#define GADC_BUFF           2.0		/* ADC buffer Gain			*/
+#define GADC          250./350.		/* ADC Input Gain			*/
+#define GAINDAC_RANGE	 3000.0
+#define GAINDAC_BITS		 16
+#define GAINDAC_MIN			-6.
+#define GAINDAC_MAX		    30.
 /* 
  * Control words for the RUNTASKS parameter
  */
@@ -75,6 +85,7 @@
 #define USE_FIR			  0x004
 #define ACQUIRE_BASELINE  0x008
 #define ADJUST_FAST_FILT  0x010
+#define DISABLE_AUTOT     0x00D
 #define BASELINE_SHIFT	  0x020
 #define RESIDUAL_BASE	  0x040
 #define WRITE_BASELINE	  0x080
@@ -102,24 +113,6 @@
 #define WHICHTEST_WRITE_MEMORY      21
 #define WHICHTEST_CHECK_MEMORY      22
 #define WHICHTEST_RESET             99
-/*
- * ASC parameters:
- */
-#define ADC_RANGE		 1000.0
-#define ADC_BITS			 12
-#define GINPUT              1.0		/* Input attenuator Gain	*/
-#define GINPUT_BUFF	        1.0		/* Input buffer Gain		*/
-#define GINVERTING_AMP 3240./499.	/* Inverting Amp Gain		*/
-#define GV_DIVIDER  124.9/498.9		/* Voltage Divider after 
-									   Inverting AMP */
-#define GGAINDAC_BUFF       1.0		/* GainDAC buffer Gain		*/
-#define GNYQUIST      422./613.		/* Nyquist Filter Gain		*/
-#define GADC_BUFF           2.0		/* ADC buffer Gain			*/
-#define GADC          250./350.		/* ADC Input Gain			*/
-#define GAINDAC_RANGE	 3000.0
-#define GAINDAC_BITS		 16
-#define GAINDAC_MIN			-6.
-#define GAINDAC_MAX		    30.
 /*
  *    CAMAC status Register control codes
  */
@@ -186,5 +179,8 @@
 
 /* Misc. constants */
 #define DEFAULT_CLOCK_SPEED  40.0
+
+/* For Xerxes only */
+#define REALTIME_CLOCK_TICK    800e-9
 
 #endif						/* Endif for DXP4C2X_H */
