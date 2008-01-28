@@ -23,8 +23,8 @@ USR_CFLAGS +=          -DEXCLUDE_SERIAL -DEXCLUDE_ARCNET -DEXCLUDE_VEGA
 USR_CFLAGS_WIN32    += -DHANDEL_USE_DLL -DHANDEL_MAKE_DLL -DWIN32
 
 # Don't build DXP4C2X on vxWorks for now, lots of work needed
-#handel_SRCS_vxWorks  += dxp4c2x.c dxp4c2x_psl.c
-#handel_SRCS_vxWorks  += dxp4c.c md_vxWorks.c
+handel_SRCS_vxWorks  += dxp4c2x.c dxp4c2x_psl.c md_vxWorks.c
+#handel_SRCS_vxWorks  += dxp4c.c
 handel_SRCS_Linux    += x10p.c x10p_psl.c md_linux.c epplib.c usblib_linux.c
 handel_SRCS_cygwin32 += x10p.c x10p_psl.c xmap.c xmap_psl.c md_win95.c xia_usb2.c epplib.c plxlib.c usblib.c
 handel_SRCS_WIN32    += x10p.c x10p_psl.c xmap.c xmap_psl.c md_win95.c xia_usb2.c epplib.c plxlib.c usblib.c
