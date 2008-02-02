@@ -107,6 +107,11 @@ XIA_MD_STATIC void XIA_MD_API dxp_md_error_control(char *,int *);
 XIA_MD_STATIC int XIA_MD_API dxp_md_get_maxblk(void);
 XIA_MD_STATIC int XIA_MD_API dxp_md_set_maxblk(unsigned int *);
 XIA_MD_STATIC int XIA_MD_API dxp_md_puts(char *);
+XIA_MD_STATIC int XIA_MD_API dxp_md_set_priority(int *priority);
+XIA_MD_STATIC char * dxp_md_fgets(char *s, int length, FILE *stream);
+XIA_MD_STATIC char * dxp_md_tmp_path(void);
+XIA_MD_STATIC void dxp_md_clear_tmp(void);
+XIA_MD_STATIC char * dxp_md_path_separator(void);
 
 #ifdef USE_SERIAL_DLPORTIO
 XIA_MD_STATIC void dxp_md_poll_and_read(unsigned short port, unsigned long nBytes, unsigned char *buf);

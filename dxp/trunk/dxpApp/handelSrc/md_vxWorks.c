@@ -25,6 +25,7 @@
 #include "xia_md.h"
 /* #include "seriallib.h" */
 #include "xia_common.h"
+#include "xia_assert.h"
 
 #define MODE 4
 
@@ -101,6 +102,26 @@ static void dxp_md_serial_write(unsigned short port, unsigned long nBytes, unsig
 static void dxp_md_clear_port(unsigned short port);
 #endif /* USE_SERIAL_DLPORTIO */
 
+typedef unsigned int	DWORD;
+
+#define NORMAL_PRIORITY_CLASS 0
+#define REALTIME_PRIORITY_CLASS -20
+#define HIGH_PRIORITY_CLASS -10
+#define ABOVE_NORMAL_PRIORITY_CLASS -5
+#define BELOW_NORMAL_PRIORITY_CLASS 5
+
+static char *TMP_PATH = ".";
+static char *PATH_SEP = "/";
+
+unsigned int GetCurrentProcess()		/* This only works for SetPriorityClass, not a true	*/
+{					/* replacement for Microsoft Windows GetCurrentProcess.	*/
+    return(0);
+}
+
+BOOL SetPriorityClass(unsigned int hProcess, DWORD dwPriorityClass)
+{
+    return(0);
+}
 
 /******************************************************************************
  *
@@ -135,6 +156,11 @@ XIA_MD_EXPORT int XIA_MD_API dxp_md_init_util(Xia_Util_Functions* funcs, char* t
     funcs->dxp_md_enable_log    = dxp_md_enable_log;
     funcs->dxp_md_set_log_level = dxp_md_set_log_level;
     funcs->dxp_md_log	        = dxp_md_log;
+    funcs->dxp_md_set_priority  = dxp_md_set_priority;
+    funcs->dxp_md_fgets         = dxp_md_fgets;
+    funcs->dxp_md_tmp_path      = dxp_md_tmp_path;
+    funcs->dxp_md_clear_tmp     = dxp_md_clear_tmp;
+    funcs->dxp_md_path_separator = dxp_md_path_separator;
 
     if (out_stream == NULL)
     {
@@ -1885,6 +1911,133 @@ static void dxp_md_clear_port(unsigned short port)
 #endif /* USE_SERIAL_DLPORTIO */
 
 
+/** @brief Safe version of fgets() that can handle both UNIX and DOS
+ * line-endings.
+ *
+ * If the trailing two characters are '\r' + \n', they are replaced by a
+ * single '\n'.
+ */
+XIA_MD_STATIC char * dxp_md_fgets(char *s, int length, FILE *stream)
+{
+  int buf_len = 0;
+
+  char *buf     = NULL;
+  char *cstatus = NULL;
+
+
+  ASSERT(s != NULL);
+  ASSERT(stream != NULL);
+  ASSERT(length > 0);
+
+
+  buf = dxp_md_alloc(length + 1);
+
+  if (!buf) {
+    return NULL;
+  }
+
+  cstatus = fgets(buf, (length + 1), stream);
+
+  if (!cstatus) {
+    dxp_md_free(buf);
+    return NULL;
+  }
+
+  buf_len = strlen(buf);
+
+  if ((buf[buf_len - 2] == '\r') && (buf[buf_len - 1] == '\n')) {
+    buf[buf_len - 2] = '\n';
+    buf[buf_len - 1] = '\0';
+  }
+
+  ASSERT(strlen(buf) < length);
+
+  strcpy(s, buf);
+
+  free(buf);
+
+  return s;
+}
+
+
+/** @brief Get a safe temporary directory path.
+ *
+ */
+XIA_MD_STATIC char * dxp_md_tmp_path(void)
+{
+  return TMP_PATH;
+}
+
+
+/** @brief Clears the temporary path cache.
+ *
+ */
+XIA_MD_STATIC void dxp_md_clear_tmp(void)
+{
+  return;
+}
+
+
+/** @brief Returns the path separator
+ *
+ */
+XIA_MD_STATIC char * dxp_md_path_separator(void)
+{
+  return PATH_SEP;
+}
+
+
+/** @brief Sets the priority of the current process 
+ *
+ */
+XIA_MD_STATIC int XIA_MD_API dxp_md_set_priority(int *priority)
+{
+  BOOL status;
+
+  DWORD pri;
+
+  unsigned int h;
+
+  char pri_str[5];
+
+
+  h = GetCurrentProcess();
+
+  switch(*priority) {
+  
+  default:
+	sprintf(error_string, "Invalid priority type: %#x", *priority);
+	dxp_md_log_error("dxp_md_set_priority", error_string, DXP_MDINVALIDPRIORITY);
+	return DXP_MDINVALIDPRIORITY;
+	break;
+
+  case MD_IO_PRI_NORMAL:
+	pri = NORMAL_PRIORITY_CLASS;
+	strncpy(pri_str, "NORM", 5);
+	break;
+
+  case MD_IO_PRI_HIGH:
+	pri = REALTIME_PRIORITY_CLASS;
+	strncpy(pri_str, "HIGH", 5);
+	break;
+  }
+
+  status = SetPriorityClass(h, pri);
+
+  if (!status) {
+	sprintf(error_string,
+			"Error setting priority class (%s) for current process",
+			pri_str);
+	dxp_md_log_error("dxp_md_set_priority", error_string, DXP_MDPRIORITY);
+	return DXP_MDPRIORITY;
+  }
+
+  sprintf(error_string, "Priority class set to '%s' for current process",
+		  pri_str);
+  dxp_md_log_debug("dxp_md_set_priority", error_string);
+
+  return DXP_SUCCESS;
+}
 
 
 
