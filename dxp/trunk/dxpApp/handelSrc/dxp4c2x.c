@@ -87,18 +87,18 @@ static double dacpergain;
 /* 
  * Store pointers to the proper DLL routines to talk to the CAMAC crate 
  */
-static DXP_MD_IO dxp4c2x_md_io;
-static DXP_MD_SET_MAXBLK dxp4c2x_md_set_maxblk;
-static DXP_MD_GET_MAXBLK dxp4c2x_md_get_maxblk;
+XERXES_STATIC DXP_MD_IO dxp4c2x_md_io;
+XERXES_STATIC DXP_MD_SET_MAXBLK dxp4c2x_md_set_maxblk;
+XERXES_STATIC DXP_MD_GET_MAXBLK dxp4c2x_md_get_maxblk;
 /* 
  * Define the utility routines used throughout this library
  */
-static DXP_MD_LOG dxp4c2x_md_log;
-static DXP_MD_ALLOC dxp4c2x_md_alloc;
-static DXP_MD_FREE dxp4c2x_md_free;
-static DXP_MD_PUTS dxp4c2x_md_puts;
-static DXP_MD_WAIT dxp4c2x_md_wait;
-static DXP_MD_FGETS dxp4c2x_md_fgets;
+XERXES_STATIC DXP_MD_LOG dxp4c2x_md_log;
+XERXES_STATIC DXP_MD_ALLOC dxp4c2x_md_alloc;
+XERXES_STATIC DXP_MD_FREE dxp4c2x_md_free;
+XERXES_STATIC DXP_MD_PUTS dxp4c2x_md_puts;
+XERXES_STATIC DXP_MD_WAIT dxp4c2x_md_wait;
+XERXES_STATIC DXP_MD_FGETS dxp4c2x_md_fgets;
 
 XERXES_STATIC int dxp_read_external_memory(int *ioChan, int *modChan, Board *board,
                                            unsigned long base, unsigned long offset, unsigned long *data);
@@ -120,7 +120,7 @@ typedef struct Mem_Op
 Mem_Op_t;
 
 
-static Mem_Op_t mem_readers[] =
+XERXES_STATIC Mem_Op_t mem_readers[] =
   {
     { "external", dxp_read_external_memory
     },
@@ -216,7 +216,7 @@ int dxp_init_dxp4c2x(Functions* funcs)
  * Routine to initialize the IO Driver library, get the proper pointers
  *
  ******************************************************************************/
-static int dxp_init_driver(Interface* iface)
+XERXES_STATIC int dxp_init_driver(Interface* iface)
 /* Interface *iface;    Input: Pointer to the IO Interface  */
 {
 
@@ -232,7 +232,7 @@ static int dxp_init_driver(Interface* iface)
  * Routine to initialize the Utility routines, get the proper pointers
  *
  ******************************************************************************/
-static int dxp_init_utils(Utils* utils)
+XERXES_STATIC int dxp_init_utils(Utils* utils)
 /* Utils *utils;     Input: Pointer to the utility functions */
 {
 
@@ -271,7 +271,7 @@ static int dxp_init_utils(Utils* utils)
  * data transfer which shall begin shortly.
  *
  ******************************************************************************/
-static int dxp_write_tsar(int* ioChan, unsigned short* addr)
+XERXES_STATIC int dxp_write_tsar(int* ioChan, unsigned short* addr)
 /* int *ioChan;      Input: I/O channel of DXP module      */
 /* unsigned short *addr;   Input: address to write into the TSAR */
 {
@@ -283,7 +283,7 @@ static int dxp_write_tsar(int* ioChan, unsigned short* addr)
 
   f=DXP_TSAR_F_WRITE;
   a=DXP_TSAR_A_WRITE;
-  len=0;
+  len=1;
   status=dxp4c2x_md_io(ioChan,&f,&a,(void *)addr,&len);     /* write TSAR */
   if (status!=DXP_SUCCESS) {
     status = DXP_WRITE_TSAR;
@@ -299,7 +299,7 @@ static int dxp_write_tsar(int* ioChan, unsigned short* addr)
  * DXP and report the status of the DXP.
  *
  ******************************************************************************/
-static int dxp_write_csr(int* ioChan, unsigned short* data)
+XERXES_STATIC int dxp_write_csr(int* ioChan, unsigned short* data)
 /* int *ioChan;      Input: I/O channel of DXP module      */
 /* unsigned short *data;   Input: address of data to write to CSR*/
 {
@@ -329,7 +329,7 @@ static int dxp_write_csr(int* ioChan, unsigned short* data)
  * DXP and report the status of the DXP.
  *
  ******************************************************************************/
-static int dxp_read_csr(int* ioChan, unsigned short* data)
+XERXES_STATIC int dxp_read_csr(int* ioChan, unsigned short* data)
 /* int *ioChan;      Input: I/O channel of DXP module   */
 /* unsigned short *data;   Output: where to put data from CSR */
 {
@@ -358,7 +358,7 @@ static int dxp_read_csr(int* ioChan, unsigned short* data)
  * This register contains status bits for the DXP4C2X.
  *
  ******************************************************************************/
-static int dxp_read_gsr(int* ioChan, unsigned short* data)
+XERXES_STATIC int dxp_read_gsr(int* ioChan, unsigned short* data)
   /* int *ioChan;           Input: I/O channel of DXP module   */
   /* unsigned short *data;  Output: where to put data from CSR */
 {
@@ -384,7 +384,7 @@ static int dxp_read_gsr(int* ioChan, unsigned short* data)
  * modify the Channel selector bits.  Not changing any other control bits.
  *
  ******************************************************************************/
-static int dxp_write_channel_gcr(int* ioChan, unsigned short* data)
+XERXES_STATIC int dxp_write_channel_gcr(int* ioChan, unsigned short* data)
   /* int *ioChan;           Input: I/O channel of DXP module	*/
   /* unsigned short *data;  Output: What channel to access		*/
 {
@@ -412,7 +412,7 @@ static int dxp_write_channel_gcr(int* ioChan, unsigned short* data)
  * DSP for example based on the address previously downloaded to the TSAR
  *
  ******************************************************************************/
-static int dxp_read_data(int* ioChan, unsigned short* data, unsigned int len)
+XERXES_STATIC int dxp_read_data(int* ioChan, unsigned short* data, unsigned int len)
 /* int *ioChan;       Input: I/O channel of DXP module   */
 /* unsigned short *data;    Output: where to put data read     */
 /* unsigned int len;     Input: length of the data to read  */
@@ -440,7 +440,7 @@ static int dxp_read_data(int* ioChan, unsigned short* data, unsigned int len)
  * DSP for example based on the address previously downloaded to the TSAR
  *
  ******************************************************************************/
-static int dxp_write_data(int* ioChan, unsigned short* data, unsigned int len)
+XERXES_STATIC int dxp_write_data(int* ioChan, unsigned short* data, unsigned int len)
 /* int *ioChan;       Input: I/O channel of DXP module   */
 /* unsigned short *data;    Input: address of data to write    */
 /* unsigned int len;     Input: length of the data to read  */
@@ -470,7 +470,7 @@ static int dxp_write_data(int* ioChan, unsigned short* data, unsigned int len)
  * a FiPPi program.
  *
  ******************************************************************************/
-static int dxp_write_fippi(int* ioChan, unsigned short* data, unsigned int len)
+XERXES_STATIC int dxp_write_fippi(int* ioChan, unsigned short* data, unsigned int len)
 /* int *ioChan;       Input: I/O channel of DXP module   */
 /* unsigned short *data;    Input: address of data to write    */
 /* unsigned int len;     Input: length of the data to read  */
@@ -499,7 +499,7 @@ static int dxp_write_fippi(int* ioChan, unsigned short* data, unsigned int len)
  * Enable the LAM for a single DXP module.
  *
  ******************************************************************************/
-static int dxp_look_at_me(int* ioChan, int* modChan)
+XERXES_STATIC int dxp_look_at_me(int* ioChan, int* modChan)
 /* int *ioChan;      Input: I/O channel of DXP module */
 /* int *modChan;     Input: DXP channels no (0,1,2,3)      */
 {
@@ -530,7 +530,7 @@ static int dxp_look_at_me(int* ioChan, int* modChan)
  * Disable the LAM for a single DXP module.
  *
  ******************************************************************************/
-static int dxp_ignore_me(int* ioChan, int* modChan)
+XERXES_STATIC int dxp_ignore_me(int* ioChan, int* modChan)
 /* int *ioChan;      Input: I/O channel of DXP module */
 /* int *modChan;     Input: DXP channels no (0,1,2,3)      */
 {
@@ -560,7 +560,7 @@ static int dxp_ignore_me(int* ioChan, int* modChan)
  * Clear the LAM for a single DXP module.
  *
  ******************************************************************************/
-static int dxp_clear_LAM(int* ioChan, int* modChan)
+XERXES_STATIC int dxp_clear_LAM(int* ioChan, int* modChan)
 /* int *ioChan;      Input: I/O channel of DXP module */
 /* int *modChan;     Input: DXP channels no (0,1,2,3)      */
 {
@@ -603,7 +603,7 @@ static int dxp_clear_LAM(int* ioChan, int* modChan)
  * data from the appropriate channel and address of the DXP.
  *
  ******************************************************************************/
-static int dxp_read_word(int* ioChan, int* modChan, unsigned short* addr,
+XERXES_STATIC int dxp_read_word(int* ioChan, int* modChan, unsigned short* addr,
                          unsigned short* readdata)
 /* int *ioChan;      Input: I/O channel of DXP module      */
 /* int *modChan;     Input: DXP channels no (0,1,2,3)      */
@@ -659,7 +659,7 @@ static int dxp_read_word(int* ioChan, int* modChan, unsigned short* addr,
  * data to the appropriate channel and address of the DXP.
  *
  ******************************************************************************/
-static int dxp_write_word(int* ioChan, int* modChan, unsigned short* addr,
+XERXES_STATIC int dxp_write_word(int* ioChan, int* modChan, unsigned short* addr,
                           unsigned short* writedata)
 /* int *ioChan;      Input: I/O channel of DXP module      */
 /* int *modChan;     Input: DXP channels no (-1,0,1,2,3)   */
@@ -717,7 +717,7 @@ static int dxp_write_word(int* ioChan, int* modChan, unsigned short* addr,
  * data from the appropriate channel and address of the DXP.
  *
  ******************************************************************************/
-static int dxp_read_block(int* ioChan, int* modChan, unsigned short* addr,
+XERXES_STATIC int dxp_read_block(int* ioChan, int* modChan, unsigned short* addr,
                           unsigned int* length, unsigned short* readdata)
 /* int *ioChan;      Input: I/O channel of DXP module       */
 /* int *modChan;     Input: DXP channels no (0,1,2,3)       */
@@ -734,8 +734,7 @@ static int dxp_read_block(int* ioChan, int* modChan, unsigned short* addr,
   unsigned short data;
   unsigned int i,nxfers,xlen;
   unsigned int maxblk;
-
-
+                        
   if((*modChan<0)||(*modChan>3)){
     sprintf(info_string,"called with DXP channel number %d",*modChan);
     status = DXP_BAD_PARAM;
@@ -795,7 +794,7 @@ static int dxp_read_block(int* ioChan, int* modChan, unsigned short* addr,
  * data to the appropriate channel and address of the DXP.
  *
  ******************************************************************************/
-static int dxp_write_block(int* ioChan, int* modChan, unsigned short* addr,
+XERXES_STATIC int dxp_write_block(int* ioChan, int* modChan, unsigned short* addr,
                            unsigned int* length, unsigned short* writedata)
 /* int *ioChan;      Input: I/O channel of DXP module     */
 /* int *modChan;     Input: DXP channels no (-1,0,1,2,3)  */
@@ -880,7 +879,7 @@ static int dxp_write_block(int* ioChan, int* modChan, unsigned short* addr,
  * DXP channel is specified then all channels are downloaded.
  *
  ******************************************************************************/
-static int dxp_download_fpgaconfig(int* ioChan, int* modChan, char *name, Board* board)
+XERXES_STATIC int dxp_download_fpgaconfig(int* ioChan, int* modChan, char *name, Board* board)
 /* int *ioChan;   Input: I/O channel of DXP module */
 /* int *modChan;   Input: DXP channels no (-1,0,1,2,3) */
 /* char *name;                     Input: Type of FPGA to download         */
@@ -1116,7 +1115,7 @@ static int dxp_download_fpgaconfig(int* ioChan, int* modChan, char *name, Board*
  * the fipconfig global array at location determined by *dec_index.
  *
  ******************************************************************************/
-static int dxp_get_fpgaconfig(Fippi_Info* fippi)
+XERXES_STATIC int dxp_get_fpgaconfig(Fippi_Info* fippi)
 /* Fippi_Info *fippi;   I/O: structure of Fippi info */
 {
   int status;
@@ -1124,8 +1123,6 @@ static int dxp_get_fpgaconfig(Fippi_Info* fippi)
   char line[LINE_LEN];
   unsigned int j, nchars, len;
   FILE *fp;
-
-  unsigned short temp=0, lowbyte=1;
 
   sprintf(info_string,"%s%s%s","Reading FPGA file ",
           fippi->filename,"...");
@@ -1153,8 +1150,10 @@ static int dxp_get_fpgaconfig(Fippi_Info* fippi)
   }
 
   /* Stuff the data into the fipconfig array */
+  /* Note, we don't pack data as is done on Saturn, we only put 1 byte
+   * in each element of fippi->data.
+   */
 
-  lowbyte = 1;
   len = 0;
   while (dxp4c2x_md_fgets(line,132,fp)!=NULL) {
     if (line[0]=='*') continue;
@@ -1163,16 +1162,8 @@ static int dxp_get_fpgaconfig(Fippi_Info* fippi)
       nchars--;
     }
     for (j=0;j<nchars;j=j+2) {
-      sscanf(&line[j],"%2hX",&temp);
-      /* Check if the next byte is the low or high byte of the configuration word */
-      if (lowbyte==1) {
-        len++;
-        fippi->data[len-1] = temp;
-        lowbyte = 0;
-      } else {
-        fippi->data[len-1] |= temp<<8;
-        lowbyte = 1;
-      }
+      sscanf(&line[j],"%2hX",&(fippi->data[len]));
+      len++;
     }
   }
   fippi->proglen = len;
@@ -1189,7 +1180,7 @@ static int dxp_get_fpgaconfig(Fippi_Info* fippi)
  * FiPPis are OK
  *
  ******************************************************************************/
-static int dxp_download_fpga_done(int* modChan, char *name, Board *board)
+XERXES_STATIC int dxp_download_fpga_done(int* modChan, char *name, Board *board)
 /* int *modChan;   Input: Module channel number              */
 /* char *name;                          Input: Type of FPGA to check the status of*/
 /* board *board;   Input: Board structure for this device    */
@@ -1255,7 +1246,7 @@ static int dxp_download_fpga_done(int* modChan, char *name, Board *board)
  * channels are downloaded.
  *
  ******************************************************************************/
-static int dxp_download_dspconfig(int* ioChan, int* modChan, Board *board)
+XERXES_STATIC int dxp_download_dspconfig(int* ioChan, int* modChan, Board *board)
 /* int *ioChan;     Input: I/O channel of DXP module  */
 /* int *modChan;    Input: DXP channel no (-1,0,1,2,3) */
 /* Dsp_Info *dsp;    Input: DSP structure     */
@@ -1279,13 +1270,16 @@ static int dxp_download_dspconfig(int* ioChan, int* modChan, Board *board)
 
   ASSERT(board != NULL);
 
-
   if((*modChan<-1)||(*modChan>3)){
     sprintf(info_string,"DXP4C2X routine called with channel number %d",*modChan);
     status = DXP_BAD_PARAM;
     dxp_log_error("dxp_download_dspconfig",info_string,status);
   }
 	
+  if (*modChan == -1) dsp = board->dsp[0];
+  else dsp = board->dsp[*modChan];
+  ASSERT(dsp != NULL);
+
   /* Read-Modify-Write to CSR to initiate download */
   status = dxp_read_csr(ioChan, &data);
   if (status!=DXP_SUCCESS){
@@ -1364,7 +1358,7 @@ static int dxp_download_dspconfig(int* ioChan, int* modChan, Board *board)
  * If the routine returns DXP_SUCCESS, then the DSP is ready to run.
  *
  ******************************************************************************/
-static int dxp_download_dsp_done(int* ioChan, int* modChan, int* mod,
+XERXES_STATIC int dxp_download_dsp_done(int* ioChan, int* modChan, int* mod,
                                  Board *board, unsigned short* value,
                                  float* timeout)
 /* int *ioChan;      Input: I/O channel of the module  */
@@ -1424,7 +1418,7 @@ static int dxp_download_dsp_done(int* ioChan, int* modChan, int* mod,
  * can be allocated.
  *
  ******************************************************************************/
-static int dxp_get_fipinfo(Fippi_Info* fippi)
+XERXES_STATIC int dxp_get_fipinfo(Fippi_Info* fippi)
 /* Fippi_Info *fippi;    I/O: Structure of FIPPI program Info */
 {
 
@@ -1440,7 +1434,7 @@ static int dxp_get_fipinfo(Fippi_Info* fippi)
  * can be allocated.
  *
  ******************************************************************************/
-static int dxp_get_defaultsinfo(Dsp_Defaults* defaults)
+XERXES_STATIC int dxp_get_defaultsinfo(Dsp_Defaults* defaults)
 /* Dsp_Defaults *defaults;    I/O: Structure of FIPPI program Info */
 {
 
@@ -1457,7 +1451,7 @@ static int dxp_get_defaultsinfo(Dsp_Defaults* defaults)
  * can be allocated.
  *
  ******************************************************************************/
-static int dxp_get_dspinfo(Dsp_Info* dsp)
+XERXES_STATIC int dxp_get_dspinfo(Dsp_Info* dsp)
 /* Dsp_Info *dsp;       I/O: Structure of DSP program Info */
 {
 
@@ -1478,7 +1472,7 @@ static int dxp_get_dspinfo(Dsp_Info* dsp)
  * channels.
  *
  ******************************************************************************/
-static int dxp_get_dspconfig(Dsp_Info* dsp)
+XERXES_STATIC int dxp_get_dspconfig(Dsp_Info* dsp)
 /* Dsp_Info *dsp;     I/O: Structure of DSP program Info */
 {
   char info_string[INFO_LEN];
@@ -1527,7 +1521,7 @@ static int dxp_get_dspconfig(Dsp_Info* dsp)
  * here.
  *
  ******************************************************************************/
-static int dxp_get_dspdefaults(Dsp_Defaults* defaults)
+XERXES_STATIC int dxp_get_dspdefaults(Dsp_Defaults* defaults)
 /* Dsp_Defaults *defaults;     I/O: Structure of DSP defaults    */
 {
   char info_string[INFO_LEN];
@@ -1620,7 +1614,7 @@ static int dxp_get_dspdefaults(Dsp_Defaults* defaults)
  * Read the DSP configuration file  -- passed filepointer
  *
  ******************************************************************************/
-static int dxp_load_dspfile(FILE* fp, Dsp_Info* dsp)
+XERXES_STATIC int dxp_load_dspfile(FILE* fp, Dsp_Info* dsp)
 /* FILE  *fp;       Input: Pointer to the opened DSP file*/
 /* unsigned short *dspconfig;   Output: Array containing DSP program */
 /* unsigned int *nwordsdsp;    Output: Size of DSP program   */
@@ -1653,7 +1647,7 @@ static int dxp_load_dspfile(FILE* fp, Dsp_Info* dsp)
  * Routine to read in the DSP program
  *
  ******************************************************************************/
-static int dxp_load_dspconfig(FILE* fp, Dsp_Info* dsp)
+XERXES_STATIC int dxp_load_dspconfig(FILE* fp, Dsp_Info* dsp)
 /* FILE *fp;       Input: File pointer from which to read the symbols */
 /* unsigned short *dspconfig;   Output: Array containing DSP program    */
 /* unsigned int *nwordsdsp;    Output: Size of DSP program       */
@@ -1695,7 +1689,7 @@ static int dxp_load_dspconfig(FILE* fp, Dsp_Info* dsp)
  * Routine to read in the DSP symbol name list
  *
  ******************************************************************************/
-static int dxp_load_dspsymbol_table(FILE* fp, Dsp_Info* dsp)
+XERXES_STATIC int dxp_load_dspsymbol_table(FILE* fp, Dsp_Info* dsp)
 /* FILE *fp;      Input: File pointer from which to read the symbols */
 /* char **pnames;     Output: Array of DSP param names     */
 /* unsigned short *nsymbol;   Output: Number of defined DSP symbols    */
@@ -1767,7 +1761,7 @@ static int dxp_load_dspsymbol_table(FILE* fp, Dsp_Info* dsp)
  * of the DSP
  *
  ******************************************************************************/
-static int dxp_symbolname(unsigned short* lindex, Dsp_Info* dsp, char string[])
+XERXES_STATIC int dxp_symbolname(unsigned short* lindex, Dsp_Info* dsp, char string[])
 /* unsigned short *lindex;    Input: address of parameter   */
 /* Dsp_Info *dsp;      Input: dsp structure with info  */
 /* char string[];      Output: parameter name    */
@@ -1794,7 +1788,7 @@ static int dxp_symbolname(unsigned short* lindex, Dsp_Info* dsp, char string[])
  * symbol table.
  *
  ******************************************************************************/
-static int dxp_loc(char name[], Dsp_Info* dsp, unsigned short* address)
+XERXES_STATIC int dxp_loc(char name[], Dsp_Info* dsp, unsigned short* address)
 /* char name[];     Input: symbol name for accessing YMEM params */
 /* Dsp_Info *dsp;    Input: dsp structure with info    */
 /* unsigned short *address;  Output: address in YMEM                      */
@@ -1842,7 +1836,7 @@ static int dxp_loc(char name[], Dsp_Info* dsp, unsigned short* address)
  * of the DXP of ioChan.
  *
  ******************************************************************************/
-static int dxp_dspparam_dump(int* ioChan, int* modChan, Dsp_Info* dsp)
+XERXES_STATIC int dxp_dspparam_dump(int* ioChan, int* modChan, Dsp_Info* dsp)
 /* int *ioChan;      Input: I/O channel of DXP module        */
 /* int *modChan;     Input: DXP channels no (0,1,2,3)        */
 /* Dsp_Info *dsp;     Input: dsp structure with info  */
@@ -1943,7 +1937,7 @@ static int dxp_dspparam_dump(int* ioChan, int* modChan, Dsp_Info* dsp)
  * see dxp_test_mem for the meaning of *pattern..
  *
  ******************************************************************************/
-static int dxp_test_spectrum_memory(int* ioChan, int* modChan, int* pattern,
+XERXES_STATIC int dxp_test_spectrum_memory(int* ioChan, int* modChan, int* pattern,
                                     Board *board)
 /* int *ioChan;     Input: IO channel to test    */
 /* int *modChan;    Input: Channel on the module to test */
@@ -1986,7 +1980,7 @@ static int dxp_test_spectrum_memory(int* ioChan, int* modChan, int* pattern,
  * see dxp_test_mem for the meaning of *pattern..
  *
  ******************************************************************************/
-static int dxp_test_baseline_memory(int* ioChan, int* modChan, int* pattern,
+XERXES_STATIC int dxp_test_baseline_memory(int* ioChan, int* modChan, int* pattern,
                                     Board *board)
 /* int *ioChan;      Input: IO channel to test    */
 /* int *modChan;     Input: Channel on the module to test */
@@ -2030,7 +2024,7 @@ static int dxp_test_baseline_memory(int* ioChan, int* modChan, int* pattern,
  * see dxp_test_mem for the meaning of *pattern..
  *
  ******************************************************************************/
-static int dxp_test_event_memory(int* ioChan, int* modChan, int* pattern,
+XERXES_STATIC int dxp_test_event_memory(int* ioChan, int* modChan, int* pattern,
                                  Board *board)
 /* int *ioChan;      Input: IO channel to test    */
 /* int *modChan;     Input: Channel on the module to test */
@@ -2079,7 +2073,7 @@ static int dxp_test_event_memory(int* ioChan, int* modChan, int* pattern,
  *  *pattern=2 for 0xAAAA,0x5555,0xAAAA,0x5555...
  *
  ******************************************************************************/
-static int dxp_test_mem(int* ioChan, int* modChan, int* pattern,
+XERXES_STATIC int dxp_test_mem(int* ioChan, int* modChan, int* pattern,
                         unsigned int* length, unsigned short* addr)
 /* int *ioChan;      Input: I/O channel of DXP module        */
 /* int *modChan;     Input: DXP channels no (0,1,2,3)        */
@@ -2190,7 +2184,7 @@ static int dxp_test_mem(int* ioChan, int* modChan, int* pattern,
  * pointer and channel number.
  *
  ******************************************************************************/
-static int dxp_modify_dspsymbol(int* ioChan, int* modChan, char* name,
+XERXES_STATIC int dxp_modify_dspsymbol(int* ioChan, int* modChan, char* name,
                                 unsigned short* value, Board* board)
 /* int *ioChan;     Input: IO channel to write to    */
 /* int *modChan;    Input: Module channel number to write to */
@@ -2292,7 +2286,7 @@ static int dxp_modify_dspsymbol(int* ioChan, int* modChan, char* name,
  * pointer and channel number.
  *
  ******************************************************************************/
-static int dxp_write_dsp_param_addr(int* ioChan, int* modChan,
+XERXES_STATIC int dxp_write_dsp_param_addr(int* ioChan, int* modChan,
                                     unsigned int* addr, unsigned short* value)
 /* int *ioChan;      Input: IO channel to write to    */
 /* int *modChan;     Input: Module channel number to write to */
@@ -2330,7 +2324,7 @@ static int dxp_write_dsp_param_addr(int* ioChan, int* modChan,
  * for zigzag0 or zigzag1 is returned depending on what was passed as *name.
  *
  ******************************************************************************/
-static int dxp_read_dspsymbol(int* ioChan, int* modChan, char* name,
+XERXES_STATIC int dxp_read_dspsymbol(int* ioChan, int* modChan, char* name,
                               Board* board, double* value)
 /* int *ioChan;     Input: IO channel to write to    */
 /* int *modChan;    Input: Module channel number to write to */
@@ -2373,7 +2367,7 @@ static int dxp_read_dspsymbol(int* ioChan, int* modChan, char* name,
   dsp = board->dsp[*modChan];
 
   ASSERT(dsp != NULL);
-
+  
   if ((dsp->proglen)<=0) {
     status = DXP_DSPLOAD;
     sprintf(info_string, "Must Load DSP code before reading %s", name);
@@ -2483,7 +2477,7 @@ static int dxp_read_dspsymbol(int* ioChan, int* modChan, char* name,
  * modChan.  It returns the array to the caller.
  *
  ******************************************************************************/
-static int dxp_read_dspparams(int* ioChan, int* modChan, Board* b,
+XERXES_STATIC int dxp_read_dspparams(int* ioChan, int* modChan, Board* b,
                               unsigned short* params)
 /* int *ioChan;      Input: I/O channel of DSP  */
 /* int *modChan;     Input: module channel of DSP  */
@@ -2514,7 +2508,7 @@ static int dxp_read_dspparams(int* ioChan, int* modChan, Board* b,
  * modChan.
  *
  ******************************************************************************/
-static int dxp_write_dspparams(int* ioChan, int* modChan, Dsp_Info* dsp,
+XERXES_STATIC int dxp_write_dspparams(int* ioChan, int* modChan, Dsp_Info* dsp,
                                unsigned short* params)
 /* int *ioChan;      Input: I/O channel of DSP  */
 /* int *modChan;     Input: module channel of DSP  */
@@ -2544,7 +2538,7 @@ static int dxp_write_dspparams(int* ioChan, int* modChan, Dsp_Info* dsp,
  * For 4C boards, it is fixed.
  *
  ******************************************************************************/
-static int dxp_get_spectrum_length(int *ioChan, int *modChan,
+XERXES_STATIC int dxp_get_spectrum_length(int *ioChan, int *modChan,
                                    Board *board, unsigned int *len)
 {
   int status;
@@ -2587,7 +2581,7 @@ static int dxp_get_spectrum_length(int *ioChan, int *modChan,
  * For 4C boards, it is fixed.
  *
  ******************************************************************************/
-static int dxp_get_baseline_length(int *modChan, Board *b, unsigned int *len)
+XERXES_STATIC int dxp_get_baseline_length(int *modChan, Board *b, unsigned int *len)
 {
   int status;
 
@@ -2618,7 +2612,7 @@ static int dxp_get_baseline_length(int *modChan, Board *b, unsigned int *len)
  * For 4C boards, it is fixed.
  *
  ******************************************************************************/
-static unsigned int dxp_get_event_length(Dsp_Info* dsp, unsigned short* params)
+XERXES_STATIC unsigned int dxp_get_event_length(Dsp_Info* dsp, unsigned short* params)
 /* Dsp_Info *dsp;     Input: Relavent DSP info   */
 /* unsigned short *params;   Input: Array of DSP parameters */
 {
@@ -2642,7 +2636,7 @@ static unsigned int dxp_get_event_length(Dsp_Info* dsp, unsigned short* params)
  * For 4C boards, it is fixed.
  *
  ******************************************************************************/
-static unsigned int dxp_get_history_length(Dsp_Info* dsp, unsigned short* params)
+XERXES_STATIC unsigned int dxp_get_history_length(Dsp_Info* dsp, unsigned short* params)
 /* Dsp_Info *dsp;     Input: Relavent DSP info   */
 /* unsigned short *params;   Input: Array of DSP parameters */
 {
@@ -2666,7 +2660,7 @@ static unsigned int dxp_get_history_length(Dsp_Info* dsp, unsigned short* params
  * modChan.  It returns the array to the caller.
  *
  ******************************************************************************/
-static int dxp_read_spectrum(int* ioChan, int* modChan, Board* board,
+XERXES_STATIC int dxp_read_spectrum(int* ioChan, int* modChan, Board* board,
                              unsigned long* spectrum)
 /* int *ioChan;     Input: I/O channel of DSP  */
 /* int *modChan;    Input: module channel of DSP  */
@@ -2729,7 +2723,7 @@ static int dxp_read_spectrum(int* ioChan, int* modChan, Board* board,
  * modChan.  It returns the array to the caller.
  *
  ******************************************************************************/
-static int dxp_read_baseline(int* ioChan, int* modChan, Board* board,
+XERXES_STATIC int dxp_read_baseline(int* ioChan, int* modChan, Board* board,
                              unsigned long* baseline)
 /* int *ioChan;      Input: I/O channel of DSP     */
 /* int *modChan;     Input: module channel of DSP     */
@@ -2795,7 +2789,7 @@ static int dxp_read_baseline(int* ioChan, int* modChan, Board* board,
  * modChan.  It returns the array to the caller.
  *
  ******************************************************************************/
-static int dxp_read_history(int* ioChan, int* modChan, Board* board,
+XERXES_STATIC int dxp_read_history(int* ioChan, int* modChan, Board* board,
                             unsigned short* history)
 /* int *ioChan;      Input: I/O channel of DSP     */
 /* int *modChan;     Input: module channel of DSP    */
@@ -2835,7 +2829,7 @@ static int dxp_read_history(int* ioChan, int* modChan, Board* board,
  * Routine to write data to the history buffer for a single DSP.
  *
  ******************************************************************************/
-static int dxp_write_history(int* ioChan, int* modChan, Board* board,
+XERXES_STATIC int dxp_write_history(int* ioChan, int* modChan, Board* board,
                              unsigned int *length,  unsigned short* history)
 /* int *ioChan;      Input: I/O channel of DSP     */
 /* int *modChan;     Input: module channel of DSP    */
@@ -2925,7 +2919,7 @@ int dxp_done_with_readout(int* ioChan, int *modChan, Board *board)
  * whether to ignore the gate signal and whether to clear the MCA.
  *
  ******************************************************************************/
-static int dxp_begin_run(int* ioChan, int* modChan, unsigned short* gate,
+XERXES_STATIC int dxp_begin_run(int* ioChan, int* modChan, unsigned short* gate,
                          unsigned short* resume, Board *board, int *id)
 /* int *ioChan;      Input: I/O channel of DXP module   */
 /* int *modChan;     Input: Module channel number    */
@@ -2946,7 +2940,7 @@ static int dxp_begin_run(int* ioChan, int* modChan, unsigned short* gate,
 
 
   dxp_log_debug("dxp_begin_run", "Entering dxp_begin_run()");
-
+ 
   /* Assign input parameters to avoid compiler warnings */
   itemp = modChan;
   btemp = board;
@@ -2990,7 +2984,7 @@ static int dxp_begin_run(int* ioChan, int* modChan, unsigned short* gate,
  * This routine ends the run on the specified CAMAC channel.
  *
  ******************************************************************************/
-static int dxp_end_run(int* ioChan, int* modChan, Board *board)
+XERXES_STATIC int dxp_end_run(int* ioChan, int* modChan, Board *board)
 /* int *ioChan;      Input: I/O channel of DXP module */
 /* int *modChan;     Input: Module channel number  */
 {
@@ -3028,7 +3022,7 @@ static int dxp_end_run(int* ioChan, int* modChan, Board *board)
  * Routine to determine if the module thinks a run is active.
  *
  ******************************************************************************/
-static int dxp_run_active(int* ioChan, int* modChan, int* active)
+XERXES_STATIC int dxp_run_active(int* ioChan, int* modChan, int* active)
 /* int *ioChan;      Input: I/O channel of DXP module   */
 /* int *modChan;     Input: module channel number of DXP module */
 /* int *active;      Output: Does the module think a run is active? */
@@ -3059,7 +3053,7 @@ static int dxp_run_active(int* ioChan, int* modChan, int* active)
  * in the xerxes_generic.h file.
  *
  ******************************************************************************/
-static int dxp_begin_control_task(int* ioChan, int* modChan, short *type,
+XERXES_STATIC int dxp_begin_control_task(int* ioChan, int* modChan, short *type,
                                   unsigned int *length, int *info, Board *board)
 {
   int status = DXP_SUCCESS;
@@ -3270,7 +3264,7 @@ static int dxp_begin_control_task(int* ioChan, int* modChan, short *type,
  * Routine to end a control task routine.
  *
  ******************************************************************************/
-static int dxp_end_control_task(int* ioChan, int* modChan, Board *board)
+XERXES_STATIC int dxp_end_control_task(int* ioChan, int* modChan, Board *board)
 {
   int status = DXP_SUCCESS;
   char info_string[INFO_LEN];
@@ -3360,7 +3354,7 @@ static int dxp_end_control_task(int* ioChan, int* modChan, Board *board)
  * Routine to get control task parameters.
  *
  ******************************************************************************/
-static int dxp_control_task_params(int* ioChan, int* modChan, short *type,
+XERXES_STATIC int dxp_control_task_params(int* ioChan, int* modChan, short *type,
                                    Board *board, int *info)
 /* int *ioChan;      Input: I/O channel of DXP module   */
 /* int *modChan;     Input: module channel number of DXP module */
@@ -3438,7 +3432,7 @@ static int dxp_control_task_params(int* ioChan, int* modChan, short *type,
  * Routine to return control task data.
  *
  ******************************************************************************/
-static int dxp_control_task_data(int* ioChan, int* modChan, short *type,
+XERXES_STATIC int dxp_control_task_data(int* ioChan, int* modChan, short *type,
                                  Board *board, void *data)
 {
   int status = DXP_SUCCESS;
@@ -3604,7 +3598,7 @@ static int dxp_control_task_data(int* ioChan, int* modChan, short *type,
  *
  *
  ******************************************************************************/
-static int dxp_begin_calibrate(int* ioChan, int* modChan, int* calib_task, Board *board)
+XERXES_STATIC int dxp_begin_calibrate(int* ioChan, int* modChan, int* calib_task, Board *board)
 /* int *ioChan;     Input: I/O channel of DXP module*/
 /* int *modChan;    Input: Module channel number */
 /* int *calib_task;    Input: int.gain (1) reset (2)   */
@@ -3671,7 +3665,7 @@ static int dxp_begin_calibrate(int* ioChan, int* modChan, int* calib_task, Board
  * Returns the RUNERROR and ERRINFO words from the DSP parameter block
  *
  ******************************************************************************/
-static int dxp_decode_error(unsigned short array[], Dsp_Info* dsp,
+XERXES_STATIC int dxp_decode_error(unsigned short array[], Dsp_Info* dsp,
                             unsigned short* runerror, unsigned short* errinfo)
 /* unsigned short array[];  Input: array from parameter block read */
 /* Dsp_Info *dsp;    Input: Relavent DSP info     */
@@ -3716,7 +3710,7 @@ static int dxp_decode_error(unsigned short array[], Dsp_Info* dsp,
  * If modChan is -1 then all channels are cleared on the DXP.
  *
  ******************************************************************************/
-static int dxp_clear_error(int* ioChan, int* modChan, Board* board)
+XERXES_STATIC int dxp_clear_error(int* ioChan, int* modChan, Board* board)
 /* int *ioChan;     Input: I/O channel of DXP module  */
 /* int *modChan;    Input: DXP channels no (-1,0,1,2,3) */
 /* Dsp_Info *dsp;    Input: Relavent DSP info    */
@@ -3757,7 +3751,7 @@ static int dxp_clear_error(int* ioChan, int* modChan, Board* board)
  * calibration task.
  *
  ******************************************************************************/
-static int dxp_check_calibration(int* calibtest, unsigned short* params, Dsp_Info* dsp)
+XERXES_STATIC int dxp_check_calibration(int* calibtest, unsigned short* params, Dsp_Info* dsp)
 /* int *calibtest;     Input: Calibration test performed */
 /* unsigned short *params;   Input: parameters read from the DSP */
 /* Dsp_Info *dsp;     Input: Relavent DSP info    */
@@ -3785,7 +3779,7 @@ static int dxp_check_calibration(int* calibtest, unsigned short* params, Dsp_Inf
  * Returns some run statistics from the parameter block array[]
  *
  ******************************************************************************/
-static int dxp_get_runstats(int *ioChan, int *modChan, Board *b,
+XERXES_STATIC int dxp_get_runstats(int *ioChan, int *modChan, Board *b,
                             unsigned long *evts, unsigned long *under,
                             unsigned long *over, unsigned long *fast,
                             unsigned long *base, double* live,
@@ -3934,7 +3928,7 @@ static int dxp_get_runstats(int *ioChan, int *modChan, Board *b,
  * assumptions:  The GAINDAC has a linear response in dB
  *
  ******************************************************************************/
-static int dxp_perform_gaincalc(float* gainchange, unsigned short* old_gaindac,
+XERXES_STATIC int dxp_perform_gaincalc(float* gainchange, unsigned short* old_gaindac,
                                 short* delta_gaindac)
 /* float *gainchange;     Input: desired gain change           */
 /* unsigned short *old_gaindac;   Input: current gaindac    */
@@ -3974,7 +3968,7 @@ static int dxp_perform_gaincalc(float* gainchange, unsigned short* old_gaindac,
  *       does not do either!
  *
  ******************************************************************************/
-static int dxp_change_gains(int* ioChan, int* modChan, int* module,
+XERXES_STATIC int dxp_change_gains(int* ioChan, int* modChan, int* module,
                             float* gainchange, Board* board)
 /* int *ioChan;     Input: IO channel of desired channel   */
 /* int *modChan;    Input: channel on module      */
@@ -4107,7 +4101,7 @@ static int dxp_change_gains(int* ioChan, int* modChan, int* module,
  *       OFFDACVAL
  *
  ******************************************************************************/
-static int dxp_setup_asc(int* ioChan, int* modChan, int* module, float* adcRule,
+XERXES_STATIC int dxp_setup_asc(int* ioChan, int* modChan, int* module, float* adcRule,
                          float* gainmod, unsigned short* polarity, float* vmin,
                          float* vmax, float* vstep, Board* board)
 /* int *ioChan;     Input: IO channel number     */
@@ -4228,7 +4222,7 @@ static int dxp_setup_asc(int* ioChan, int* modChan, int* module, float* adcRule,
  * Perform the neccessary calibration runs to get the ASC ready to take data
  *
  ******************************************************************************/
-static int dxp_calibrate_asc(int* mod, int* camChan, unsigned short* used,
+XERXES_STATIC int dxp_calibrate_asc(int* mod, int* camChan, unsigned short* used,
                              Board *board)
 /* int *mod;     Input: Camac Module number to calibrate   */
 /* int *camChan;    Input: Camac pointer       */
@@ -4264,7 +4258,7 @@ static int dxp_calibrate_asc(int* mod, int* camChan, unsigned short* used,
  *    o restore RUNTASKS for each channel
  *
  ******************************************************************************/
-static int dxp_calibrate_channel(int* mod, int* camChan, unsigned short* used,
+XERXES_STATIC int dxp_calibrate_channel(int* mod, int* camChan, unsigned short* used,
                                  int* calibtask, Board *board)
 /* int *mod;      Input: Camac Module number to calibrate   */
 /* int *camChan;     Input: Camac pointer       */
@@ -4400,7 +4394,7 @@ static int dxp_calibrate_channel(int* mod, int* camChan, unsigned short* used,
  * Finally try to open the file as an environment variable.
  *
  ******************************************************************************/
-static FILE *dxp_find_file(const char* filename, const char* mode)
+XERXES_STATIC FILE *dxp_find_file(const char* filename, const char* mode)
 /* const char *filename;   Input: filename to open   */
 /* const char *mode;    Input: Mode to use when opening */
 {
@@ -4484,7 +4478,7 @@ static FILE *dxp_find_file(const char* filename, const char* mode)
 /**********
  * This routine does nothing for this product.
  **********/
-static int dxp_setup_cmd(Board *board, char *name, unsigned int *lenS,
+XERXES_STATIC int dxp_setup_cmd(Board *board, char *name, unsigned int *lenS,
                          byte_t *send, unsigned int *lenR, byte_t *receive,
                          byte_t ioFlags)
 {
@@ -4568,7 +4562,7 @@ XERXES_STATIC int dxp_write_mem(int *ioChan, int *modChan, Board *board,
  * register, provided that it is defined
  * for this product.
  **********/
-static int dxp_write_reg(int *ioChan, int *modChan, char *name,
+XERXES_STATIC int dxp_write_reg(int *ioChan, int *modChan, char *name,
                          unsigned long *data)
 {
   int status;
