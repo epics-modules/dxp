@@ -22,7 +22,7 @@ dxpVX_registerRecordDeviceDriver(pdbbase)
 putenv("EPICS_TS_MIN_WEST=300")
 
 # Setup for save_restore
-< ../save_restore.cmd
+< ../save_restore_vxWorks.cmd
 save_restoreSet_status_prefix("dxp2X:")
 dbLoadRecords("$(AUTOSAVE)/asApp/Db/save_restoreStatus.db", "P=dxp2X:")
 set_pass0_restoreFile("auto_settings4.sav")
@@ -38,8 +38,8 @@ ksc2917_setup(1, 0xFF00, 0x00A0, 2)
 # because we need to initialize the DXP hardware.
 camacLibInit
 
-# Set logging level (1=ERROR, 2=WARNING, 3=XXX, 4=DEBUG)
-xiaSetLogLevel(4)
+# Set logging level (1=ERROR, 2=WARNING, 3=INFO, 4=DEBUG)
+xiaSetLogLevel(2)
 xiaInit("dxp4c2x_4.ini")
 xiaStartSystem
 
@@ -60,7 +60,7 @@ dbLoadRecords("$(SSCAN)/sscanApp/Db/scan.db","P=dxp2X:,MAXPTS1=2000,MAXPTS2=1000
 
 iocInit
 
-seq dxpMED, "P=dxp2X:, DXP=dxp, MCA=mca, N_DETECTORS=4"
+seq &dxpMED, "P=dxp2X:, DXP=dxp, MCA=mca, N_DETECTORS=4"
 
 ### Start up the autosave task and tell it what to do.
 # Save settings every thirty seconds
@@ -68,4 +68,7 @@ create_monitor_set("auto_settings4.req", 30, "P=dxp2X:")
 
 ### Start the saveData task.
 saveData_Init("saveData.req", "P=dxp2X:")
+
+# Free the memory allocated at the top
+free(mem)
 
