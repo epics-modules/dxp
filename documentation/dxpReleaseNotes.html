@@ -9,8 +9,10 @@
 See <a href="dxpKnownProblems.html">known problems</a> for information
 on problems each release.
 
-<h2 align="center">Release 2-8 (xx-Feb-2008) </h2>
+<h2 align="center">Release 2-8 (6-Feb-2008) </h2>
 <ul>
+  <li>Updated code for DXP4C2X to work again.  Based on X10P code from Handel 0.6.47.  This makes the DXP4C2X
+      compatible with the Saturn and the xMAP.
   <li>Changes in Handel code for Saturn to be compatible with Handel version 0.6.47.  These are mostly
       minor.  
       The most important changes are that the Saturn now supports "maxwidth" and "baseline_threshold"
@@ -20,8 +22,6 @@ on problems each release.
   <li>Updated documentation to explain how to use udev or hotplug to run the USB Saturn on Linux without
       root privilege.  Added USB_DEVFS_PATH environment variable to iocSaturn/st.cmd to fix problem with
       libusb using /proc/bus/usb when it should be using /dev/bus/usb, and thus not getting permissions right.
-  <li>Updated code for DXP4C2X to work again.  Based on X10P code from Handel 0.6.47.  This makes the DXP4C2X
-      compatible with the Saturn and the xMAP.
   <li>Fixed problem with EraseAll not displaying the newly erased spectra.
 </ul>
 
