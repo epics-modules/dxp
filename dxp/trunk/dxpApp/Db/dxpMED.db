@@ -6,7 +6,7 @@
 record(bo,"$(P)EraseAll") {
         field(VAL,"1")
         field(OUT,"$(P)$(MCAALL).ERAS CA MS")
-        field(FLNK,"$(P)StatusAllOnce")
+        field(FLNK,"$(P)ReadAllOnce")
 }
 
 record(bo,"$(P)EraseStart") {
