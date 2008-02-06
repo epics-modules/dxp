@@ -1265,6 +1265,10 @@ XERXES_STATIC int dxp_download_dspconfig(int* ioChan, int* modChan, Board *board
   unsigned int j,nxfers,xlen;
   unsigned int maxblk;
 
+  unsigned int i;
+
+  float timeout = 0.0;
+
   Dsp_Info *dsp = NULL;
 
 
@@ -1342,14 +1346,32 @@ XERXES_STATIC int dxp_download_dspconfig(int* ioChan, int* modChan, Board *board
     return status;
   }
 
+  /* Verify that the DSP has booted on all of the channels. */
+
+  timeout = 0.001f;
+  dxp4c2x_md_wait(&timeout);
+
+  for (i = 0; i < board->nchan; i++) {
+    status = dxp_wait_for_busy(ioChan, (int *)&i, board, 50, 0.0, 0.5);
+
+    if (status != DXP_SUCCESS) {
+      sprintf(info_string, "Error waiting for DSP to boot ioChan = %d", *ioChan);
+      dxp_log_error("dxp_download_dspconfig", info_string, status);
+      return status;
+    }
+  }
+
   /*
    * All done, clear the LAM on this module 
    */
   if((status=dxp_clear_LAM(ioChan, modChan))!=DXP_SUCCESS){
 	dxp_log_error("dxp_download_dspconfig","Unable to clear LAM",status);
+    return status;
   }
 
-  return status;
+  board->chanstate[0].dspdownloaded = 1;
+
+  return DXP_SUCCESS;
 }
 	
 /******************************************************************************
@@ -4809,7 +4831,7 @@ XERXES_STATIC int dxp_read_external_memory(int *ioChan, int *modChan, Board *boa
 
   unsigned int info_len = 4;
 
-  short task = CT_DXPX10P_READ_MEMORY;
+  short task = CT_DXP2X_READ_MEMORY;
 
   unsigned long i;
 
