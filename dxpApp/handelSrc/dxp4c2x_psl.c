@@ -3357,7 +3357,7 @@ PSL_STATIC int PSL_API pslDoADCTrace(int detChan, void *info)
       return status;
     }
 
-    if (BUSY == 0) {
+    if (BUSY == 99) {
       break;
     }
 
