@@ -8,7 +8,7 @@
 <H1>DXP - EPICS software for XIA Digital Signal Processing Systems</H1>
 
 <H2>Mark Rivers</H2>
-<H2>January 8, 2008</H2>
+<H2>February 6, 2008</H2>
 </CENTER>
 
 <HR>
@@ -167,13 +167,12 @@ digital signal processor based multichannel analyzers from
                             Installing the Saturn on Windows</a></h3>
 <p>To use the EPICS DXP software with a Saturn on a Windows PC do the following:
 <ul>
-  <li>To use the EPP interface:
-  <ul>
-    <li>Install the 
-      <a href="http://www.driverlinx.com" target="_blank">Windows Port IO Driver</a>
-      from Scientific Software Tools.  This is a software driver
-      that lets Windows applications communicate with I/O ports, including the Enhanced Parallel Port.</li>
-  </ul>
+  <li>Install the 
+    <a href="http://www.driverlinx.com" target="_blank">Windows Port IO Driver</a>
+    from Scientific Software Tools.  This is a software driver
+    that lets Windows applications communicate with I/O ports, including the Enhanced Parallel Port.
+    Although this is only needed to communicate with the EPP port, the driver must be installed even
+    if USB only will be used, because the EPICS dxpApp application is linked with that DLL.</li>
   <li>To use the USB 1.0 interface:
   <ul>
     <li>Install the 
@@ -780,8 +779,9 @@ script is used.
                             Installing EPICS for the xMAP</a></h2>
 <p>To install the EPICS DXP software with an xMAP system on a Windows computer do the following:
 <ul>
-  <li>Follow the instructions for installing the Saturn on Windows.  The differences are that the Windows Port I/O driver
-      does not need to be installed, since the xMAP does not use the EPP port. Also, where the directions say iocBoot/iocSaturn
+  <li>Follow the instructions for installing the Saturn on Windows.  The Windows Port I/O driver
+      needs to be installed, even though the xMAP does not use the EPP port, because the dxpApp application
+      is linked with that DLL. Also, where the directions say iocBoot/iocSaturn
       use iocBoot/iocXMAP instead.
   <li>Install the PCI/PXI converter from National Instruments.
   <li>Install the National Instruments driver software.
@@ -1156,7 +1156,35 @@ files temporarily and ignore the ugly white fields for non-existant records!
 <h2 align="center"><a name="Installing the DXP2X">
                             Installing the DXP2X</a></h2>
 <p> </p>
-This part of the document is not yet complete.  R2-7 of the dxp module does not support the DXP2X.
+The DXP4C2X CAMAC module is supported under vxWorks.  It works with the Kinetic Systems
+3922/2922 VME to CAMAC adapter.
+<p>
+The example IOC directory, iocDXP2X, creates EPICS process variables with names like
+dxp2X:dxp1.PKTIM, where dxp2X: is the "prefix" for the process variable names, dxp1
+is the DXP record name, and PKTIM is the field name.  This is OK
+for installations where there will be at most one DXP2X system on the subnet.  However, in many cases there
+will be the possibility of more than one DXP2X running EPICS on the same subnet.  If this is the
+case then it is essential that each one use a different prefix, because EPICS process variable names
+must be unique on a subnet.  Here is how to give your DXP2X system a unique name, and still be able to upgrade
+the EPICS software easily.  It is recommended that you follow these instructions even if you don't have
+name conflicts on your IOC, so that files you edit are in a directory that will not be overwritten when you upgrade
+the EPICS software.
+<ul>
+  <li>Make a copy of the iocDXP2X directory.  Let's assume you will make your prefix be myDXP2X:, so a
+      good name for the directory would be iocmyDXP2X/.
+  <li>Edit all files in that directory (including *.cmd, auto_settings*.req, *.template, and START_IOC*),
+      changing all occurances of dxp2X: to myDXP2X:.
+  <li>If you have created any higher-level medm screens that load the medm screens in this package, you
+      will need to edit them to pass the new prefix, myDXP2X:
+  <li>The next time you unpack a new version of the EPICS DXP software it will overwrite the iocDXP2X
+      directory.  However, if you have made your own new directory, myDXP2X/, that will not be
+      modified.
+  <li>There are example startup scripts (e.g. 4element.cmd), Handel initialization files (e.g. 4element_reset.ini),
+      database templates (e.g. 4element.template), 
+      and autosave request files (e.g. auto_settings4.req) for 4, 8, 12 and 16 element systems.  The .ini file
+      will almost certainly need to be edited to match your detector and CAMAC configuration.
+</ul>
+
 <p></p>
 
 
