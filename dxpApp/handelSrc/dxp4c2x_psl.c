@@ -565,13 +565,15 @@ PSL_STATIC int PSL_API pslDownloadFirmware(int detChan, char *type, char *file,
 {
   int statusX;
   int status;
+  unsigned int modChan;
 
   CurrentFirmware *currentFirmware = NULL;
 
   ASSERT(m != NULL);
 
+  status = pslGetModChan(detChan, m, &modChan);
 
-  currentFirmware = m->currentFirmware;
+  currentFirmware = &m->currentFirmware[modChan];
 
   /* Immediately dismiss the types that aren't supported (currently) by the
    * DXP4C2X
