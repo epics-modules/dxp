@@ -66,6 +66,8 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_open(char *, int *);
 XIA_MD_STATIC int XIA_MD_API dxp_md_open_bcn(int *, int *, int *, int *);
 XIA_MD_STATIC int XIA_MD_API dxp_md_io(int *,unsigned int *,unsigned long *,void  *,unsigned int *);
 XIA_MD_STATIC int XIA_MD_API dxp_md_close(int *camChan);
+XIA_MD_STATIC void XIA_MD_API dxp_md_vx_log(int level, char *routine, char *message, int error, char *file, int line);
+XIA_MD_STATIC void dxp_md_vx_output(char *filename);
 #endif /* EXCLUDE DXP4C2X */
 
 XIA_MD_STATIC int XIA_MD_API dxp_md_lock_resource(int *ioChan, int *modChan, short *lock);
