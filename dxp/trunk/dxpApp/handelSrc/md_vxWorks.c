@@ -44,6 +44,10 @@
  * If other support is added then take the prototypes and starting code from md_win95.c
  */
 
+/* Note: we replace dxp_md_log and dxp_md_output from md_log.c with versions specific to vxWorks
+ * This is because on vxWorks stdout and stderr can change their values when the startup script ends,
+ * and we must reassign them each time if they are being used. 
+ */
 
 /* System include files */
 #include <stdlib.h>
@@ -95,8 +99,12 @@ typedef unsigned int	DWORD;
 #define ABOVE_NORMAL_PRIORITY_CLASS -5
 #define BELOW_NORMAL_PRIORITY_CLASS 5
 
+#define INFO_LEN	400
+
 static char *TMP_PATH = ".";
 static char *PATH_SEP = "/";
+static int use_stdout = 0;
+static int use_stderr = 0;
 
 unsigned int GetCurrentProcess()		/* This only works for SetPriorityClass, not a true	*/
 {					/* replacement for Microsoft Windows GetCurrentProcess.	*/
@@ -136,11 +144,11 @@ XIA_MD_EXPORT int XIA_MD_API dxp_md_init_util(Xia_Util_Functions* funcs, char* t
     funcs->dxp_md_warning       = dxp_md_warning;
     funcs->dxp_md_info          = dxp_md_info;
     funcs->dxp_md_debug         = dxp_md_debug;
-    funcs->dxp_md_output        = dxp_md_output;
+    funcs->dxp_md_output        = dxp_md_vx_output;
     funcs->dxp_md_suppress_log  = dxp_md_suppress_log;
     funcs->dxp_md_enable_log    = dxp_md_enable_log;
     funcs->dxp_md_set_log_level = dxp_md_set_log_level;
-    funcs->dxp_md_log	        = dxp_md_log;
+    funcs->dxp_md_log	        = dxp_md_vx_log;
     funcs->dxp_md_set_priority  = dxp_md_set_priority;
     funcs->dxp_md_fgets         = dxp_md_fgets;
     funcs->dxp_md_tmp_path      = dxp_md_tmp_path;
@@ -150,6 +158,7 @@ XIA_MD_EXPORT int XIA_MD_API dxp_md_init_util(Xia_Util_Functions* funcs, char* t
     if (out_stream == NULL)
     {
 	out_stream = stdout;
+        use_stdout = 1;
     }
 
     return DXP_SUCCESS;
@@ -650,5 +659,92 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_set_priority(int *priority)
   return DXP_SUCCESS;
 }
 
+/*****************************************************************************
+ *
+ * This routine is the main logging routine. It shouldn't be called directly.
+ * Use the macros provided in xerxes_generic.h.
+ *
+ *****************************************************************************/
+XIA_MD_STATIC void XIA_MD_API dxp_md_vx_log(int level, char *routine, char *message, int error, char *file, int line)
+/* int level;							Input: The level of this log message */
+/* char *routine;						Input: Name of routine calling dxp_log*/
+/* char *message;						Input: Log message to send to output */
+/* int error;							Input: Only used if this is an ERROR */
+{
+
+  if (out_stream == NULL) {
+    out_stream = stdout;
+    use_stdout = 1;
+  }
+  if (use_stdout) out_stream = stdout;
+  if (use_stderr) out_stream = stderr;
+  
+  /* Call the original function in md_log.c */
+  dxp_md_log(level, routine, message, error, file, line);
+}
+		
+/*****************************************************************************
+ *
+ * Routine to set the logging output to whatever FILE * the user would like.
+ * By default, the output stream is set to stdout.
+ *
+ *****************************************************************************/
+XIA_MD_STATIC void dxp_md_vx_output(char *filename)
+/* char *filename;		Input: Name of the stream or file to redirect error output */
+{
+	int status;
+	char *strtmp = NULL;
+	unsigned int i;
+	char info_string[INFO_LEN];
+        
+        use_stderr = 0;
+        use_stdout = 0;
+
+/* First close the currently opened stream, iff it is a file */
+	if ((out_stream!=stdout) && (out_stream!=stderr)) {
+/* close the stream */
+		fclose(out_stream);
+	}
+/* change the input name to all lower case to check for predefined streams */
+	strtmp = (char *) dxp_md_alloc((strlen(filename)+1) * sizeof(char));
+	for (i=0;i<strlen(filename);i++) strtmp[i] = (char) tolower(filename[i]);
+	strtmp[strlen(filename)]='\0';
+
+/* if filename is stdin, then default to stdout */
+	if (STREQ(strtmp,"stdin")) {
+		dxp_md_log_warning("dxp_md_output", "Output filename can't be stdin; reset to stdout.");
+		out_stream = stdout;
+                use_stdout = 1;
+		dxp_md_free(strtmp);
+		return;
+	}
+
+/* Check if the filename is stdout, NULL or stderr */
+	if ((STREQ(strtmp,"stdout")) || (filename==NULL) || (STREQ(filename, ""))) {
+		out_stream = stdout;
+                use_stdout = 1;
+		dxp_md_free(strtmp);
+		return;
+	}
+	if (STREQ(strtmp,"stderr")) {
+		out_stream = stderr;
+                use_stderr = 1;
+		dxp_md_free(strtmp);
+		return;
+	}
+/* The filename must be for a "real" file */
+	out_stream = fopen(filename,"w");
+
+	if (out_stream==NULL) {
+		status = DXP_MDFILEIO;
+		sprintf(info_string,"Unable to open filename: %s, no action performed",filename);
+		dxp_md_log_error("dxp_md_output",info_string,status);
+		dxp_md_free(strtmp);
+		return;
+	}
+	dxp_md_free(strtmp);
+	return;
+
+}
 
 
