@@ -899,6 +899,7 @@ XERXES_STATIC int dxp_download_fpgaconfig(int* ioChan, int* modChan, char *name,
   unsigned int maxblk;
   Fippi_Info *fippi=NULL;
   int mod;
+  int chan;
 
   /* Variables for the control tasks */
   short task;
@@ -933,8 +934,10 @@ XERXES_STATIC int dxp_download_fpgaconfig(int* ioChan, int* modChan, char *name,
         break;
       }
     }
+    chan = 0;
   } else {
     fippi = board->fippi[*modChan];
+    chan = *modChan;
   }
   
   mod = board->mod;
@@ -969,7 +972,7 @@ XERXES_STATIC int dxp_download_fpgaconfig(int* ioChan, int* modChan, char *name,
   }
 
   /* check the DSP download state, if downloaded, then sleep */
-  if (board->chanstate[*modChan].dspdownloaded==1) {
+  if (board->chanstate[chan].dspdownloaded==1) {
     
     dxp_log_debug("dxp_download_fpgaconfig", "board->chanstate[].dspdownloaded == 1");
     
@@ -1061,11 +1064,11 @@ XERXES_STATIC int dxp_download_fpgaconfig(int* ioChan, int* modChan, char *name,
   j = 0;
    do {
 
-    sprintf(info_string, "xlen = %u", nxfers);
+    sprintf(info_string, "xlen = %u", xlen);
     dxp_log_debug("dxp_download_fpgaconfig", info_string);
 
 
-    /* now read the data */
+    /* now write the data */
 
     status = dxp_write_fippi(ioChan, &(fippi->data[j*maxblk+10]), xlen);
     if (status!=DXP_SUCCESS) {
@@ -1084,7 +1087,7 @@ XERXES_STATIC int dxp_download_fpgaconfig(int* ioChan, int* modChan, char *name,
   dxp_log_debug("dxp_download_fpgaconfig", "Preparing to wake the DSP up");
   
   /* After FIPPI is downloaded, end the SLEEP mode */
-  if (board->chanstate[*modChan].dspdownloaded==1) {
+  if (board->chanstate[chan].dspdownloaded==1) {
     dxp_log_debug("dxp_download_fpgaconfig", "board->chanstate[].dspdownloaded == 1");
     if ((status=dxp_end_control_task(ioChan, modChan, board))!=DXP_SUCCESS) {
       sprintf(info_string,"Error waking the DSP from sleep for module %i",mod);
@@ -1095,7 +1098,7 @@ XERXES_STATIC int dxp_download_fpgaconfig(int* ioChan, int* modChan, char *name,
 
     /* Now wait for BUSY=0 to indicate the DSP is ready */
     value = 0;
-    timeout = 2.0;
+    timeout = 5.0;
     if ((status=dxp_download_dsp_done(ioChan, modChan, &mod, board,
                                       &value, &timeout))!=DXP_SUCCESS) {
       sprintf(info_string,"Error waiting for BUSY=0 state for module %i",mod);
@@ -1369,7 +1372,12 @@ XERXES_STATIC int dxp_download_dspconfig(int* ioChan, int* modChan, Board *board
     return status;
   }
 
-  board->chanstate[0].dspdownloaded = 1;
+  if (*modChan == ALLCHAN) {
+      int i;
+      for (i=0; i<board->nchan; i++) board->chanstate[i].dspdownloaded = 1;
+  } else {
+      board->chanstate[*modChan].dspdownloaded = 1;
+  }
 
   return DXP_SUCCESS;
 }
