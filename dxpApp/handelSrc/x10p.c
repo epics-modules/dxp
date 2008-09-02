@@ -2691,6 +2691,7 @@ static int dxp_read_baseline(int* ioChan, int* modChan, Board* board,
   status = dxp_read_block(ioChan, modChan, &start, &len, us_baseline);
   if (status != DXP_SUCCESS) {
     dxp_log_error("dxp_read_baseline", "Error reading out baseline", status);
+    x10p_md_free(us_baseline);
     return status;
   }
 
@@ -2698,6 +2699,7 @@ static int dxp_read_baseline(int* ioChan, int* modChan, Board* board,
     baseline[i] = (unsigned long)us_baseline[i];
   }
 
+  x10p_md_free(us_baseline);
   return status;
 }
 
