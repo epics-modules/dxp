@@ -34,7 +34,8 @@ dxp_SRCS += dxpMED.st
 
 dxp_LIBS += handel
 dxp_LIBS += mca 
-dxp_LIBS += calc sscan autosave
+dxp_LIBS += calc autosave
+dxp_LIBS += busy
 dxp_LIBS += asyn
 dxp_LIBS += seq pv
 dxp_LIBS += $(EPICS_BASE_IOC_LIBS)
