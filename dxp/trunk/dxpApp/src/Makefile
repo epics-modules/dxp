@@ -34,8 +34,8 @@ dxp_SRCS += dxpMED.st
 
 dxp_LIBS += handel
 dxp_LIBS += mca 
-dxp_LIBS += calc autosave
-dxp_LIBS += busy
+# tmm: these are not needed for libdxp
+#dxp_LIBS += calc busy autosave
 dxp_LIBS += asyn
 dxp_LIBS += seq pv
 dxp_LIBS += $(EPICS_BASE_IOC_LIBS)
@@ -43,6 +43,7 @@ dxp_LIBS += $(EPICS_BASE_IOC_LIBS)
 #=============================
 # build an ioc application
 
+# tmm: for testing, disable the App
 PROD_IOC_vxWorks += dxpApp
 PROD_IOC_Linux += dxpApp
 PROD_IOC_cygwin32 += dxpApp
