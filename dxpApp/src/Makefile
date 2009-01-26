@@ -58,7 +58,7 @@ dxpApp_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary
 
 dxpApp_LIBS += dxp handel
 dxpApp_LIBS += mca
-dxpApp_LIBS += calc autosave
+dxpApp_LIBS += calc sscan autosave
 dxpApp_LIBS += busy
 dxpApp_LIBS_vxWorks += camac
 dxpApp_LIBS += asyn
