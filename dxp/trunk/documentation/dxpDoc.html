@@ -207,8 +207,8 @@ digital signal processor based multichannel analyzers from
       which contain medm.  Note that medm may work with non-commercial versions of X windows servers for
       Windows, but Exceed is the only package that is guaranteed to work.
   <li>Download 
-      <a href="http://cars.uchicago.edu/software/pub/dxpStandalone_2-7.tgz">dxpStandalone_2-7.tgz</a>,
-      which is the latest release of the EPICS DXP software, containing Cygwin and native Windows binaries.</li>
+      <a href="http://cars.uchicago.edu/software/pub/">the latest standalone release (e.g. dxpStandalone_XXX.tgz)</a>,
+      of the EPICS DXP software, containing Cygwin and native Windows binaries.</li>
   <li>Unpack that distribution into a directory such as C:\EPICS or C:\Program Files\EPICS.  
       The distribution file, dxpStandlone.tar.gz can be unpacked using WinZip, or with the gunzip and
       tar utilities that come with Cygwin.  To use the Cygwin tools:
@@ -237,8 +237,8 @@ digital signal processor based multichannel analyzers from
       C:\epics_adl, and if you unpacked the dxp tar file distribution into C:\epics, then type the following commands at the 
       Cygwin bash shell prompt:
       <pre>
-      $ mkdir /cygdrive/epics_adls
-      $ find /cygdrive/epics -name '*.adl' -exec cp -f -p -v {} /cygdrive/epics_adls \;
+      $ mkdir /cygdrive/c/epics_adls
+      $ find /cygdrive/c/epics -name '*.adl' -exec cp -f -p -v {} /cygdrive/c/epics_adls \;
       </pre>
       Define the environment variable EPICS_DISPLAY_PATH to point to C:\epics_adls.  For the Windows shell use the
       Windows&nbsp;Control&nbsp;Panel/System/Advanced/Environment&nbsp;Variables. For the Cygwin shell edit your .bashrc file.
