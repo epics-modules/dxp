@@ -14,6 +14,8 @@ SNCSEQ=/home/oxygen/MOONEY/epics/synApps/support/seq/2-0-12
 # EPICS_BASE usually appears last so other apps can override stuff:
 EPICS_BASE=/home/oxygen/MOONEY/epics/base-3.14.10
 
+SUPPORT=/home/oxygen/MOONEY/epics/synApps/support
+
 ASYN=/home/oxygen/MOONEY/epics/synApps/support/asyn/4-10
 MCA=/home/oxygen/MOONEY/epics/synApps/support/mca
 CAMAC=/home/oxygen/MOONEY/epics/synApps/support/camac
