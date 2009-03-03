@@ -45,7 +45,9 @@ dxp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 # tmm: for support only (no example), disable the App
 PROD_IOC_vxWorks += dxpApp
+ifeq ($(LINUX_USB_INSTALLED), YES)
 PROD_IOC_Linux += dxpApp
+endif
 PROD_IOC_cygwin32 += dxpApp
 PROD_IOC_WIN32 += dxpApp
 
@@ -65,7 +67,9 @@ dxpApp_LIBS += asyn
 dxpApp_LIBS += seq pv
 dxpApp_LIBS += $(EPICS_BASE_IOC_LIBS)
 dxpApp_LIBS_WIN32 += DLPORTIO PlxApi
+ifeq ($(LINUX_USB_INSTALLED), YES)
 dxpApp_SYS_LIBS_Linux += usb
+endif
 dxpApp_SYS_LIBS_cygwin32 += DLPORTIO PlxApi
 dxpApp_SYS_LIBS_cygwin32 += setupapi
 dxpApp_SYS_LIBS_cygwin32 += rpc
