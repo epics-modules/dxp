@@ -14,7 +14,11 @@ LIBRARY_IOC_vxWorks  += handel
 LIBRARY_IOC_cygwin32 += handel
 LIBRARY_IOC_WIN32    += handel
 
+ifeq ($(LINUX_USB_INSTALLED), YES)
 USR_CFLAGS_Linux    += -DEXCLUDE_CAMAC -DEXCLUDE_DXP4C -DEXCLUDE_DXP4C2X -DEXCLUDE_XMAP -DEXCLUDE_PLX -DLINUX
+else
+USR_CFLAGS_Linux    += -DEXCLUDE_CAMAC -DEXCLUDE_DXP4C -DEXCLUDE_DXP4C2X -DEXCLUDE_USB  -DEXCLUDE_XMAP -DEXCLUDE_PLX -DLINUX
+endif
 USR_CFLAGS_cygwin32 += -DEXCLUDE_CAMAC -DEXCLUDE_DXP4C -DEXCLUDE_DXP4C2X
 USR_CFLAGS_WIN32    += -DEXCLUDE_CAMAC -DEXCLUDE_DXP4C -DEXCLUDE_DXP4C2X
 USR_CFLAGS_vxWorks  += -DEXCLUDE_DXPX10P -DEXCLUDE_USB -DEXCLUDE_XMAP -DEXCLUDE_PLX
@@ -25,7 +29,11 @@ USR_CFLAGS_WIN32    += -DHANDEL_USE_DLL -DHANDEL_MAKE_DLL -DWIN32
 # Don't build DXP4C2X on vxWorks for now, lots of work needed
 handel_SRCS_vxWorks  += dxp4c2x.c dxp4c2x_psl.c md_vxWorks.c
 #handel_SRCS_vxWorks  += dxp4c.c
-handel_SRCS_Linux    += x10p.c x10p_psl.c md_linux.c epplib.c usblib_linux.c
+ifeq ($(LINUX_USB_INSTALLED), YES)
+handel_SRCS_Linux    += usblib_linux.c
+endif
+handel_SRCS_Linux    += x10p.c x10p_psl.c md_linux.c epplib.c
+
 handel_SRCS_cygwin32 += x10p.c x10p_psl.c xmap.c xmap_psl.c md_win95.c xia_usb2.c epplib.c plxlib.c usblib.c
 handel_SRCS_WIN32    += x10p.c x10p_psl.c xmap.c xmap_psl.c md_win95.c xia_usb2.c epplib.c plxlib.c usblib.c
 handel_SRCS += xerxes.c
