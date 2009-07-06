@@ -38,19 +38,13 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_usb2.h,v 1.4 2007-12-20 20:03:18 rivers Exp $
+ * $Id: xia_usb2.h,v 1.5 2009-07-06 18:24:32 rivers Exp $
  */
 
 #ifndef __XIA_USB2_H__
 #define __XIA_USB2_H__
 
-#ifdef WIN32
 #include "windows.h"
-#endif
-
-#ifdef LINUX
-#include "xia_linux.h"
-#endif
 
 #include "Dlldefs.h"
 
@@ -61,12 +55,12 @@
 extern "C" {
 #endif
 
-  XIA_EXPORT int XIA_API xia_usb2_open(int dev, HANDLE *h);
-  XIA_EXPORT int XIA_API xia_usb2_close(HANDLE h);
-  XIA_EXPORT int XIA_API xia_usb2_read(HANDLE h, unsigned long addr,
+  XIA_IMPORT int XIA_API xia_usb2_open(int dev, HANDLE *h);
+  XIA_IMPORT int XIA_API xia_usb2_close(HANDLE h);
+  XIA_IMPORT int XIA_API xia_usb2_read(HANDLE h, unsigned long addr,
                                        unsigned long n_bytes,
                                        byte_t *buf);
-  XIA_EXPORT int XIA_API xia_usb2_write(HANDLE h, unsigned long addr,
+  XIA_IMPORT int XIA_API xia_usb2_write(HANDLE h, unsigned long addr,
                                         unsigned long n_bytes,
                                         byte_t *buf);
 

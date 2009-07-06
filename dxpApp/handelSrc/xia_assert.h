@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *  
  *
- * $Id: xia_assert.h,v 1.2 2007-10-22 03:59:43 rivers Exp $
+ * $Id: xia_assert.h,v 1.3 2009-07-06 18:24:31 rivers Exp $
  *
  * This contains a modified implementation of the ASSERT() macro
  * discusssed in "Writing Solid Code", by Steve Maguire, pp 17-18
@@ -57,9 +57,12 @@ if (x)                       \
 else                         \
 _Assert(__FILE__, __LINE__)
 
+#define FAIL() _Assert(__FILE__, __LINE__)
+
 #else
 
 #define ASSERT(x)
+#define FAIL()
 
 #endif /* _DEBUG */ 
 

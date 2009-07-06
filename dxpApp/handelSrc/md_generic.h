@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *  
  *
- * $Id: md_generic.h,v 1.6 2007-10-23 02:01:25 rivers Exp $
+ * $Id: md_generic.h,v 1.7 2009-07-06 18:24:30 rivers Exp $
  *
  *    Generic constant definitions related to the MD layer
  */
@@ -50,21 +50,22 @@
 #define MD_INFO			3
 #define	MD_DEBUG		4
 
-/* IO Flags for serial port communications */
+/* IO Flags for serial port communications
+   These are used by udxp(s) drivers exclusively */
 #define IO_NORMAL    0x01
 #define IO_OPEN      0x02
 #define IO_CRITICAL  0x04
 #define IO_CLOSE     0x08
 #define IO_SNIFF_ON  0x10
 #define IO_SNIFF_OFF 0x20
+#define IO_USB       0x40 /* Special flag to signal dxp_command for USB comm */
 
 #define MD_INVALID_ADDR -1
 
 /* I/O Priority flags */
 enum {
   MD_IO_PRI_NORMAL = 0,
-  MD_IO_PRI_HIGH
-
+  MD_IO_PRI_HIGH,
 };
 
 #endif						/* Endif for MD_GENERIC_H */

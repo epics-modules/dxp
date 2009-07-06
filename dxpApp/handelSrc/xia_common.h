@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *  
  *
- * $Id: xia_common.h,v 1.6 2007-11-14 21:21:40 rivers Exp $
+ * $Id: xia_common.h,v 1.7 2009-07-06 18:24:31 rivers Exp $
  *
  *    All of the useful typedefs and macros
  *    go in here. Two conditions must be met
@@ -54,7 +54,10 @@
 #include <string.h>
 #include <math.h>
 
-/** Constants **/
+/* Define the length of the error reporting string info_string */
+#define INFO_LEN 400
+/* Define the length of the line string used to read in files */
+#define LINE_LEN 132
 
 /** Typedefs **/
 typedef unsigned char  byte_t;
@@ -77,7 +80,8 @@ typedef unsigned short flag_t;
 #define HI_BYTE(word) (((word) >> 8) & 0xFF)
 #define LO_WORD(dword) ((dword) & 0xFFFF)
 #define HI_WORD(dword) (((dword) >> 16) & 0xFFFF)
-#define MAKE_LOWER_CASE(s, i) for ((i) = 0; (i) < strlen((s)); (i)++) (s)[i] = (char)tolower((s)[i])
+#define MAKE_LOWER_CASE(s, i) for ((i) = 0; (i) < strlen((s)); (i)++) \
+                                 (s)[i] = (char)tolower((s)[i])
 #define N_ELEMS(x) (sizeof(x) / sizeof((x)[0]))
 
 

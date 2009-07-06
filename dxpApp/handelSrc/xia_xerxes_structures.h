@@ -35,7 +35,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xia_xerxes_structures.h,v 1.3 2007-11-14 21:08:17 rivers Exp $
+ * $Id: xia_xerxes_structures.h,v 1.4 2009-07-06 18:24:32 rivers Exp $
  *
  */
 
@@ -330,7 +330,7 @@ typedef int (*DXP_GET_RUNSTATS)(int *ioChan, int *modChan, Board *b,
 								unsigned long *over, unsigned long *fast,
 								unsigned long *basee, double *live, double *icr,
 								double *ocr);
-typedef int (*DXP_DECODE_ERROR)(unsigned short *, Dsp_Info *, unsigned short *, unsigned short *);
+typedef int (*DXP_DECODE_ERROR)(int *ioChan, int *modChan, Dsp_Info *, unsigned short *, unsigned short *);
 typedef int (*DXP_CLEAR_ERROR)(int *, int *, Board *);
 typedef int (*DXP_CHANGE_GAINS)(int *, int *, int *, float *, Board *);
 typedef int (*DXP_SETUP_ASC)(int *, int *, int *, float *, float *, unsigned short *, 
@@ -346,7 +346,7 @@ typedef int (*DXP_WRITE_REG)(int *ioChan, int *modChan, char *name,
 typedef int (*DXP_READ_REG)(int *ioChan, int *modChan, char *name,
 							unsigned long *data);
 
-typedef int (*DXP_DO_CMD)(int *, byte_t, unsigned int, byte_t *, unsigned int, byte_t *, byte_t);
+typedef int (*DXP_DO_CMD)(int *, byte_t, unsigned int, byte_t *, unsigned int, byte_t *);
 
 typedef int (*DXP_UNHOOK)(Board *board);
 

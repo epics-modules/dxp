@@ -45,7 +45,7 @@
  *
  *  Following are prototypes for HanDeL library routines
  *
- * $Id: handel.h,v 1.7 2007-11-14 21:26:03 rivers Exp $
+ * $Id: handel.h,v 1.8 2009-07-06 18:24:29 rivers Exp $
  *
  */
 

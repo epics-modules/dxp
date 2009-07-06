@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: epplib.h,v 1.2 2007-10-23 02:06:42 rivers Exp $
+ * $Id: epplib.h,v 1.3 2009-07-06 18:24:29 rivers Exp $
  *
  * Header file for the epplib.dll source.
  *

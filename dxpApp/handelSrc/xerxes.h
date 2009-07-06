@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xerxes.h,v 1.3 2007-11-14 21:22:29 rivers Exp $
+ * $Id: xerxes.h,v 1.4 2009-07-06 18:24:31 rivers Exp $
  *
  *    Following are prototypes for dxp driver routines
  */
@@ -77,7 +77,6 @@ XERXES_IMPORT int XERXES_API dxp_add_board_item(char *ltoken, char **values);
 XERXES_IMPORT int XERXES_API dxp_assign_channel(void);
 XERXES_IMPORT int XERXES_API dxp_user_setup(void);
 XERXES_IMPORT int XERXES_API dxp_reset_channel(int *detChan);
-XERXES_IMPORT int XERXES_API dxp_reset_dspconfig(int *detChan);
 XERXES_IMPORT int XERXES_API dxp_reset_fpgaconfig(int *detChan, char *name);
 XERXES_IMPORT int XERXES_API dxp_del_board(char *type, char *iolib, char *ifacelib, 
 					   char *iostring);
@@ -216,7 +215,6 @@ XERXES_IMPORT int XERXES_API dxp_add_board_item();
 XERXES_IMPORT int XERXES_API dxp_assign_channel();
 XERXES_IMPORT int XERXES_API dxp_user_setup();
 XERXES_IMPORT int XERXES_API dxp_reset_channel();
-XERXES_IMPORT int XERXES_API dxp_reset_dspconfig();
 XERXES_IMPORT int XERXES_API dxp_reset_fpgaconfig();
 XERXES_IMPORT int XERXES_API dxp_add_board();
 XERXES_IMPORT int XERXES_API dxp_add_btype();

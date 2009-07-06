@@ -39,7 +39,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: plxlibapi.h,v 1.2 2007-11-14 21:47:24 rivers Exp $
+ * $Id: plxlibapi.h,v 1.3 2009-07-06 18:24:30 rivers Exp $
  *
  * API for plxlib
  */

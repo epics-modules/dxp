@@ -38,7 +38,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_usb2_api.h,v 1.3 2007-12-20 20:03:54 rivers Exp $
+ * $Id: xia_usb2_api.h,v 1.4 2009-07-06 18:24:32 rivers Exp $
  */
 
 #ifndef __XIA_USB2_API_H__

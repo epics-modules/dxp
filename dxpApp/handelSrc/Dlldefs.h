@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: Dlldefs.h,v 1.3 2007-11-14 21:45:21 rivers Exp $
+ * $Id: Dlldefs.h,v 1.4 2009-07-06 18:24:27 rivers Exp $
  */
 
 #ifndef __DLLDEFS_H__
@@ -68,7 +68,15 @@
 #ifdef WIN32_USBLIB_VBA
 #define XIA_API _stdcall
 #else
+
+#ifdef WIN32_XIA_USB2_VBA
+#define XIA_API _stdcall
+#else
+
 #define XIA_API
+
+#endif /* WIN32_XIA_USB2_VBA */
+
 #endif /* WIN32_USBLIB_VBA */
 
 #endif /* WIN32_SERIAL_VBA */

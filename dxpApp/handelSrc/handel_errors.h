@@ -35,7 +35,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: handel_errors.h,v 1.6 2007-10-23 01:57:22 rivers Exp $
+ * $Id: handel_errors.h,v 1.7 2009-07-06 18:24:29 rivers Exp $
  * 
  *
  */
@@ -216,7 +216,18 @@
 #define XIA_PRESET_VALUE_OOR 659 /** Requested preset value is out-of-range. */
 #define XIA_MEMORY_LENGTH    660 /** Memory length is invalid. */
 #define XIA_UNKNOWN_PREAMP_TYPE 661 /** Preamp type is unknown. */
-
+#define XIA_DAC_TARGET_OOR  662 /** The specified DAC target is out of range. */
+#define XIA_DAC_TOL_OOR     663 /** The specified DAC tolerance is out of
+                                      range. */
+#define XIA_BAD_TRIGGER     664 /** Specified trigger setting is invalid. */
+#define XIA_EVENT_LEN_OOR   665 /** The specified event length is out of
+                                    range. */
+#define XIA_PRE_BUF_LEN_OOR 666 /** The specified pre-buffer length is out of
+                                    range. */
+#define XIA_HV_OOR          667 /** The specified high voltage value is out of
+                                    range. */
+#define XIA_PEAKMODE_OOR    668 /** The specified peak mode is out of range. */
+#define XIA_NOSUPPORTED_PREAMP_TYPE 669 /** The specified preamp type is not supported by current firmware. */
 /* XUP errors 701-800 */
 #define XIA_XUP_VERSION     701 /** XUP version is not supported */
 #define XIA_CHKSUM          702 /** checksum mismatch in the XUP */

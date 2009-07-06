@@ -39,7 +39,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_usb2_cb.h,v 1.1 2007-10-22 02:36:19 rivers Exp $
+ * $Id: xia_usb2_cb.h,v 1.2 2009-07-06 18:24:32 rivers Exp $
  */
 
 #ifndef __XIA_USB2_CB_H__

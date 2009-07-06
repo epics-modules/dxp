@@ -65,7 +65,6 @@
 #include "xerxes.h"
 #include "xerxes_errors.h"
 
-
 typedef int (*interfaceWrite_FP)(FILE *, Module *);
 
 typedef struct _InterfaceWriter {
@@ -85,7 +84,7 @@ static int writeInterface(FILE *fp, Module *m);
 
 static FILE* dxp_find_file(const char *, const char *, char [MAXFILENAME_LEN]);
 
-static char line[132];
+static char line[LINE_LEN];
 
 
 /** GLOBAL Variables **/
@@ -329,11 +328,11 @@ HANDEL_STATIC int HANDEL_API xiaWriteIniFile(char *filename)
         }
 
       fprintf(iniFile, "type = %s\n", typeStr);
-      fprintf(iniFile, "type_value = %3.3f\n", detector->typeValue[0]);
+      fprintf(iniFile, "type_value = %3.3lf\n", detector->typeValue[0]);
 		
       for (j = 0; j < detector->nchan; j++)
         {
-          fprintf(iniFile, "channel%u_gain = %3.3f\n", j, detector->gain[j]);
+          fprintf(iniFile, "channel%u_gain = %3.3lf\n", j, detector->gain[j]);
 			
           switch (detector->polarity[j])
             {
@@ -390,8 +389,8 @@ HANDEL_STATIC int HANDEL_API xiaWriteIniFile(char *filename)
         while (firmware != NULL)
           {
             fprintf(iniFile, "ptrr = %u\n", firmware->ptrr);
-            fprintf(iniFile, "min_peaking_time = %3.3f\n", firmware->min_ptime);
-            fprintf(iniFile, "max_peaking_time = %3.3f\n", firmware->max_ptime);
+            fprintf(iniFile, "min_peaking_time = %3.3lf\n", firmware->min_ptime);
+            fprintf(iniFile, "max_peaking_time = %3.3lf\n", firmware->max_ptime);
 				
             if (firmware->fippi != NULL)
               {
@@ -434,7 +433,7 @@ HANDEL_STATIC int HANDEL_API xiaWriteIniFile(char *filename)
       entry = defaults->entry;
       while (entry != NULL)
         {
-          fprintf(iniFile, "%s = %3.3f\n", entry->name, entry->data);
+          fprintf(iniFile, "%s = %3.3lf\n", entry->name, entry->data);
           entry = entry->next;
         }
 
@@ -511,7 +510,7 @@ HANDEL_STATIC int HANDEL_API xiaWriteIniFile(char *filename)
         {
           fprintf(iniFile, "channel%u_alias = %d\n", j, module->channels[j]);
           fprintf(iniFile, "channel%u_detector = %s:%u\n", j, module->detector[j], (unsigned int)module->detector_chan[j]);
-          fprintf(iniFile, "channel%u_gain = %3.3f\n", j, module->gain[j]);
+          fprintf(iniFile, "channel%u_gain = %3.3lf\n", j, module->gain[j]);
           fprintf(iniFile, "firmware_set_chan%u = %s\n", j, module->firmware[j]);
           fprintf(iniFile, "default_chan%u = %s\n", j, module->defaults[j]);
         }
@@ -541,7 +540,7 @@ HANDEL_SHARED int HANDEL_API xiaReadIniFile(char *inifile)
   FILE *fp = NULL;
 	
   char newFile[MAXFILENAME_LEN];
-  char tmpLine[132];
+  char tmpLine[LINE_LEN];
 
   fpos_t start;
   fpos_t end;
@@ -883,7 +882,14 @@ HANDEL_STATIC int HANDEL_API xiaGetLine(FILE *fp, char *lline)
   /* Now fine the match to the section entry */
   do 
     {
-      cstatus = handel_md_fgets(lline, 132, fp); 
+      cstatus = handel_md_fgets(lline, LINE_LEN, fp); 
+      
+      /* lline won't be overwritten in this case */
+      if (cstatus == NULL)
+      {
+        return XIA_EOF;
+      }
+      
       /* Check for any alphanumeric character in the line */
       for (j = 0; j < (unsigned int)strlen(lline); j++) 
         { 
@@ -922,7 +928,7 @@ HANDEL_STATIC int HANDEL_API xiaFindEntryLimits(FILE *fp, const char *section, f
   /* Now fine the match to the section entry */
   do {
     do {
-	    cstatus = handel_md_fgets(line, 132, fp);
+	    cstatus = handel_md_fgets(line, LINE_LEN, fp);
 	    /* 
 	       sprintf(info_string, "Line read: %s", line);
 	       xiaLogDebug("xiaFindEntryLimits", info_string);
@@ -976,7 +982,7 @@ HANDEL_STATIC int HANDEL_API xiaFindEntryLimits(FILE *fp, const char *section, f
        */
       fgetpos(fp, end);
  
-      cstatus = handel_md_fgets(line, 132, fp);
+      cstatus = handel_md_fgets(line, LINE_LEN, fp);
       /*
         sprintf(info_string, "cstatus == %s", (cstatus == NULL) ? "NULL" : cstatus);
         xiaLogDebug("xiaFindEntryStart", info_string);
@@ -1181,10 +1187,9 @@ HANDEL_STATIC int xiaLoadModule(FILE *fp, fpos_t *start, fpos_t *end)
 {
   int status;
   int chanAlias;
-  unsigned int itemp;
 
-  byte_t pciSlot;
-  byte_t pciBus;
+	byte_t pciSlot;
+	byte_t pciBus;
 	
   unsigned int numChans;
   unsigned int scsiBus;
@@ -1486,8 +1491,7 @@ HANDEL_STATIC int xiaLoadModule(FILE *fp, fpos_t *start, fpos_t *end)
       return status;
 	  }
 
-	  sscanf(value, "%u", &itemp);
-          pciSlot = itemp;
+	  sscanf(value, "%u", &pciSlot);
 
 	  sprintf(info_string, "PCI Slot = %u", pciSlot);
 	  xiaLogDebug("xiaLoadModule", info_string);
@@ -1507,8 +1511,7 @@ HANDEL_STATIC int xiaLoadModule(FILE *fp, fpos_t *start, fpos_t *end)
       return status;
 	  }
 
-	  sscanf(value, "%u", &itemp);
-          pciBus = itemp;
+	  sscanf(value, "%u", &pciBus);
 
 	  sprintf(info_string, "PCI Bus = %u", pciBus);
 	  xiaLogDebug("xiaLoadModule", info_string);
@@ -1943,8 +1946,8 @@ HANDEL_STATIC int xiaLoadDefaults(FILE *fp, fpos_t *start, fpos_t *end)
   char alias[MAXALIAS_LEN];
   char tmpName[MAXITEM_LEN];
   char tmpValue[MAXITEM_LEN];
-  char endLine[132];
-  char line[132];
+  char endLine[LINE_LEN];
+  char line[LINE_LEN];
 
   double defValue;
 
@@ -2253,10 +2256,10 @@ HANDEL_STATIC int HANDEL_API xiaSetPosOnNext(FILE *fp, fpos_t *start, fpos_t *en
 {
   int status;
 
-  char endLine[132];
-  char line[132];
-  char tmpValue[132];
-  char tmpName[132];
+  char endLine[LINE_LEN];
+  char line[LINE_LEN];
+  char tmpValue[LINE_LEN];
+  char tmpName[LINE_LEN];
 
   fsetpos(fp, end);
   status = xiaGetLine(fp, endLine);
@@ -2321,9 +2324,9 @@ HANDEL_STATIC int HANDEL_API xiaFileRA(FILE *fp, fpos_t *start, fpos_t *end, cha
   /* Use this to hold the "value" of value until we're sure that this is the
    * right name and we can return.
    */
-  char tmpValue[132];
-  char tmpName[132];
-  char endLine[132];
+  char tmpValue[LINE_LEN];
+  char tmpName[LINE_LEN];
+  char endLine[LINE_LEN];
 
   fsetpos(fp, end);
   status = xiaGetLine(fp, endLine);

@@ -38,7 +38,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xia_module.h,v 1.4 2007-11-20 03:08:31 rivers Exp $
+ * $Id: xia_module.h,v 1.5 2009-07-06 18:24:32 rivers Exp $
  *
  *
  */
@@ -106,13 +106,9 @@ enum {
 #ifndef EXCLUDE_USB2
   USB2,
 #endif /* EXCLUDE_USB2 */
-#ifndef EXCLUDE_ARCNET
-  ARCNET,
-#endif /* EXCLUDE_ARCNET */
 #ifndef EXCLUDE_PLX
   PLX,
 #endif /* EXCLUDE_PLX */
-  DUMMY_INTERFACE
 };
 
 
@@ -128,6 +124,43 @@ enum {
   DEFAULT_TOK 
 };
 
+
+static ModName_t KNOWN_MODS[] = {
+
+#ifndef EXCLUDE_DXPX10P
+  {"dxpx10p", "dxpx10p"},
+  {"saturn",  "dxpx10p"},
+  {"x10p",    "dxpx10p"},
+#endif /* EXCLUDE_DXPX10P */
+
+#ifndef EXCLUDE_DXP4C2X
+  {"dxp4c2x", "dxp4c2x"},
+  {"dxp2x4x", "dxp4c2x"},
+  {"dxp2x",   "dxp4c2x"},
+#endif /* EXCLUDE_DXP4C2X */
+
+#ifndef EXCLUDE_UDXP
+  {"udxps",   "udxps"},
+#endif /* EXCLUDE_UDXP */
+
+#ifndef EXCLUDE_UDXP
+  {"udxp",    "udxp"},
+#endif /* EXCLUDE_UDXP */
+
+#ifndef EXCLUDE_XMAP
+  {"xmap",    "xmap"},
+#endif /* EXCLUDE_XMAP */
+
+#ifndef EXCLUDE_VEGA
+  {"vega",   "vega"},
+#endif /* EXCLUDE_VEGA */
+
+#ifndef EXCLUDE_MERCURY
+  {"mercury", "mercury"},
+#endif /* EXCLUDE_MERCURY */
+};
+
+#define N_KNOWN_MODS (sizeof(KNOWN_MODS) / sizeof(KNOWN_MODS[0]))
 
 /* Channel index offset in strings like channel{n}_alias, etc */
 #define CHANNEL_IDX_OFFSET  7

@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: plxlib_errors.h,v 1.1 2007-10-22 02:56:04 rivers Exp $
+ * $Id: plxlib_errors.h,v 1.2 2009-07-06 18:24:30 rivers Exp $
  *
  */
 

@@ -39,33 +39,92 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_usb2_private.h,v 1.3 2007-12-20 20:04:18 rivers Exp $
+ * $Id: xia_usb2_private.h,v 1.4 2009-07-06 18:24:32 rivers Exp $
  */
 
 #ifndef __XIA_USB2_API_PRIVATE_H__
 #define __XIA_USB2_API_PRIVATE_H__
 
-#ifdef WIN32
-#include <windows.h>
-#endif
+#include "windows.h"
+
+#include "xia_common.h"
+
+
+#define XIA_USB2_NUM_ENDPOINTS 4
 
 /* Custom messages */
 #define WM_CLOSE_DEVICE  (WM_USER + 1)
+
 
 /* Transfer types */
 #define XIA_USB2_READ     0x0
 
 
 /* Endpoints */
-#define XIA_USB2_SETUP_EP 0x1
-#define XIA_USB2_READ_EP  0x82
-#define XIA_USB2_WRITE_EP 0x6
+#define XIA_USB2_SETUP_EP   0x1
+#define XIA_USB2_READ_EP    0x82
+#define XIA_USB2_WRITE_EP   0x6
+#define XIA_USB2_CONTROL_EP 0x0
+
 
 /* XIA USB2 protocol constants */
 #define XIA_USB2_SETUP_PACKET_SIZE      9
-#define XIA_USB2_SMALL_READ_PACKET_SIZE 512
 
 #define XIA_USB2_SETUP_FLAG_WRITE   0x0
 #define XIA_USB2_SETUP_FLAG_READ    0x1
+
+
+/* Control endpoint requests */
+#define XIA_USB2_GET_DESCRIPTOR_REQTYPE        0x80
+#define XIA_USB2_GET_DESCRIPTOR_REQ            6
+#define XIA_USB2_CONFIGURATION_DESCRIPTOR_TYPE 2
+
+
+/* Configuration descriptor using the naming convention of the USB 2.0
+ * standard.
+ */
+#pragma pack(1)
+typedef struct _configuration_descriptor {
+    byte_t         bLength;
+    byte_t         bDescriptorType;
+    unsigned short wTotalLength;
+    byte_t         bNumInterfaces;
+    byte_t         bConfigurationValue;
+    byte_t         iConfiguration;
+    byte_t         bmAttributes;
+    byte_t         bMaxPower;
+} xia_usb2_configuration_descriptor_t;
+#pragma pack()
+
+/* Interface descriptor using the naming convention of the USB 2.0
+ * standard.
+ */
+#pragma pack(1)
+typedef struct _interface_descriptor {
+    byte_t bLength;
+    byte_t bDescriptorType;
+    byte_t bInterfaceNumber;
+    byte_t bAlternateSetting;
+    byte_t bNumEndpoints;
+    byte_t bInterfaceClass;
+    byte_t bInterfaceSubClass;
+    byte_t bInterfaceProtocol;
+    byte_t iInterface;
+} xia_usb2_interface_descriptor_t;
+#pragma pack()
+
+/* Endpoint descriptor using the naming convention of the USB 2.0
+ * standard.
+ */
+#pragma pack(1)
+typedef struct _endpoint_descriptor {
+    byte_t         bLength;
+    byte_t         bDescriptorType;
+    byte_t         bEndpointAddress;
+    byte_t         bmAttributes;
+    unsigned short wMaxPacketSize;
+    byte_t         bInterval;
+} xia_usb2_endpoint_descriptor_t;
+#pragma pack()
 
 #endif /* __XIA_USB2_API_PRIVATE_H__ */

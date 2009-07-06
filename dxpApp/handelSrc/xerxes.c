@@ -121,12 +121,6 @@ XERXES_STATIC int dxp_parse_memory_str(char *name, char *type, unsigned long *ba
 
 static FILE* dxp_find_file(const char *, const char *, char [MAXFILENAME_LEN]);
 
-
-/* Define the length of the error reporting string info_string */
-#define INFO_LEN 400
-/* Define the length of the line string used to read in files */
-#define LINE_LEN 132
-
 static char *delim=" ,=\t\r\n";
 /* Register definition for zero and one */
 static int zero=0;
@@ -312,7 +306,7 @@ XERXES_EXPORT int XERXES_API dxp_install_utils(const char *utilname)
   char lstr[133];
 
   if (utilname != NULL) {
-	strncpy(lstr, utilname, 132);
+	strncpy(lstr, utilname, LINE_LEN);
 	lstr[strlen(utilname)] = '\0';
   } else {
 	strcpy(lstr, "NULL");
@@ -695,7 +689,7 @@ int XERXES_API dxp_read_config(char *cname)
    */ 
   for(i=0;;i++){ 
 	do {
-	  cstatus = xerxes_md_fgets(line,132,fp); 
+	  cstatus = xerxes_md_fgets(line,LINE_LEN,fp); 
 	} while (((line[0]=='*')||(line[0]=='\r')||(line[0]=='\n'))&&(cstatus!=NULL)); 
 	if(cstatus==NULL) break;
 	/* What kind of entry do we have?
@@ -1028,25 +1022,32 @@ int dxp_add_board_item(char *ltoken, char **values)
 	for (j = 0; j < working_board->nchan; j++) {
 
 	  if (working_board->used && (1<<j)) {
-		working_board->dsp[j]        = working_dsp;
-		working_board->fippi[j]      = working_fippi;
-		working_board->user_fippi[j] = working_user_fippi;
-		working_board->defaults[j]   = working_defaults;
 
-		if (working_dsp != NULL) {
-		  param_array_size =
-			working_board->dsp[j]->params->nsymbol * sizeof(unsigned short);
-		  working_board->params[j] =
-			(unsigned short *)xerxes_md_alloc(param_array_size);
-		  memset(working_board->params[j], 0, param_array_size);
-		}
+      working_board->dsp[j]        = working_dsp;
+  		working_board->fippi[j]      = working_fippi;
+  		working_board->user_fippi[j] = working_user_fippi;
+  		working_board->defaults[j]   = working_defaults;
 
+  		if (working_dsp != NULL) {
+  		  param_array_size =
+  			working_board->dsp[j]->params->nsymbol * sizeof(unsigned short);
+  		  working_board->params[j] =
+  			(unsigned short *)xerxes_md_alloc(param_array_size);
+  		  memset(working_board->params[j], 0, param_array_size);
+      } else if (working_system_fippi != NULL ) {
+  		  param_array_size =
+  			working_system_fippi->params->nsymbol * sizeof(unsigned short);
+  		  working_board->params[j] =
+  			(unsigned short *)xerxes_md_alloc(param_array_size);
+  		  memset(working_board->params[j], 0, param_array_size);
+      }
+      
 	  } else {
-		working_board->dsp[j]        = NULL;
-		working_board->params[j]     = NULL;
-		working_board->fippi[j]      = NULL;
-		working_board->user_fippi[j] = NULL;
-		working_board->defaults[j]   = NULL;
+  		working_board->dsp[j]        = NULL;
+  		working_board->params[j]     = NULL;
+  		working_board->fippi[j]      = NULL;
+  		working_board->user_fippi[j] = NULL;
+  		working_board->defaults[j]   = NULL;
 	  }
 	}
 
@@ -1129,11 +1130,14 @@ int dxp_add_board_item(char *ltoken, char **values)
 	param_array_size =
 	  working_board->dsp[chanid]->params->nsymbol * sizeof(unsigned short);
 
-	working_board->params[chanid] = (unsigned short *) 
-	  xerxes_md_alloc(param_array_size);
+  if (param_array_size > 0) {
+    /* Only allocate memory if there are parameters */
+  	working_board->params[chanid] = (unsigned short *) 
+  	  xerxes_md_alloc(param_array_size);
 
-	memset(working_board->params[chanid], 0, param_array_size);
-
+  	memset(working_board->params[chanid], 0, param_array_size);
+  }
+    
   } else if (STREQ(ltoken, "default_fippi")) {
 
 	if (working_btype == NULL){
@@ -1202,6 +1206,21 @@ int dxp_add_board_item(char *ltoken, char **values)
       return status;
     }
 
+    /* Space for params array needs to be allocated if a system_fippi exists */
+  	if (working_board != NULL) {
+  	  total_syms = working_board->system_fippi->params->nsymbol +
+  		working_board->system_fippi->params->n_per_chan_symbols;
+
+  	  for (j = 0; j < working_board->nchan; j++) {
+    		if (working_board->system_fippi != NULL) {
+    		  param_array_size = total_syms * sizeof(unsigned short);
+    		  working_board->params[j] =
+    			(unsigned short *)xerxes_md_alloc(param_array_size);
+    		  memset(working_board->params[j], 0, param_array_size);
+    		}
+  	  }
+  	}
+    
     working_system_fippi = working_board->system_fippi;
 
   } else if (STREQ(ltoken, "system_fpga")) {
@@ -1819,9 +1838,9 @@ static int XERXES_API dxp_read_modules(FILE* fp)
   unsigned int m;
   unsigned int nchan;
 
-  char strtemp[132];
-  char temp_line[132];
-  char ioname[132] = "";
+  char strtemp[LINE_LEN];
+  char temp_line[LINE_LEN];
+  char ioname[LINE_LEN] = "";
 
   char *values[10];
 
@@ -1850,7 +1869,7 @@ static int XERXES_API dxp_read_modules(FILE* fp)
 
 	/* Skip ahead in the file until we encounter some real data. */
 	do {
-	  cstatus = xerxes_md_fgets(line,132,fp);
+	  cstatus = xerxes_md_fgets(line,LINE_LEN,fp);
 
 	  if (line[0] == '*') {
 		is_comment = TRUE_;
@@ -2367,13 +2386,11 @@ static int XERXES_API dxp_free_dsp(Dsp_Info *dsp)
   sprintf(info_string, "dsp = %p", dsp);
   dxp_log_debug("dxp_free_dsp", info_string);
 
-  if (dsp->filename != NULL) 
-	xerxes_md_free(dsp->filename);
-  if (dsp->data != NULL) 
-	xerxes_md_free(dsp->data);
+  if (dsp->filename != NULL) xerxes_md_free(dsp->filename);
+  
+  if ((dsp->maxproglen > 0) && (dsp->data != NULL)) xerxes_md_free(dsp->data);
 
-  if (dsp->params != NULL)
-	dxp_free_params(dsp->params);
+  if (dsp->params != NULL) dxp_free_params(dsp->params);
 
   /* Free the Dsp_Info structure */
   xerxes_md_free(dsp);
@@ -2394,16 +2411,17 @@ static int XERXES_API dxp_free_fippi(Fippi_Info *fippi)
   char info_string[INFO_LEN];
 
   if (fippi==NULL) {
-	status = DXP_NOMEM;
-	sprintf(info_string,"Fippi object unallocated:  can not free");
-	dxp_log_error("dxp_free_fippi",info_string,status);
-	return status;
+  	status = DXP_NOMEM;
+  	sprintf(info_string,"Fippi object unallocated:  can not free");
+  	dxp_log_error("dxp_free_fippi",info_string,status);
+  	return status;
   }
 
-  if (fippi->filename!=NULL) 
-	xerxes_md_free(fippi->filename);
-  if (fippi->data!=NULL) 
-	xerxes_md_free(fippi->data);
+  if (fippi->filename!=NULL) xerxes_md_free(fippi->filename);
+ 
+  if (fippi->proglen > 0) {
+    if (fippi->data != NULL) xerxes_md_free(fippi->data);
+  }
 
   /* Free the Fippi_Info structure */
   xerxes_md_free(fippi);
@@ -3094,7 +3112,7 @@ XERXES_STATIC int dxp_add_dsp(char* filename, Board_Info* board,
 
 	if (STREQ(current->filename, filename)) {
     sprintf(info_string, "Skipping creation of new DSP entry for '%s', since "
-            "we already have a copy loaded at %p", filename, current);
+            "we already have a copy loaded at %#x", filename, current);
     dxp_log_info("dxp_add_dsp", info_string);
 
 	  *passed = current;
@@ -3148,18 +3166,21 @@ XERXES_STATIC int dxp_add_dsp(char* filename, Board_Info* board,
 	return status;
   }
 
-  new_dsp->data = (unsigned short *)xerxes_md_alloc(new_dsp->maxproglen *
-													sizeof(unsigned short));
+  if (new_dsp->maxproglen > 0) {
+    /* maxproglen == 0 indicates "ignore.dsp" as in udxp */
+    new_dsp->data = (unsigned short *)xerxes_md_alloc(new_dsp->maxproglen *
+  													sizeof(unsigned short));
 
-  if (!new_dsp->data) {
-	dxp_free_dsp(new_dsp);
+    if (!new_dsp->data) {
+  	dxp_free_dsp(new_dsp);
 
-	sprintf(info_string, "Error allocating %d bytes for 'new_dsp->data'",
-			new_dsp->maxproglen * sizeof(unsigned short));
-	dxp_log_error("dxp_add_dsp", info_string, DXP_NOMEM);
-	return DXP_NOMEM;
+  	sprintf(info_string, "Error allocating %d bytes for 'new_dsp->data'",
+  			new_dsp->maxproglen * sizeof(unsigned short));
+  	dxp_log_error("dxp_add_dsp", info_string, DXP_NOMEM);
+  	return DXP_NOMEM;
+    }
   }
-
+  
   new_dsp->params->parameters = (Parameter *)xerxes_md_alloc(
 													   new_dsp->params->maxsym *
 													   sizeof(Parameter));
@@ -3324,29 +3345,33 @@ static int XERXES_API dxp_add_fippi(char* filename, Board_Info* board, Fippi_Inf
   }
 
   /* Finish allocating memory */
-  temp_fippi->data = (unsigned short *) 
-	xerxes_md_alloc((temp_fippi->maxproglen) * sizeof(unsigned short));
+  if (temp_fippi->maxproglen > 0) {
+    /* don't allocate zero length buffer */
 
-  if (!temp_fippi->data) {
-	sprintf(info_string, "Error allocating %u bytes of memory for "
-			"temp_fippi->data", temp_fippi->maxproglen * sizeof(unsigned short));
-	dxp_log_error("dxp_add_fippi", info_string, DXP_NOMEM);
+    temp_fippi->data = (unsigned short *) 
+  	xerxes_md_alloc((temp_fippi->maxproglen) * sizeof(unsigned short));
 
-	dxp_free_fippi(temp_fippi);
-	xerxes_md_free(current->filename);
-	xerxes_md_free(current);
+    if (!temp_fippi->data) {
+  	sprintf(info_string, "Error allocating %u bytes of memory for "
+  			"temp_fippi->data", temp_fippi->maxproglen * sizeof(unsigned short));
+  	dxp_log_error("dxp_add_fippi", info_string, DXP_NOMEM);
 
-	if (prev != NULL) {
-	  prev->next = NULL;
-	}
+  	dxp_free_fippi(temp_fippi);
+  	xerxes_md_free(current->filename);
+  	xerxes_md_free(current);
 
-	if (prev == NULL) {
-	  fippi_head = NULL;
-	}
+  	if (prev != NULL) {
+  	  prev->next = NULL;
+  	}
 
-	return DXP_NOMEM;
+  	if (prev == NULL) {
+  	  fippi_head = NULL;
+  	}
+
+  	return DXP_NOMEM;
+    }
   }
-
+  
   status = board->funcs->dxp_get_fpgaconfig(temp_fippi);
 
   if (status != DXP_SUCCESS) {
@@ -3364,14 +3389,19 @@ static int XERXES_API dxp_add_fippi(char* filename, Board_Info* board, Fippi_Inf
 	return status;
   }
 
+  
   /* Now Copy the fippi_temp structure into the fippi structure, this will
    * move the memory allocated in the driver layer into the permanent
    * midlevel layer */
   current->maxproglen = temp_fippi->maxproglen;
   current->proglen = temp_fippi->proglen;
-  current->data = (unsigned short *) xerxes_md_alloc((temp_fippi->proglen)*sizeof(unsigned short));
-  memcpy(current->data, temp_fippi->data, (temp_fippi->proglen)*sizeof(unsigned short));
 
+  if (temp_fippi->proglen > 0) {
+    /* Don't allocate zero length buffer */
+    current->data = (unsigned short *) xerxes_md_alloc((temp_fippi->proglen)*sizeof(unsigned short));  
+    memcpy(current->data, temp_fippi->data, (temp_fippi->proglen)*sizeof(unsigned short));
+  }
+  
   /* Ok, the memory is copied into the local library memory space, now free the memory
    * used by temp_fippi */
   dxp_free_fippi(temp_fippi);
@@ -3443,7 +3473,7 @@ XERXES_STATIC int dxp_add_system_fippi(char *filename, Board_Info *b,
   if ((*fippi)->params == NULL) {
     dxp_free_system_fippi(*fippi);
     sprintf(info_string, "Error allocating %d bytes for '*fippi->params'",
-            sizeof(Dsp_Params));
+            (*fippi)->params);
     dxp_log_error("dxp_add_system_fippi", info_string, DXP_NOMEM);
     return DXP_NOMEM;
   }
@@ -3464,7 +3494,7 @@ XERXES_STATIC int dxp_add_system_fippi(char *filename, Board_Info *b,
 
   if ((*fippi)->data == NULL) {
     dxp_free_system_fippi(*fippi);
-    sprintf(info_string, "Error allocating %ld bytes for '*fippi->data'",
+    sprintf(info_string, "Error allocating %d bytes for '*fippi->data'",
             (*fippi)->max_data_len);
     dxp_log_error("dxp_add_system_fippi", info_string, DXP_NOMEM);
     return DXP_NOMEM;
@@ -4151,56 +4181,6 @@ int XERXES_API dxp_reset_fpgaconfig(int* detChan, char *name)
 	return status;
   }
 	
-  return DXP_SUCCESS;
-}
-
-/******************************************************************************
- *
- * Download DSP firmware to a single channel.
- *
- ******************************************************************************/
-int XERXES_API dxp_reset_dspconfig(int* detChan)
-	 /* int *detChan;					Input: Detector Channel number	*/
-{
-    int status;
-    char info_string[INFO_LEN];
-    int modChan, ioChan;
-    Board *chosen = NULL;
-    /* Time to wait for the initialization of the DSP program */
-    float one = 1.;
-	
-  /* Get the ioChan and dxpChan matching the detChan */
-
-  if((status=dxp_det_to_elec(detChan, &chosen, &modChan))!=DXP_SUCCESS){
-	sprintf(info_string,"Unknown Detector Channel %d",*detChan);
-	dxp_log_error("dxp_reset_dspconfig",info_string,status);
-	return status;
-  }
-  ioChan = chosen->ioChan;
-
-  /* Download the DSP code to this channel of this module. */
-  if((status=chosen->btype->funcs->dxp_download_dspconfig(&ioChan,
-														  &modChan, chosen))!=DXP_SUCCESS){
-	sprintf(info_string,"Error downloading to module %d, channel %d",chosen->mod,modChan);
-	dxp_log_error("dxp_reset_dspconfig",info_string,status);
-	return status;
-
-    }
-    /* DSP is downloaded, set its state */
-    chosen->chanstate[modChan].dspdownloaded = 1;
-
-	xerxes_md_wait(&one);
-
-    /* Read out the DSP parameter memory, these contain the defaults defined
-     * at the DSP compile time. */
-    if((status=chosen->btype->funcs->dxp_read_dspparams(&ioChan, &modChan, 
-							chosen, chosen->params[modChan]))!=DXP_SUCCESS){
-
-	sprintf(info_string,"Error reading parameters from module %d channel %d",chosen->mod,modChan);
-	dxp_log_error("dxp_reset_dspconfig",info_string,status);
-	return status;
-  }
-
   return DXP_SUCCESS;
 }
 
@@ -5991,8 +5971,10 @@ XERXES_EXPORT int XERXES_API dxp_max_symbols(int* detChan,
  * only 16 bits.
  *
  ******************************************************************************/
-int XERXES_API dxp_readout_detector_run(int* detChan, unsigned short params[],
-										unsigned long baseline[], unsigned long spectrum[])
+XERXES_EXPORT int XERXES_API dxp_readout_detector_run(int* detChan,
+                                                      unsigned short params[],
+                                                      unsigned long baseline[],
+                                                      unsigned long spectrum[])
 	 /* int *detChan;						Input: detector channel number      */
 	 /* unsigned short params[];				Output: parameter memory            */
 	 /* unsigned short baseline[];			Output: baseline histogram          */
@@ -6119,36 +6101,51 @@ static int dxp_do_readout(Board* board, int* modChan, unsigned short params[],
   int status, error;
   unsigned short runerror,errinfo; 
 
-  /* Read out the parameters from the DSP memory */
-  status = board->btype->funcs->dxp_read_dspparams(&(board->ioChan), modChan, 
-												   board, 
-												   board->params[*modChan]);
-  if (status != DXP_SUCCESS)
-	{
-	  dxp_log_error("dxp_do_readout","error reading parameters",status);
-	  return status;
-	}
-
 
   /* If a System DSP is defined, used that instead of the normal DSP. */
   if (params != NULL) {
-	if (board->system_dsp) {
+  
+    /* Read out the parameters from the DSP memory */
+    status = board->btype->funcs->dxp_read_dspparams(&(board->ioChan), 
+                             modChan, board, 
+  												   board->params[*modChan]);
+    
+    if (status != DXP_SUCCESS)
+  	{
+  	  dxp_log_error("dxp_do_readout","error reading parameters",status);
+  	  return status;
+  	}
+  
+    if (board->system_fippi)  {
+    	
+      total_syms = board->system_fippi->params->nsymbol +
+    							   board->system_fippi->params->n_per_chan_symbols;
 
-	  total_syms = board->system_dsp->params->nsymbol +
-		board->system_dsp->params->n_per_chan_symbols;
-	} else {
+    } else {
+    
+    	if (board->system_dsp) {
 
-	  total_syms = board->dsp[*modChan]->params->nsymbol;
-	}
+    	  total_syms = board->system_dsp->params->nsymbol +
+    		board->system_dsp->params->n_per_chan_symbols;
+        
+      } else {
 
-	for (i = 0; i < (unsigned int)total_syms; i++) {
-	  params[i] = board->params[*modChan][i];
-	}
+    	  total_syms = board->dsp[*modChan]->params->nsymbol;
+    	}
+
+    
+    }
+    
+    for (i = 0; i < (unsigned int)total_syms; i++) {
+    	params[i] = board->params[*modChan][i];
+    }
+
   }
 
   /* Pull out the RUNERROR and ERRINFO parameters from the DSP parameter list
    * and act on it accordingly */
-  status = board->btype->funcs->dxp_decode_error(board->params[*modChan], board->dsp[*modChan], 
+  status = board->btype->funcs->dxp_decode_error(&(board->ioChan), modChan, 
+                           board->dsp[*modChan], 
 												   &runerror, &errinfo);
   if (status != DXP_SUCCESS)
 	{
@@ -6323,8 +6320,8 @@ int XERXES_API dxp_save_config(int* lun)
   FILE *fout;
 
   Board_Info *current_btype = NULL;
-  char current_ifacename[132];
-  char current_dllname[132];
+  char current_ifacename[LINE_LEN];
+  char current_dllname[LINE_LEN];
   Fippi_Info *current_fippi = NULL;
   Dsp_Info *current_dsp = NULL;
 
@@ -6512,7 +6509,7 @@ int XERXES_API dxp_restore_config(int* lun)
    */        
   do {  
     /* skip comments and blank lines */
-    cstatus = xerxes_md_fgets(line, 132, fp);
+    cstatus = xerxes_md_fgets(line, LINE_LEN, fp);
   
   } while((line[0] == '*') ||
 		  (line[0] == '\r')||
@@ -6590,7 +6587,7 @@ int XERXES_API dxp_restore_config(int* lun)
 	 */
   
 	/* Get the Detector number */
-	xerxes_md_fgets(line, 132, fp);
+	xerxes_md_fgets(line, LINE_LEN, fp);
   
 	token = strtok(line, delim);
 
@@ -6640,7 +6637,7 @@ int XERXES_API dxp_restore_config(int* lun)
 	  return status;
 	}
 
-	xerxes_md_fgets(line, 132, fp);
+	xerxes_md_fgets(line, LINE_LEN, fp);
   
 	token = strtok(line, localDelim);  
 	token = strtok(NULL, localDelim);  
@@ -6665,7 +6662,7 @@ int XERXES_API dxp_restore_config(int* lun)
 	memset(params, 0, sizeof(params));
 	nparam = 0;
 
-	while(xerxes_md_fgets(line, 132, fp) != NULL) {  
+	while(xerxes_md_fgets(line, LINE_LEN, fp) != NULL) {  
 	  token = strtok(line, localDelim);  
 	  token = strtok(NULL, localDelim);
   
@@ -6698,7 +6695,7 @@ int XERXES_API dxp_restore_config(int* lun)
 	 * Load the parameter values
 	 */
 	nparam = 0;
-	while(xerxes_md_fgets(line, 132, fp) != NULL) {  
+	while(xerxes_md_fgets(line, LINE_LEN, fp) != NULL) {  
 	  token = strtok(line, localDelim);
 	  token = strtok(NULL, localDelim);
   
@@ -7648,7 +7645,6 @@ XERXES_EXPORT int XERXES_API dxp_cmd(int *detChan, byte_t *cmd, unsigned int *le
   int modChan;
     
   char info_string[INFO_LEN];
-  byte_t ioFlags = IO_NORMAL;    
   
   Board *chosen = NULL;
     
@@ -7663,8 +7659,9 @@ XERXES_EXPORT int XERXES_API dxp_cmd(int *detChan, byte_t *cmd, unsigned int *le
     
   /*before = GetTickCount();*/
 
-  status = chosen->btype->funcs->dxp_do_cmd(&(chosen->ioChan), *cmd, *lenS,
-											send, *lenR, receive, ioFlags);
+  /* Use detChan to enable channel selection of USB udxp */
+  status = chosen->btype->funcs->dxp_do_cmd(detChan, *cmd, *lenS,
+											send, *lenR, receive);
     
   /*    after = GetTickCount();*/
 

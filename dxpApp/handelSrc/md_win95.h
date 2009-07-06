@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *  
  *
- * $Id: md_win95.h,v 1.4 2007-11-14 21:46:50 rivers Exp $
+ * $Id: md_win95.h,v 1.5 2009-07-06 18:24:30 rivers Exp $
  *
  */
 

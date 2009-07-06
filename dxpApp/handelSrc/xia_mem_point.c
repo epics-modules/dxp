@@ -39,7 +39,7 @@
  * Interface to memory checkpoints. In reality, these checkpoints are just
  * hash tables.
  *
- * $Id: xia_mem_point.c,v 1.2 2007-11-14 21:13:33 rivers Exp $
+ * $Id: xia_mem_point.c,v 1.3 2009-07-06 18:24:32 rivers Exp $
  */
 
 #include <stdlib.h>

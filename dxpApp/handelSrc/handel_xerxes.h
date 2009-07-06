@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: handel_xerxes.h,v 1.3 2007-11-14 21:39:31 rivers Exp $
+ * $Id: handel_xerxes.h,v 1.4 2009-07-06 18:24:30 rivers Exp $
  *
  */
 
@@ -113,9 +113,6 @@ static char *INTERF_LIST[] = {
 #ifndef EXCLUDE_USB2
   "USB2",
 #endif /* EXCLUDE_USB2 */
-#ifndef EXCLUDE_ARCNET
-  "ARCNET",
-#endif /* EXCLUDE_ARCNET */
 #ifndef EXCLUDE_PLX
   "PXI",
 #endif /* EXCLUDE_PLX */
@@ -124,7 +121,7 @@ static char *INTERF_LIST[] = {
 #define N_KNOWN_BOARDS  (sizeof(BOARD_LIST) / sizeof(BOARD_LIST[0]))
 
 #define MAX_INTERF_LEN   24
-#define MAX_MD_LEN        6 
+#define MAX_MD_LEN       12 
 #define MAX_NUM_CHAN_LEN  4
 /* As far as the Xerxes configuration goes, this allows a detChan range of
  * 0 - 9999, which should be enough for anybody.
