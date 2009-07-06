@@ -2,7 +2,7 @@
 #define __PLX_API_H
 
 /*******************************************************************************
- * Copyright (c) 2003 PLX Technology, Inc.
+ * Copyright (c) 2007 PLX Technology, Inc.
  * 
  * PLX Technology Inc. licenses this software under specific terms and
  * conditions.  Use of any of the software or derviatives thereof in any
@@ -35,7 +35,7 @@
  *
  * Revision:
  *
- *      09-31-03 : PCI SDK v4.20
+ *      02-01-07 : PLX SDK v5.00
  *
  ******************************************************************************/
 
@@ -45,7 +45,7 @@
 /**********************************************
 *          Verify Required Definitions
 **********************************************/
-#include "PlxDefinitionsCheck.h"
+#include "PlxDefCk.h"
 
 
 
@@ -55,15 +55,7 @@
 **********************************************/
 #include "Plx.h"
 #include "PlxTypes.h"
-
-#if defined(IOP_CODE)
-    #include "LocalApi.h"
-#endif
-
-#if defined(PCI_CODE)
-    #include "PciApi.h"
-    #include "PciDrvApi.h"
-#endif
+#include "PexApi.h"
 
 
 

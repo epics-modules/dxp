@@ -20,17 +20,17 @@ Revision History:
 
 --*/
 
-/* begin_winioctl */
+// begin_winioctl
 
 #ifndef _DEVIOCTL_
 #define _DEVIOCTL_
 
-/* begin_ntddk begin_wdm begin_nthal begin_ntifs
+// begin_ntddk begin_wdm begin_nthal begin_ntifs
 //
 // Define the various device type values.  Note that values used by Microsoft
 // Corporation are in the range 0-32767, and 32768-65535 are reserved for use
 // by customers.
-*/
+//
 
 #define DEVICE_TYPE ULONG
 
@@ -93,31 +93,31 @@ Revision History:
 #define FILE_DEVICE_KSEC                0x00000039
 #define FILE_DEVICE_FIPS		0x0000003A
 
-/*
+//
 // Macro definition for defining IOCTL and FSCTL function control codes.  Note
 // that function codes 0-2047 are reserved for Microsoft Corporation, and
 // 2048-4095 are reserved for customers.
-*/
+//
 
 #define CTL_CODE( DeviceType, Function, Method, Access ) (                 \
     ((DeviceType) << 16) | ((Access) << 14) | ((Function) << 2) | (Method) \
 )
 
-/*
+//
 // Macro to extract device type out of the device io control code
-*/
+//
 #define DEVICE_TYPE_FROM_CTL_CODE(ctrlCode)     (((ULONG)(ctrlCode & 0xffff0000)) >> 16)
 
-/*
+//
 // Define the method codes for how buffers are passed for I/O and FS controls
-*/
+//
 
 #define METHOD_BUFFERED                 0
 #define METHOD_IN_DIRECT                1
 #define METHOD_OUT_DIRECT               2
 #define METHOD_NEITHER                  3
 
-/*
+//
 // Define the access check value for any access
 //
 //
@@ -129,17 +129,17 @@ Revision History:
 // FILE_SPECIAL_ACCESS is checked by the NT I/O system the same as FILE_ANY_ACCESS.
 // The file systems, however, may add additional access checks for I/O and FS controls
 // that use this value.
-*/
+//
 
 
 #define FILE_ANY_ACCESS                 0
 #define FILE_SPECIAL_ACCESS    (FILE_ANY_ACCESS)
-#define FILE_READ_ACCESS          ( 0x0001 )    /* file & pipe */
-#define FILE_WRITE_ACCESS         ( 0x0002 )    /* file & pipe */
+#define FILE_READ_ACCESS          ( 0x0001 )    // file & pipe
+#define FILE_WRITE_ACCESS         ( 0x0002 )    // file & pipe
 
-/* end_ntddk end_wdm end_nthal end_ntifs */
+// end_ntddk end_wdm end_nthal end_ntifs
 
-#endif /* _DEVIOCTL_ */
+#endif // _DEVIOCTL_
 
-/* end_winioctl */
+// end_winioctl
 

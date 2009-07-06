@@ -1,8 +1,6 @@
 /*
  *  md_linux.h
  *
- * Created 08/12/03 -- PJF
- *
  * Copyright (c) 2004, X-ray Instrumentation Associates
  *               2005, XIA LLC
  * All rights reserved.
@@ -37,6 +35,9 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
+ *
+ * $Id: md_linux.h,v 1.4 2009-07-06 18:24:30 rivers Exp $
+ *
  */
 
 
@@ -47,14 +48,12 @@
 #include "xia_mddef.h"
 #include "xia_common.h"
 
-/* Some constants */
 #define MAXMOD 100
 
 #define MD_IO_READ  0
 #define MD_IO_WRITE 1
 #define MD_IO_OPEN  2
 #define MD_IO_CLOSE 3
-
 
 /* If this is compiled by a C++ compiler, make it clear that these are C routines */
 #ifdef __cplusplus
@@ -69,19 +68,17 @@ extern "C" {
 #ifndef EXCLUDE_CAMAC
 XIA_MD_STATIC int XIA_MD_API dxp_md_initialize(unsigned int *, char *);
 XIA_MD_STATIC int XIA_MD_API dxp_md_open(char *, int *);
-XIA_MD_STATIC int XIA_MD_API dxp_md_open_bcn(int *, int *, int *, int *);
-XIA_MD_STATIC int XIA_MD_API dxp_md_io(int *camChan, unsigned int *function,
-									   unsigned long *addr, void *data,
-									   unsigned int *length);
+XIA_MD_STATIC int dxp_md_io(int *camChan, unsigned int *f, unsigned long *a,
+			    void *data, unsigned int *len);
 XIA_MD_STATIC int XIA_MD_API dxp_md_close(int *camChan);
 #endif /* EXCLUDE_CAMAC */
 
 #ifndef EXCLUDE_EPP
 XIA_MD_STATIC int XIA_MD_API dxp_md_epp_initialize(unsigned int *, char *);
 XIA_MD_STATIC int XIA_MD_API dxp_md_epp_open(char *, int *);
-XIA_MD_STATIC int XIA_MD_API dxp_md_epp_io(int *camChan, unsigned int *function,
-										   unsigned long *addr, void *data,
-										   unsigned int *length);
+XIA_MD_STATIC int dxp_md_epp_io(int *camChan, unsigned int *function,
+				unsigned long *address, void *data,
+				unsigned int *length);
 XIA_MD_STATIC int XIA_MD_API dxp_md_epp_close(int *camChan);
 #endif /* EXCLUDE_EPP */
 
@@ -89,53 +86,19 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_epp_close(int *camChan);
 XIA_MD_STATIC int XIA_MD_API dxp_md_usb_initialize(unsigned int *maxMod, char *dllName);
 XIA_MD_STATIC int XIA_MD_API dxp_md_usb_open(char *ioname, int *camChan);
 XIA_MD_STATIC int XIA_MD_API dxp_md_usb_io(int *camChan, unsigned int *function, 
-										   unsigned long *address, void *data,
-										   unsigned int *length);
+					   unsigned int *address, unsigned short *data,
+					   unsigned int *length);
 XIA_MD_STATIC int XIA_MD_API dxp_md_usb_close(int *camChan);
 #endif /* EXCLUDE_USB */
-
-
-#ifndef EXCLUDE_USB2
-XIA_MD_STATIC int  dxp_md_usb2_initialize(unsigned int *maxMod,
-                                         char *dllName);
-XIA_MD_STATIC int  dxp_md_usb2_open(char *ioname, int *camChan);
-XIA_MD_STATIC int  dxp_md_usb2_io(int *camChan, unsigned int *function, 
-										   unsigned long *address, void *data,
-										   unsigned int *length);
-XIA_MD_STATIC int  dxp_md_usb2_close(int *camChan);
-#endif /* EXCLUDE_USB2 */
-
 
 #ifndef EXCLUDE_SERIAL
 XIA_MD_STATIC int XIA_MD_API dxp_md_serial_initialize(unsigned int *maxMod, char *dllName);
 XIA_MD_STATIC int XIA_MD_API dxp_md_serial_open(char *ioname, int *camChan);
-XIA_MD_STATIC int XIA_MD_API dxp_md_serial_io(int *camChan,
-											  unsigned int *function, 
-											  unsigned long *address, void *data,
-											  unsigned int *length);
+XIA_MD_STATIC int XIA_MD_API dxp_md_serial_io(int *camChan, unsigned int *function, 
+					      unsigned int *address, unsigned short *data,
+					      unsigned int *length);
 XIA_MD_STATIC int XIA_MD_API dxp_md_serial_close(int *camChan);
 #endif /* EXCLUDE_SERIAL */
-
-#ifndef EXCLUDE_ARCNET
-XIA_MD_STATIC int XIA_MD_API dxp_md_arcnet_initialize(unsigned int *maxMod, char *dllName);
-XIA_MD_STATIC int XIA_MD_API dxp_md_arcnet_open(char *ioname, int *camChan);
-XIA_MD_STATIC int XIA_MD_API dxp_md_arcnet_io(int *camChan,
-											  unsigned int *function, 
-											  unsigned long *address,
-											  void *data,
-											  unsigned int *length);
-XIA_MD_STATIC int XIA_MD_API dxp_md_arcnet_close(int *camChan);
-#endif /* EXCLUDE_ARCNET */
-
-#ifndef EXCLUDE_PLX
-  XIA_MD_STATIC int dxp_md_plx_initialize(unsigned int *maxMod, char *dllName);
-  XIA_MD_STATIC int dxp_md_plx_open(char *ioname, int *camChan);
-  XIA_MD_STATIC int dxp_md_plx_io(int *camChan, unsigned int *function,
-								  unsigned long *address, void *data,
-								  unsigned int *length);
-  XIA_MD_STATIC int dxp_md_plx_close(int *camChan);
-
-#endif /* EXCLUDE_PLX */
 
 XIA_MD_STATIC int XIA_MD_API dxp_md_lock_resource(int *ioChan, int *modChan, short *lock);
 XIA_MD_STATIC int XIA_MD_API dxp_md_wait(float *);
@@ -143,18 +106,17 @@ XIA_MD_STATIC void XIA_MD_API dxp_md_error_control(char *,int *);
 XIA_MD_STATIC int XIA_MD_API dxp_md_get_maxblk(void);
 XIA_MD_STATIC int XIA_MD_API dxp_md_set_maxblk(unsigned int *);
 XIA_MD_STATIC int XIA_MD_API dxp_md_puts(char *);
-XIA_MD_STATIC int XIA_MD_API dxp_md_set_priority(int *priority);
-XIA_MD_STATIC char * dxp_md_fgets(char *s, int length, FILE *stream);
-XIA_MD_STATIC char * dxp_md_tmp_path(void);
-XIA_MD_STATIC void dxp_md_clear_tmp(void);
-XIA_MD_STATIC char * dxp_md_path_separator(void);
-
+  XIA_MD_STATIC int XIA_MD_API dxp_md_set_priority(int *priority);
+  XIA_MD_STATIC char * dxp_md_fgets(char *s, int length, FILE *stream);
+  XIA_MD_STATIC char * dxp_md_tmp_path(void);
+  XIA_MD_STATIC void dxp_md_clear_tmp(void);
+  XIA_MD_STATIC char * dxp_md_path_separator(void);
 
 
   /* Protocol-specific Imports go here */
 #ifndef EXCLUDE_CAMAC
-XIA_MD_IMPORT int XIA_MD_API xia_camxfr(short *camadr, short func, long nbytes, short mode, short *buf);
-XIA_MD_IMPORT int XIA_MD_API xia_caminit(short *buf);
+#include "camacapi.h"
+#include "camac_errors.h"
 #endif /* EXCLUDE_CAMAC */
 
 #ifndef EXLCUDE_EPP
@@ -174,40 +136,12 @@ XIA_MD_IMPORT int XIA_MD_API DxpReadPort(unsigned short port, unsigned short *da
 #endif /* EXCLUDE_EPP */
 
 #ifndef EXCLUDE_USB
-#include "usb.h"
-#include "usblib.h"
-/* XIA_MD_IMPORT int XIA_MD_API usb_open(char *device, HANDLE *hDevice); */
-/* XIA_MD_IMPORT int XIA_MD_API usb_close(HANDLE hDevice); */
-/* XIA_MD_IMPORT int XIA_MD_API usb_read(long address, long nWords, char *device, unsigned short *data); */
-/* XIA_MD_IMPORT int XIA_MD_API usb_write(long address, long nWords, char *device, unsigned short *data); */
   
 #endif /* EXCLUDE_USB */
 
-
 #ifndef EXCLUDE_SERIAL
 
-#include "seriallib.h"
-
-XIA_MD_IMPORT int XIA_MD_API InitSerialPort(unsigned short port, unsigned long baud);
-XIA_MD_IMPORT int XIA_MD_API CloseSerialPort(unsigned short port);
-XIA_MD_IMPORT serial_read_error_t * XIA_MD_API ReadSerialPort(
-											   unsigned short port,
-											   unsigned long size,
-											   unsigned char *data);
-XIA_MD_IMPORT int XIA_MD_API WriteSerialPort(unsigned short port, unsigned long size, unsigned char *data);
-XIA_MD_IMPORT int XIA_MD_API CheckAndClearTransmitBuffer(unsigned short port);
-XIA_MD_IMPORT int XIA_MD_API CheckAndClearReceiveBuffer(unsigned short port);
-XIA_MD_IMPORT int XIA_MD_API GetErrors(unsigned short port, unsigned short *errs);
-XIA_MD_IMPORT int XIA_MD_API NumBytesAtSerialPort(unsigned short port, unsigned long *numBytes);
-  XIA_MD_IMPORT int XIA_MD_API SetTimeoutInMS(unsigned short port, double ms);
 #endif /* EXCLUDE_UDXP */
-
-#ifndef EXCLUDE_ARCNET
-XIA_MD_IMPORT int XIA_MD_API dxpInitializeArcnet(unsigned char nodeID);
-XIA_MD_IMPORT int XIA_MD_API dxpSetAddressArcnet(unsigned char nodeID, unsigned short address);
-XIA_MD_IMPORT int XIA_MD_API dxpReadArcnet(unsigned char nodeID, unsigned short address, unsigned short *data, unsigned int len);
-XIA_MD_IMPORT int XIA_MD_API dxpWriteArcnet(unsigned char nodeID, unsigned short address, unsigned short *data, unsigned int len);
-#endif /* EXCLUDE_ARCNET */
 
 
 
@@ -241,28 +175,6 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_serial_open();
 XIA_MD_STATIC int XIA_MD_API dxp_md_serial_io();
 XIA_MD_STATIC int XIA_MD_API dxp_md_serial_close();
 #endif /* EXCLUDE_SERIAL */
-
-#ifndef EXCLUDE_ARCNET
-XIA_MD_STATIC int XIA_MD_API dxp_md_arcnet_initialize();
-XIA_MD_STATIC int XIA_MD_API dxp_md_arcnet_open();
-XIA_MD_STATIC int XIA_MD_API dxp_md_arcnet_io();
-XIA_MD_STATIC int XIA_MD_API dxp_md_arcnet_close();
-#endif /* EXCLUDE_ARCNET */
-
-#ifndef EXCLUDE_PLX
-  XIA_MD_STATIC int dxp_md_plx_initialize();
-  XIA_MD_STATIC int dxp_md_plx_open();
-  XIA_MD_STATIC int dxp_md_plx_io();
-  XIA_MD_STATIC int dxp_md_plx_close();
-#endif /* EXCLUDE_PLX */
-
-#ifndef EXCLUDE_USB2
-  XIA_MD_STATIC int dxp_md_usb2_initialize();
-  XIA_MD_STATIC int dxp_md_usb2_open();
-  XIA_MD_STATIC int dxp_md_usb2_io();
-  XIA_MD_STATIC int dxp_md_usb2_close();
-#endif /* EXCLUDE_USB2 */
-
 
 XIA_MD_STATIC int XIA_MD_API dxp_md_lock_resource();
 XIA_MD_STATIC int XIA_MD_API dxp_md_wait();
@@ -310,14 +222,6 @@ XIA_MD_IMPORT int XIA_MD_API ReadSerialPort();
 XIA_MD_IMPORT int XIA_MD_API WriteSerialPort();
 XIA_MD_IMPORT int XIA_MD_API GetErrors();
 #endif /* EXCLUDE_SERIAL */
-
-
-#ifndef EXCLUDE_ARCNET
-XIA_MD_IMPORT int XIA_MD_API dxpInitializeArcnet();
-XIA_MD_IMPORT int XIA_MD_API dxpSetAddressArcnet();
-XIA_MD_IMPORT int XIA_MD_API dxpReadArcnet();
-XIA_MD_IMPORT int XIA_MD_API dxpWriteArcnet();
-#endif /* EXCLUDE_ARCNET */
 
 #endif
 #ifdef __cplusplus

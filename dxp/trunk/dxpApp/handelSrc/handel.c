@@ -160,7 +160,7 @@ HANDEL_EXPORT int HANDEL_API xiaInit(char *iniFile)
   
   if (nFilesOpen > 0) {
     xia_print_open_handles(stdout);
-    ASSERT(FALSE_);
+    FAIL();
   }
 
     status = xiaReadIniFile(iniFile);
@@ -789,7 +789,7 @@ HANDEL_SHARED int HANDEL_API xiaFreeModule(Module *module)
     switch (module->interface_info->type) {
 	default:
 	  /* Impossible */
-	  ASSERT(FALSE_);
+	  FAIL();
 	  break;
 
 	case NO_INTERFACE:

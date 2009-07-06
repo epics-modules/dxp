@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_xerxes.h,v 1.3 2007-11-14 21:08:29 rivers Exp $
+ * $Id: xia_xerxes.h,v 1.4 2009-07-06 18:24:32 rivers Exp $
  *
  *    Following are prototypes for dxp driver routines
  */
@@ -88,7 +88,6 @@ extern "C"
   XERXES_EXPORT int XERXES_API dxp_assign_channel(void);
   XERXES_EXPORT int XERXES_API dxp_user_setup(void);
   XERXES_EXPORT int XERXES_API dxp_reset_channel(int *detChan);
-  XERXES_EXPORT int XERXES_API dxp_reset_dspconfig(int *detChan);
   XERXES_EXPORT int XERXES_API dxp_reset_fpgaconfig(int *detChan, char *name);
   XERXES_EXPORT int XERXES_API dxp_del_board(char *type, char *iolib, char *ifacelib,
                                              char *iostring);
@@ -248,7 +247,6 @@ extern "C"
   XERXES_EXPORT int XERXES_API dxp_assign_channel();
   XERXES_EXPORT int XERXES_API dxp_user_setup();
   XERXES_EXPORT int XERXES_API dxp_reset_channel();
-  XERXES_EXPORT int XERXES_API dxp_reset_dspconfig();
   XERXES_EXPORT int XERXES_API dxp_reset_fpgaconfig();
   XERXES_EXPORT int XERXES_API dxp_add_board();
   XERXES_EXPORT int XERXES_API dxp_add_btype();

@@ -39,7 +39,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: plxlib.h,v 1.3 2007-11-17 15:47:46 rivers Exp $
+ * $Id: plxlib.h,v 1.4 2009-07-06 18:24:30 rivers Exp $
  *
  * This driver serves as the interface between the MD layer and the PLX
  * chip on our PXI/cPCI hardware.
@@ -82,20 +82,24 @@ extern "C" {
 typedef struct _virtual_map {
   
   unsigned long     *addr;
-  HANDLE            *h;
+  PLX_DEVICE_OBJECT *device;
   PLX_NOTIFY_OBJECT *events;
-  PLX_INTR          *intrs;
+  PLX_INTERRUPT     *intrs;
   boolean_t         *registered;
 
   unsigned long n;
 
 } virtual_map_t;
 
+typedef struct _API_ERRORS
+{
+    PLX_STATUS  code;
+    char       *text;
+} API_ERRORS;
 
 /** CONSTANTS **/
 #define PLX_PCI_SPACE_0  2
 #define EXTERNAL_MEMORY_LOCAL_ADDR  0x100000
-
 
 /** MACROS **/
 #define ACCESS_VADDR(i, address)  \

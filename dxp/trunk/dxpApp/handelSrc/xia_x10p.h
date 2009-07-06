@@ -35,7 +35,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xia_x10p.h,v 1.3 2007-12-20 20:04:54 rivers Exp $
+ * $Id: xia_x10p.h,v 1.4 2009-07-06 18:24:32 rivers Exp $
  *
  *
  *    Following are prototypes for dxp4c2x.c and xerxes.c routines
@@ -109,10 +109,10 @@ XERXES_STATIC int XERXES_API dxp_load_dspfile(FILE *, Dsp_Info *);
 XERXES_STATIC int XERXES_API dxp_load_dspsymbol_table(FILE *, Dsp_Info *);
 XERXES_STATIC int XERXES_API dxp_load_dspconfig(FILE *, Dsp_Info *);
 
-XERXES_STATIC int XERXES_API dxp_decode_error(unsigned short [], Dsp_Info *, unsigned short *, 
-					      unsigned short *);
+XERXES_STATIC int XERXES_API dxp_decode_error(int *, int *, Dsp_Info *, 
+                unsigned short *, unsigned short *);
 XERXES_STATIC int XERXES_API dxp_clear_error(int *, int *, Board *);
-XERXES_STATIC int XERXES_API dxp_check_calibration(int *, unsigned short *, Dsp_Info *);
+XERXES_STATIC int XERXES_API dxp_check_calibration(int *, Dsp_Info *);
   XERXES_STATIC int dxp_get_runstats(int *ioChan, int *modChan, Board *b,
 									 unsigned long *evts, unsigned long *under,
 									 unsigned long *over, unsigned long *fast,

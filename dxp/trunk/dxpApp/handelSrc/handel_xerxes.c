@@ -555,7 +555,6 @@ HANDEL_STATIC int xia__CopyInterfString(Module *m, char *interf)
 	break;
 #endif /* EXCLUDE_PLX */
 
-	/* XXX ARCNET stuff goes here... */
   }
 
   return XIA_SUCCESS;
@@ -621,9 +620,10 @@ HANDEL_STATIC int xia__CopyMDString(Module *m, char *md)
 
 #ifndef EXCLUDE_SERIAL
   case SERIAL:
-	sprintf(md, "%u", m->interface_info->info.serial->com_port);
+	sprintf(md, "%u:%u", m->interface_info->info.serial->com_port,
+			m->interface_info->info.serial->baud_rate);
 	break;
-#endif /* EXCLUDE_ARCNET */
+#endif /* EXCLUDE_SERIAL */
 
 #ifndef EXCLUDE_PLX
   case PLX:
@@ -633,7 +633,6 @@ HANDEL_STATIC int xia__CopyMDString(Module *m, char *md)
 
 #endif /* EXCLUDE_PLX */
 
-	/* XXX ARCNET stuff goes here... */
 
   }
 
@@ -927,10 +926,22 @@ HANDEL_STATIC int xia__GetSystemFPGAName(Module *module, char *detType,
   status = xiaFddGetFirmware(fs->filename, tmpPath, "system_fpga", fake_pt, 0,
                              NULL, detType, sysFPGAName, rawFilename);
 
+  /* This is not necessarily an error. We will still pass the error value
+   * up to the top-level but only use an informational message. For products
+   * without system_fippis defined in their FDD files this message will always
+   * appear and we don't want them to be confused by spurious ERRORs.
+   */
+  if (status == XIA_FILEERR) {
+    sprintf(info_string, "Error finding system_fpga in %s", fs->filename);
+    xiaLogInfo("xia__GetSystemFPGAName", info_string);
+    return status;
+  }
+  
+  /* These are "real" errors, not just missing file problems. */
   if (status != XIA_SUCCESS) {
-	sprintf(info_string, "Error finding system_fpga in %s", fs->filename);
-	xiaLogError("xia__GetSystemFPGAName", info_string, status);
-	return status;
+    sprintf(info_string, "Error finding system_fpga in %s", fs->filename);
+    xiaLogError("xia__GetSystemFPGAName", info_string, status);
+    return status;
   }
 
   *found = TRUE_;
@@ -1002,10 +1013,22 @@ HANDEL_STATIC int xia__GetSystemDSPName(Module *module, char *detType,
   status = xiaFddGetFirmware(fs->filename, tmpPath, "system_dsp", fake_pt, 0, NULL,
 							 detType, sysDSPName, rawFilename);
 
+   /* This is not necessarily an error. We will still pass the error value
+   * up to the top-level but only use an informational message. For products
+   * without system_fippis defined in their FDD files this message will always
+   * appear and we don't want them to be confused by spurious ERRORs.
+   */
+  if (status == XIA_FILEERR) {
+    sprintf(info_string, "Cannot find system_dsp in %s", fs->filename);
+    xiaLogInfo("xia__GetSystemDSPName", info_string);
+    return status;
+  }
+  
+  /* These are "real" errors, not just missing file problems. */
   if (status != XIA_SUCCESS) {
-	sprintf(info_string, "Error finding system_dsp in %s", fs->filename);
-	xiaLogError("xia__GetSystemDSPName", info_string, status);
-	return status;
+    sprintf(info_string, "Cannot find system_dsp in %s", fs->filename);
+    xiaLogError("xia__GetSystemDSPName", info_string, status);
+    return status;
   }
 
   *found = TRUE_;
@@ -1115,10 +1138,23 @@ HANDEL_STATIC int xia__GetFiPPIAName(Module *module, char *detType,
   status = xiaFddGetFirmware(fs->filename, tmpPath, "fippi_a", fake_pt, 0, NULL,
 							 detType, sysFippiAName, rawFilename);
 
+
+   /* This is not necessarily an error. We will still pass the error value
+   * up to the top-level but only use an informational message. For products
+   * without system_fippis defined in their FDD files this message will always
+   * appear and we don't want them to be confused by spurious ERRORs.
+   */
+  if (status == XIA_FILEERR) {
+    sprintf(info_string, "Cannot find fippi_a in %s", fs->filename);
+    xiaLogInfo("xia__GetFiPPIAName", info_string);
+    return status;
+  }
+  
+  /* These are "real" errors, not just missing file problems. */
   if (status != XIA_SUCCESS) {
-	sprintf(info_string, "Error finding fippi_a in %s", fs->filename);
-	xiaLogError("xia__GetFiPPIAName", info_string, status);
-	return status;
+    sprintf(info_string, "Cannot find fippi_a in %s", fs->filename);
+    xiaLogError("xia__GetFiPPIAName", info_string, status);
+    return status;
   }
 
   *found = TRUE_;
@@ -1926,7 +1962,7 @@ HANDEL_STATIC int xia__AddXerxesParams(Module *m)
  */
 HANDEL_STATIC int xia__DoSystemFiPPI(Module *m, boolean_t *found)
 {
-  int detChan=0;
+  int detChan = -1;
   int status;
 
   unsigned int i;

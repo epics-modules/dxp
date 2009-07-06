@@ -38,7 +38,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_usb2_errors.h,v 1.1 2007-10-22 02:36:19 rivers Exp $
+ * $Id: xia_usb2_errors.h,v 1.2 2009-07-06 18:24:32 rivers Exp $
  */
 
 #ifndef __XIA_USB2_ERRORS_H__
@@ -55,5 +55,6 @@
 #define XIA_USB2_NULL_HANDLE      7
 #define XIA_USB2_ZERO_BYTES       8
 #define XIA_USB2_NULL_BUFFER      9
+#define XIA_USB2_INVALID_HANDLE   10
 
 #endif /* __XIA_USB2_ERRORS_H__ */

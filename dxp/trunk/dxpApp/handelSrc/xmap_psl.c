@@ -38,7 +38,7 @@
 * SUCH DAMAGE.
 *
 *
-* $Id: xmap_psl.c,v 1.3 2007-11-20 03:10:45 rivers Exp $
+* $Id: xmap_psl.c,v 1.4 2009-07-06 18:24:32 rivers Exp $
 */
 
 #include <math.h>
@@ -88,7 +88,7 @@ PSL_STATIC int psl__GetFiPPIName(int modChan, double pt, FirmwareSet *fs,
                                  char *detType, char *name, char *rawName);
 PSL_STATIC int psl__GetDSPName(int modChan, double pt, FirmwareSet *fs,
                                char *detType, char *name, char *rawName);
-/*PSL_STATIC int psl__GetDetectorTypeName(Detector *d, char *name); */
+PSL_STATIC int psl__GetDetectorTypeName(Detector *d, char *name);
 PSL_STATIC int psl__UpdateFilterParams(int detChan, int modChan, double pt,
                                        XiaDefaults *defs, FirmwareSet *fs,
                                        Module *m, Detector *det);
@@ -430,6 +430,12 @@ PSL_STATIC int psl__SetPreampType(int detChan, int modChan, char *name,
 PSL_STATIC int psl__GetPreampType(int detChan, void *value, XiaDefaults *defs);
 PSL_STATIC int psl__SynchPreampType(int detChan, int det_chan, Module *m,
                                     Detector *det, XiaDefaults *defs);
+PSL_STATIC int psl__SetPeakMode(int detChan, int modChan, char *name,
+                                  void *value, char *detType,
+                                  XiaDefaults *defs, Module *m,
+                                  Detector *det, FirmwareSet *fs);
+PSL_STATIC int psl__GetPeakMode(int detChan, void *value,
+                                  XiaDefaults *defs);
 
 
 
@@ -632,7 +638,7 @@ static AcquisitionValue_t ACQ_VALUES[] =
     {"synchronous_run",       TRUE_, FALSE_, XMAP_UPDATE_MAPPING | XMAP_UPDATE_MCA,
      0.0, psl__SetSynchRun,        psl__GetSynchRun, NULL},
 
-    {"maxwidth",              TRUE_, FALSE_, XMAP_UPDATE_NEVER, 0.400,
+    {"maxwidth",              TRUE_, FALSE_, XMAP_UPDATE_NEVER, 1.000,
      psl__SetMaxWidth,        psl__GetMaxWidth, NULL},
 
     {"preamp_type",           TRUE_, TRUE_, XMAP_UPDATE_NEVER, 0.0,
@@ -640,10 +646,13 @@ static AcquisitionValue_t ACQ_VALUES[] =
 
     {"decay_time",            TRUE_, TRUE_, XMAP_UPDATE_NEVER, 10.0,
      psl__SetDecayTime, psl__GetDecayTime, psl__SynchDecayTime },
+
+    {"peak_mode",           TRUE_, FALSE_, XMAP_UPDATE_NEVER,  1.0,                   
+     psl__SetPeakMode,      psl__GetPeakMode, NULL},     
   };
 
 
-static char info_string[400];
+static char info_string[INFO_LEN];
 
 
 /** @brief Initializes the PSL functions for the xMAP hardware.
@@ -1046,43 +1055,54 @@ PSL_STATIC int pslStartRun(int detChan, unsigned short resume,
 
   unsigned short ignored_gate   = 0;
 
+  boolean_t isMapping = FALSE_;
 
   UNUSED(defaults);
   UNUSED(m);
 
-
-  /* Initialize the mapping flag register. */
-  status = psl__SetRegisterBit(detChan, "MFR", 12, TRUE_);
+  /* Only clear buffer if mapping mode firmware is running */
+  status = psl__IsMapping(detChan, &isMapping);
 
   if (status != XIA_SUCCESS) {
-    sprintf(info_string, "Error initializing mapping registers for detChan '%d'",
-            detChan);
+    sprintf(info_string, "Error checking firmware type for detChan %d", detChan);
     pslLogError("pslStartRun", info_string, status);
     return status;
   }
+  
+  if (isMapping)
+  {
+    /* Initialize the mapping flag register. */
+    status = psl__SetRegisterBit(detChan, "MFR", 12, TRUE_);
 
-  /* If using mapping mode firmware, we need to clear the buffers
-  * before the run starts.
-  */
-  status = psl__ClearBuffer(detChan, 'a', TRUE_);
+    if (status != XIA_SUCCESS) {
+      sprintf(info_string, "Error initializing mapping registers for detChan '%d'",
+              detChan);
+      pslLogError("pslStartRun", info_string, status);
+      return status;
+    }
 
-  /* Ignore an error that says we aren't using mapping mode firmware since
-  * this check is always run.
-  */
-  if (status != XIA_SUCCESS && status != XIA_NO_MAPPING) {
-    sprintf(info_string, "Error clearing buffer 'a' for detChan %d", detChan);
-    pslLogError("pslStartRun", info_string, status);
-    return status;
+    /* If using mapping mode firmware, we need to clear the buffers
+    * before the run starts.
+    */
+    status = psl__ClearBuffer(detChan, 'a', TRUE_);
+
+    /* Ignore an error that says we aren't using mapping mode firmware since
+    * this check is always run.
+    */
+    if (status != XIA_SUCCESS && status != XIA_NO_MAPPING) {
+      sprintf(info_string, "Error clearing buffer 'a' for detChan %d", detChan);
+      pslLogError("pslStartRun", info_string, status);
+      return status;
+    }
+
+    status = psl__ClearBuffer(detChan, 'b', TRUE_);
+
+    if (status != XIA_SUCCESS && status != XIA_NO_MAPPING) {
+      sprintf(info_string, "Error clearing buffer 'b' for detChan %d", detChan);
+      pslLogError("pslStartRun", info_string, status);
+      return status;
+    }
   }
-
-  status = psl__ClearBuffer(detChan, 'b', TRUE_);
-
-  if (status != XIA_SUCCESS && status != XIA_NO_MAPPING) {
-    sprintf(info_string, "Error clearing buffer 'b' for detChan %d", detChan);
-    pslLogError("pslStartRun", info_string, status);
-    return status;
-  }
-
 
   statusX = dxp_start_one_run(&detChan, &ignored_gate, &resume);
 
@@ -1428,7 +1448,7 @@ PSL_STATIC int pslUserSetup(int detChan, XiaDefaults *defaults,
                                      detector_chan, m, modChan);
 
     if (status != XIA_SUCCESS) {
-      sprintf(info_string, "Error setting '%s' to %0.3f for detChan %d",
+      sprintf(info_string, "Error setting '%s' to %0.3lf for detChan %d",
               entry->name, entry->data, detChan);
       pslLogError("pslUserSetup", info_string, status);
       return status;
@@ -2346,7 +2366,7 @@ PSL_STATIC int psl__CalculateGain(XiaDefaults *defs, double preampGain,
   */
   for (i = 0; i < MAX_BINFACT_ITERS; i++) {
 
-    sprintf(info_string, "binscale = %0.3f, BINSCALE = %#x", binscale,
+    sprintf(info_string, "binscale = %0.3lf, BINSCALE = %#x", binscale,
             *BINSCALE);
     pslLogDebug("psl__CalculateGain", info_string);
 
@@ -2354,7 +2374,7 @@ PSL_STATIC int psl__CalculateGain(XiaDefaults *defs, double preampGain,
 
     scaledTotGain = totGain * binScale;
 
-    sprintf(info_string, "Scaled Total gain = %.3f", scaledTotGain);
+    sprintf(info_string, "Scaled Total gain = %.3lf", scaledTotGain);
     pslLogDebug("psl__CalculateGain", info_string);
 
     /* The scale factor corresponds to the setting of the JPn00 jumper.
@@ -2362,7 +2382,7 @@ PSL_STATIC int psl__CalculateGain(XiaDefaults *defs, double preampGain,
     * the (-12 dB) setting.
     */
     if (scale != 1.0 && scale != 0.25) {
-      sprintf(info_string, "Specified gain scale factor (%0.3f) is not allowed",
+      sprintf(info_string, "Specified gain scale factor (%0.3lf) is not allowed",
               scale);
       pslLogError("psl__CalculateGain", info_string, XIA_GAIN_SCALE);
       return XIA_GAIN_SCALE;
@@ -2370,17 +2390,17 @@ PSL_STATIC int psl__CalculateGain(XiaDefaults *defs, double preampGain,
 
     sysGain *= scale;
 
-    sprintf(info_string, "System gain = %0.3f", sysGain);
+    sprintf(info_string, "System gain = %0.3lf", sysGain);
     pslLogDebug("psl__CalculateGain", info_string);
 
     varGain = scaledTotGain / sysGain;
 
-    sprintf(info_string, "Variable gain = %0.3f", varGain);
+    sprintf(info_string, "Variable gain = %0.3lf", varGain);
     pslLogDebug("psl__CalculateGain", info_string);
 
     varGainDB = 20.0 * log10(varGain);
 
-    sprintf(info_string, "Variable gain = %0.3f dB", varGainDB);
+    sprintf(info_string, "Variable gain = %0.3lf dB", varGainDB);
     pslLogDebug("psl__CalculateGain", info_string);
 
     if (varGainDB < -6.0 || varGainDB > 30.0) {
@@ -2396,7 +2416,7 @@ PSL_STATIC int psl__CalculateGain(XiaDefaults *defs, double preampGain,
   }
 
   if (varGainDB < -6.0 || varGainDB > 30.0) {
-    sprintf(info_string, "Variable gain of %0.3f dB is out-of-range",
+    sprintf(info_string, "Variable gain of %0.3lf dB is out-of-range",
             varGainDB);
     pslLogError("psl__CalculateGain", info_string, XIA_GAIN_OOR);
     return XIA_GAIN_OOR;
@@ -2407,7 +2427,7 @@ PSL_STATIC int psl__CalculateGain(XiaDefaults *defs, double preampGain,
   gaindac  = varGainDB * ((double)(0x1 << GAINDAC_BITS) / GAINDAC_DB_RANGE);
   *GAINDAC = (parameter_t)ROUND(gaindac);
 
-  sprintf(info_string, "gaindac = %0.3f, GAINDAC = %#x", gaindac, *GAINDAC);
+  sprintf(info_string, "gaindac = %0.3lf, GAINDAC = %#x", gaindac, *GAINDAC);
   pslLogDebug("psl__CalculateGain", info_string);
 
   return XIA_SUCCESS;
@@ -3060,7 +3080,7 @@ PSL_STATIC int psl__SetResetDelay(int detChan, int modChan, char *name, void *va
 
   if (status != XIA_SUCCESS) {
     sprintf(info_string, "Error setting reset delay to %f microseconds for "
-            "detChan %d", *resetDelay, detChan);
+            "detChan %d", resetDelay, detChan);
     pslLogError("psl__SetResetDelay", info_string, status);
     return status;
   }
@@ -3658,7 +3678,8 @@ PSL_STATIC int psl__UpdateFilterParams(int detChan, int modChan, double pt,
   parameter_t SLOWGAP    = 0;
   parameter_t PEAKINT    = 0;
   parameter_t PEAKSAM    = 0;
-
+  parameter_t PEAKMODE   = 0;
+  
   double tick        = psl__GetClockTick();
   double sl          = 0.0;
   double sg          = 0.0;
@@ -3666,7 +3687,8 @@ PSL_STATIC int psl__UpdateFilterParams(int detChan, int modChan, double pt,
   double psOffset    = 0.0;
   double piOffset    = 0.0;
   double gapMinAtDec = 0.0;
-
+  double peakMode    = 0.0;
+  
   parameter_t filter[2];
 
   char psStr[20];
@@ -3726,15 +3748,6 @@ PSL_STATIC int psl__UpdateFilterParams(int detChan, int modChan, double pt,
   SLOWLEN = (parameter_t)ROUND(sl);
 
   if (SLOWLEN < MIN_SLOWLEN || SLOWLEN > MAX_SLOWLEN) {
-    parameter_t RUNERROR = 0;
-
-    /* XXX TMP DEBUG */
-    status = pslGetParameter(detChan, "RUNERROR", &RUNERROR);
-    ASSERT(status == XIA_SUCCESS);
-
-    sprintf(info_string, "RUNERROR = %u", RUNERROR);
-    pslLogDebug("psl__UpdateFilterParams", info_string);
-
     sprintf(info_string, "Calculated slow filter length (%u) is not in the "
             "allowed range (%u, %u) for detChan %d", SLOWLEN, MIN_SLOWLEN,
             MAX_SLOWLEN, detChan);
@@ -3776,6 +3789,24 @@ PSL_STATIC int psl__UpdateFilterParams(int detChan, int modChan, double pt,
     return XIA_SLOWGAP_OOR;
   }
 
+  status = pslSetParameter(detChan, "SLOWLEN", SLOWLEN);
+
+  if (status != XIA_SUCCESS) {
+    sprintf(info_string, "Error setting slow filter length to %u for detChan %d",
+            SLOWLEN, detChan);
+    pslLogError("psl__UpdateFilterParams", info_string, status);
+    return status;
+  }
+
+  status = pslSetParameter(detChan, "SLOWGAP", SLOWGAP);
+
+  if (status != XIA_SUCCESS) {
+    sprintf(info_string, "Error setting slow filter gap to %u for detChan %d",
+            SLOWGAP, detChan);
+    pslLogError("psl__UpdateFilterParams", info_string, status);
+    return status;
+  }
+
   /* Calculate other filter parameters from the filter info in the FDD file.
   * For the xMAP, we interpret the filter data as:
   *
@@ -3796,41 +3827,7 @@ PSL_STATIC int psl__UpdateFilterParams(int detChan, int modChan, double pt,
   } else {
     PEAKINT = (parameter_t)(SLOWLEN + SLOWGAP + filter[0]);
   }
-
-  /* If the user has defined a custom peak sampling value at this decimation
-  * then it will override the value from the FDD file.
-  */
-  sprintf(psStr, "peak_sample_offset%u", DECIMATION);
-
-  status = pslGetDefault(psStr, (void *)&psOffset, defs);
-
-  if (status == XIA_SUCCESS) {
-    PEAKSAM = (parameter_t)(SLOWLEN + SLOWGAP -
-                            (parameter_t)(psOffset /
-                                          (tick * pow(2.0, DECIMATION))));
-
-  } else {
-    PEAKSAM = (parameter_t)(SLOWLEN + SLOWGAP - filter[1]);
-  }
-
-  status = pslSetParameter(detChan, "SLOWLEN", SLOWLEN);
-
-  if (status != XIA_SUCCESS) {
-    sprintf(info_string, "Error setting slow filter length to %u for detChan %d",
-            SLOWLEN, detChan);
-    pslLogError("psl__UpdateFilterParams", info_string, status);
-    return status;
-  }
-
-  status = pslSetParameter(detChan, "SLOWGAP", SLOWGAP);
-
-  if (status != XIA_SUCCESS) {
-    sprintf(info_string, "Error setting slow filter gap to %u for detChan %d",
-            SLOWGAP, detChan);
-    pslLogError("psl__UpdateFilterParams", info_string, status);
-    return status;
-  }
-
+  
   status = pslSetParameter(detChan, "PEAKINT", PEAKINT);
 
   if (status != XIA_SUCCESS) {
@@ -3840,15 +3837,47 @@ PSL_STATIC int psl__UpdateFilterParams(int detChan, int modChan, double pt,
     return status;
   }
 
-  status = pslSetParameter(detChan, "PEAKSAM", PEAKSAM);
+  /* No need to set PEAKSAM if PEAKMODE is XIA_PEAK_SENSING_MODE */
+  status = pslGetDefault("peak_mode", (void *)&peakMode, defs);
+  ASSERT(status == XIA_SUCCESS);
+
+  PEAKMODE = (parameter_t) peakMode;
+  status = pslSetParameter(detChan, "PEAKMODE", PEAKMODE);
 
   if (status != XIA_SUCCESS) {
-    sprintf(info_string, "Error setting peak sample to %u for detChan %d",
-            PEAKSAM, detChan);
+    sprintf(info_string, "Error setting engery filter peak mode to %0.2f for "
+            "detChan %d", peakMode, detChan);
     pslLogError("psl__UpdateFilterParams", info_string, status);
     return status;
   }
+      
+  if (PEAKMODE != XIA_PEAK_SENSING_MODE) {
+    /* If the user has defined a custom peak sampling value at this decimation
+    * then it will override the value from the FDD file.
+    */
+    sprintf(psStr, "peak_sample_offset%u", DECIMATION);
 
+    status = pslGetDefault(psStr, (void *)&psOffset, defs);
+
+    if (status == XIA_SUCCESS) {
+      PEAKSAM = (parameter_t)(SLOWLEN + SLOWGAP -
+                              (parameter_t)(psOffset /
+                                            (tick * pow(2.0, DECIMATION))));
+
+    } else {
+      PEAKSAM = (parameter_t)(SLOWLEN + SLOWGAP - filter[1]);
+    }
+
+    status = pslSetParameter(detChan, "PEAKSAM", PEAKSAM);
+
+    if (status != XIA_SUCCESS) {
+      sprintf(info_string, "Error setting peak sample to %u for detChan %d",
+              PEAKSAM, detChan);
+      pslLogError("psl__UpdateFilterParams", info_string, status);
+      return status;
+    }
+  }
+    
   status = psl__UpdateGain(detChan, modChan, defs, m, det);
 
   if (status != XIA_SUCCESS) {
@@ -4533,7 +4562,7 @@ PSL_STATIC int psl__SetPresetValue(int detChan, int modChan, char *name, void *v
   hiLen = (unsigned long)floor(len / ldexp(1.0, 32));
   loLen = (unsigned long)ROUND(len - ((double)hiLen * ldexp(1.0, 32)));
 
-  sprintf(info_string, "len = %0.0f, hiLen = %#lx, loLen = %#lx",
+  sprintf(info_string, "len = %0.0lf, hiLen = %#x, loLen = %#x",
           len, hiLen, loLen);
   pslLogDebug("psl__SetPresetValue", info_string);
 
@@ -4791,7 +4820,7 @@ PSL_STATIC int psl__SetSCA(int detChan, int modChan, char *name,
   ASSERT(STRNEQ(name, "sca"));
 
 
-  sscanf(name, "sca%hu_%s", &scaNum, limit);
+  sscanf(name, "sca%u_%s", &scaNum, limit);
 
   if (!(STREQ(limit, "lo") || STREQ(limit, "hi"))) {
     sprintf(info_string, "Malformed SCA string '%s': missing 'lo' or 'hi' "
@@ -4829,17 +4858,17 @@ PSL_STATIC int psl__SetSCA(int detChan, int modChan, char *name,
 
   addr = SCALIM + scaNum;
 
-  sprintf(info_string, "SCA limit pointer value '%s' = %#lx", limParam, addr);
+  sprintf(info_string, "SCA limit pointer value '%s' = %#x", limParam, addr);
   pslLogDebug("psl__SetSCA", info_string);
-  sprintf(info_string, "Preparing to set SCA limit: addr = %#lx", addr);
+  sprintf(info_string, "Preparing to set SCA limit: addr = %#x", addr);
   pslLogDebug("psl__SetSCA", info_string);
 
-  sprintf(memory, "data:%#lx:1", addr);
+  sprintf(memory, "data:%#x:1", addr);
 
   statusX = dxp_write_memory(&detChan, memory, &data);
 
   if (statusX != DXP_SUCCESS) {
-    sprintf(info_string, "Error writing SCA limit (%lu) for detChan %d",
+    sprintf(info_string, "Error writing SCA limit (%u) for detChan %d",
             data, detChan);
     pslLogError("psl__SetSCA", info_string, XIA_XERXES);
     return XIA_XERXES;
@@ -5197,7 +5226,7 @@ PSL_STATIC int psl__SetNumMapPixels(int detChan, int modChan, char *name,
                            (parameter_t)(NUMPIXELS & 0xFFFF));
 
   if (status != XIA_SUCCESS) {
-    sprintf(info_string, "Error setting the total number of scan points (%lu) for "
+    sprintf(info_string, "Error setting the total number of scan points (%u) for "
             "detChan %d", NUMPIXELS, detChan);
     pslLogError("psl__SetNumMapPixels", info_string, status);
     return status;
@@ -5207,7 +5236,7 @@ PSL_STATIC int psl__SetNumMapPixels(int detChan, int modChan, char *name,
                            (parameter_t)((NUMPIXELS >> 16) & 0xFFFF));
 
   if (status != XIA_SUCCESS) {
-    sprintf(info_string, "Error setting the total number of scan points (%lu) for "
+    sprintf(info_string, "Error setting the total number of scan points (%u) for "
             "detChan %d", NUMPIXELS, detChan);
     pslLogError("psl__SetNumMapPixels", info_string, status);
     return status;
@@ -5345,13 +5374,28 @@ PSL_STATIC int psl__SetBufferDone(int detChan, char *name, XiaDefaults *defs,
 {
   int status;
 
+  boolean_t isMapping = FALSE_;
+
   UNUSED(defs);
   UNUSED(name);
 
-
   ASSERT(value != NULL);
 
+  status = psl__IsMapping(detChan, &isMapping);
 
+  if (status != XIA_SUCCESS) {
+    sprintf(info_string, "Error checking firmware type for detChan %d", detChan);
+    pslLogError("psl__SetBufferDone", info_string, status);
+    return status;
+  }
+
+  if (!isMapping) {
+    sprintf(info_string, "Mapping mode firmware not running on detChan %d",
+            detChan);
+    pslLogError("psl__SetBufferDone", info_string, XIA_NO_MAPPING);
+    return XIA_NO_MAPPING;
+  }
+  
   status = psl__ClearBuffer(detChan, *((char *)value), TRUE_);
 
   if (status != XIA_SUCCESS) {
@@ -5623,7 +5667,7 @@ PSL_STATIC int psl__GetBuffer(int detChan, char buf, unsigned long *data,
     return status;
   }
 
-  sprintf(memoryStr, "burst_map:%#lx:%lu", base, len);
+  sprintf(memoryStr, "burst_map:%#x:%u", base, len);
 
   statusX = dxp_read_memory(&detChan, memoryStr, data);
 
@@ -5695,7 +5739,7 @@ PSL_STATIC int psl__GetCurrentPixel(int detChan, void *value, XiaDefaults *defs,
 
   *((unsigned long *)value) = WORD_TO_LONG(PIXELNUM, PIXELNUMA);
 
-  sprintf(info_string, "Current pixel = %lu for detChan %d",
+  sprintf(info_string, "Current pixel = %u for detChan %d",
           *((unsigned long *)value), detChan);
   pslLogDebug("psl__GetCurrentPixel", info_string);
 
@@ -5778,7 +5822,7 @@ PSL_STATIC int psl__SetRegisterBit(int detChan, char *reg, int bit,
 
     if (statusX != DXP_SUCCESS) {
       sprintf(info_string, "Error reading the '%s' for detChan %d",
-              reg, detChan);
+              bit, reg, detChan);
       pslLogError("psl__SetRegisterBit", info_string, XIA_XERXES);
       return XIA_XERXES;
     }
@@ -5789,7 +5833,7 @@ PSL_STATIC int psl__SetRegisterBit(int detChan, char *reg, int bit,
   statusX = dxp_write_register(&detChan, reg, &val);
 
   if (statusX != DXP_SUCCESS) {
-    sprintf(info_string, "Error writing %#lx to the '%s' after setting bit %d "
+    sprintf(info_string, "Error writing %#x to the '%s' after setting bit %d "
             "for detChan %d", val, reg, bit, detChan);
     pslLogError("psl__SetRegisterBit", info_string, XIA_XERXES);
     return XIA_XERXES;
@@ -5826,7 +5870,7 @@ PSL_STATIC int psl__ClearRegisterBit(int detChan, char *reg, int bit)
   statusX = dxp_write_register(&detChan, reg, &val);
 
   if (statusX != DXP_SUCCESS) {
-    sprintf(info_string, "Error writing %#lx to the '%s' after clearing bit %d "
+    sprintf(info_string, "Error writing %#x to the '%s' after clearing bit %d "
             "for detChan %d", val, reg, bit, detChan);
     pslLogError("psl__ClearRegisterBit", info_string, XIA_XERXES);
     return XIA_XERXES;
@@ -6083,7 +6127,7 @@ PSL_STATIC int psl__SetSyncCount(int detChan, int modChan, char *name,
   statusX = dxp_write_register(&detChan, "SYNCCNT", &count);
 
   if (statusX != DXP_SUCCESS) {
-    sprintf(info_string, "Error setting the number of SYNC counts to %lu "
+    sprintf(info_string, "Error setting the number of SYNC counts to %u "
             "for detChan %d", count, detChan);
     pslLogError("psl__SetSyncCount", info_string, XIA_XERXES);
     return XIA_XERXES;
@@ -6240,22 +6284,6 @@ PSL_STATIC int psl__ClearBuffer(int detChan, char buf, boolean_t waitForEmpty)
   int i;
 
   boolean_t cleared   = FALSE_;
-  boolean_t isMapping = FALSE_;
-
-  status = psl__IsMapping(detChan, &isMapping);
-
-  if (status != XIA_SUCCESS) {
-    sprintf(info_string, "Error checking firmware type for detChan %d", detChan);
-    pslLogError("psl__ClearBuffer", info_string, status);
-    return status;
-  }
-
-  if (!isMapping) {
-    sprintf(info_string, "Mapping mode firmware not running on detChan %d",
-            detChan);
-    pslLogError("psl__ClearBuffer", info_string, XIA_NO_MAPPING);
-    return XIA_NO_MAPPING;
-  }
 
   switch (buf) {
   case 'a':
@@ -6326,7 +6354,7 @@ PSL_STATIC int psl__CheckBit(int detChan, char *reg, int bit, boolean_t *isSet)
 
   if (statusX != DXP_SUCCESS) {
     sprintf(info_string, "Error reading the '%s' for detChan %d",
-            reg, detChan);
+            bit, reg, detChan);
     pslLogError("psl__ClearRegisterBit", info_string, XIA_XERXES);
     return XIA_XERXES;
   }
@@ -6988,7 +7016,7 @@ PSL_STATIC int psl__GetMCR(int detChan, char *name, XiaDefaults *defs,
 
   statusX = dxp_read_register(&detChan, "MCR", (unsigned long *)value);
 
-  sprintf(info_string, "MCR = %#lx", *((unsigned long *)value));
+  sprintf(info_string, "MCR = %#x", *((unsigned long *)value));
   pslLogDebug("psl__GetMCR", info_string);
 
   if (statusX != DXP_SUCCESS) {
@@ -7164,7 +7192,7 @@ PSL_STATIC int psl__GetMFR(int detChan, char *name, XiaDefaults *defs,
 
   statusX = dxp_read_register(&detChan, "MFR", (unsigned long *)value);
 
-  sprintf(info_string, "MFR = %#lx", *((unsigned long *)value));
+  sprintf(info_string, "MFR = %#x", *((unsigned long *)value));
   pslLogDebug("psl__GetMFR", info_string);
 
   if (statusX != DXP_SUCCESS) {
@@ -7325,7 +7353,7 @@ PSL_STATIC int psl__GetCSR(int detChan, char *name, XiaDefaults *defs,
 
   statusX = dxp_read_register(&detChan, "CSR", (unsigned long *)value);
 
-  sprintf(info_string, "CSR = %#lx", *((unsigned long *)value));
+  sprintf(info_string, "CSR = %#x", *((unsigned long *)value));
   pslLogDebug("psl__GetCSR", info_string);
 
   if (statusX != DXP_SUCCESS) {
@@ -7913,9 +7941,8 @@ PSL_STATIC int psl__GetModuleMCA(int detChan, void *value,
 
   /* We require that all channels use the same length MCA. */
   len = (unsigned long)(nBins * 4);
-  ASSERT((len % XMAP_MEMORY_BLOCK_SIZE) == 0);
 
-  sprintf(memStr, "burst:%#lx:%lu", addr, len);
+  sprintf(memStr, "burst:%#x:%u", addr, len);
 
   statusX = dxp_read_memory(&detChan, memStr, value);
 
@@ -8247,6 +8274,10 @@ PSL_STATIC int psl__SwitchFirmware(int detChan, double type, int modChan,
               "reset preamplifiers for peaking time = %0.3f microseconds for "
               "detChan %d", pt, detChan);
       pslLogError("psl__SwitchFirmware", info_string, status);
+      if (status == XIA_FILEERR) {
+        /* Reset status to a more meaningful code */
+        status = XIA_NOSUPPORTED_PREAMP_TYPE;
+      }
       return status;
     }
 
@@ -8299,6 +8330,10 @@ PSL_STATIC int psl__SwitchFirmware(int detChan, double type, int modChan,
               "reset preamplifiers for peaking time = %0.3f microseconds for "
               "detChan %d", pt, detChan);
       pslLogError("psl__SwitchFirmware", info_string, status);
+      if (status == XIA_FILEERR) {
+        /* Reset status to a more meaningful code */
+        status = XIA_NOSUPPORTED_PREAMP_TYPE;
+      }
       return status;
     }
 
@@ -8589,6 +8624,68 @@ PSL_STATIC int psl__WakeDSP(int detChan)
   return XIA_SUCCESS;
 }
 
+
+/** @brief Set peak mode for determining the energy from the energy filter output
+*
+* PEAKMODE = 0: XIA_PEAK_SENSING_MODE The largest filter value from a given 
+* pulse will be used as the energy.
+*
+* PEAKMODE = 1: XIA_PEAK_SAMPLING_MODE. The energy filter value will be sampled 
+* at a specific time determined by the setting of PEAKSAM.
+*
+*/
+PSL_STATIC int psl__SetPeakMode(int detChan, int modChan, char *name,
+                                        void *value, char *detType,
+                                        XiaDefaults *defs, Module *m,
+                                        Detector *det, FirmwareSet *fs)
+{
+  int status;
+
+  double peakMode = *((double *)value);
+  double pt;
+  
+  UNUSED(name);
+  UNUSED(detType);
+
+
+  ASSERT(value != NULL);
+
+  if ((peakMode != XIA_PEAK_SENSING_MODE) && 
+      (peakMode != XIA_PEAK_SAMPLING_MODE)) {
+    sprintf(info_string, "User specified peak mode %0f is not within the "
+            "valid range (0,1) for detChan %d", peakMode, detChan);
+    pslLogError("psl__SetPeakMode", info_string, XIA_PEAKMODE_OOR);
+    return XIA_PEAKMODE_OOR;
+  }
+
+  status = pslSetDefault("peak_mode", (void *)value, defs);
+  ASSERT(status == XIA_SUCCESS);
+
+  /* The actual update is done in psl__UpdateFilterParams
+   * to make sure PEAKSAM can be recalculated
+   */
+  status = pslGetDefault("peaking_time", (void *)&pt, defs);
+  ASSERT(status == XIA_SUCCESS);
+
+  status = psl__UpdateFilterParams(detChan, modChan, pt, defs, fs, m, det);
+
+
+  return XIA_SUCCESS;
+}
+
+
+/** @brief Get the current peak mode.
+*
+*/
+PSL_STATIC int psl__GetPeakMode(int detChan, void *value,
+                                        XiaDefaults *defs)
+{
+  UNUSED(detChan);
+  UNUSED(value);
+  UNUSED(defs);
+
+  return XIA_SUCCESS;
+}
 
 #ifdef _WIN32
 #pragma warning(pop)

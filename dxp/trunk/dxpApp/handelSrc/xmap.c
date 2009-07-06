@@ -68,11 +68,6 @@ typedef struct _FPGA_downloader {
 } FPGA_downloader_t;
 
 
-/* Define the length of the error reporting string info_string */
-#define INFO_LEN 400
-/* Define the length of the line string used to read in files */
-#define LINE_LEN 132
-
 /* Store pointers to the proper DLL routines to talk to the CAMAC crate */
 static DXP_MD_IO         xmap_md_io;
 static DXP_MD_SET_MAXBLK xmap_md_set_maxblk;
@@ -557,7 +552,7 @@ static int dxp_download_dspconfig(int* ioChan, int* modChan, Board *board)
   /* Reassemble the 16 bit words into a single 32-bit value for transfer to
    * the hardware.
    */
-  sprintf(info_string, "system_dsp->proglen = %lu", system_dsp->proglen);
+  sprintf(info_string, "system_dsp->proglen = %u", system_dsp->proglen);
   dxp_log_debug("dxp_download_dspconfig", info_string);
 
   /* Due to issues with the DSP Host port transfer, we verify that the 
@@ -584,7 +579,7 @@ static int dxp_download_dspconfig(int* ioChan, int* modChan, Board *board)
 		status = dxp_write_global_register(*ioChan, XMAP_REG_TDR, data);
 
 		if (status != DXP_SUCCESS) {
-		  sprintf(info_string, "Error writing %#lx to address %#lx in DSP Program "
+		  sprintf(info_string, "Error writing %#x to address %#x in DSP Program "
 				  "Memory", data, (unsigned long)(i / 2));
 		  dxp_log_error("dxp_download_dspconfig", info_string, status);
 		  return status;
@@ -603,13 +598,13 @@ static int dxp_download_dspconfig(int* ioChan, int* modChan, Board *board)
 
   if (j ==  MAX_NUM_DSP_RETRY) {
 	sprintf(info_string, "Unable to completely download the DSP code in "
-			"%u tries (TCR = %lu) for ioChan = %d", MAX_NUM_DSP_RETRY,
+			"%u tries (TCR = %u) for ioChan = %d", MAX_NUM_DSP_RETRY,
 			transfer_ct, *ioChan);
 	dxp_log_error("dxp_download_dspconfig", info_string, DXP_DSP_RETRY);
 	return DXP_DSP_RETRY;
   }
 
-  sprintf(info_string, "Downloaded %lu 16-bit words to System DSP", i);
+  sprintf(info_string, "Downloaded %u 16-bit words to System DSP", i);
   dxp_log_debug("dxp_download_dspconfig", info_string);
 
   status = dxp_boot_dsp(*ioChan, *modChan, board);
@@ -771,7 +766,7 @@ XERXES_STATIC int dxp_load_dsp_code_from_file(char *file, Dsp_Info *dsp)
         n_chars = strlen(line);
 
         for (i = 0; (i < n_chars) && isxdigit(line[i]); i += 8) {
-          sscanf(&line[i], "%4hx%4hx", &hi, &lo);
+          sscanf(&line[i], "%4x%4x", &hi, &lo);
 
           dsp->data[n_data_words++] = lo;
           dsp->data[n_data_words++] = hi;
@@ -780,7 +775,7 @@ XERXES_STATIC int dxp_load_dsp_code_from_file(char *file, Dsp_Info *dsp)
 	  
       dsp->proglen = n_data_words;
 
-      sprintf(info_string, "DSP Code length = %lu", dsp->proglen);
+      sprintf(info_string, "DSP Code length = %u", dsp->proglen);
       dxp_log_debug("dxp_load_dsp_code_from_file", info_string);
 
       xia_file_close(fp);
@@ -815,6 +810,8 @@ XERXES_STATIC int dxp_load_symbols_from_file(char *file, Dsp_Params *params)
   unsigned long offset        = 0;
 
   char line[82];
+  
+  static int call_count = 0;
 
   FILE *fp = NULL;
 
@@ -845,8 +842,8 @@ XERXES_STATIC int dxp_load_symbols_from_file(char *file, Dsp_Params *params)
 	}
 
 	if (STRNEQ(line, "@CONSTANTS@")) {
-	  sscanf(xmap_md_fgets(line, sizeof(line), fp), "%hu", &n_globals);
-	  sscanf(xmap_md_fgets(line, sizeof(line), fp), "%hu", &n_per_chan);
+	  sscanf(xmap_md_fgets(line, sizeof(line), fp), "%u", &n_globals);
+	  sscanf(xmap_md_fgets(line, sizeof(line), fp), "%u", &n_per_chan);
 
 	  params->nsymbol            = n_globals;
 	  params->n_per_chan_symbols = n_per_chan;
@@ -871,21 +868,21 @@ XERXES_STATIC int dxp_load_symbols_from_file(char *file, Dsp_Params *params)
 	   * channel DSP parameters, since they have 4 unique addresses, are
 	   * stored as offsets relative to the appropriate channel offset.
 	   */
-	  sscanf(xmap_md_fgets(line, sizeof(line), fp), "%lx", &global_offset);
+	  sscanf(xmap_md_fgets(line, sizeof(line), fp), "%x", &global_offset);
 
-	  sprintf(info_string, "global_offset = %#lx", global_offset);
+	  sprintf(info_string, "global_offset = %#x", global_offset);
 	  dxp_log_debug("dxp_load_symbols_from_file", info_string);
 
 	  for (i = 0; i < 4; i++) {
-		sscanf(xmap_md_fgets(line, sizeof(line), fp), "%lx", &(params->chan_offsets[i]));
+		sscanf(xmap_md_fgets(line, sizeof(line), fp), "%x", &(params->chan_offsets[i]));
 		
-		sprintf(info_string, "chan%d_offset = %#lx", i, params->chan_offsets[i]);
+		sprintf(info_string, "chan%d_offset = %#x", i, params->chan_offsets[i]);
 		dxp_log_debug("dxp_load_symbols_from_file", info_string);
 	  }
 	
 	} else if (STRNEQ(line, "@GLOBAL@")) {
 	  for (i = 0; i < n_globals; i++) {
-		sscanf(xmap_md_fgets(line, sizeof(line), fp), "%s : %lu",
+		sscanf(xmap_md_fgets(line, sizeof(line), fp), "%s : %u",
 			   params->parameters[i].pname, &offset);
 		params->parameters[i].address = offset + global_offset;
 
@@ -896,7 +893,7 @@ XERXES_STATIC int dxp_load_symbols_from_file(char *file, Dsp_Params *params)
 	
 	} else if (STRNEQ(line, "@CHANNEL@")) {
 	  for (i = 0; i < n_per_chan; i++) {
-		sscanf(xmap_md_fgets(line, sizeof(line), fp), "%s : %lu",
+		sscanf(xmap_md_fgets(line, sizeof(line), fp), "%s : %u",
 			   params->per_chan_parameters[i].pname, &offset);
 		params->per_chan_parameters[i].address = offset;
 
@@ -1209,6 +1206,7 @@ static int dxp_get_channel_addr(char *name, int modChan, Dsp_Info *dsp,
   ASSERT(addr != NULL);
   ASSERT(modChan >=0 && modChan < 4);
 
+
   for (i = 0; i < dsp->params->n_per_chan_symbols; i++) {
 	if (STREQ(name, dsp->params->per_chan_parameters[i].pname)) {
 
@@ -1325,7 +1323,7 @@ static int dxp_read_dspparams(int* ioChan, int* modChan, Board *b,
 	status = dxp_read_global_register(*ioChan, XMAP_REG_TDR, &p);
 
 	if (status != DXP_SUCCESS) {
-	  sprintf(info_string, "Error reading DSP parameter located at %#lx for "
+	  sprintf(info_string, "Error reading DSP parameter located at %#x for "
 			  "ioChan = %d", addr, *ioChan);
 	  dxp_log_error("dxp_read_dspparams", info_string, status);
 	  return status;
@@ -1354,7 +1352,7 @@ static int dxp_read_dspparams(int* ioChan, int* modChan, Board *b,
 	status = dxp_read_global_register(*ioChan, XMAP_REG_TDR, &p);
 	
 	if (status != DXP_SUCCESS) {
-	  sprintf(info_string, "Error reading DSP parameters located at %#lx for "
+	  sprintf(info_string, "Error reading DSP parameters located at %#x for "
 			  "ioChan = %d", addr, *ioChan);
 	  dxp_log_error("dxp_read_dspparams", info_string, status);
 	  return status;
@@ -1502,7 +1500,7 @@ static int dxp_read_spectrum(int* ioChan, int* modChan, Board* board,
 	return status;
   }
 
-  sprintf(info_string, "ioChan = %d, modChan = %d: MCA addr = %#lx", *ioChan,
+  sprintf(info_string, "ioChan = %d, modChan = %d: MCA addr = %#x", *ioChan,
 		  *modChan, addr);
   dxp_log_debug("dxp_read_spectrum", info_string);
 
@@ -1575,11 +1573,11 @@ static int dxp__get_mca_chan_addr(int ioChan, int modChan, Board *board,
 	total_len += mca_len;
   }
 
-  sprintf(info_string, "total_len = %lu", total_len);
+  sprintf(info_string, "total_len = %u", total_len);
   dxp_log_debug("dxp__get_mca_chan_addr", info_string);
 
   if ((total_len % XMAP_MEMORY_BLOCK_SIZE) != 0) {
-	sprintf(info_string, "Total MCA length (%lu) of channels prior to module "
+	sprintf(info_string, "Total MCA length (%u) of channels prior to module "
 			"channel %d is not a multiple of the memory block size (%u)",
 			total_len, modChan, XMAP_MEMORY_BLOCK_SIZE);
 	dxp_log_error("dxp__get_mca_chan_addr", info_string, DXP_MEMORY_BLK_SIZE);
@@ -1632,7 +1630,7 @@ static int dxp_read_baseline(int *ioChan, int *modChan, Board *board,
 						   baseline);
 
   if (status != DXP_SUCCESS) {
-	sprintf(info_string, "Error reading baseline histogram from %#lx for "
+	sprintf(info_string, "Error reading baseline histogram from %#x for "
 			"ioChan = %d", buffer_addr, *ioChan);
 	dxp_log_error("dxp_read_baseline", info_string, status);
 	return status;
@@ -1944,10 +1942,11 @@ static int dxp_control_task_data(int* ioChan, int* modChan, short *type,
 /** @brief Decode DSP error values.
  *
  */
-static int dxp_decode_error(unsigned short array[], Dsp_Info* dsp, 
+ static int dxp_decode_error(int* ioChan, int* modChan, Dsp_Info* dsp, 
 							unsigned short* runerror, unsigned short* errinfo)
 {
-  UNUSED(array);
+  UNUSED(ioChan);
+  UNUSED(modChan);
   UNUSED(dsp);
 
   *runerror = 0;
@@ -1957,7 +1956,7 @@ static int dxp_decode_error(unsigned short array[], Dsp_Info* dsp,
 }
 
 
-/** @brief Clears any DSP errors.
+/** @brief Unused for the xMap.
  *
  */
 static int dxp_clear_error(int* ioChan, int* modChan, Board *board)
@@ -2372,7 +2371,7 @@ XERXES_STATIC int dxp_read_reg(int *ioChan, int *modChan, char *name,
  *
  */
 XERXES_STATIC int dxp_do_cmd(int *ioChan, byte_t cmd, unsigned int lenS,
-							 byte_t *send, unsigned int lenR, byte_t *receive, byte_t ioFlags)
+							 byte_t *send, unsigned int lenR, byte_t *receive)
 {
   UNUSED(ioChan);
   UNUSED(cmd);
@@ -2454,7 +2453,7 @@ XERXES_STATIC int dxp_read_sca(int *ioChan, int *modChan, Board* board,
 	return status;
   }
 
-  sprintf(info_string, "SCA data array addr = %#lx", sca_addr);
+  sprintf(info_string, "SCA data array addr = %#x", sca_addr);
   dxp_log_debug("dxp_read_sca", info_string);
 
   status = dxp_read_dspsymbol(ioChan, modChan, "NUMSCA", board, &NUMSCA);
@@ -2508,7 +2507,7 @@ XERXES_STATIC int dxp__get_sca_addr(int ioChan, int modChan, Board *b,
 	return status;
   }
 
-  *addr = (unsigned long)SCAMEMBASE + (modChan * 0x40);
+  *addr = (unsigned long)SCAMEMBASE + (modChan * XMAP_SCA_CHAN_OFFSET);
 
   return DXP_SUCCESS;
 }
@@ -2640,7 +2639,7 @@ XERXES_STATIC int dxp_download_fpga(int ioChan, unsigned long target,
   
 
   float init_timeout  = .001f;
-  float xdone_timeout = 1.0f;
+  float xdone_timeout = .001f;
 
 
   ASSERT(fpga != NULL);
@@ -2653,7 +2652,7 @@ XERXES_STATIC int dxp_download_fpga(int ioChan, unsigned long target,
   status = dxp_write_global_register(ioChan, XMAP_REG_CFG_CONTROL, target);
 
   if (status != DXP_SUCCESS) {
-	sprintf(info_string, "Error writing target '%#lx' to Control Register for "
+	sprintf(info_string, "Error writing target '%#x' to Control Register for "
 			"ioChan = %d", target, ioChan);
 	dxp_log_error("dxp_download_fpga", info_string, status);
 	return status;
@@ -2679,7 +2678,7 @@ XERXES_STATIC int dxp_download_fpga(int ioChan, unsigned long target,
   for (j = 0; j < XMAP_NUM_TARGETS; j++) {
 	if (target & (1 << j)) {
 	  if (! (cfg_status & XMAP_CFG_STATUS[j][XMAP_INIT])) {
-		sprintf(info_string, "INIT* line never asserted for Target %lu after "
+		sprintf(info_string, "INIT* line never asserted for Target %u after "
 				"waiting %f seconds", j, init_timeout);
 		dxp_log_error("dxp_download_fpga", info_string, DXP_FPGA_TIMEOUT);
 		return DXP_FPGA_TIMEOUT;
@@ -2732,7 +2731,7 @@ XERXES_STATIC int dxp_download_fpga(int ioChan, unsigned long target,
   for (j = 0; j < XMAP_NUM_TARGETS; j++) {
 	if (target & (1 << j)) {
 	  if (! (cfg_status & XMAP_CFG_STATUS[j][XMAP_XDONE])) {
-		sprintf(info_string, "XDONE line never asserted for Target %lu after "
+		sprintf(info_string, "XDONE line never asserted for Target %u after "
 				"waiting %f seconds", j, xdone_timeout);
 		dxp_log_error("dxp_download_fpga", info_string, DXP_FPGA_TIMEOUT);
 		return DXP_FPGA_TIMEOUT;
@@ -2948,13 +2947,13 @@ XERXES_STATIC int dxp_set_csr_bit(int ioChan, byte_t bit)
 
   val |= (0x1 << bit);
 
-  sprintf(info_string, "Setting CSR to %#lx", val);
+  sprintf(info_string, "Setting CSR to %#x", val);
   dxp_log_debug("dxp_set_csr_bit", info_string);
 
   status = dxp_write_global_register(ioChan, XMAP_REG_CSR, val);
 
   if (status != DXP_SUCCESS) {
-	sprintf(info_string, "Error writing %#lx to the CSR for ioChan = %d", val,
+	sprintf(info_string, "Error writing %#x to the CSR for ioChan = %d", val,
 			ioChan);
 	dxp_log_error("dxp_set_csr_bit", info_string, status);
 	return status;
@@ -2993,13 +2992,13 @@ XERXES_STATIC int dxp_clear_csr_bit(int ioChan, byte_t bit)
 
   val &= ~(0x1 << bit);
 
-  sprintf(info_string, "Setting CSR to %#lx", val);
+  sprintf(info_string, "Setting CSR to %#x", val);
   dxp_log_debug("dxp_clear_csr_bit", info_string);
 
   status = dxp_write_global_register(ioChan, XMAP_REG_CSR, val);
   
   if (status != DXP_SUCCESS) {
-	sprintf(info_string, "Error writing %#lx to the CSR for ioChan = %d", val,
+	sprintf(info_string, "Error writing %#x to the CSR for ioChan = %d", val,
 			ioChan);
 	dxp_log_error("dxp_clear_csr_bit", info_string, status);
 	return status;
@@ -3118,7 +3117,7 @@ static int dxp_get_adc_trace(int ioChan, int modChan, unsigned long *data,
 	return status;
   }
 
-  sprintf(info_string, "TRACESTART = %f, TRACELEN = %f", TRACESTART, TRACELEN);
+  sprintf(info_string, "TRACESTART = %#x, TRACELEN = %#x", TRACESTART, TRACELEN);
   dxp_log_debug("dxp_get_adc_trace", info_string);
 
   buffer_addr = (unsigned long)TRACESTART + XMAP_DATA_MEMORY;
@@ -3127,7 +3126,7 @@ static int dxp_get_adc_trace(int ioChan, int modChan, unsigned long *data,
 						   data);
   
   if (status != DXP_SUCCESS) {
-	sprintf(info_string, "Error reading ADC trace from %#lx for ioChan = %d",
+	sprintf(info_string, "Error reading ADC trace from %#x for ioChan = %d",
 			buffer_addr, ioChan);
 	dxp_log_error("dxp_get_adc_trace", info_string, status);
 	return status;
@@ -3394,7 +3393,7 @@ static int dxp__burst_read_block(int ioChan, int modChan, unsigned long addr,
 
 
   if (addr > XMAP_MEMORY_32_MAX_ADDR) {
-	sprintf(info_string, "Specified external memory address (%#lx) is greater "
+	sprintf(info_string, "Specified external memory address (%#x) is greater "
 			"then the maximum allowed address (%#x) for ioChan = %d", addr,
 			XMAP_MEMORY_32_MAX_ADDR, ioChan);
 	dxp_log_error("dxp__burst_read_block", info_string, DXP_MEMORY_LENGTH);
@@ -3409,7 +3408,7 @@ static int dxp__burst_read_block(int ioChan, int modChan, unsigned long addr,
   status = xmap_md_io(&ioChan, &io_type, &ext_mem_addr, (void *)data, &len);
 
   if (status != DXP_SUCCESS) {
-	sprintf(info_string, "Error doing 'burst' read (addr = %#lx, len = %u) for "
+	sprintf(info_string, "Error doing 'burst' read (addr = %#x, len = %u) for "
 			"ioChan = %d", ext_mem_addr, len, ioChan);
 	dxp_log_error("dxp__burst_read_block", info_string, status);
 	return status;
@@ -3515,7 +3514,7 @@ static int dxp__read_block(int ioChan, unsigned long addr, unsigned int len,
   status = dxp_write_global_register(ioChan, XMAP_REG_TAR, addr);
 
   if (status != DXP_SUCCESS) {
-	sprintf(info_string, "Error writing block base address (%#lx) to TAR for "
+	sprintf(info_string, "Error writing block base address (%#x) to TAR for "
 			"ioChan = %d", addr, ioChan);
 	dxp_log_error("dxp__read_block", info_string, status);
 	return status;
@@ -3592,7 +3591,7 @@ static int dxp__get_base_history(int ioChan, int modChan, unsigned long *data,
 	return status;
   }
 
-  sprintf(info_string, "TRACESTART = %f, TRACELEN = %f", TRACESTART, TRACELEN);
+  sprintf(info_string, "TRACESTART = %#x, TRACELEN = %#x", TRACESTART, TRACELEN);
   dxp_log_debug("dxp__get_base_history", info_string);
 
   buffer_addr = (unsigned long)TRACESTART + XMAP_DATA_MEMORY;
@@ -3601,7 +3600,7 @@ static int dxp__get_base_history(int ioChan, int modChan, unsigned long *data,
 						   data);
   
   if (status != DXP_SUCCESS) {
-	sprintf(info_string, "Error reading baseline history from %#lx for ioChan = %d",
+	sprintf(info_string, "Error reading baseline history from %#x for ioChan = %d",
 			buffer_addr, ioChan);
 	dxp_log_error("dxp__get_base_history", info_string, status);
 	return status;
@@ -3982,7 +3981,7 @@ static int dxp__read_data_memory(int ioChan, unsigned long base,
 
   if (status != DXP_SUCCESS) {
     sprintf(info_string, "Error setting Transfer Address Register to the base "
-            "memory address (%#lx) for ioChan = %d", addr, ioChan);
+            "memory address (%#x) for ioChan = %d", addr, ioChan);
     dxp_log_error("dxp__read_data_memory", info_string, status);
     return status;
   }
@@ -3991,7 +3990,7 @@ static int dxp__read_data_memory(int ioChan, unsigned long base,
     status = dxp_read_global_register(ioChan, XMAP_REG_TDR, &val);
 
     if (status != DXP_SUCCESS) {
-      sprintf(info_string, "Error reading data memory word (%lu) for ioChan = %d",
+      sprintf(info_string, "Error reading data memory word (%d) for ioChan = %d",
               i, ioChan);
       dxp_log_error("dxp__read_data_memory", info_string, status);
       return status;
@@ -4038,7 +4037,7 @@ static int dxp__write_data_memory(int ioChan, unsigned long base,
 
   if (status != DXP_SUCCESS) {
 	sprintf(info_string, "Error setting Transfer Address Register to the base "
-			"memory address (%#lx) for ioChan = %d", addr, ioChan);
+			"memory address (%#x) for ioChan = %d", addr, ioChan);
 	dxp_log_error("dxp__write_data_memory", info_string, status);
 	return status;
   }
@@ -4345,7 +4344,7 @@ static int dxp__burst_read_buffer(int ioChan, int modChan, unsigned long addr,
   ASSERT(data != NULL);
 
 
-  sprintf(info_string, "addr = %#lx, len = %u", addr, len);
+  sprintf(info_string, "addr = %#x, len = %u", addr, len);
   dxp_log_debug("dxp__burst_read_buffer", info_string);
 
   /* The TAR is written as part of the overall burst read command so there is
@@ -4354,7 +4353,7 @@ static int dxp__burst_read_buffer(int ioChan, int modChan, unsigned long addr,
   status = xmap_md_io(&ioChan, &io_type, &addr, (void *)data, &len);
 
   if (status != DXP_SUCCESS) {
-	sprintf(info_string, "Error doing 'burst' read (addr = %#lx, len = %u) for "
+	sprintf(info_string, "Error doing 'burst' read (addr = %#x, len = %u) for "
 			"ioChan = %d", addr, len, ioChan);
 	dxp_log_error("dxp__burst_read_buffer", info_string, status);
 	return status;

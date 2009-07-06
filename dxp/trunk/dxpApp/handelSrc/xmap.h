@@ -37,7 +37,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xmap.h,v 1.2 2007-11-14 20:47:44 rivers Exp $
+ * $Id: xmap.h,v 1.3 2009-07-06 18:24:32 rivers Exp $
  *
  */
 
@@ -79,7 +79,7 @@ enum {
   /* Event samples scaled by 2^(-ESCALE) */
   XMAP_CT_EVENTS,
   /* Wake the DSP up */
-  XMAP_CT_WAKE_DSP
+  XMAP_CT_WAKE_DSP,
 };
 
 #endif /* XMAP_H */

@@ -306,6 +306,7 @@ HANDEL_EXPORT int HANDEL_API xiaStopRun(int detChan)
 		
 		while (detChanSetElem != NULL)
 		  {
+			/* Recursive loop here to stop run for all channels */
 			status = xiaStopRun((int)detChanSetElem->channel);
 			
 			if (status != XIA_SUCCESS)

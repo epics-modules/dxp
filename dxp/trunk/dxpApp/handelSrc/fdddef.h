@@ -35,7 +35,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: fdddef.h,v 1.2 2007-10-23 02:00:06 rivers Exp $
+ * $Id: fdddef.h,v 1.3 2009-07-06 18:24:29 rivers Exp $
  *
  */
 

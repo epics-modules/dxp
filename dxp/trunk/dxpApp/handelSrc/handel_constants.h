@@ -39,7 +39,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: handel_constants.h,v 1.7 2007-10-23 01:53:04 rivers Exp $
+ * $Id: handel_constants.h,v 1.8 2009-07-06 18:24:29 rivers Exp $
  *
  */
 
@@ -58,11 +58,13 @@
 #define XIA_PREAMP_RESET 0.0
 #define XIA_PREAMP_RC    1.0
 
+/** Peak mode **/
+#define XIA_PEAK_SENSING_MODE     0
+#define XIA_PEAK_SAMPLING_MODE    1
 
 /** Mapping Mode Point Control Types **/
 #define XIA_MAPPING_CTL_GATE 1.0
 #define XIA_MAPPING_CTL_SYNC 2.0
-
 
 /** Old Test Constants **/
 #define XIA_HANDEL_TEST_MASK             0x1

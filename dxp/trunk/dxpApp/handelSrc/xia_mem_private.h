@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_mem_private.h,v 1.2 2007-11-14 21:13:17 rivers Exp $
+ * $Id: xia_mem_private.h,v 1.3 2009-07-06 18:24:32 rivers Exp $
  */
 
 #ifndef __XIA_MEM_PRIVATE_H__

@@ -73,7 +73,6 @@
 
 #include "xia_assert.h"
 
-
 /* Define the length of the error reporting string info_string */
 #define INFO_LEN 400
 /* Define the length of the line string used to read in files */
@@ -858,7 +857,7 @@ static int dxp_download_fpgaconfig(int* ioChan, int* modChan, char *name, Board*
     return status;
   }
   /* check the DSP download state, if downloaded, then sleep */
-  if (board->chanstate[*modChan].dspdownloaded==1) {
+  if ((*modChan!=ALLCHAN)&&(board->chanstate[*modChan].dspdownloaded==1)) {
     task = CT_DXPX10P_SLEEP_DSP;
     ilen = 1;
     taskinfo[0] = 1;
@@ -990,7 +989,7 @@ static int dxp_download_fpgaconfig(int* ioChan, int* modChan, char *name, Board*
   }
 
   /* After FIPPI is downloaded, end the SLEEP mode */
-  if (board->chanstate[*modChan].dspdownloaded==1) {
+  if ((*modChan!=ALLCHAN)&&(board->chanstate[*modChan].dspdownloaded==1)) {
     if ((status=dxp_end_control_task(ioChan, modChan, board))!=DXP_SUCCESS) {
       sprintf(info_string,"Error putting the DSP to sleep for module %i",mod);
       status = DXP_DSPSLEEP;
@@ -1063,7 +1062,7 @@ static int dxp_get_fpgaconfig(Fippi_Info* fippi)
 
   lowbyte = 1;
   len = 0;
-  while (x10p_md_fgets(line,132,fp)!=NULL) {
+  while (x10p_md_fgets(line,LINE_LEN,fp)!=NULL){
     if (line[0]=='*') continue;
     nchars = strlen(line)-1;
     while ((nchars>0) && !isxdigit(line[nchars])) {
@@ -1479,7 +1478,7 @@ static int dxp_get_dspdefaults(Dsp_Defaults* defaults)
 
   while (fstatus!=NULL) {
     do
-      fstatus = x10p_md_fgets(line,132,fp);
+            fstatus = x10p_md_fgets(line,LINE_LEN,fp);
     while ((line[0]=='*') && (fstatus!=NULL));
 
     /* Check if we are downloading more parameters than allowed. */
@@ -1589,7 +1588,7 @@ static int dxp_load_dspconfig(FILE* fp, Dsp_Info* dsp)
    *  and read the configuration
    */
   dsp->proglen = 0;
-  while (x10p_md_fgets(line,132,fp)!=NULL) {
+	while(x10p_md_fgets(line,LINE_LEN,fp)!=NULL) {
     nchars = strlen(line);
     while ((nchars>0) && !isxdigit(line[nchars])) {
       nchars--;
@@ -1623,9 +1622,9 @@ static int dxp_load_dspsymbol_table(FILE* fp, Dsp_Info* dsp)
   /*
    *  Read comments and number of symbols
    */
-  while (x10p_md_fgets(line,132,fp)!=NULL) {
+	while(x10p_md_fgets(line,LINE_LEN,fp)!=NULL){
     if (line[0]=='*') continue;
-    sscanf(line,"%hu",&(dsp->params->nsymbol));
+    sscanf(line,"%hd",&(dsp->params->nsymbol));
     break;
   }
   if (dsp->params->nsymbol>0) {
@@ -1645,13 +1644,13 @@ static int dxp_load_dspsymbol_table(FILE* fp, Dsp_Info* dsp)
                       "Memory not allocated for single parameter name",status);
         return status;
       }
-      if (x10p_md_fgets(line, 132, fp)==NULL) {
+			if (x10p_md_fgets(line, LINE_LEN, fp)==NULL) {
         status = DXP_BAD_PARAM;
         dxp_log_error("dxp_load_dspsymbol_table",
                       "Error in SYMBOL format of DSP file",status);
         return status;
       }
-      retval = sscanf(line, "%s %1s %hu %hu", dsp->params->parameters[i].pname, atype,
+      retval = sscanf(line, "%s %1s %hd %hd", dsp->params->parameters[i].pname, atype,
                       &(dsp->params->parameters[i].lbound), &(dsp->params->parameters[i].ubound));
       dsp->params->parameters[i].address = i;
       dsp->params->parameters[i].access = 1;
@@ -2683,13 +2682,16 @@ static int dxp_read_baseline(int* ioChan, int* modChan, Board* board,
   if (!us_baseline) {
     sprintf(info_string, "Error allocating %d bytes for 'us_baseline'",
             len * sizeof(unsigned short));
+    x10p_md_free(us_baseline);
     dxp_log_error("dxp_read_baseline", info_string, DXP_ALLOCMEM);
     return DXP_ALLOCMEM;
   }
 
   /* Read out the basline histogram. */
   status = dxp_read_block(ioChan, modChan, &start, &len, us_baseline);
+
   if (status != DXP_SUCCESS) {
+    x10p_md_free(us_baseline);
     dxp_log_error("dxp_read_baseline", "Error reading out baseline", status);
     x10p_md_free(us_baseline);
     return status;
@@ -3612,16 +3614,19 @@ static int dxp_begin_calibrate(int* ioChan, int* modChan, int* calib_task, Board
  * Returns the RUNERROR and ERRINFO words from the DSP parameter block
  *
  ******************************************************************************/
-static int dxp_decode_error(unsigned short array[], Dsp_Info* dsp,
+static int dxp_decode_error(int* ioChan, int* modChan, Dsp_Info* dsp, 
                             unsigned short* runerror, unsigned short* errinfo)
-/* unsigned short array[];  Input: array from parameter block read */
-/* Dsp_Info *dsp;    Input: Relavent DSP info     */
-/* unsigned short *runerror; Output: runerror word     */
-/* unsigned short *errinfo;  Output: errinfo word      */
+	 /* int *ioChan;					Input: I/O channel of DXP module		*/
+	 /* int *modChan;				Input: DXP channels no (-1,0,1,2,3)	*/
+	 /* unsigned short *runerror;	Output: runerror word					*/
+	 /* unsigned short *errinfo;		Output: errinfo word						*/
 {
 
   int status;
   char info_string[INFO_LEN];
+
+  unsigned short addr;
+  unsigned short stemp;  
   unsigned short addr_RUNERROR,addr_ERRINFO;
 
   /* Be paranoid and check if the DSP configuration is downloaded.  If not, do it */
@@ -3637,6 +3642,7 @@ static int dxp_decode_error(unsigned short array[], Dsp_Info* dsp,
 
   status  = dxp_loc("RUNERROR", dsp, &addr_RUNERROR);
   status += dxp_loc("ERRINFO", dsp, &addr_ERRINFO);
+  
   if (status!=DXP_SUCCESS) {
     status=DXP_NOSYMBOL;
     dxp_log_error("dxp_decode_error",
@@ -3644,10 +3650,34 @@ static int dxp_decode_error(unsigned short array[], Dsp_Info* dsp,
     return status;
   }
 
-  *runerror = array[addr_RUNERROR];
-  *errinfo = (unsigned short) (*runerror!=0 ? array[addr_ERRINFO] : 0);
-  return DXP_SUCCESS;
+  /* Read the value of the symbol from DSP memory */
+  addr = (unsigned short) (dsp->params->parameters[addr_RUNERROR].address 
+                          + startp);
 
+  status = dxp_read_word(ioChan, modChan, &addr, &stemp);
+  if (status != DXP_SUCCESS)
+	{
+	  sprintf(info_string, "Error reading parameter RUNERROR");
+	  dxp_log_error("dxp_decode_error",info_string,status);
+	  return status;
+}
+
+  *runerror = (unsigned short) stemp;
+
+  addr = (unsigned short) (dsp->params->parameters[addr_ERRINFO].address 
+                          + startp);
+  
+  status = dxp_read_word(ioChan, modChan, &addr, &stemp);
+  if (status != DXP_SUCCESS)
+	{
+	  sprintf(info_string, "Error reading parameter RUNERROR");
+	  dxp_log_error("dxp_decode_error",info_string,status);
+	  return status;
+	}
+  
+  *errinfo = (unsigned short) (*runerror!=0 ? stemp : 0);
+  
+  return DXP_SUCCESS;
 }
 
 /******************************************************************************
@@ -3698,20 +3728,17 @@ static int dxp_clear_error(int* ioChan, int* modChan, Board* board)
  * calibration task.
  *
  ******************************************************************************/
-static int dxp_check_calibration(int* calibtest, unsigned short* params, Dsp_Info* dsp)
+static int dxp_check_calibration(int* calibtest, Dsp_Info* dsp)
 /* int *calibtest;     Input: Calibration test performed */
-/* unsigned short *params;   Input: parameters read from the DSP */
 /* Dsp_Info *dsp;     Input: Relavent DSP info    */
 {
 
   int status = DXP_SUCCESS;
   int *itemp;
-  unsigned short *stemp;
   Dsp_Info *dtemp;
 
   /* Assign input parameters to avoid compiler warnings */
   itemp = calibtest;
-  stemp = params;
   dtemp = dsp;
 
   /* No checking is currently performed. */
@@ -4220,7 +4247,6 @@ static int dxp_calibrate_channel(int* mod, int* camChan, unsigned short* used,
   unsigned short addr_RUNTASKS=USHRT_MAX;
   unsigned short runerror,errinfo;
 
-  unsigned short params[MAXSYM];
   double dtemp;
 
   /*
@@ -4270,19 +4296,10 @@ static int dxp_calibrate_channel(int* mod, int* camChan, unsigned short* used,
      *  RUNTASKS
      */
 
-    /* Read out the parameter memory into the Params array */
-
-    status2 = dxp_read_dspparams(camChan, &chan, board, params);
-    if (status2 != DXP_SUCCESS) {
-      sprintf(info_string,
-              "error reading parameters for mod %d chan %d",*mod,chan);
-      dxp_log_error("dxp_calibrate_channel",info_string,status2);
-      return status2;
-    }
-
+		
     /* Check for errors reported by the DSP. */
 
-    status2 = dxp_decode_error(params, board->dsp[chan], &runerror, &errinfo);
+		status2 = dxp_decode_error(camChan, &chan, board->dsp[chan], &runerror, &errinfo);
     if (status2 != DXP_SUCCESS) {
       dxp_log_error("dxp_calibrate_channel","Unable to decode errors",status2);
       return status2;
@@ -4303,7 +4320,7 @@ static int dxp_calibrate_channel(int* mod, int* camChan, unsigned short* used,
     /* Call the primitive routine that checks the calibration to ensure
      * that all went well.  The results depend on the calibration performed. */
 
-    status += dxp_check_calibration(calibtask, params, board->dsp[chan]);
+		status += dxp_check_calibration(calibtask, board->dsp[chan]);
     if (status != DXP_SUCCESS) {
       sprintf(info_string,"Calibration Error: mod %d chan %d",
               *mod,chan);

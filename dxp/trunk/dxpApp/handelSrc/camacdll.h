@@ -1,7 +1,8 @@
-/* camac dll header file for win95. 1/29/97 */
-
-
-/* Copyright (c) 2002, X-ray Instrumentation Associates
+/*
+ * camacdll.h
+ * 
+ * Copyright (c) 2004, X-ray Instrumentation Associates
+ *               2005, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -33,6 +34,9 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
+ *
+ * $Id: camacdll.h,v 1.2 2009-07-06 18:24:28 rivers Exp $
+ *
  */
 
 
