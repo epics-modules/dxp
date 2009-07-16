@@ -107,7 +107,7 @@ HANDEL_STATIC int  _doAddModuleItem(Module *module, void *data, unsigned int i, 
 HANDEL_STATIC int  _splitIdxAndType(char *str, unsigned int *idx, char *type);
 HANDEL_STATIC int  _parseDetectorIdx(char *str, int *idx, char *alias);
 
-
+static char *XIA_NULL_STRING = "null";
 
 /* This array should have the string at some index correspond to the Interface
  * constant that that index represents. If a new interface is added a new 
@@ -163,6 +163,42 @@ static ModItem_t items[] = {
 
 #define NUM_ITEMS (sizeof(items) / sizeof(items[0]))
 
+static ModName_t KNOWN_MODS[] = {
+
+#ifndef EXCLUDE_DXPX10P
+  {"dxpx10p", "dxpx10p"},
+  {"saturn",  "dxpx10p"},
+  {"x10p",    "dxpx10p"},
+#endif /* EXCLUDE_DXPX10P */
+
+#ifndef EXCLUDE_DXP4C2X
+  {"dxp4c2x", "dxp4c2x"},
+  {"dxp2x4x", "dxp4c2x"},
+  {"dxp2x",   "dxp4c2x"},
+#endif /* EXCLUDE_DXP4C2X */
+
+#ifndef EXCLUDE_UDXP
+  {"udxps",   "udxps"},
+#endif /* EXCLUDE_UDXP */
+
+#ifndef EXCLUDE_UDXP
+  {"udxp",    "udxp"},
+#endif /* EXCLUDE_UDXP */
+
+#ifndef EXCLUDE_XMAP
+  {"xmap",    "xmap"},
+#endif /* EXCLUDE_XMAP */
+
+#ifndef EXCLUDE_VEGA
+  {"vega",   "vega"},
+#endif /* EXCLUDE_VEGA */
+
+#ifndef EXCLUDE_MERCURY
+  {"mercury", "mercury"},
+#endif /* EXCLUDE_MERCURY */
+};
+
+#define N_KNOWN_MODS (sizeof(KNOWN_MODS) / sizeof(KNOWN_MODS[0]))
 
 static ModInitFunc_t inits[] = {
   _initChannels,
@@ -675,7 +711,7 @@ HANDEL_STATIC int HANDEL_API xiaProcessInterface(Module *chosen, char *name, voi
               {
                 status = XIA_MISSING_INTERFACE;
                 sprintf(info_string, "'%s' is a member of an unknown interface", name);
-                xiaLogError("xiaProcessInterace", info_string, status);
+                xiaLogError("xiaProcessInterface", info_string, status);
                 return status;
               }
 		  
