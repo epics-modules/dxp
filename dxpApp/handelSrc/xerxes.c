@@ -3112,7 +3112,7 @@ XERXES_STATIC int dxp_add_dsp(char* filename, Board_Info* board,
 
 	if (STREQ(current->filename, filename)) {
     sprintf(info_string, "Skipping creation of new DSP entry for '%s', since "
-            "we already have a copy loaded at %#x", filename, current);
+            "we already have a copy loaded at %p", filename, current);
     dxp_log_info("dxp_add_dsp", info_string);
 
 	  *passed = current;
@@ -3473,7 +3473,7 @@ XERXES_STATIC int dxp_add_system_fippi(char *filename, Board_Info *b,
   if ((*fippi)->params == NULL) {
     dxp_free_system_fippi(*fippi);
     sprintf(info_string, "Error allocating %d bytes for '*fippi->params'",
-            (*fippi)->params);
+            sizeof((*fippi)->params));
     dxp_log_error("dxp_add_system_fippi", info_string, DXP_NOMEM);
     return DXP_NOMEM;
   }
@@ -3494,7 +3494,7 @@ XERXES_STATIC int dxp_add_system_fippi(char *filename, Board_Info *b,
 
   if ((*fippi)->data == NULL) {
     dxp_free_system_fippi(*fippi);
-    sprintf(info_string, "Error allocating %d bytes for '*fippi->data'",
+    sprintf(info_string, "Error allocating %ld bytes for '*fippi->data'",
             (*fippi)->max_data_len);
     dxp_log_error("dxp_add_system_fippi", info_string, DXP_NOMEM);
     return DXP_NOMEM;
