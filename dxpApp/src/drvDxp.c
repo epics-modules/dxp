@@ -24,6 +24,7 @@
 #include <epicsEvent.h>
 #include <epicsThread.h>
 #include <epicsString.h>
+#include <epicsExit.h>
 
 #ifdef linux
 #include <sys/io.h>
@@ -168,6 +169,11 @@ static asynDrvUser drvDxpDrvUser = {
 };
 
 
+static void exitHandler(void *arg)
+{
+    xiaExit();
+}
+
 int DXPConfig(const char *portName, int ndetectors, int ngroups, int pollFreq) 
 {
     int i;
@@ -303,6 +309,10 @@ int DXPConfig(const char *portName, int ndetectors, int ngroups, int pollFreq)
                                pPvt) == NULL)
           errlogPrintf("DXPConfig: epicsThreadCreate failure\n");
     }
+    
+    /* Establish an exit handler that calls xiaExit().  This is needed to properly shut down
+     * devices, particularly USB2 on Linux */
+    epicsAtExit(exitHandler, NULL);
 
     return(0);
 }
@@ -838,7 +848,7 @@ static asynStatus drvUserCreate(void *drvPvt, asynUser *pasynUser,
                                 const char **pptypeName, size_t *psize)
 {
     int i;
-    char *pstring;
+    const char *pstring;
 
     for (i=0; i<MAX_MCA_COMMANDS; i++) {
         pstring = mcaCommands[i].commandString;
@@ -888,12 +898,18 @@ void report(void *drvPvt, FILE *fp, int details)
 /* Connect */
 asynStatus connect(void *drvPvt, asynUser *pasynUser)
 {
+    int status=asynSuccess;
 #ifdef linux
     /* We need to call iopl(3) once for each thread */
-    iopl(3);
+    status = iopl(3);
+    if (!status) {
+        asynPrint(pasynUser, ASYN_TRACE_ERROR, 
+            "drvDxp::connect, error calling iopl(3), status=%d\n",
+            status);
+    }
 #endif
     pasynManager->exceptionConnect(pasynUser);
-    return(asynSuccess);
+    return(status);
 }
 
 /* Disconnect */
