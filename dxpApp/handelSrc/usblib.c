@@ -12,18 +12,31 @@
  * by bugs in the Microsoft headers.
  */
 
+#ifdef _WIN32
 #pragma warning( disable : 4115 )
+#endif
+
 #include <windows.h>
 
+/* windows.h defines _WIN32, but we don't want this on Cygwin */
+#ifdef CYGWIN32
+  #undef _WIN32
+#endif
+
+#ifdef _WIN32
 #pragma warning( disable : 4201 )
+#endif
+
 #include <winioctl.h>
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <conio.h>
 
 #include "Dlldefs.h"
 #include "usblib.h"
+
+static unsigned char inBuffer[262144];
+static unsigned char outBuffer[262144];
 
 XIA_EXPORT int XIA_API usb_open(char *device, HANDLE *hDevice)
 {
@@ -55,7 +68,7 @@ XIA_EXPORT int XIA_API usb_close(HANDLE hDevice)
 XIA_EXPORT int XIA_API usb_read(long address, long nWords, char *device, unsigned short *buffer)
 {	
   /*
-  /* Declare variables
+  * Declare variables
   */
 
   unsigned char* pData = (unsigned char*)buffer;
@@ -66,7 +79,6 @@ XIA_EXPORT int XIA_API usb_read(long address, long nWords, char *device, unsigne
   unsigned long nBytes = 0;
   BOOL bResult = FALSE;
   HANDLE hDevice = NULL;
-  unsigned char inBuffer[262144];
   long inPacketSize, outPacketSize;
   BULK_TRANSFER_CONTROL bulkControl;
 
@@ -162,7 +174,6 @@ XIA_EXPORT int XIA_API usb_write(long address, long nWords, char *device, unsign
   unsigned long nBytes = 0;
   BOOL bResult = FALSE;
   HANDLE hDevice = NULL;
-  unsigned char outBuffer[262144];
   long outPacketSize;
   BULK_TRANSFER_CONTROL bulkControl;
 
