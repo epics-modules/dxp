@@ -1864,7 +1864,7 @@ static int dxp_test_spectrum_memory(int* ioChan, int* modChan, int* pattern,
 {
   int status;
   char info_string[INFO_LEN];
-  unsigned short start, addr;
+  unsigned short start, addr=0;
   unsigned int len;
 
   if ((status=dxp_loc("SPECTSTART", board->dsp[*modChan], &addr))!=DXP_SUCCESS) {
@@ -1907,7 +1907,7 @@ static int dxp_test_baseline_memory(int* ioChan, int* modChan, int* pattern,
 {
   int status;
   char info_string[INFO_LEN];
-  unsigned short start, addr;
+  unsigned short start, addr=0;
   unsigned int len;
 
   if ((status=dxp_loc("BASESTART", board->dsp[*modChan], &addr))!=DXP_SUCCESS) {
@@ -1951,7 +1951,7 @@ static int dxp_test_event_memory(int* ioChan, int* modChan, int* pattern,
 {
   int status;
   char info_string[INFO_LEN];
-  unsigned short start, addr;
+  unsigned short start, addr=0;
   unsigned int len;
 
   /* Now read the Event Buffer base address and length and store in
