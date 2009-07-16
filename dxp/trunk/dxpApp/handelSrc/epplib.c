@@ -146,6 +146,12 @@ XIA_EXPORT int XIA_API DxpInitEPP(int port) {
 
   /*initial return status */
   rstat=0;
+
+#ifdef LINUX
+  rstat = iopl(3);
+  if (rstat) return(rstat);
+#endif
+
   data=_inp(EPORT);
   data = (char)((data&0x1F) + 0x80);
   _outp(EPORT,data);
