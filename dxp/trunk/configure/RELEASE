@@ -9,23 +9,21 @@ TEMPLATE_TOP=$(EPICS_BASE)/templates/makeBaseApp/top
 #INSTALL_LOCATION_APP=<fullpathname>
 
 #If using the sequencer, point SNCSEQ at its top directory:
-SNCSEQ=/home/oxygen/MOONEY/epics/synApps/support/seq/2-0-12
+SNCSEQ=/corvette/home/epics/devel/seq/2-0-12
 
 # EPICS_BASE usually appears last so other apps can override stuff:
-EPICS_BASE=/home/oxygen/MOONEY/epics/base-3.14.10
+EPICS_BASE=/corvette/usr/local/epics/base-3.14.10
 
-SUPPORT=/home/oxygen/MOONEY/epics/synApps/support
-
-ASYN=/home/oxygen/MOONEY/epics/synApps/support/asyn/4-10
-MCA=/home/oxygen/MOONEY/epics/synApps/support/mca
-CAMAC=/home/oxygen/MOONEY/epics/synApps/support/camac
-DXP=/home/oxygen/MOONEY/epics/synApps/support/dxp
+ASYN=/corvette/home/epics/devel/asyn/4-11beta
+MCA=/corvette/home/epics/devel/mca/6-11
+CAMAC=/corvette/home/epics/devel/camac/2-5
+DXP=/corvette/home/epics/devel/dxp/2-10
 
 # The following are needed only to support the ioc
-CALC=/home/oxygen/MOONEY/epics/synApps/support/calc
-SSCAN=/home/oxygen/MOONEY/epics/synApps/support/sscan
-BUSY=/home/oxygen/MOONEY/epics/synApps/support/busy
-AUTOSAVE=/home/oxygen/MOONEY/epics/synApps/support/autosave
+CALC=/corvette/home/epics/devel/calc/2-7
+SSCAN=/corvette/home/epics/devel/sscan/2-6-3
+BUSY=/corvette/home/epics/devel/busy/1-2
+AUTOSAVE=/corvette/home/epics/devel/autosave/4-5
 
 #Capfast users may need the following definitions
 #CAPFAST_TEMPLATES=
