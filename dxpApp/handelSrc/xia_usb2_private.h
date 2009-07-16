@@ -39,13 +39,15 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_usb2_private.h,v 1.4 2009-07-06 18:24:32 rivers Exp $
+ * $Id: xia_usb2_private.h,v 1.5 2009-07-16 16:59:23 rivers Exp $
  */
 
 #ifndef __XIA_USB2_API_PRIVATE_H__
 #define __XIA_USB2_API_PRIVATE_H__
 
+#ifdef _WIN32
 #include "windows.h"
+#endif
 
 #include "xia_common.h"
 
