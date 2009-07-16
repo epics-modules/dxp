@@ -36,26 +36,31 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: Dlldefs.h,v 1.4 2009-07-06 18:24:27 rivers Exp $
+ * $Id: Dlldefs.h,v 1.5 2009-07-16 18:01:07 rivers Exp $
  */
 
 #ifndef __DLLDEFS_H__
 #define __DLLDEFS_H__
 
+#ifdef EPICS_DLL_NO
+#define XIA_STATIC_BUILD
+#endif 
+
 #define XIA_STATIC static
 #define XIA_SHARED 
 
 #ifdef _WIN32
-#define XIA_IMPORT __declspec( dllimport)
-#define XIA_EXPORT  __declspec( dllexport)
-#else
-#define XIA_IMPORT 
-#define XIA_EXPORT 
+  #ifdef XIA_STATIC_BUILD
+    #define XIA_EXPORT
+    #define XIA_IMPORT
+  #else /* __STATIC */
+    #define XIA_IMPORT __declspec( dllimport)
+    #define XIA_EXPORT  __declspec( dllexport)
+  #endif
+#else /* _WIN32 */
+  #define XIA_IMPORT 
+  #define XIA_EXPORT 
 #endif
-
-#ifdef __STATIC__
-#define XIA_EXPORT
-#endif /* __STATIC__ */
 
 #ifdef WIN32_EPPLIB_VBA
 #define XIA_API _stdcall
