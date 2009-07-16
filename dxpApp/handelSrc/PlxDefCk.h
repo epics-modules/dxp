@@ -42,7 +42,7 @@
 /**********************************************
 *       Automatic selection for Windows
 **********************************************/
-#if defined(_WIN32) || defined(_WIN64)
+#if defined(_WIN32) || defined(_WIN64) || defined(CYGWIN32)
     #if !defined(PLX_LITTLE_ENDIAN) && !defined(PLX_BIG_ENDIAN)
         #define PLX_LITTLE_ENDIAN
     #endif
