@@ -37,7 +37,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: handel_generic.h,v 1.9 2009-07-06 18:24:29 rivers Exp $
+ * $Id: handel_generic.h,v 1.10 2009-07-16 17:55:06 rivers Exp $
  *
  */
 
@@ -65,7 +65,6 @@
 #define XIA_GAIN_MIN		0.0
 #define XIA_GAIN_MAX		99.99
 
-static char *XIA_NULL_STRING = "null";
 #define XIA_NULL_STRING_LEN  (strlen(XIA_NULL_STRING) + 1)
 
 /* XiaDaqEntry states */
