@@ -56,6 +56,11 @@
 /* Headers from PLX SDK */
 #include "PlxApi.h"
 
+/* The above include file causes _WIN32 to be defined on Cygwin, undefine it. */
+#ifdef CYGWIN32
+  #undef _WIN32
+#endif
+
 #ifdef _WIN32
 #pragma warning( default: 4115 )
 #endif /* _WIN32 */
@@ -64,10 +69,10 @@
 #include "xia_common.h"
 #include "xia_assert.h"
 
+#define PLXLIB_DEBUG 1
+
 #include "plxlib.h"
 #include "plxlib_errors.h"
-
-#define PLXLIB_DEBUG 1
 
 /* In milliseconds. Here are the assumptions for this calculation:
 * 1) Maximum memory read could be 1M x 32 bits, which is 4MB.
@@ -78,13 +83,13 @@
 #define MAX_BURST_TIMEOUT 40
 
 static void _plx_log_DEBUG(char *msg, ...);
-static void _plx_print_more(int err);
+static void _plx_print_more(PLX_STATUS err);
 
 static int _plx_find_handle_index(HANDLE h, unsigned long *idx);
 static int _plx_add_slot_to_map(PLX_DEVICE_OBJECT *device);
 static int _plx_remove_slot_from_map(unsigned long idx);
 
-static boolean_t IS_DEBUG = FALSE_;
+/* static boolean_t IS_DEBUG = FALSE_; */
 static FILE *LOG_FILE = NULL;
 
 static virtual_map_t V_MAP =
@@ -92,7 +97,7 @@ static virtual_map_t V_MAP =
     NULL, NULL, 0
   };
 
-static boolean_t IS_REGISTERED = FALSE_;
+/* static boolean_t IS_REGISTERED = FALSE_; */
 
 /** @PLX error string from error code translation
 *
