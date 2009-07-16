@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_mem.c,v 1.4 2009-07-06 18:24:31 rivers Exp $
+ * $Id: xia_mem.c,v 1.5 2009-07-16 17:02:12 rivers Exp $
  */
 
 #include <stdlib.h>
@@ -208,7 +208,7 @@ XIA_EXPORT void xia_mem_checkpoint(mem_check_pt_t *chk_pt)
 	key = (char *)malloc(256);
 	ASSERT(key != NULL);
 
-	sprintf(key, "%s:%u:%#p", b->file, b->line, b->addr);
+	sprintf(key, "%s:%u:%p", b->file, b->line, b->addr);
 	xia_mem_point_insert(p, key);
 	key = NULL;
   }
@@ -261,7 +261,7 @@ XIA_EXPORT void xia_mem_checkpoint_cmp(mem_check_pt_t *pt, char *out)
   fprintf(fp, "\n**********MEMORY LEAK START**********\n");
 
   for (b = BLK_HEAD; b != NULL; b = b->next) {
-	sprintf(key, "%s:%u:%#p", b->file, b->line, b->addr);
+	sprintf(key, "%s:%u:%p", b->file, b->line, b->addr);
 	
 	if (!xia_mem_point_key_exists((mem_point_t *)*pt, key)) {
 	  fprintf(fp, "\n");

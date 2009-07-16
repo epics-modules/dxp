@@ -34,7 +34,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_file.c,v 1.3 2009-07-06 18:24:31 rivers Exp $
+ * $Id: xia_file.c,v 1.4 2009-07-16 17:02:28 rivers Exp $
  */
 
 #include <stdio.h>
@@ -128,7 +128,7 @@ XIA_EXPORT void xia_print_open_handles(FILE *stream)
 
 
   for (fh = FILE_HANDLES; fh != NULL; fh = fh->next) {
-    fprintf(stream, "<%#x> %s, line %d\n", fh->fp, fh->file, fh->line);
+    fprintf(stream, "<%p> %s, line %d\n", fh->fp, fh->file, fh->line);
   }
 }
 

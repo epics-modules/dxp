@@ -2913,7 +2913,7 @@ PSL_STATIC int PSL_API pslGetMCAData(int detChan, void *value,
   status = pslGetDefault("number_mca_channels", &mcaLen, defs);
   ASSERT(status == XIA_SUCCESS);
 
-  sprintf(memStr, "spectrum:%#x:%u", (unsigned short)mcaStartAddress,
+  sprintf(memStr, "spectrum:%#x:%lu", (unsigned short)mcaStartAddress,
           (unsigned long)mcaLen);
 
   statusX = dxp_read_memory(&detChan, memStr, (unsigned long *)value);
