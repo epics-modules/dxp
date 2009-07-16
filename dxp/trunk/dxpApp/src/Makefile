@@ -76,13 +76,12 @@ dxpApp_SYS_LIBS_cygwin32 += rpc
 dxpApp_SYS_LIBS_WIN32 += setupapi
 
 # Test applications
-PROD_IOC_cygwin32 += test_scas2
-test_scas2_SRCS += test_scas2.c
-test_scas2_LIBS += dxp
-test_scas2_LIBS += handel
-test_scas2_SYS_LIBS_cygwin32 += DLPORTIO PlxApi
-test_scas2_LIBS += $(EPICS_BASE_IOC_LIBS)
-test_scas2_SYS_LIBS += setupapi
+PROD_IOC_Linux += test_usb
+test_usb_SRCS += test_usb.c
+test_usb_LIBS += dxp
+test_usb_LIBS += handel
+test_usb_SYS_LIBS_Linux += usb
+test_usb_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #===========================
 #===========================
