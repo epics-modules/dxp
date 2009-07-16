@@ -328,11 +328,11 @@ HANDEL_STATIC int HANDEL_API xiaWriteIniFile(char *filename)
         }
 
       fprintf(iniFile, "type = %s\n", typeStr);
-      fprintf(iniFile, "type_value = %3.3lf\n", detector->typeValue[0]);
+      fprintf(iniFile, "type_value = %3.3f\n", detector->typeValue[0]);
 		
       for (j = 0; j < detector->nchan; j++)
         {
-          fprintf(iniFile, "channel%u_gain = %3.3lf\n", j, detector->gain[j]);
+          fprintf(iniFile, "channel%u_gain = %3.3f\n", j, detector->gain[j]);
 			
           switch (detector->polarity[j])
             {
@@ -389,8 +389,8 @@ HANDEL_STATIC int HANDEL_API xiaWriteIniFile(char *filename)
         while (firmware != NULL)
           {
             fprintf(iniFile, "ptrr = %u\n", firmware->ptrr);
-            fprintf(iniFile, "min_peaking_time = %3.3lf\n", firmware->min_ptime);
-            fprintf(iniFile, "max_peaking_time = %3.3lf\n", firmware->max_ptime);
+            fprintf(iniFile, "min_peaking_time = %3.3f\n", firmware->min_ptime);
+            fprintf(iniFile, "max_peaking_time = %3.3f\n", firmware->max_ptime);
 				
             if (firmware->fippi != NULL)
               {
@@ -433,7 +433,7 @@ HANDEL_STATIC int HANDEL_API xiaWriteIniFile(char *filename)
       entry = defaults->entry;
       while (entry != NULL)
         {
-          fprintf(iniFile, "%s = %3.3lf\n", entry->name, entry->data);
+          fprintf(iniFile, "%s = %3.3f\n", entry->name, entry->data);
           entry = entry->next;
         }
 
@@ -510,7 +510,7 @@ HANDEL_STATIC int HANDEL_API xiaWriteIniFile(char *filename)
         {
           fprintf(iniFile, "channel%u_alias = %d\n", j, module->channels[j]);
           fprintf(iniFile, "channel%u_detector = %s:%u\n", j, module->detector[j], (unsigned int)module->detector_chan[j]);
-          fprintf(iniFile, "channel%u_gain = %3.3lf\n", j, module->gain[j]);
+          fprintf(iniFile, "channel%u_gain = %3.3f\n", j, module->gain[j]);
           fprintf(iniFile, "firmware_set_chan%u = %s\n", j, module->firmware[j]);
           fprintf(iniFile, "default_chan%u = %s\n", j, module->defaults[j]);
         }
@@ -1201,6 +1201,8 @@ HANDEL_STATIC int xiaLoadModule(FILE *fp, fpos_t *start, fpos_t *end)
   unsigned int comPort;
   unsigned int baudRate;
   unsigned int deviceNumber;
+  
+  unsigned int itemp;
 
   double chanGain;
 
@@ -1491,7 +1493,8 @@ HANDEL_STATIC int xiaLoadModule(FILE *fp, fpos_t *start, fpos_t *end)
       return status;
 	  }
 
-	  sscanf(value, "%u", &pciSlot);
+	  sscanf(value, "%u", &itemp);
+      pciSlot = itemp;
 
 	  sprintf(info_string, "PCI Slot = %u", pciSlot);
 	  xiaLogDebug("xiaLoadModule", info_string);
@@ -1511,7 +1514,8 @@ HANDEL_STATIC int xiaLoadModule(FILE *fp, fpos_t *start, fpos_t *end)
       return status;
 	  }
 
-	  sscanf(value, "%u", &pciBus);
+	  sscanf(value, "%u", &itemp);
+      pciBus = itemp;
 
 	  sprintf(info_string, "PCI Bus = %u", pciBus);
 	  xiaLogDebug("xiaLoadModule", info_string);
