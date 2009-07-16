@@ -133,14 +133,18 @@ extern "C" {
     typedef unsigned short        U16;
     typedef signed long           S32;
     typedef unsigned long         U32;
+#if defined(__GNUC__)
+    typedef signed long long      S64;
+    typedef unsigned long long    U64;
+#else
     typedef signed _int64         S64;
     typedef unsigned _int64       U64;
+#endif
     typedef INT_PTR               PLX_INT_PTR;        // For 32/64-bit code compatability
     typedef UINT_PTR              PLX_UINT_PTR;
 
     typedef HANDLE                PLX_DRIVER_HANDLE;  // Windows-specific driver handle
 #endif
-
 
 
 /******************************************
