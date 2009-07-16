@@ -47,22 +47,31 @@
 
 /* System include files */
 
-#pragma warning(disable : 4115)
 #include <windows.h>
-#pragma warning(default : 4115)
 
+/* When building on Cygwin _WIN32 should not be defined, but we
+ * need to include windows.h, and that defines it.  Undefine it. */
+#ifdef CYGWIN32
+  #undef _WIN32
+#endif
+
+/* These pragmas are only valid on VC, not gcc */
+#ifdef _WIN32
+#pragma warning(disable : 4115)
+#pragma warning(default : 4115)
 
 /* Disables the warning about "conditional expressions" being "constant".
  * This is caused by our use of the TRUE_ and FALSE_ macros that evaluate
  * to statements like (1 == 1).
  */
 #pragma warning(disable : 4127)
-
+#endif
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
+#include <ctype.h>
 
 /* XIA include files */
 #include "xerxes_errors.h"
@@ -78,16 +87,13 @@
 
 #define SERIAL_WAIT_TIMEOUT  ((unsigned long)1100)
 
+#ifndef EXCLUDE_CAMAC
 /* variables to store the IO channel information */
 static char *camacName[MAXMOD];
+static unsigned int numDXP    = 0;
+#endif
 
 /* total number of modules in the system */
-static unsigned int numDXP    = 0;
-static unsigned int numEPP    = 0;
-static unsigned int numUSB    = 0;
-static unsigned int numSerial = 0;
-static unsigned int numPLX    = 0;
-static unsigned int numUSB2   = 0;
 static unsigned int numMod    = 0;
 
 /* error string used as a place holder for calls to dxp_md_error() */
@@ -105,6 +111,7 @@ static unsigned int maxblk=0;
  * (initially included for handling multiple EPP modules hanging off the same
  * EPP address)
  */
+static unsigned int numEPP    = 0;
 static int eppID[MAXMOD];
 /* variables to store the IO channel information */
 static char *eppName[MAXMOD];
@@ -122,13 +129,14 @@ static int currentID = -1;
 /* USB definitions */
 /* The id variable stores an optional ID number associated with each module 
  */
-static int usbID[MAXMOD];
+static unsigned int numUSB    = 0;
+/* static int usbID[MAXMOD]; */
 /* variables to store the IO channel information */
 static char *usbName[MAXMOD];
 /* variables to store the USB Device Name */
-static char *usbDevice[MAXMOD];
+/* static char *usbDevice[MAXMOD]; */
 
-static HANDLE usbHandle[MAXMOD];
+/* static HANDLE usbHandle[MAXMOD]; */
 
 static long usb_addr=0;
 #endif /* EXCLUDE_USB IO */
@@ -139,6 +147,7 @@ static long usb_addr=0;
 #include "xia_usb2.h"
 #include "xia_usb2_errors.h"
 
+static unsigned int numUSB2   = 0;
 /* A string holding the device number in it. */
 static char *usb2Names[MAXMOD];
 
@@ -157,6 +166,7 @@ static unsigned long usb2AddrCache[MAXMOD];
 
 #define HEADER_SIZE 4
 
+static unsigned int numSerial = 0;
 /* variables to store the IO channel information */
 static char *serialName[MAXMOD];
 
@@ -175,6 +185,7 @@ static int dxp_md_serial_reset(unsigned short port, unsigned long baud);
 #include "plxlibapi.h"
 #include "plxlib_errors.h"
 
+static unsigned int numPLX    = 0;
 static HANDLE pxiHandles[MAXMOD];
 static char * pxiNames[MAXMOD];
 
@@ -515,7 +526,7 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_epp_initialize(unsigned int* maxMod, char* d
     numEPP = 0;
 
     /* Initialize the EPP port */
-    rstat = sscanf(dllname,"%x",&port);
+    rstat = sscanf(dllname,"%hx",&port);
     if (rstat!=1) {
 	status = DXP_NOMATCH;
 	dxp_md_log_error("dxp_md_epp_initialize",
@@ -742,7 +753,7 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_epp_io(int* camChan, unsigned int* function,
 	/*		dest = sport;
 	 *length = 1;*/
     } else {
-	sprintf(error_string,"Unknown EPP address=%d",*address);
+	sprintf(error_string,"Unknown EPP address=%ld",*address);
 	status = DXP_MDIO;
 	dxp_md_log_error("dxp_md_epp_io",error_string,status);
 	return status;
@@ -750,7 +761,7 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_epp_io(int* camChan, unsigned int* function,
 
     if (rstat!=0) {
 	status = DXP_MDIO;
-	sprintf(error_string,"Problem Performing I/O to Function: %d, address: %#hx",*function, *address);
+	sprintf(error_string,"Problem Performing I/O to Function: %d, address: %#lx",*function, *address);
 	dxp_md_log_error("dxp_md_epp_io",error_string,status);
 	sprintf(error_string,"Trying to write to internal address: %d, length %d",next_addr, *length);
 	dxp_md_log_error("dxp_md_epp_io",error_string,status);
@@ -907,9 +918,9 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_usb_io(int* camChan, unsigned int* function,
   if (rstat != 0) 
 	{
 	  status = DXP_MDIO;
-	  sprintf(error_string,"Problem Performing USB I/O to Function: %d, address: %d",*function, *address);
+	  sprintf(error_string,"Problem Performing USB I/O to Function: %d, address: %ld",*function, *address);
 	  dxp_md_log_error("dxp_md_usb_io",error_string,status);
-	  sprintf(error_string,"Trying to write to internal address: %#hx, length %d", usb_addr, *length);
+	  sprintf(error_string,"Trying to write to internal address: %#lx, length %d", usb_addr, *length);
 	  dxp_md_log_error("dxp_md_usb_io",error_string,status);
 	  return status;
 	}
@@ -1580,7 +1591,7 @@ XIA_MD_STATIC char * dxp_md_tmp_path(void)
   tmp_path = dxp_md_alloc(tmp_path_len + 1);
   
   if (!tmp_path) {
-    sprintf(error_string, "Unable to allocate %d bytes for 'tmp_path'.",
+    sprintf(error_string, "Unable to allocate %ld bytes for 'tmp_path'.",
             tmp_path_len + 1);
     dxp_md_log_error("dxp_md_tmp_path", error_string, DXP_MDNOMEM);
     return NULL;
@@ -1715,6 +1726,7 @@ XIA_MD_STATIC int dxp_md_plx_open(char *ioname, int *camChan)
   int status;
   int n_scanned  = 0;
   int len_ioname = 0;
+  unsigned int temp1, temp2;
 
   unsigned short id = 0xFFFF;
 
@@ -1735,7 +1747,9 @@ XIA_MD_STATIC int dxp_md_plx_open(char *ioname, int *camChan)
   }
 
   /* Parse in and open a new slot */
-  n_scanned = sscanf(ioname, "%u:%u", &bus, &slot);
+  n_scanned = sscanf(ioname, "%u:%u", &temp1, &temp2);
+  bus = temp1;
+  slot = temp2;
 
   if (n_scanned != 2) {
 	sprintf(error_string, "Error parsing ioname = '%s'. The proper format is "
@@ -2032,7 +2046,7 @@ XIA_MD_STATIC int  dxp_md_usb2_io(int *camChan, unsigned int *function,
       byte_buf = md_md_alloc(n_bytes);
 
       if (byte_buf == NULL) {
-        sprintf(error_string, "Error allocating %d bytes for 'byte_buf' for "
+        sprintf(error_string, "Error allocating %ld bytes for 'byte_buf' for "
                 "camChan %d", n_bytes, *camChan);
         dxp_md_log_error("dxp_md_usb2_io", error_string, DXP_MDNOMEM);
         return DXP_MDNOMEM;
@@ -2043,7 +2057,7 @@ XIA_MD_STATIC int  dxp_md_usb2_io(int *camChan, unsigned int *function,
 
       if (status != XIA_USB2_SUCCESS) {
         md_md_free(byte_buf);
-        sprintf(error_string, "Error reading %u bytes from %#x for "
+        sprintf(error_string, "Error reading %lu bytes from %#lx for "
                 "camChan %d", n_bytes, cache_addr, *camChan);
         dxp_md_log_error("dxp_md_usb2_io", error_string, DXP_MDIO);
         return DXP_MDIO;
@@ -2065,7 +2079,7 @@ XIA_MD_STATIC int  dxp_md_usb2_io(int *camChan, unsigned int *function,
       byte_buf = md_md_alloc(n_bytes);
 
       if (byte_buf == NULL) {
-        sprintf(error_string, "Error allocating %u bytes for 'byte_buf' for "
+        sprintf(error_string, "Error allocating %lu bytes for 'byte_buf' for "
                 "camChan %d", n_bytes, *camChan);
         dxp_md_log_error("dxp_md_usb2_io", error_string, DXP_MDNOMEM);
         return DXP_MDNOMEM;
@@ -2082,7 +2096,7 @@ XIA_MD_STATIC int  dxp_md_usb2_io(int *camChan, unsigned int *function,
       md_md_free(byte_buf);
 
       if (status != XIA_USB2_SUCCESS) {
-        sprintf(error_string, "Error writing %u bytes to %#x for "
+        sprintf(error_string, "Error writing %lu bytes to %#lx for "
                 "camChan %d", n_bytes, cache_addr, *camChan);
         dxp_md_log_error("dxp_md_usb2_io", error_string, DXP_MDIO);
         return DXP_MDIO;
@@ -2138,7 +2152,7 @@ XIA_MD_STATIC int  dxp_md_usb2_close(int *camChan)
   status = xia_usb2_close(h);
 
   if (status != XIA_USB2_SUCCESS) {
-    sprintf(error_string, "Error closing camChan (%d) with HANDLE = %#x",
+    sprintf(error_string, "Error closing camChan (%d) with HANDLE = %p",
             *camChan, h);
     dxp_md_log_error("dxp_md_usb2_close", error_string, DXP_MDCLOSE);
     return DXP_MDCLOSE;
@@ -2159,5 +2173,6 @@ XIA_MD_STATIC int  dxp_md_usb2_close(int *camChan)
 
 #endif /* EXCLUDE_USB2 */
 
-
+#ifdef _WIN32
 #pragma warning( default : 4127 )
+#endif
