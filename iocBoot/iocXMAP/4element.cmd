@@ -12,7 +12,7 @@ dbLoadRecords("$(AUTOSAVE)/asApp/Db/save_restoreStatus.db", "P=dxpXMAP:")
 set_pass0_restoreFile("auto_settings4.sav")
 set_pass1_restoreFile("auto_settings4.sav")
 
-# Set logging level (1=ERROR, 2=WARNING, 3=XXX, 4=DEBUG)
+# Set logging level (1=ERROR, 2=WARNING, 3=INFO, 4=DEBUG)
 xiaSetLogLevel(2)
 xiaInit("xmap4.ini")
 xiaStartSystem
