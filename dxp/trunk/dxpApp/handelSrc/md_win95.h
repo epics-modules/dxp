@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *  
  *
- * $Id: md_win95.h,v 1.5 2009-07-06 18:24:30 rivers Exp $
+ * $Id: md_win95.h,v 1.6 2009-07-16 17:52:51 rivers Exp $
  *
  */
 
@@ -133,7 +133,7 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_serial_close(int *camChan);
 
 #endif /* EXCLUDE_PLX */
 
-XIA_MD_STATIC int XIA_MD_API dxp_md_lock_resource(int *ioChan, int *modChan, short *lock);
+/* XIA_MD_STATIC int XIA_MD_API dxp_md_lock_resource(int *ioChan, int *modChan, short *lock); */
 XIA_MD_STATIC int XIA_MD_API dxp_md_wait(float *);
 XIA_MD_STATIC void XIA_MD_API dxp_md_error_control(char *,int *);
 XIA_MD_STATIC int XIA_MD_API dxp_md_get_maxblk(void);
