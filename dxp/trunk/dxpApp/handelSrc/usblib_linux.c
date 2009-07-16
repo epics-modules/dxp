@@ -47,6 +47,8 @@
 #define bool int
 #endif
 
+#define XIA_USB2_SMALL_READ_PACKET_SIZE 512
+
 static int xia_usb2__send_setup_packet(HANDLE h, unsigned short addr,
                                        unsigned long n_bytes, byte_t rw_flag);
 static struct usb_dev_handle        *xia_usb_handle = NULL;
@@ -93,6 +95,7 @@ XIA_EXPORT int XIA_API xia_usb_open(char *device, HANDLE *hDevice)
                                                        xia_usb_device->config[0].bConfigurationValue);
                             if (rv == 0) {
                                 rv = usb_claim_interface(xia_usb_handle, 0);
+                                rv = usb_reset(xia_usb_handle);
                                 sprintf(error_string, "Found USB 1.0 board");
                                 xiaLogInfo("xia_usb_open", error_string);
                             }
@@ -152,6 +155,7 @@ XIA_EXPORT int XIA_API xia_usb2_open(int device_number, HANDLE *hDevice)
                                                        xia_usb_device->config[0].bConfigurationValue);
                             if (rv == 0) {
                                 rv = usb_claim_interface(xia_usb_handle, 0);
+                                rv = usb_reset(xia_usb_handle);
                                 sprintf(error_string, "Found USB 2.0 board");
                                 xiaLogInfo("xia_usb2_open", error_string);
                             }
@@ -177,29 +181,24 @@ XIA_EXPORT int XIA_API xia_usb2_open(int device_number, HANDLE *hDevice)
 /*---------------------------------------------------------------------------------------*/
 XIA_EXPORT int XIA_API xia_usb_close(HANDLE hDevice)
 {
-    return 0;                                            /* At this time never close        */
-
-    if (hDevice) {
-        usb_close(xia_usb_handle);
+    int rv = 0;
+    
+    /* This does a reset of the USB device before closing it.  This is needed for USB2 on Linux
+     * or the next time that XIA software is run it cannot open the device correctly */
+    if (hDevice && xia_usb_handle) {
+        rv |= usb_release_interface(xia_usb_handle, 0);
+        rv |= usb_close(xia_usb_handle);
         xia_usb_handle = NULL;
         xia_usb_device = NULL;
     }
 
-    return 0;
+    return rv;
 }
 
 /*---------------------------------------------------------------------------------------*/
 XIA_EXPORT int XIA_API xia_usb2_close(HANDLE hDevice)
 {
-    return 0;                                            /* At this time never close        */
-
-    if (hDevice) {
-        usb_close(xia_usb_handle);
-        xia_usb_handle = NULL;
-        xia_usb_device = NULL;
-    }
-
-    return 0;
+    return(xia_usb_close(hDevice));
 }
 
 /*---------------------------------------------------------------------------------------*/
@@ -237,7 +236,6 @@ XIA_EXPORT int XIA_API xia_usb_read(long address, long nWords, char *device, uns
     if (rv != CTRL_SIZE) {
         sprintf(error_string, "usb_bulk_read returned %d should be %d", rv, CTRL_SIZE);
         xiaLogError("xia_usb_read", error_string, XIA_MD);
-        xia_usb_close(hDevice);
         return 14;
     }
 
@@ -245,11 +243,8 @@ XIA_EXPORT int XIA_API xia_usb_read(long address, long nWords, char *device, uns
     if (rv != n_bytes) {
         sprintf(error_string, "usb_bulk_read returned %d should be %d", rv, n_bytes);
         xiaLogError("xia_usb_read", error_string, XIA_MD);
-        xia_usb_close(hDevice);
         return 2;
     }
-
-    xia_usb_close(hDevice);
 
     return 0;
 
@@ -348,7 +343,6 @@ XIA_EXPORT int XIA_API xia_usb_write(long address, long nWords, char *device, un
     if (rv != CTRL_SIZE) {
         sprintf(error_string, "usb_bulk_write returned %d should be %d", rv, CTRL_SIZE);
         xiaLogError("xia_usb_write", error_string, XIA_MD);
-        xia_usb_close(hDevice);
         return 14;
     }
 
@@ -356,10 +350,8 @@ XIA_EXPORT int XIA_API xia_usb_write(long address, long nWords, char *device, un
     if (rv != n_bytes) {
         sprintf(error_string, "usb_bulk_write returned %d should be %d", rv, n_bytes);
         xiaLogError("xia_usb_write", error_string, XIA_MD);
-        xia_usb_close(hDevice);
         return 15;
     }
-    xia_usb_close(hDevice);
     return 0;
 } 
     
