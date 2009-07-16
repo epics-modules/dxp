@@ -33,7 +33,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: usblib.h,v 1.5 2009-07-06 18:24:30 rivers Exp $
+ * $Id: usblib.h,v 1.6 2009-07-16 17:43:37 rivers Exp $
  *
  */
 
@@ -41,10 +41,25 @@
 #define _USBLIB_H_
 
 #define CTRL_SIZE 5
+#ifdef LINUX
+#define IN2 2
+#define OUT1 1
+#define OUT2 2
+#define OUT4 4
+#else
 #define IN2 8
 #define OUT1 0
 #define OUT2 1
 #define OUT4 3
+#endif
+
+#include "Dlldefs.h"
+#ifdef WIN32
+  #include <windows.h>
+#endif
+#ifdef LINUX
+  #include "xia_linux.h"
+#endif
 
 /* Few definitions shamelessly copied from ezusbsys.h provided by Cypress */
 
@@ -88,13 +103,13 @@ typedef struct _BULK_TRANSFER_CONTROL
 
 /* Function Prototypes */
 
-/*XIA_EXPORT int XIA_API usb_read(long address, long nWords, long ModNum, uint16* buffer);
-XIA_EXPORT int XIA_API usb_write(long address, long nWords, long ModNum, uint16* buffer);
+/*XIA_EXPORT int XIA_API xia_usb_read(long address, long nWords, long ModNum, uint16* buffer);
+XIA_EXPORT int XIA_API xia_usb_write(long address, long nWords, long ModNum, uint16* buffer);
 */
-XIA_EXPORT int XIA_API usb_close(HANDLE hDevice);
-XIA_EXPORT int XIA_API usb_open(char *device, HANDLE *hDevice);
-XIA_EXPORT int XIA_API usb_read(long address, long nWords, char *device, unsigned short *buffer);
-XIA_EXPORT int XIA_API usb_write(long address, long nWords, char *device, unsigned short *buffer);
-
+XIA_EXPORT int XIA_API xia_usb_close(HANDLE hDevice);
+XIA_EXPORT int XIA_API xia_usb_open(char *device, HANDLE *hDevice);
+XIA_EXPORT int XIA_API xia_usb_read(long address, long nWords, char *device, unsigned short *buffer);
+XIA_EXPORT int XIA_API xia_usb_write(long address, long nWords, char *device, unsigned short *buffer);
 
 #endif /* _USBLIB_H_ */
+
