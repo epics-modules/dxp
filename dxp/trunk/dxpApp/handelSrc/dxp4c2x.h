@@ -1,9 +1,6 @@
 /*
  *  dxp4c2x.h
  *
- *  Modified 2-Feb-97 EO: add prototype for dxp_primitive routines
- *      dxp_read_long and dxp_write_long; added various parameters
- *
  * Copyright (c) 2004, X-ray Instrumentation Associates
  *               2005, XIA LLC
  * All rights reserved.
@@ -37,10 +34,8 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
- *
- * $Id: dxp4c2x.h,v 1.3 2009-07-06 18:24:28 rivers Exp $
- *
- *
+ * 
+ * *
  *    Following are prototypes for dxp4c2x.c routines
  */
 
@@ -63,6 +58,7 @@
 #define MAXDSP_LEN       0x8000
 #define MAXFIP_LEN   0x00020000
 #define MAX_FIPPI			  5
+
 /* 
  * Control words for the RUNTASKS parameter
  */
@@ -70,6 +66,7 @@
 #define USE_FIR			  0x004
 #define ACQUIRE_BASELINE  0x008
 #define ADJUST_FAST_FILT  0x010
+#define DISABLE_AUTOT     0x00D
 #define BASELINE_SHIFT	  0x020
 #define RESIDUAL_BASE	  0x040
 #define WRITE_BASELINE	  0x080
