@@ -14,6 +14,13 @@
     Release 2-10 (16-Jul-2009)
   </h2>
   <ul>
+    <li>This is a maintenance release, required by the need to provide an EPICS release
+      that is compatible with xManager 1.0.5 for the xMAP hardware. The next release of
+      DXP (R3-0) will be a major rewrite. The dxp record will be eliminated, and standard
+      asyn device support will be used instead to control the DXP parameters. It will
+      provide support for mapping mode with the xMAP, using the on-board buffer memory.
+      It will use the NDArray class from the areaDetector module. I plan to release R3-0
+      within the next 2 months.</li>
     <li>Updated to version 1.0.3 of XIA's Handel library, which is required to be compatible
       with the PLX v5.2 driver used for the xMAP in xManager 1.0 and higher. This is not
       the official 1.0.3 Handel release, because XIA had neglected to incorporate many
