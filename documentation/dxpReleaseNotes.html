@@ -11,6 +11,27 @@
     See <a href="dxpKnownProblems.html">known problems</a> for information on problems
     each release.</p>
   <h2 style="text-align: center">
+    Release 2-10 (16-Jul-2009)
+  </h2>
+  <ul>
+    <li>Updated to version 1.0.3 of XIA's Handel library, which is required to be compatible
+      with the PLX v5.2 driver used for the xMAP in xManager 1.0 and higher. This is not
+      the official 1.0.3 Handel release, because XIA had neglected to incorporate many
+      of the fixes to Handel I sent them in January 2008, so I had to reapply all of these
+      fixes. Hopefully the next Handel release will build with no modifications for EPICS
+      on all platforms (win32-x86, cygwin-x86, linux-x86 and vxWorks).</li>
+    <li>Fixed problem with USB 2.0 interface on Saturn under Linux. Previously one needed
+      to power off the Saturn before restarting the EPICS IOC. This is no longer necessary.</li>
+    <li>Eliminated most warnings in xiaStartSystem with improved .ini files.</li>
+    <li>This release of Handel is much faster in xiaStartSystem with xMAP systems. However,
+      this is only true if the firmware FDD file is on a local drive. I have found that
+      if the FDD file is on a remote Linux server that the time for xiaStartSystem can
+      be 20 times slower. On a 12 channel xMAP system with win32-x86 xiaStartSystem takes
+      7 seconds if the firmware is on a local drive and 154 seconds if it is on a remote
+      server. On this same system running cygwin-x86 the times are 72 seconds (local)
+      and 196 seconds (remote).</li>
+  </ul>
+  <h2 style="text-align: center">
     Release 2-9 (2-Feb-2009)
   </h2>
   <ul>
