@@ -36,15 +36,11 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: Dlldefs.h,v 1.5 2009-07-16 18:01:07 rivers Exp $
+ * $Id: Dlldefs.h,v 1.6 2009-07-21 13:43:26 rivers Exp $
  */
 
 #ifndef __DLLDEFS_H__
 #define __DLLDEFS_H__
-
-#ifdef EPICS_DLL_NO
-#define XIA_STATIC_BUILD
-#endif 
 
 #define XIA_STATIC static
 #define XIA_SHARED 
