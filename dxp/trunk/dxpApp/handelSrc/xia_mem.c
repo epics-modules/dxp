@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_mem.c,v 1.5 2009-07-16 17:02:12 rivers Exp $
+ * $Id: xia_mem.c,v 1.6 2009-08-31 21:42:40 rivers Exp $
  */
 
 #include <stdlib.h>
@@ -266,7 +266,7 @@ XIA_EXPORT void xia_mem_checkpoint_cmp(mem_check_pt_t *pt, char *out)
 	if (!xia_mem_point_key_exists((mem_point_t *)*pt, key)) {
 	  fprintf(fp, "\n");
 	  fprintf(fp, "Allocation: %s:%d\n", b->file, b->line);
-	  fprintf(fp, "Size: %d bytes\n", b->n);
+	  fprintf(fp, "Size: %ld bytes\n", (long)b->n);
 	}
   }
   

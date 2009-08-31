@@ -2680,8 +2680,8 @@ static int dxp_read_baseline(int* ioChan, int* modChan, Board* board,
   us_baseline = (unsigned short *)x10p_md_alloc(len * sizeof(unsigned short));
 
   if (!us_baseline) {
-    sprintf(info_string, "Error allocating %d bytes for 'us_baseline'",
-            len * sizeof(unsigned short));
+    sprintf(info_string, "Error allocating %ld bytes for 'us_baseline'",
+            (long)(len * sizeof(unsigned short)));
     x10p_md_free(us_baseline);
     dxp_log_error("dxp_read_baseline", info_string, DXP_ALLOCMEM);
     return DXP_ALLOCMEM;
@@ -3149,8 +3149,8 @@ static int dxp_begin_control_task(int* ioChan, int* modChan, short *type,
       ustemp = (unsigned short *)x10p_md_alloc((*length - 4) * sizeof(unsigned short));
 
       if (ustemp == NULL) {
-        sprintf(info_string, "Out-of-memory allocating %d bytes for 'ustemp'",
-                (*length - 4) * sizeof(unsigned short));
+        sprintf(info_string, "Out-of-memory allocating %ld bytes for 'ustemp'",
+                (long)((*length - 4) * sizeof(unsigned short)));
         dxp_log_error("dxp_begin_control_task", info_string, DXP_NOMEM);
         return DXP_NOMEM;
       }
@@ -4808,8 +4808,8 @@ XERXES_STATIC int dxp_read_external_memory(int *ioChan, int *modChan, Board *boa
     buf = (unsigned long *)x10p_md_alloc(current_len * sizeof(unsigned long));
 
     if (buf == NULL) {
-      sprintf(info_string, "Out-of-memory allocating %d bytes for 'buf'",
-              current_len * sizeof(unsigned long));
+      sprintf(info_string, "Out-of-memory allocating %ld bytes for 'buf'",
+              (long)(current_len * sizeof(unsigned long)));
       dxp_log_error("dxp_read_external_memory", info_string, DXP_NOMEM);
       return DXP_NOMEM;
     }
@@ -4914,8 +4914,8 @@ XERXES_STATIC int dxp_write_external_memory(int *ioChan, int *modChan, Board *bo
     info = (int *)x10p_md_alloc(info_len * sizeof(int));
 
     if (info == NULL) {
-      sprintf(info_string, "Out-of-memory allocating %d bytes for 'info'",
-              info_len * sizeof(int));
+      sprintf(info_string, "Out-of-memory allocating %ld bytes for 'info'",
+              (long)(info_len * sizeof(int)));
       dxp_log_error("dxp_write_external_memory", info_string, DXP_NOMEM);
       return DXP_NOMEM;
     }
@@ -5098,8 +5098,8 @@ XERXES_STATIC int dxp_read_spectrum_memory(int *ioChan, int *modChan,
   mca = x10p_md_alloc(n_mca_words * sizeof(unsigned short));
 
   if (mca == NULL) {
-    sprintf(info_string, "Unable to allocated %d bytes for 'mca'.",
-            n_mca_words * sizeof(unsigned short));
+    sprintf(info_string, "Unable to allocated %ld bytes for 'mca'.",
+            (long)(n_mca_words * sizeof(unsigned short)));
     dxp_log_error("dxp_read_spectrum_memory", info_string, DXP_NOMEM);
     return DXP_NOMEM;
   }

@@ -3126,8 +3126,8 @@ XERXES_STATIC int dxp_add_dsp(char* filename, Board_Info* board,
   new_dsp = (Dsp_Info *)xerxes_md_alloc(sizeof(Dsp_Info));
 
   if (!new_dsp) {
-	sprintf(info_string, "Error allocating %d bytes for 'new_dsp'",
-			sizeof(Dsp_Info));
+	sprintf(info_string, "Error allocating %ld bytes for 'new_dsp'",
+			(long)sizeof(Dsp_Info));
 	dxp_log_error("dxp_add_dsp", info_string, DXP_NOMEM);
 	return DXP_NOMEM;
   }
@@ -3137,8 +3137,8 @@ XERXES_STATIC int dxp_add_dsp(char* filename, Board_Info* board,
   if (!new_dsp->params) {
 	dxp_free_dsp(new_dsp);
 
-	sprintf(info_string, "Error allocating %d bytes for 'new_dsp->params'",
-			sizeof(Dsp_Params));
+	sprintf(info_string, "Error allocating %ld bytes for 'new_dsp->params'",
+			(long)sizeof(Dsp_Params));
 	dxp_log_error("dxp_add_dsp", info_string, DXP_NOMEM);
 	return DXP_NOMEM;
   }
@@ -3148,8 +3148,8 @@ XERXES_STATIC int dxp_add_dsp(char* filename, Board_Info* board,
   if (!new_dsp->filename) {
 	dxp_free_dsp(new_dsp);
 
-	sprintf(info_string, "Error allocating %d bytes for 'new_dsp->filename'",
-			strlen(filename) + 1);
+	sprintf(info_string, "Error allocating %ld bytes for 'new_dsp->filename'",
+			(long)strlen(filename) + 1);
 	dxp_log_error("dxp_add_dsp", info_string, DXP_NOMEM);
 	return DXP_NOMEM;
   }
@@ -3174,8 +3174,8 @@ XERXES_STATIC int dxp_add_dsp(char* filename, Board_Info* board,
     if (!new_dsp->data) {
   	dxp_free_dsp(new_dsp);
 
-  	sprintf(info_string, "Error allocating %d bytes for 'new_dsp->data'",
-  			new_dsp->maxproglen * sizeof(unsigned short));
+  	sprintf(info_string, "Error allocating %ld bytes for 'new_dsp->data'",
+  			(long)(new_dsp->maxproglen * sizeof(unsigned short)));
   	dxp_log_error("dxp_add_dsp", info_string, DXP_NOMEM);
   	return DXP_NOMEM;
     }
@@ -3188,8 +3188,8 @@ XERXES_STATIC int dxp_add_dsp(char* filename, Board_Info* board,
   if (!new_dsp->params->parameters) {
 	dxp_free_dsp(new_dsp);
 
-	sprintf(info_string, "Error allocating %d bytes for 'new_dsp->params->"
-			"parameter'", new_dsp->params->maxsym * sizeof(Parameter));
+	sprintf(info_string, "Error allocating %ld bytes for 'new_dsp->params->"
+			"parameter'", (long)(new_dsp->params->maxsym * sizeof(Parameter)));
 	dxp_log_error("dxp_add_dsp", info_string, DXP_NOMEM);
 	return DXP_NOMEM;
   }
@@ -3201,8 +3201,8 @@ XERXES_STATIC int dxp_add_dsp(char* filename, Board_Info* board,
   if (!new_dsp->params->per_chan_parameters) {
 	dxp_free_dsp(new_dsp);
 
-	sprintf(info_string, "Error allocating %d bytes for 'new_dsp->params->"
-			"per_chan_parameters'", new_dsp->params->maxsym * sizeof(Parameter));
+	sprintf(info_string, "Error allocating %ld bytes for 'new_dsp->params->"
+			"per_chan_parameters'", (long)(new_dsp->params->maxsym * sizeof(Parameter)));
 	dxp_log_error("dxp_add_dsp", info_string, DXP_NOMEM);
 	return DXP_NOMEM;
   }
@@ -3352,8 +3352,8 @@ static int XERXES_API dxp_add_fippi(char* filename, Board_Info* board, Fippi_Inf
   	xerxes_md_alloc((temp_fippi->maxproglen) * sizeof(unsigned short));
 
     if (!temp_fippi->data) {
-  	sprintf(info_string, "Error allocating %u bytes of memory for "
-  			"temp_fippi->data", temp_fippi->maxproglen * sizeof(unsigned short));
+  	sprintf(info_string, "Error allocating %ld bytes of memory for "
+  			"temp_fippi->data", (long)(temp_fippi->maxproglen * sizeof(unsigned short)));
   	dxp_log_error("dxp_add_fippi", info_string, DXP_NOMEM);
 
   	dxp_free_fippi(temp_fippi);
@@ -3449,8 +3449,8 @@ XERXES_STATIC int dxp_add_system_fippi(char *filename, Board_Info *b,
   *fippi = xerxes_md_alloc(sizeof(System_FiPPI_Info));
 
   if (*fippi == NULL) {
-    sprintf(info_string, "Error allocating %d bytes for '*fippi'",
-            sizeof(System_FiPPI_Info));
+    sprintf(info_string, "Error allocating %ld bytes for '*fippi'",
+            (long)sizeof(System_FiPPI_Info));
     dxp_log_error("dxp_add_system_fippi", info_string, DXP_NOMEM);
     return DXP_NOMEM;
   }
@@ -3460,8 +3460,8 @@ XERXES_STATIC int dxp_add_system_fippi(char *filename, Board_Info *b,
   (*fippi)->filename = xerxes_md_alloc(strlen(filename) + 1);
   
   if ((*fippi)->filename == NULL) {
-    sprintf(info_string, "Error allocating %d bytes for '*fippi->filename'",
-            strlen(filename) + 1);
+    sprintf(info_string, "Error allocating %ld bytes for '*fippi->filename'",
+            (long)strlen(filename) + 1);
     dxp_log_error("dxp_add_system_fippi", info_string, DXP_NOMEM);
     return DXP_NOMEM;
   }
@@ -3472,8 +3472,8 @@ XERXES_STATIC int dxp_add_system_fippi(char *filename, Board_Info *b,
 
   if ((*fippi)->params == NULL) {
     dxp_free_system_fippi(*fippi);
-    sprintf(info_string, "Error allocating %d bytes for '*fippi->params'",
-            sizeof((*fippi)->params));
+    sprintf(info_string, "Error allocating %ld bytes for '*fippi->params'",
+            (long)sizeof((*fippi)->params));
     dxp_log_error("dxp_add_system_fippi", info_string, DXP_NOMEM);
     return DXP_NOMEM;
   }
@@ -3505,8 +3505,8 @@ XERXES_STATIC int dxp_add_system_fippi(char *filename, Board_Info *b,
 
   if ((*fippi)->params->parameters == NULL) {
     dxp_free_system_fippi(*fippi);
-    sprintf(info_string, "Error allocating %d bytes for "
-            "'*fippi->params->parameters'", (*fippi)->params->maxsym *
+    sprintf(info_string, "Error allocating %ld bytes for "
+            "'*fippi->params->parameters'", (long)(*fippi)->params->maxsym *
             sizeof(Parameter));
     dxp_log_error("dxp_add_system_fippi", info_string, DXP_NOMEM);
     return DXP_NOMEM;
@@ -7775,7 +7775,7 @@ XERXES_STATIC int XERXES_API dxp_parse_memory_str(char *name, char *type, unsign
   full_name = (char *)xerxes_md_alloc(name_len);
   
   if (full_name == NULL) {
-	sprintf(info_string, "Error allocating %d bytes for 'full_name'", name_len);
+	sprintf(info_string, "Error allocating %ld bytes for 'full_name'", (long)name_len);
 	dxp_log_error("dxp_parse_memory_str", info_string, DXP_NOMEM);
 	return DXP_NOMEM;
   }
