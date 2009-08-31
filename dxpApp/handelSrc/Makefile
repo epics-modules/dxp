@@ -82,6 +82,8 @@ INC += handel.h
 INC += handel_constants.h
 INC += handeldef.h
 INC += handel_generic.h
+INC += md_generic.h
+INC += handel_errors.h
 
 #===========================
 
