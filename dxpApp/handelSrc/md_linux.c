@@ -364,7 +364,7 @@ XIA_MD_EXPORT int XIA_MD_API dxp_md_init_io(Xia_Io_Functions* funcs, char* type)
 
     funcs->dxp_md_get_maxblk = dxp_md_get_maxblk;
     funcs->dxp_md_set_maxblk = dxp_md_set_maxblk;
-    funcs->dxp_md_lock_resource = NULL;
+    funcs->dxp_md_lock_resource = dxp_md_lock_resource;
 
 
     return DXP_SUCCESS;
@@ -1872,7 +1872,7 @@ XIA_MD_STATIC int  dxp_md_usb2_close(int *camChan)
 
   h = usb2Handles[*camChan];
 
-  if (h == (HANDLE)NULL) {
+  if (h == (HANDLE)0) {
     sprintf(error_string, "Skipping previously closed camChan = %d", *camChan);
     dxp_md_log_info("dxp_md_usb2_close", error_string);
     return DXP_SUCCESS;
@@ -1887,7 +1887,7 @@ XIA_MD_STATIC int  dxp_md_usb2_close(int *camChan)
     return DXP_MDCLOSE;
   }
 
-  usb2Handles[*camChan] = (HANDLE)NULL;
+  usb2Handles[*camChan] = (HANDLE)0;
 
   ASSERT(usb2Names[*camChan] != NULL);
 
