@@ -5642,7 +5642,7 @@ PSL_STATIC int PSL_API _pslDoNSca(int detChan, void *value, Module *m)
 
   if (m->ch[modChan].sca_lo == NULL) {
     /* Should n_sca be reset to 0 on failure? */
-    sprintf(info_string, "Error allocating %d bytes for m->ch[modChan].sca_lo", nBytes);
+    sprintf(info_string, "Error allocating %ld bytes for m->ch[modChan].sca_lo", (long)nBytes);
     pslLogError("_psDoNSca", info_string, XIA_NOMEM);
     return XIA_NOMEM;
   }
@@ -5653,7 +5653,7 @@ PSL_STATIC int PSL_API _pslDoNSca(int detChan, void *value, Module *m)
 
   if (m->ch[modChan].sca_hi == NULL) {
     x10p_psl_md_free(m->ch[modChan].sca_lo);
-    sprintf(info_string, "Error allocating %d bytes for m->ch[modChan].sca_hi", nBytes);
+    sprintf(info_string, "Error allocating %ld bytes for m->ch[modChan].sca_hi", (long)nBytes);
     pslLogError("_pslDoNSca", info_string, XIA_NOMEM);
     return XIA_NOMEM;
   }

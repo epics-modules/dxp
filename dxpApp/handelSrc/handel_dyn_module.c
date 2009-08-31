@@ -2513,7 +2513,7 @@ HANDEL_STATIC int _initChannels(Module *module)
 
   if (module->ch == NULL) {
     status = XIA_NOMEM;
-    sprintf(info_string, "Error allocating %d bytes for module->ch", nBytes);
+    sprintf(info_string, "Error allocating %ld bytes for module->ch", (long)nBytes);
     xiaLogError("_initChannels", info_string, status);
     return status;
   }
@@ -2542,8 +2542,8 @@ HANDEL_STATIC int _initDetectors(Module *module)
   module->detector = (char **)handel_md_alloc(nBytes);
 
   if (module->detector == NULL) {
-    sprintf(info_string, "Error allocating %d bytes for module->detector",
-            nBytes);
+    sprintf(info_string, "Error allocating %ld bytes for module->detector",
+            (long)nBytes);
     xiaLogError("_initDetectors", info_string, XIA_NOMEM);
     return XIA_NOMEM;
   }
@@ -2552,8 +2552,8 @@ HANDEL_STATIC int _initDetectors(Module *module)
     module->detector[i] = (char *)handel_md_alloc(nBytesMaxStr);
 
     if (module->detector[i] == NULL) {
-      sprintf(info_string, "Error allocating %d bytes for module->detector[%d]",
-              nBytesMaxStr, i);
+      sprintf(info_string, "Error allocating %ld bytes for module->detector[%d]",
+              (long)nBytesMaxStr, i);
       xiaLogError("_initDetectors", info_string, XIA_NOMEM);
       return XIA_NOMEM;
     }
@@ -2578,8 +2578,8 @@ HANDEL_STATIC int _initDetectorChans(Module *module)
   module->detector_chan = (int *)handel_md_alloc(nBytes);
 
   if (module->detector_chan == NULL) {
-    sprintf(info_string, "Error allocating %d bytes for module->detector_chan",
-            nBytes);
+    sprintf(info_string, "Error allocating %ld bytes for module->detector_chan",
+            (long)nBytes);
     xiaLogError("_initDetectorChans", info_string, XIA_NOMEM);
     return XIA_NOMEM;
   }
@@ -2605,8 +2605,8 @@ HANDEL_STATIC int _initGains(Module *module)
   module->gain = (double *)handel_md_alloc(nBytes);
 
   if (module->gain == NULL) {
-    sprintf(info_string, "Error allocating %d bytes for module->gain",
-            nBytes);
+    sprintf(info_string, "Error allocating %ld bytes for module->gain",
+            (long)nBytes);
     xiaLogError("_initGains", info_string, XIA_NOMEM);
     return XIA_NOMEM;
   }
@@ -2633,8 +2633,8 @@ HANDEL_STATIC int _initFirmware(Module *module)
   module->firmware = (char **)handel_md_alloc(nBytes);
 
   if (module->firmware == NULL) {
-    sprintf(info_string, "Error allocating %d bytes for module->firmware",
-            nBytes);
+    sprintf(info_string, "Error allocating %ld bytes for module->firmware",
+            (long)nBytes);
     xiaLogError("_initFirmware", info_string, XIA_NOMEM);
     return XIA_NOMEM;
   }
@@ -2643,8 +2643,8 @@ HANDEL_STATIC int _initFirmware(Module *module)
     module->firmware[i] = (char *)handel_md_alloc(nBytesMaxStr);
 
     if (module->firmware[i] == NULL) {
-      sprintf(info_string, "Error allocating %d bytes for module->detector[%d]",
-              nBytesMaxStr, i);
+      sprintf(info_string, "Error allocating %ld bytes for module->detector[%d]",
+              (long)nBytesMaxStr, i);
       xiaLogError("_initFirmware", info_string, XIA_NOMEM);
       return XIA_NOMEM;
     }
@@ -2669,8 +2669,8 @@ HANDEL_STATIC int _initCurrentFirmware(Module *module)
   module->currentFirmware = (CurrentFirmware *)handel_md_alloc(nBytes);
 
   if (module->currentFirmware == NULL) {
-    sprintf(info_string, "Error allocating %d bytes for module->currentFirmware",
-            nBytes);
+    sprintf(info_string, "Error allocating %ld bytes for module->currentFirmware",
+            (long)nBytes);
     xiaLogError("_initCurrentFirmware", info_string, XIA_NOMEM);
     return XIA_NOMEM;
   }
@@ -2711,8 +2711,8 @@ HANDEL_STATIC int _initMultiState(Module *module)
     module->state = (MultiChannelState *)handel_md_alloc(nBytes);
 
     if (module->state == NULL) {
-      sprintf(info_string, "Error allocating %d bytes for module->state",
-              nBytes);
+      sprintf(info_string, "Error allocating %ld bytes for module->state",
+              (long)nBytes);
       xiaLogError("_initMultiState", info_string, XIA_NOMEM);
       return XIA_NOMEM;
     }
@@ -2720,8 +2720,8 @@ HANDEL_STATIC int _initMultiState(Module *module)
     module->state->runActive = (boolean_t *)handel_md_alloc(nBytesFlag);
 
     if (module->state->runActive == NULL) {
-      sprintf(info_string, "Error allocating %d bytes for module->state->runActive",
-              nBytesFlag);
+      sprintf(info_string, "Error allocating %ld bytes for module->state->runActive",
+              (long)nBytesFlag);
       xiaLogError("_initMultiState", info_string, XIA_NOMEM);
       return XIA_NOMEM;
     }
@@ -2876,8 +2876,8 @@ HANDEL_STATIC int _initChanAliases(Module *module)
   module->channels = (int *)handel_md_alloc(nBytes);
 
   if (module->channels == NULL) {
-    sprintf(info_string, "Error allocating %d bytes for module->channels",
-            nBytes);
+    sprintf(info_string, "Error allocating %ld bytes for module->channels",
+            (long)nBytes);
     xiaLogError("_initChanAliases", info_string, XIA_NOMEM);
     return XIA_NOMEM;
   }
