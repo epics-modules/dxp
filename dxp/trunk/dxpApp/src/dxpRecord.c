@@ -106,17 +106,19 @@ static long get_control_double(struct dbAddr *paddr, struct dbr_ctrlDouble *pcd)
 #define DXP_STRING_SIZE      16
 #define DXP_TASK_STRING_SIZE 25
 
+/* IMPORTANT: the data types in the following 2 structures MUST match those
+ * in dxpRecord.h, generated from the .dbd file */
 typedef struct  {
-    unsigned short   val;
-    char             label[DXP_STRING_SIZE];
-    short            offset;
+    epicsInt16   val;
+    char         label[DXP_STRING_SIZE];
+    epicsInt16   offset;
 } DXP_SHORT_PARAM;
 
 typedef struct  {
-    long     val;
-    char    label[DXP_STRING_SIZE];
-    short   offset_lo;
-    short   offset_hi;
+    epicsInt32   val;
+    char         label[DXP_STRING_SIZE];
+    epicsInt16   offset_lo;
+    epicsInt16   offset_hi;
 } DXP_LONG_PARAM;
 
 typedef struct  {
@@ -693,7 +695,7 @@ static long monitor(struct dxpRecord *pdxp)
       if(long_param[i].val != long_val) {
          if (dxpRecordDebug > 5) printf("%s dxpRecord: New value of long parameter %s\n",
             pdxp->name, long_param[i].label);
-         if (dxpRecordDebug > 5) printf("  old (record)=%ld", long_param[i].val);
+         if (dxpRecordDebug > 5) printf("  old (record)=%d", long_param[i].val);
          if (dxpRecordDebug > 5) printf("  new (dxp)=%ld\n", long_val);
          long_param[i].val = long_val;
          db_post_events(pdxp,&long_param[i].val, monitor_mask);
