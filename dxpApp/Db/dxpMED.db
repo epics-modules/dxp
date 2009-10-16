@@ -91,7 +91,7 @@ grecord(bo,"$(P)DoStatusAll") {
 grecord(ai,"$(P)ReadCallback") {
         field(SCAN,"I/O Intr")
         field(DTYP, "asynInt32")
-        field(INP, "$(INP)ACQUIRING")
+        field(INP, "$(INP)MCA_ACQUIRING")
         field(FLNK, "$(P)ReadAllOnce PP MS")
 }
 
