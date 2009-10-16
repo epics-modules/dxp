@@ -18,11 +18,11 @@ option -c;
 %%#include <stdlib.h>
 %%#include <errlog.h>
 
-#define MAX_DETECTORS 32
+#define MAX_DETECTORS 100
 #define MAX_SCAS 16
 /* MAX_ROIS must be defined as MAX_DETECTORS * MAX_SCAS.
    It can't be done in SNL because of syntax limitations. */
-#define MAX_ROIS 512
+#define MAX_ROIS 1600
 
 int i;
 int j;
