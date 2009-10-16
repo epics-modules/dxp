@@ -1,7 +1,7 @@
 
 file {
-	name="/home/epics/devel/dxp/2-8beta/dxpApp/op/adl/dxpTop.adl"
-	version=030000
+	name="/home/epics/devel/xmap/xmapApp/opi/adl/dxpTop.adl"
+	version=030102
 }
 display {
 	object {
@@ -109,7 +109,7 @@ text {
 	display[0] {
 		label="Single Saturn"
 		name="single_dxp_top.adl"
-		args="P=dxpSaturn:, M=mca1, D=dxp1"
+		args="P=dxpSaturn:, M=mca1, D=dxp1:"
 	}
 	display[1] {
 		label="Saturn 1-element MED"
