@@ -16,7 +16,6 @@ LIBRARY_IOC_vxWorks += dxp
 LIBRARY_IOC_cygwin32 += dxp
 LIBRARY_IOC_WIN32 += dxp
 
-DBDINC += dxpRecord
 DBD += dxpSupport.dbd
 DBD += dxp.dbd
 DBD += dxpVX.dbd
@@ -26,18 +25,13 @@ USR_CFLAGS += -DEXCLUDE_DGFG200
 USR_CFLAGS += -DEXCLUDE_UDXPS
 
 # The following are compiled and added to the Support library
-dxp_SRCS += epicsHandelUtils.c
-dxp_SRCS += dxpRecord.c
-dxp_SRCS += devDxp.c
-dxp_SRCS += drvDxp.c
-dxp_SRCS += dxpMED.st
+dxp_SRCS += NDDxp.cpp
+dxp_SRCS += registrarNDDxp.c
 
 dxp_LIBS += handel
-dxp_LIBS += mca 
-# tmm: these are not needed for libdxp
-dxp_LIBS += calc busy autosave
 dxp_LIBS += asyn
-dxp_LIBS += seq pv
+dxp_LIBS += ADBase
+dxp_LIBS += mca 
 dxp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #=============================
@@ -60,10 +54,11 @@ dxpApp_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary
 
 dxpApp_LIBS += dxp handel
 dxpApp_LIBS += mca
+dxpApp_LIBS += asyn
+dxpApp_LIBS += ADBase
 dxpApp_LIBS += calc sscan autosave
 dxpApp_LIBS += busy
 dxpApp_LIBS_vxWorks += camac
-dxpApp_LIBS += asyn
 dxpApp_LIBS += seq pv
 dxpApp_LIBS += $(EPICS_BASE_IOC_LIBS)
 dxpApp_LIBS_WIN32 += DLPORTIO PlxApi
