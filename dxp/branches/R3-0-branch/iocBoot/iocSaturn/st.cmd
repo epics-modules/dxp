@@ -1,9 +1,11 @@
 < envPaths
 
-# Tell EPICS all about the record types, device-support modules, drivers,
-# etc. in this build from dxpApp
-dbLoadDatabase("../../dbd/dxp.dbd")
+### Register all support components
+dbLoadDatabase("$(DXP)/dbd/dxp.dbd")
 dxp_registerRecordDeviceDriver(pdbbase)
+
+# Set EPICS_CA_MAX_ARRAY_BYTES large enough for the trace buffers
+epicsEnvSet EPICS_CA_MAX_ARRAY_BYTES 100000
 
 # On Linux execute the following command so that libusb uses /dev/bus/usb
 # as the file system for the USB device.  
@@ -19,21 +21,13 @@ xiaSetLogLevel(2)
 xiaInit("saturn.ini")
 xiaStartSystem
 
-# DXPConfig(serverName, ndetectors, ngroups, pollFrequency)
-DXPConfig("DXP1",  1, 1, 100)
+NDDxpConfig("DXP1", 1, 10, 42000000)
+#asynSetTraceIOMask("DXP1", 0, 0x2)
+#asynSetTraceMask("DXP1", 0, 0x9)
 
-
-# DXP record
-# Execute the following line if you have a Vortex detector or 
-# another detector with a reset pre-amplifier
-dbLoadRecords("../../dxpApp/Db/dxp2x_reset.db","P=dxpSaturn:, R=dxp1, INP=@asyn(DXP1 0)")
-# Execute the following line if you have a Ketek detector or 
-# another detector with an RC pre-amplifier
-#dbLoadRecords("../../dxpApp/Db/dxp2x_rc.db","P=dxpSaturn:, R=dxp1, INP=@asyn(DXP1 0)")
-
-# MCA record
+dbLoadRecords("$(DXP)/dxpApp/Db/dxp.template","P=dxpSaturn:,R=dxp1:,PORT=DXP1,ADDR=0,TIMEOUT=1,PINI=YES")
 dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=dxpSaturn:, M=mca1, DTYP=asynMCA,INP=@asyn(DXP1 0),NCHAN=2048")
-dbLoadRecords("../../dxpApp/Db/mcaCallback.db", "P=dxpSaturn:, M=mca1,INP=@asyn(DXP1 0)")
+dbLoadRecords("$(DXP)/dxpApp/Db/mcaCallback.template", "P=dxpSaturn:, R=mca1, INP=@asyn(DXP1 0)")
 
 # Template to copy MCA ROIs to DXP SCAs
 dbLoadTemplate("roi_to_sca.substitutions")
@@ -50,16 +44,9 @@ set_pass1_restoreFile("auto_settings.sav")
 # 1D data, but it doesn't store anything to disk.  (See 'saveData' below for that.)
 dbLoadRecords("$(SSCAN)/sscanApp/Db/scan.db","P=dxpSaturn:,MAXPTS1=2000,MAXPTS2=1000,MAXPTS3=10,MAXPTS4=10,MAXPTSH=2048")
 
-# Debugging flags
-#xiaSetLogLevel(4)
-#asynSetTraceMask DXP1 0 255
-#var mcaRecordDebug 10
-#var dxpRecordDebug 10
-
-iocInit
+iocInit()
 
 ### Start up the autosave task and tell it what to do.
-
 # Save settings every thirty seconds
 create_monitor_set("auto_settings.req", 30, P=dxpSaturn:)
 
