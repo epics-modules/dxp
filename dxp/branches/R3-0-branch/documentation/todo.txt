@@ -1,0 +1,19 @@
+                       DXP 3-0 Things to do
+
+- Get non-root access working on colorado
+
+- Make everything work on Saturn
+  - Elapsed live time
+  - ICR, OCR, Input counts, output counts
+  - SCAs
+
+- Make option to use INI rather than save/restore
+  
+- Test performance on Saturn, make at least as good as 2-11
+
+- Make everything work on xMAP
+  - All-channel operations, without SNL program if possible
+
+- Test performance on xMAP, make at least as good as 2-11
+
+- Implement mapping mode on xMAP
