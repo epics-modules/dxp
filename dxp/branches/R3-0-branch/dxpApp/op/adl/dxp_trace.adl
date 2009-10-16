@@ -1,14 +1,14 @@
 
 file {
-	name="i:\epics\synApps5-1beta2\dxp\dxpApp\op\adl\dxp_trace.adl"
-	version=030003
+	name="/home/epics/devel/xmap/xmapApp/opi/adl/dxp_trace.adl"
+	version=030102
 }
 display {
 	object {
-		x=71
-		y=375
+		x=127
+		y=148
 		width=650
-		height=373
+		height=400
 	}
 	clr=14
 	bclr=4
@@ -103,8 +103,7 @@ display {
 	}
 	style="line"
 	trace[0] {
-		xdata="$(P)$(R).TRACE_X"
-		ydata="$(P)$(R).TRACE"
+		ydata="$(P)$(R)TRACE_DATA"
 		data_clr=54
 	}
 	x_axis {
@@ -127,48 +126,6 @@ text {
 	"dynamic attribute" {
 		chan="$(P)$(R).TRACE_WAIT"
 	}
-}
-"text entry" {
-	object {
-		x=227
-		y=351
-		width=60
-		height=20
-	}
-	control {
-		chan="$(P)$(R).TRACE_WAIT"
-		clr=14
-		bclr=51
-	}
-	limits {
-	}
-}
-text {
-	object {
-		x=8
-		y=351
-		width=210
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Time per point (usec):"
-}
-"message button" {
-	object {
-		x=498
-		y=351
-		width=80
-		height=20
-	}
-	control {
-		chan="$(P)$(R):ReadTrace.PROC"
-		clr=14
-		bclr=51
-	}
-	label="Read Once"
-	press_msg="1"
 }
 menu {
 	object {
@@ -195,28 +152,139 @@ text {
 	}
 	textix="Read rate:"
 }
-text {
+composite {
 	object {
-		x=303
-		y=351
-		width=105
-		height=20
+		x=406
+		y=350
+		width=120
+		height=41
 	}
-	"basic attribute" {
-		clr=14
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=416
+				y=350
+				width=100
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Trace mode"
+		}
+		menu {
+			object {
+				x=406
+				y=373
+				width=120
+				height=18
+			}
+			control {
+				chan="$(P)$(R)TRACE_MODE"
+				clr=14
+				bclr=51
+			}
+		}
 	}
-	textix="Read Rate:"
 }
-menu {
+composite {
 	object {
-		x=411
-		y=352
-		width=80
-		height=18
+		x=231
+		y=350
+		width=165
+		height=42
 	}
-	control {
-		chan="$(P)$(R):ReadTrace.SCAN"
-		clr=14
-		bclr=51
+	"composite name"=""
+	children {
+		composite {
+			object {
+				x=231
+				y=372
+				width=165
+				height=20
+			}
+			"composite name"=""
+			children {
+				menu {
+					object {
+						x=231
+						y=373
+						width=80
+						height=18
+					}
+					control {
+						chan="$(P)$(R)TRACE_DATA.SCAN"
+						clr=14
+						bclr=51
+					}
+				}
+				"message button" {
+					object {
+						x=316
+						y=372
+						width=80
+						height=20
+					}
+					control {
+						chan="$(P)$(R)TRACE_DATA.PROC"
+						clr=14
+						bclr=51
+					}
+					label="Read Once"
+					press_msg="1"
+				}
+			}
+		}
+		text {
+			object {
+				x=268
+				y=350
+				width=90
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Read Rate"
+		}
+	}
+}
+composite {
+	object {
+		x=8
+		y=350
+		width=210
+		height=42
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=8
+				y=350
+				width=210
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Time per point (usec)"
+		}
+		"text entry" {
+			object {
+				x=73
+				y=372
+				width=80
+				height=20
+			}
+			control {
+				chan="$(P)$(R)TRACE_TIME"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
 	}
 }
