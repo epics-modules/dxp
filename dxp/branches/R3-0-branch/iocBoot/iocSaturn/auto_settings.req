@@ -1,5 +1,5 @@
 file "mca_settings.req",                P=$(P), M=mca1
-file "dxp_settings.req",                P=$(P), R=dxp1
+file "dxp_settings.req",                P=$(P), R=dxp1:
 file "scan_settings.req",               P=$(P), S=scan1
 file "scan_settings.req",               P=$(P), S=scan2
 file "scan_settings.req",               P=$(P), S=scan3
