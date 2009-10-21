@@ -463,7 +463,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp1.FAST_PEAKS"
+				chan="$(P)dxp1:Triggers"
 				clr=14
 				bclr=2
 			}
@@ -479,7 +479,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp2.FAST_PEAKS"
+				chan="$(P)dxp2:Triggers"
 				clr=14
 				bclr=2
 			}
@@ -495,7 +495,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp3.FAST_PEAKS"
+				chan="$(P)dxp3:Triggers"
 				clr=14
 				bclr=2
 			}
@@ -511,7 +511,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp4.FAST_PEAKS"
+				chan="$(P)dxp4:Triggers"
 				clr=14
 				bclr=2
 			}
@@ -527,7 +527,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp5.FAST_PEAKS"
+				chan="$(P)dxp5:Triggers"
 				clr=14
 				bclr=2
 			}
@@ -543,7 +543,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp6.FAST_PEAKS"
+				chan="$(P)dxp6:Triggers"
 				clr=14
 				bclr=2
 			}
@@ -559,7 +559,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp7.FAST_PEAKS"
+				chan="$(P)dxp7:Triggers"
 				clr=14
 				bclr=2
 			}
@@ -575,7 +575,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp8.FAST_PEAKS"
+				chan="$(P)dxp8:Triggers"
 				clr=14
 				bclr=2
 			}
@@ -591,7 +591,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp9.FAST_PEAKS"
+				chan="$(P)dxp9:Triggers"
 				clr=14
 				bclr=2
 			}
@@ -607,7 +607,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp10.FAST_PEAKS"
+				chan="$(P)dxp10:Triggers"
 				clr=14
 				bclr=2
 			}
@@ -623,7 +623,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp11.FAST_PEAKS"
+				chan="$(P)dxp11:Triggers"
 				clr=14
 				bclr=2
 			}
@@ -639,7 +639,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp12.FAST_PEAKS"
+				chan="$(P)dxp12:Triggers"
 				clr=14
 				bclr=2
 			}
@@ -655,7 +655,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp13.FAST_PEAKS"
+				chan="$(P)dxp13:Triggers"
 				clr=14
 				bclr=2
 			}
@@ -671,7 +671,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp14.FAST_PEAKS"
+				chan="$(P)dxp14:Triggers"
 				clr=14
 				bclr=2
 			}
@@ -687,7 +687,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp15.FAST_PEAKS"
+				chan="$(P)dxp15:Triggers"
 				clr=14
 				bclr=2
 			}
@@ -703,7 +703,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp16.FAST_PEAKS"
+				chan="$(P)dxp16:Triggers"
 				clr=14
 				bclr=2
 			}
@@ -732,7 +732,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp1.SLOW_PEAKS"
+				chan="$(P)dxp1:Events"
 				clr=14
 				bclr=2
 			}
@@ -748,7 +748,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp2.SLOW_PEAKS"
+				chan="$(P)dxp2:Events"
 				clr=14
 				bclr=2
 			}
@@ -764,7 +764,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp3.SLOW_PEAKS"
+				chan="$(P)dxp3:Events"
 				clr=14
 				bclr=2
 			}
@@ -780,7 +780,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp4.SLOW_PEAKS"
+				chan="$(P)dxp4:Events"
 				clr=14
 				bclr=2
 			}
@@ -796,7 +796,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp5.SLOW_PEAKS"
+				chan="$(P)dxp5:Events"
 				clr=14
 				bclr=2
 			}
@@ -812,7 +812,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp6.SLOW_PEAKS"
+				chan="$(P)dxp6:Events"
 				clr=14
 				bclr=2
 			}
@@ -828,7 +828,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp7.SLOW_PEAKS"
+				chan="$(P)dxp7:Events"
 				clr=14
 				bclr=2
 			}
@@ -844,7 +844,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp8.SLOW_PEAKS"
+				chan="$(P)dxp8:Events"
 				clr=14
 				bclr=2
 			}
@@ -860,7 +860,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp9.SLOW_PEAKS"
+				chan="$(P)dxp9:Events"
 				clr=14
 				bclr=2
 			}
@@ -876,7 +876,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp10.SLOW_PEAKS"
+				chan="$(P)dxp10:Events"
 				clr=14
 				bclr=2
 			}
@@ -892,7 +892,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp11.SLOW_PEAKS"
+				chan="$(P)dxp11:Events"
 				clr=14
 				bclr=2
 			}
@@ -908,7 +908,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp12.SLOW_PEAKS"
+				chan="$(P)dxp12:Events"
 				clr=14
 				bclr=2
 			}
@@ -924,7 +924,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp13.SLOW_PEAKS"
+				chan="$(P)dxp13:Events"
 				clr=14
 				bclr=2
 			}
@@ -940,7 +940,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp14.SLOW_PEAKS"
+				chan="$(P)dxp14:Events"
 				clr=14
 				bclr=2
 			}
@@ -956,7 +956,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp15.SLOW_PEAKS"
+				chan="$(P)dxp15:Events"
 				clr=14
 				bclr=2
 			}
@@ -972,7 +972,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp16.SLOW_PEAKS"
+				chan="$(P)dxp16:Events"
 				clr=14
 				bclr=2
 			}
@@ -1001,7 +1001,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp1.ICR"
+				chan="$(P)dxp1:InputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1017,7 +1017,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp2.ICR"
+				chan="$(P)dxp2:InputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1033,7 +1033,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp3.ICR"
+				chan="$(P)dxp3:InputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1049,7 +1049,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp4.ICR"
+				chan="$(P)dxp4:InputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1065,7 +1065,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp5.ICR"
+				chan="$(P)dxp5:InputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1081,7 +1081,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp6.ICR"
+				chan="$(P)dxp6:InputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1097,7 +1097,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp7.ICR"
+				chan="$(P)dxp7:InputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1113,7 +1113,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp8.ICR"
+				chan="$(P)dxp8:InputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1129,7 +1129,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp9.ICR"
+				chan="$(P)dxp9:InputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1145,7 +1145,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp10.ICR"
+				chan="$(P)dxp10:InputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1161,7 +1161,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp11.ICR"
+				chan="$(P)dxp11:InputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1177,7 +1177,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp12.ICR"
+				chan="$(P)dxp12:InputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1193,7 +1193,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp13.ICR"
+				chan="$(P)dxp13:InputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1209,7 +1209,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp14.ICR"
+				chan="$(P)dxp14:InputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1225,7 +1225,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp15.ICR"
+				chan="$(P)dxp15:InputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1241,7 +1241,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp16.ICR"
+				chan="$(P)dxp16:InputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1270,7 +1270,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp1.OCR"
+				chan="$(P)dxp1:OutputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1286,7 +1286,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp2.OCR"
+				chan="$(P)dxp2:OutputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1302,7 +1302,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp3.OCR"
+				chan="$(P)dxp3:OutputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1318,7 +1318,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp4.OCR"
+				chan="$(P)dxp4:OutputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1334,7 +1334,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp5.OCR"
+				chan="$(P)dxp5:OutputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1350,7 +1350,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp6.OCR"
+				chan="$(P)dxp6:OutputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1366,7 +1366,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp7.OCR"
+				chan="$(P)dxp7:OutputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1382,7 +1382,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp8.OCR"
+				chan="$(P)dxp8:OutputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1398,7 +1398,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp9.OCR"
+				chan="$(P)dxp9:OutputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1414,7 +1414,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp10.OCR"
+				chan="$(P)dxp10:OutputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1430,7 +1430,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp11.OCR"
+				chan="$(P)dxp11:OutputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1446,7 +1446,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp12.OCR"
+				chan="$(P)dxp12:OutputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1462,7 +1462,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp13.OCR"
+				chan="$(P)dxp13:OutputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1478,7 +1478,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp14.OCR"
+				chan="$(P)dxp14:OutputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1494,7 +1494,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp15.OCR"
+				chan="$(P)dxp15:OutputCountRate"
 				clr=14
 				bclr=2
 			}
@@ -1510,7 +1510,7 @@ composite {
 				height=14
 			}
 			monitor {
-				chan="$(P)dxp16.OCR"
+				chan="$(P)dxp16:OutputCountRate"
 				clr=14
 				bclr=2
 			}
