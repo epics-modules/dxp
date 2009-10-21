@@ -103,7 +103,7 @@ display {
 	}
 	style="line"
 	trace[0] {
-		ydata="$(P)$(R)TRACE_DATA"
+		ydata="$(P)$(R)TraceData"
 		data_clr=54
 	}
 	x_axis {
@@ -124,7 +124,7 @@ text {
 		clr=14
 	}
 	"dynamic attribute" {
-		chan="$(P)$(R).TRACE_WAIT"
+		chan="$(P)$(R).TraceWait"
 	}
 }
 menu {
@@ -181,7 +181,7 @@ composite {
 				height=18
 			}
 			control {
-				chan="$(P)$(R)TRACE_MODE"
+				chan="$(P)$(R)TraceMode"
 				clr=14
 				bclr=51
 			}
@@ -214,7 +214,7 @@ composite {
 						height=18
 					}
 					control {
-						chan="$(P)$(R)TRACE_DATA.SCAN"
+						chan="$(P)$(R)TraceData.SCAN"
 						clr=14
 						bclr=51
 					}
@@ -227,7 +227,7 @@ composite {
 						height=20
 					}
 					control {
-						chan="$(P)$(R)TRACE_DATA.PROC"
+						chan="$(P)$(R)TraceData.PROC"
 						clr=14
 						bclr=51
 					}
@@ -279,7 +279,7 @@ composite {
 				height=20
 			}
 			control {
-				chan="$(P)$(R)TRACE_TIME"
+				chan="$(P)$(R)TraceTime"
 				clr=14
 				bclr=51
 			}
