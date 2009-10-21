@@ -19,118 +19,118 @@
 #  - Added preamp_gain, detector_polarity, reset_delay, gap_time, trigger_peaking_time, 
 #    trigger_gap_time, baseline_average 
 
-record(ao, "$(P)$(R)PKTIM") {
-  field(PINI, "YES")
+record(ao, "$(P)$(R)PeakingTime") {
+  field(PINI, $(PINI))
   field(VAL,  "1.0")
   field(DTYP, "asynFloat64")
-  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))peaking_time")
+  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpPeakingTime")
   field(PREC, "3")
   field(EGU, "us")
 }
 
-record(ai, "$(P)$(R)PKTIM_RBV") {
-  field(PINI, "YES")
+record(ai, "$(P)$(R)PeakingTime_RBV") {
+#  field(PINI, "RUNNING")
   field(DTYP, "asynFloat64")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))peaking_time")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpPeakingTime")
   field(PREC, "3")
   field(EGU, "us")
   field(SCAN, "I/O Intr")
 }
 
-record(ao, "$(P)$(R)DYNRANGE") {
-  field(PINI, "YES")
-  field(VAL,  "40.0")
-  field(DTYP, "asynFloat64")
-  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))dynamic_range")
-  field(PREC, "3")
-  field(EGU, "keV")
-}
+#record(ao, "$(P)$(R)DynamicRange") {
+#  field(PINI, $(PINI))
+#  field(VAL,  "40.0")
+#  field(DTYP, "asynFloat64")
+#  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpDynamicRange")
+#  field(PREC, "3")
+#  field(EGU, "keV")
+#}
 
-record(ai, "$(P)$(R)DYNRANGE_RBV") {
-  field(PINI, "YES")
+record(ai, "$(P)$(R)DynamicRange_RBV") {
+#  field(PINI, "RUNNING")
   field(DTYP, "asynFloat64")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))dynamic_range")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpDynamicRange")
   field(PREC, "3")
   field(EGU, "keV")
   field(SCAN, "I/O Intr")
 }
 
-record(ao, "$(P)$(R)FAST_TRIG") {
-  field(PINI, "YES")
+record(ao, "$(P)$(R)TriggerThreshold") {
+  field(PINI, $(PINI))
   field(VAL,  "0.15")
   field(DTYP, "asynFloat64")
-  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))trigger_threshold")
+  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpTriggerThreshold")
   field(PREC, "3")
   field(EGU, "keV")
 }
 
-record(ai, "$(P)$(R)FAST_TRIG_RBV") {
-  field(PINI, "YES")
+record(ai, "$(P)$(R)TriggerThreshold_RBV") {
+#  field(PINI, "RUNNING")
   field(DTYP, "asynFloat64")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))trigger_threshold")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpTriggerThreshold")
   field(PREC, "3")
   field(EGU, "keV")
   field(SCAN, "I/O Intr")
 }
 
-record(ao, "$(P)$(R)BASE_THRESH") {
-  field(PINI, "YES")
+record(ao, "$(P)$(R)BaselineThreshold") {
+  field(PINI, $(PINI))
   field(VAL,  "2.0")
   field(DTYP, "asynFloat64")
-  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))baseline_threshold")
+  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpBaselineThreshold")
   field(PREC, "3")
   field(EGU, "keV")
 }
 
-record(ai, "$(P)$(R)BASE_THRESH_RBV") {
-  field(PINI, "YES")
+record(ai, "$(P)$(R)BaselineThreshold_RBV") {
+#  field(PINI, "RUNNING")
   field(DTYP, "asynFloat64")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))baseline_threshold")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpBaselineThreshold")
   field(PREC, "3")
   field(EGU, "keV")
   field(SCAN, "I/O Intr")
 }
 
-record(ao, "$(P)$(R)BASE_CUT_PCT") {
-  field(PINI, "YES")
+record(ao, "$(P)$(R)BaselineCutPercent") {
+  field(PINI, $(PINI))
   field(VAL,  "5.0")
   field(DTYP, "asynFloat64")
-  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))baseline_cut")
+  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpBaselineCut")
   field(PREC, "3")
   field(EGU, "%")
 }
 
-record(ai, "$(P)$(R)BASE_CUT_PCT_RBV") {
-  field(PINI, "YES")
+record(ai, "$(P)$(R)BaselineCutPercent_RBV") {
+#  field(PINI, "RUNNING")
   field(DTYP, "asynFloat64")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))baseline_cut")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpBaselineCut")
   field(PREC, "3")
   field(EGU, "%")
   field(SCAN, "I/O Intr")
 }
 
-record(bo, "$(P)$(R)BASE_CUT_ENBL") {
-   field(PINI, "YES")
+record(bo, "$(P)$(R)BaselineCutEnable") {
+   field(PINI, $(PINI))
    field(VAL,  "1")
    field(DTYP, "asynInt32")
-   field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))enable_baseline_cut")
+   field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpEnableBaselineCut")
    field(ZNAM, "No")
    field(ONAM, "Yes")
 }
 
-record(bi, "$(P)$(R)BASE_CUT_ENBL_RBV") {
+record(bi, "$(P)$(R)BaselineCutEnable_RBV") {
    field(PINI, "1")
    field(DTYP, "asynInt32")
-   field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))enable_baseline_cut")
+   field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpEnableBaselineCut")
    field(ZNAM, "No")
    field(ONAM, "Yes")
    field(SCAN, "I/O Intr")
 }
 
-record(mbbo, "$(P)$(R)BASE_LEN") {
+record(mbbo, "$(P)$(R)BaselineFilterLength") {
   field(DESC, "baseline filter len")
   field(DTYP, "asynInt32")
-  field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))baseline_average")
+  field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpBaselineAverage")
   field(ZRST, "8")
   field(ZRVL, "8")
   field(ONVL, "16")
@@ -152,27 +152,27 @@ record(mbbo, "$(P)$(R)BASE_LEN") {
   field(IVOA, "Don't drive outputs")
 }
 
-record(longin, "$(P)$(R)BASE_LEN_RBV") {
-  field(PINI, "YES")
+record(longin, "$(P)$(R)BaselineFilterLength_RBV") {
+#  field(PINI, "RUNNING")
   field(DESC, "baseline filter len")
   field(DTYP, "asynInt32")
-  field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))baseline_average")
+  field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpBaselineAverage")
   field(SCAN, "I/O Intr")
 }
 
-record(ao, "$(P)$(R)ENERGY_THRESH") {
-  field(PINI, "YES")
+record(ao, "$(P)$(R)EnergyThreshold") {
+  field(PINI, $(PINI))
   field(VAL,  "0.0")
   field(DTYP, "asynFloat64")
-  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))energy_threshold")
+  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpEnergyThreshold")
   field(PREC, "3")
   field(EGU, "keV")
 }
 
-record(ai, "$(P)$(R)ENERGY_THRESH_RBV") {
-  field(PINI, "YES")
+record(ai, "$(P)$(R)EnergyThreshold_RBV") {
+#  field(PINI, "RUNNING")
   field(DTYP, "asynFloat64")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))energy_threshold")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpEnergyThreshold")
   field(PREC, "3")
   field(EGU, "keV")
   field(SCAN, "I/O Intr")
@@ -181,37 +181,37 @@ record(ai, "$(P)$(R)ENERGY_THRESH_RBV") {
 # Note: I don't think calibration energy is used if dynamic range is used.
 # One either uses calibration_energy and adc_percent_rule or dynamic_range
 # In any event we force ECAL=EMAX/2. in driver, so only read it back
-#record(ao, "$(P)$(R)ECAL") {
-#  field(PINI, "YES")
+#record(ao, "$(P)$(R)CalibrationEnergy") {
+#  field(PINI, $(PINI))
 #  field(VAL,  "10.0")
 #  field(DTYP, "asynFloat64")
-#  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))calibration_energy")
+#  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpCalibrationEnergy")
 #  field(PREC, "3")
 #  field(EGU, "keV")
 #}
 
-record(ai, "$(P)$(R)ECAL_RBV") {
-  field(PINI, "YES")
+record(ai, "$(P)$(R)CalibrationEnergy_RBV") {
+#  field(PINI, "RUNNING")
   field(DTYP, "asynFloat64")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))calibration_energy")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpCalibrationEnergy")
   field(PREC, "3")
   field(EGU, "keV")
   field(SCAN, "I/O Intr")
 }
 
-record(ao, "$(P)$(R)ADC_RULE") {
-  field(PINI, "YES")
+record(ao, "$(P)$(R)ADCPercentRule") {
+  field(PINI, $(PINI))
   field(VAL,  "5.0")
   field(DTYP, "asynFloat64")
-  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))adc_percent_rule")
+  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpADCPercentRule")
   field(PREC, "1")
   field(EGU, "%")
 }
 
-record(ai, "$(P)$(R)ADC_RULE_RBV") {
-  field(PINI, "YES")
+record(ai, "$(P)$(R)ADCPercentRule_RBV") {
+#  field(PINI, "RUNNING")
   field(DTYP, "asynFloat64")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))adc_percent_rule")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpADCPercentRule")
   field(PREC, "1")
   field(EGU, "%")
   field(SCAN, "I/O Intr")
@@ -219,183 +219,183 @@ record(ai, "$(P)$(R)ADC_RULE_RBV") {
 
 # mca_bin_width is not a user-friendly concept.  Use EMAX instead
 # for setting, but allow reading back
-#record(ao, "$(P)$(R)BIN_WIDTH") {
-#  field(PINI, "YES")
+#record(ao, "$(P)$(R)MCABinWidth") {
+#  field(PINI, $(PINI))
 #  field(VAL,  "10.0")
 #  field(DTYP, "asynFloat64")
-#  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))mca_bin_width")
+#  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpMCABinWidth")
 #  field(PREC, "3")
 #  field(EGU, "eV/bin")
 #}
 
-record(ai, "$(P)$(R)BIN_WIDTH_RBV") {
-  field(PINI, "YES")
+record(ai, "$(P)$(R)MCABinWidth_RBV") {
+#  field(PINI, "RUNNING")
   field(DTYP, "asynFloat64")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))mca_bin_width")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpMcaBinWidth")
   field(PREC, "3")
   field(EGU, "eV/bin")
   field(SCAN, "I/O Intr")
 }
 
-record(ao, "$(P)$(R)EMAX") {
-  field(PINI, "YES")
+record(ao, "$(P)$(R)MaxEnergy") {
+  field(PINI, $(PINI))
   field(VAL,  "20.0")
   field(DTYP, "asynFloat64")
-  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))NDDxpMaxEnergy")
+  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpMaxEnergy")
   field(PREC, "3")
   field(EGU, "keV")
 }
 
-record(ai, "$(P)$(R)EMAX_RBV") {
-  field(PINI, "YES")
+record(ai, "$(P)$(R)MaxEnergy_RBV") {
+#  field(PINI, "RUNNING")
   field(DTYP, "asynFloat64")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))NDDxpMaxEnergy")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpMaxEnergy")
   field(PREC, "3")
   field(EGU, "keV")
   field(SCAN, "I/O Intr")
 }
 
-record(ao, "$(P)$(R)PGAIN") {
-  field(PINI, "YES")
+record(ao, "$(P)$(R)PreampGain") {
+  field(PINI, $(PINI))
   field(VAL,  "2.0")
   field(DTYP, "asynFloat64")
-  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))preamp_gain")
+  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpPreampGain")
   field(PREC, "4")
   field(EGU, "mV/keV")
 }
 
-record(ai, "$(P)$(R)PGAIN_RBV") {
-  field(PINI, "YES")
+record(ai, "$(P)$(R)PreampGain_RBV") {
+#  field(PINI, "RUNNING")
   field(DTYP, "asynFloat64")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))preamp_gain")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpPreampGain")
   field(PREC, "4")
   field(EGU, "mV/keV")
   field(SCAN, "I/O Intr")
 }
 
-record(bo, "$(P)$(R)POLARITY") {
-   field(PINI, "YES")
+record(bo, "$(P)$(R)DetectorPolarity") {
+   field(PINI, $(PINI))
    field(VAL,  "1")
    field(DTYP, "asynInt32")
-   field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))detector_polarity")
+   field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpDetectorPolarity")
    field(ZNAM, "Negative")
    field(ONAM, "Positive")
 }
 
-record(bi, "$(P)$(R)POLARITY_RBV") {
-   field(PINI, "1")
+record(bi, "$(P)$(R)DetectorPolarity_RBV") {
+ #  field(PINI, "RUNNING")
    field(DTYP, "asynInt32")
-   field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))detector_polarity")
+   field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpDetectorPolarity")
    field(ZNAM, "Negative")
    field(ONAM, "Positive")
    field(SCAN, "I/O Intr")
 }
 
-record(ao, "$(P)$(R)RESET_DELAY") {
-  field(PINI, "YES")
+record(ao, "$(P)$(R)ResetDelay") {
+  field(PINI, $(PINI))
   field(VAL,  "2.0")
   field(DTYP, "asynFloat64")
-  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))reset_delay")
+  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpResetDelay")
   field(PREC, "2")
   field(EGU, "us")
 }
 
-record(ai, "$(P)$(R)RESET_DELAY_RBV") {
-  field(PINI, "YES")
+record(ai, "$(P)$(R)ResetDelay_RBV") {
+#  field(PINI, "RUNNING")
   field(DTYP, "asynFloat64")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))reset_delay")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpResetDelay")
   field(PREC, "2")
   field(EGU, "us")
   field(SCAN, "I/O Intr")
 }
 
-record(ao, "$(P)$(R)GAPTIM") {
-  field(PINI, "YES")
+record(ao, "$(P)$(R)GapTime") {
+  field(PINI, $(PINI))
   field(VAL,  "0.2")
   field(DTYP, "asynFloat64")
-  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))gap_time")
+  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpGapTime")
   field(PREC, "2")
   field(EGU, "us")
 }
 
-record(ai, "$(P)$(R)GAPTIM_RBV") {
-  field(PINI, "YES")
+record(ai, "$(P)$(R)GapTime_RBV") {
+#  field(PINI, "RUNNING")
   field(DTYP, "asynFloat64")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))gap_time")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpGapTime")
   field(PREC, "2")
   field(EGU, "us")
   field(SCAN, "I/O Intr")
 }
 
-record(ao, "$(P)$(R)TRIG_PKTIM") {
-  field(PINI, "YES")
+record(ao, "$(P)$(R)TriggerPeakingTime") {
+  field(PINI, $(PINI))
   field(VAL,  "0.15")
   field(DTYP, "asynFloat64")
-  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))trigger_peaking_time")
+  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpTriggerPeakingTime")
   field(PREC, "2")
   field(EGU, "us")
 }
 
-record(ai, "$(P)$(R)TRIG_PKTIM_RBV") {
-  field(PINI, "YES")
+record(ai, "$(P)$(R)TriggerPeakingTime_RBV") {
+#  field(PINI, "RUNNING")
   field(DTYP, "asynFloat64")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))trigger_peaking_time")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpTriggerPeakingTime")
   field(PREC, "2")
   field(EGU, "us")
   field(SCAN, "I/O Intr")
 }
 
-record(ao, "$(P)$(R)TRIG_GAPTIM") {
-  field(PINI, "YES")
+record(ao, "$(P)$(R)TriggerGapTime") {
+  field(PINI, $(PINI))
   field(VAL,  "0.0")
   field(DTYP, "asynFloat64")
-  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))trigger_gap_time")
+  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpTriggerGapTime")
   field(PREC, "2")
   field(EGU, "us")
 }
 
-record(ai, "$(P)$(R)TRIG_GAPTIM_RBV") {
-  field(PINI, "YES")
+record(ai, "$(P)$(R)TriggerGapTime_RBV") {
+#  field(PINI, "RUNNING")
   field(DTYP, "asynFloat64")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))trigger_gap_time")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpTriggerGapTime")
   field(PREC, "2")
   field(EGU, "us")
   field(SCAN, "I/O Intr")
 }
 
-record(ao, "$(P)$(R)MAX_WIDTH") {
-  field(PINI, "YES")
+record(ao, "$(P)$(R)MaxWidth") {
+  field(PINI, $(PINI))
   field(VAL,  "4.0")
   field(DTYP, "asynFloat64")
-  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))maxwidth")
+  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpMaxWidth")
   field(PREC, "2")
   field(EGU, "us")
 }
 
-record(ai, "$(P)$(R)MAX_WIDTH_RBV") {
-  field(PINI, "YES")
+record(ai, "$(P)$(R)MaxWidth_RBV") {
+#  field(PINI, "RUNNING")
   field(DTYP, "asynFloat64")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))maxwidth")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpMaxWidth")
   field(PREC, "2")
   field(EGU, "us")
   field(SCAN, "I/O Intr")
 }
 
-record(bo, "$(P)$(R)READ_STATUS") {
+record(bo, "$(P)$(R)ReadDXPParams") {
   field(PINI, "NO")
   field(DESC, "get status info")
   field(SCAN, "Passive")
   field(DTYP, "asynInt32")
-  field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))NDDxpReadDXPParams")
+  field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpReadDXPParams")
   field(ZNAM, "Done")
   field(ONAM, "Read")
 }
 
-record(mbbo, "$(P)$(R)TRACE_MODE") {
-  field(PINI, "YES")
+record(mbbo, "$(P)$(R)TraceMode") {
+  field(PINI, $(PINI))
   field(DESC, "set trace mode")
   field(DTYP, "asynInt32")
-  field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))NDDxpTraceMode")
+  field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpTraceMode")
   field(ZRVL, "0")
   field(ONVL, "1")
   field(TWVL, "2")
@@ -413,11 +413,11 @@ record(mbbo, "$(P)$(R)TRACE_MODE") {
   field(IVOA, "Don't drive outputs")
 }
 
-record(mbbi, "$(P)$(R)TRACEMODE_RBV") {
-  field(PINI, "YES")
+record(mbbi, "$(P)$(R)TraceMode_RBV") {
+#  field(PINI, "RUNNING")
   field(DESC, "set trace mode")
   field(DTYP, "asynInt32")
-  field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))NDDxpTraceMode")
+  field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpTraceMode")
   field(ZRVL, "0")
   field(ONVL, "1")
   field(TWVL, "2")
@@ -435,22 +435,22 @@ record(mbbi, "$(P)$(R)TRACEMODE_RBV") {
   field(SCAN, "I/O Intr")
 }
 
-record(ao, "$(P)$(R)TRACE_TIME") {
-  field(PINI, "YES")
+record(ao, "$(P)$(R)TraceTime") {
+  field(PINI, $(PINI))
   field(VAL, "1.0")
   field(DESC, "set trace sample time")
   field(DTYP, "asynFloat64")
-  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))NDDxpTraceTime")
+  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpTraceTime")
   field(PREC, "2")
   field(EGU, "us")
   field(HOPR, "13107.00")
   field(LOPR, "0.020")
 }
 
-record(ai, "$(P)$(R)TRACE_TIME_RBV") {
-  field(PINI, "YES")
+record(ai, "$(P)$(R)TraceTime_RBV") {
+#  field(PINI, "RUNNING")
   field(DTYP, "asynFloat64")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))NDDxpTraceTime")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpTraceTime")
   field(PREC, "2")
   field(EGU, "us")
   field(HOPR, "13107.00")
@@ -458,11 +458,11 @@ record(ai, "$(P)$(R)TRACE_TIME_RBV") {
   field(SCAN, "I/O Intr")
 }
 
-record(waveform, "$(P)$(R)TRACE_DATA") {
+record(waveform, "$(P)$(R)TraceData") {
   field(DESC, "Get trace data")
   field(DTYP, "asynInt32ArrayIn")
   field(PREC, "0")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))NDDxpTrace")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpTrace")
   field(NELM, "4096")
   field(FTVL, "LONG")
 }
@@ -471,79 +471,81 @@ record(waveform, "$(P)$(R)BaselineHistogram") {
   field(DESC, "Baseline Histogram")
   field(DTYP, "asynInt32ArrayIn")
   field(PREC, "0")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))NDDxpBaselineHistogram")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpBaselineHistogram")
   field(NELM, "1024")
   field(FTVL, "LONG")
 }
 
 # This is really redundant with the MCA_ELAPSED_REAL parameter
-record(ai, "$(P)$(R)REALTIME") {
+record(ai, "$(P)$(R)ElapsedRealTime") {
   field(DTYP, "asynFloat64")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))NDDxp_STAT_REALTIME")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpElapsedRealTime")
   field(DESC, "number of triggers")
   field(SCAN, "I/O Intr")
 }
 
-record(ai, "$(P)$(R)TRIG_LIVETIME") {
+record(ai, "$(P)$(R)ElapsedTriggerLiveTime") {
   field(DTYP, "asynFloat64")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))NDDxp_STAT_TRIGLTIME")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpElapsedTriggerLiveTime")
   field(DESC, "trigger live time")
   field(SCAN, "I/O Intr")
 }
 
 # This is really redundant with the MCA_ELAPSED_LIVE parameter
-record(ai, "$(P)$(R)ENERGY_LIVETIME") {
+record(ai, "$(P)$(R)ElapsedLiveTime") {
   field(DTYP, "asynFloat64")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))NDDxp_STAT_ELTIME")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpElapsedLiveTime")
   field(DESC, "Energy live time")
   field(SCAN, "I/O Intr")
 }
 
-record(longin, "$(P)$(R)TRIGGERS") {
+record(longin, "$(P)$(R)Triggers") {
   field(DTYP, "asynInt32")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))NDDxp_STAT_TRIGGERS")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpTriggers")
   field(DESC, "number of triggers")
   field(SCAN, "I/O Intr")
 }
 
-record(longin, "$(P)$(R)EVENTS") {
+record(longin, "$(P)$(R)Events") {
   field(DTYP, "asynInt32")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))NDDxp_STAT_EVENTS")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpEvents")
   field(DESC, "number of events")
   field(SCAN, "I/O Intr")
 }
 
-record(ai, "$(P)$(R)ICR") {
+record(ai, "$(P)$(R)InputCountRate") {
   field(DTYP, "asynFloat64")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))NDDxp_STAT_INCNTRATE")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpInputCountRate")
   field(DESC, "incident count rate")
+  field(PREC, "1")
   field(SCAN, "I/O Intr")
 }
 
-record(ai, "$(P)$(R)OCR") {
+record(ai, "$(P)$(R)OutputCountRate") {
   field(DTYP, "asynFloat64")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))NDDxp_STAT_OUTCNTRATE")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpOutputCountRate")
   field(DESC, "output count rate")
+  field(PREC, "1")
   field(SCAN, "I/O Intr")
 }
 
 # The convention is that the MCA presets: preset live takes precedence over real, both 0=None
 # MCA has preset counts, this just allows choice of count for events or triggers
-record(mbbo, "$(P)$(R)PRESET_COUNT_MODE") {
-  field(PINI, "YES")
+record(mbbo, "$(P)$(R)PresetCountMode") {
+  field(PINI, $(PINI))
   field(DESC, "set preset type for preset counts")
   field(DTYP, "asynInt32")
-  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))NDDxpPresetCountMode")
+  field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpPresetCountMode")
   field(ZRVL, "0")
   field(ONVL, "1")
   field(ZRST, "events")
   field(ONST, "triggers")
 }
 
-record(mbbi, "$(P)$(R)PRESET_COUNT_MODE_RBV") {
+record(mbbi, "$(P)$(R)PresetCountMode_RBV") {
   field(DESC, "set preset type for preset counts")
   field(DTYP, "asynInt32")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))NDDxpPresetCountMode")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpPresetCountMode")
   field(ZRVL, "0")
   field(ONVL, "1")
   field(ZRST, "events")
