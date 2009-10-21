@@ -17,10 +17,10 @@ xiaSetLogLevel(2)
 xiaInit("xmap4.ini")
 xiaStartSystem
 
-# DXPConfig(serverName, ndetectors, ngroups, pollFrequency)
-DXPConfig("DXP1",  4, 1, 100)
+# DXPConfig(serverName, ndetectors, maxBuffers, maxMemory)
+NDDxpConfig("DXP1",  4, -1, -1)
 
-dbLoadTemplate("4element.template")
+dbLoadTemplate("4element.substitutions")
 
 #xiaSetLogLevel(4)
 #asynSetTraceMask DXP1 0 255
@@ -34,7 +34,7 @@ dbLoadRecords("$(SSCAN)/sscanApp/Db/scan.db","P=dxpXMAP:,MAXPTS1=2000,MAXPTS2=10
 
 iocInit
 
-seq dxpMED, "P=dxpXMAP:, DXP=dxp, MCA=mca, N_DETECTORS=4"
+#seq dxpMED, "P=dxpXMAP:, DXP=dxp, MCA=mca, N_DETECTORS=4"
 
 ### Start up the autosave task and tell it what to do.
 # Save settings every thirty seconds
