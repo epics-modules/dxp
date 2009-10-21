@@ -1,0 +1,29 @@
+file "$(DXP)/dxpApp/Db/dxpMED.db"
+{
+pattern
+{P,        MCAALL,    INP          } 
+{dxpXMAP:, mcaAll, "@asyn(DXP1,4)"}
+}
+
+file "$(MCA)/mcaApp/Db/simple_mca.db"
+{
+pattern
+{P,           M,       DTYP,         INP           PREC,  CHANS}
+{dxpXMAP:,   mca1,  "asynMCA",   "@asyn(DXP1,0)",   2,     2048}
+{dxpXMAP:,   mca2,  "asynMCA",   "@asyn(DXP1,1)",   2,     2048}
+{dxpXMAP:,   mca3,  "asynMCA",   "@asyn(DXP1,2)",   2,     2048}
+{dxpXMAP:,   mca4,  "asynMCA",   "@asyn(DXP1,3)",   2,     2048}
+{dxpXMAP:, mcaAll,  "asynMCA",   "@asyn(DXP1,4)",   2,     2048}
+}
+
+# DXP records
+file "$(DXP)/dxpApp/Db/dxp.template"
+{
+pattern
+{      P,        R,    PINI, PORT,   ADDR,   TIMEOUT}
+{dxpXMAP:    dxp1:,    YES,  DXP1,      0,         1}
+{dxpXMAP:    dxp2:,    YES,  DXP1,      1,         1}
+{dxpXMAP:    dxp3:,    YES,  DXP1,      2,         1}
+{dxpXMAP:    dxp4:,    YES,  DXP1,      3,         1}
+{dxpXMAP:  dxpAll:,     NO,  DXP1,      4,         1}
+}
