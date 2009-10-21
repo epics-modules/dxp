@@ -16,7 +16,7 @@ record(ai, "$(P)$(R)CollectData") {
        field(DTYP, "asynInt32")
        field(VAL, "0")
        field(PINI, "YES")
-       field(INP, "$(INP)NDDxpForceRead")
+       field(INP, "$(INP)DxpForceRead")
        field(FLNK, "$(P)$(R)ReadDataOnce PP MS")
 }
 
