@@ -1,7 +1,7 @@
 program dxpMED("P=13GE2:med:,DXP=dxp,MCA=mca,N_DETECTORS=16")
 
 /*  This sequencer program works with dxp.db and dxpMED.db. 
- *  It supports copying PVs from the first DXP to all of the DXPs
+ *  It supports Copying PVs from the first DXP to all of the DXPs
  *  and multi-element MCA operations
  *
  *  Mark Rivers
@@ -38,138 +38,126 @@ char *prefix;
 char *dxp;
 char *mca;
 
-double  TRIG_PKTIM[MAX_DETECTORS];
-assign  TRIG_PKTIM to {"","","","","","","","","","","","","","","","",
+double  TriggerPeakingTime[MAX_DETECTORS];
+assign  TriggerPeakingTime to {"","","","","","","","","","","","","","","","",
                        "","","","","","","","","","","","","","","",""};
-int     copyTRIG_PKTIM; assign copyTRIG_PKTIM to "{P}CopyTRIG_PKTIM";
-monitor copyTRIG_PKTIM; evflag copyTRIG_PKTIMMon; sync copyTRIG_PKTIM copyTRIG_PKTIMMon;
+int     CopyTriggerPeakingTime; assign CopyTriggerPeakingTime to "{P}CopyTriggerPeakingTime";
+monitor CopyTriggerPeakingTime; evflag CopyTriggerPeakingTimeMon; sync CopyTriggerPeakingTime CopyTriggerPeakingTimeMon;
 
-double  TRIG_GAPTIM[MAX_DETECTORS];
-assign  TRIG_GAPTIM to {"","","","","","","","","","","","","","","","",
+double  TriggerGapTime[MAX_DETECTORS];
+assign  TriggerGapTime to {"","","","","","","","","","","","","","","","",
                         "","","","","","","","","","","","","","","",""};
-int     copyTRIG_GAPTIM; assign copyTRIG_GAPTIM to "{P}CopyTRIG_GAPTIM";
-monitor copyTRIG_GAPTIM; evflag copyTRIG_GAPTIMMon; sync copyTRIG_GAPTIM copyTRIG_GAPTIMMon;
+int     CopyTriggerGapTime; assign CopyTriggerGapTime to "{P}CopyTriggerGapTime";
+monitor CopyTriggerGapTime; evflag CopyTriggerGapTimeMon; sync CopyTriggerGapTime CopyTriggerGapTimeMon;
 
-double  FAST_TRIG[MAX_DETECTORS]; 
-assign  FAST_TRIG to {"","","","","","","","","","","","","","","","",
+double  TriggerThreshold[MAX_DETECTORS]; 
+assign  TriggerThreshold to {"","","","","","","","","","","","","","","","",
                       "","","","","","","","","","","","","","","",""};
-int     copyFAST_TRIG; assign copyFAST_TRIG to "{P}CopyFAST_TRIG";
-monitor copyFAST_TRIG; evflag copyFAST_TRIGMon; sync copyFAST_TRIG copyFAST_TRIGMon;
+int     CopyTriggerThreshold; assign CopyTriggerThreshold to "{P}CopyTriggerThreshold";
+monitor CopyTriggerThreshold; evflag CopyTriggerThresholdMon; sync CopyTriggerThreshold CopyTriggerThresholdMon;
 
-double  PKTIM[MAX_DETECTORS]; 
-assign  PKTIM to {"","","","","","","","","","","","","","","","",
+double  PeakingTime[MAX_DETECTORS]; 
+assign  PeakingTime to {"","","","","","","","","","","","","","","","",
                   "","","","","","","","","","","","","","","",""};
-int     copyPKTIM; assign copyPKTIM to "{P}CopyPKTIM";
-monitor copyPKTIM; evflag copyPKTIMMon; sync copyPKTIM copyPKTIMMon;
+int     CopyPeakingTime; assign CopyPeakingTime to "{P}CopyPeakingTime";
+monitor CopyPeakingTime; evflag CopyPeakingTimeMon; sync CopyPeakingTime CopyPeakingTimeMon;
 
-double  GAPTIM[MAX_DETECTORS]; 
-assign  GAPTIM to {"","","","","","","","","","","","","","","","",
+double  GapTime[MAX_DETECTORS]; 
+assign  GapTime to {"","","","","","","","","","","","","","","","",
                    "","","","","","","","","","","","","","","",""};
-int     copyGAPTIM; assign copyGAPTIM to "{P}CopyGAPTIM";
-monitor copyGAPTIM; evflag copyGAPTIMMon; sync copyGAPTIM copyGAPTIMMon;
+int     CopyGapTime; assign CopyGapTime to "{P}CopyGapTime";
+monitor CopyGapTime; evflag CopyGapTimeMon; sync CopyGapTime CopyGapTimeMon;
 
-double  SLOW_TRIG[MAX_DETECTORS]; 
-assign  SLOW_TRIG to {"","","","","","","","","","","","","","","","",
+double  EnergyThreshold[MAX_DETECTORS]; 
+assign  EnergyThreshold to {"","","","","","","","","","","","","","","","",
                       "","","","","","","","","","","","","","","",""};
-int     copySLOW_TRIG; assign copySLOW_TRIG to "{P}CopySLOW_TRIG";
-monitor copySLOW_TRIG; evflag copySLOW_TRIGMon; sync copySLOW_TRIG copySLOW_TRIGMon;
+int     CopyEnergyThreshold; assign CopyEnergyThreshold to "{P}CopyEnergyThreshold";
+monitor CopyEnergyThreshold; evflag CopyEnergyThresholdMon; sync CopyEnergyThreshold CopyEnergyThresholdMon;
 
-double  MAX_WIDTH[MAX_DETECTORS]; 
-assign  MAX_WIDTH to {"","","","","","","","","","","","","","","","",
+double  MaxWidth[MAX_DETECTORS]; 
+assign  MaxWidth to {"","","","","","","","","","","","","","","","",
                       "","","","","","","","","","","","","","","",""};
-int     copyMAX_WIDTH; assign copyMAX_WIDTH to "{P}CopyMAX_WIDTH";
-monitor copyMAX_WIDTH; evflag copyMAX_WIDTHMon; sync copyMAX_WIDTH copyMAX_WIDTHMon;
+int     CopyMaxWidth; assign CopyMaxWidth to "{P}CopyMaxWidth";
+monitor CopyMaxWidth; evflag CopyMaxWidthMon; sync CopyMaxWidth CopyMaxWidthMon;
 
-double  BASE_CUT_PCT[MAX_DETECTORS]; 
-assign  BASE_CUT_PCT to {"","","","","","","","","","","","","","","","",
+double  BaselineCutPercent[MAX_DETECTORS]; 
+assign  BaselineCutPercent to {"","","","","","","","","","","","","","","","",
                          "","","","","","","","","","","","","","","",""}; 
-int     copyBASE_CUT_PCT; assign copyBASE_CUT_PCT to "{P}CopyBASE_CUT_PCT";
-monitor copyBASE_CUT_PCT; evflag copyBASE_CUT_PCTMon; sync copyBASE_CUT_PCT copyBASE_CUT_PCTMon;
+int     CopyBaselineCutPercent; assign CopyBaselineCutPercent to "{P}CopyBaselineCutPercent";
+monitor CopyBaselineCutPercent; evflag CopyBaselineCutPercentMon; sync CopyBaselineCutPercent CopyBaselineCutPercentMon;
 
-double  BASE_CUT_ENBL[MAX_DETECTORS]; 
-assign  BASE_CUT_ENBL to {"","","","","","","","","","","","","","","","",
+double  BaselineCutEnable[MAX_DETECTORS]; 
+assign  BaselineCutEnable to {"","","","","","","","","","","","","","","","",
                           "","","","","","","","","","","","","","","",""};
-int     copyBASE_CUT_ENBL; assign copyBASE_CUT_ENBL to "{P}CopyBASE_CUT_ENBL";
-monitor copyBASE_CUT_ENBL; evflag copyBASE_CUT_ENBLMon; sync copyBASE_CUT_ENBL copyBASE_CUT_ENBLMon;
+int     CopyBaselineCutEnable; assign CopyBaselineCutEnable to "{P}CopyBaselineCutEnable";
+monitor CopyBaselineCutEnable; evflag CopyBaselineCutEnableMon; sync CopyBaselineCutEnable CopyBaselineCutEnableMon;
 
-double  BASE_THRESH[MAX_DETECTORS]; 
-assign  BASE_THRESH to {"","","","","","","","","","","","","","","","",
+double  BaselineThreshold[MAX_DETECTORS]; 
+assign  BaselineThreshold to {"","","","","","","","","","","","","","","","",
                         "","","","","","","","","","","","","","","",""};
-int     copyBASE_THRESH; assign copyBASE_THRESH to "{P}CopyBASE_THRESH";
-monitor copyBASE_THRESH; evflag copyBASE_THRESHMon; sync copyBASE_THRESH copyBASE_THRESHMon;
+int     CopyBaselineThreshold; assign CopyBaselineThreshold to "{P}CopyBaselineThreshold";
+monitor CopyBaselineThreshold; evflag CopyBaselineThresholdMon; sync CopyBaselineThreshold CopyBaselineThresholdMon;
 
-double  BASE_THRESH_ENBL[MAX_DETECTORS]; 
-assign  BASE_THRESH_ENBL to {"","","","","","","","","","","","","","","","",
-                             "","","","","","","","","","","","","","","",""};
-int     copyBASE_THRESH_ENBL; assign copyBASE_THRESH_ENBL to "{P}CopyBASE_THRESH_ENBL";
-monitor copyBASE_THRESH_ENBL; evflag copyBASE_THRESH_ENBLMon; sync copyBASE_THRESH_ENBL copyBASE_THRESH_ENBLMon;
-
-double  BASE_LEN[MAX_DETECTORS]; 
-assign  BASE_LEN to {"","","","","","","","","","","","","","","","",
+double  BaselineFilterLength[MAX_DETECTORS]; 
+assign  BaselineFilterLength to {"","","","","","","","","","","","","","","","",
                      "","","","","","","","","","","","","","","",""};
-int     copyBASE_LEN; assign copyBASE_LEN to "{P}CopyBASE_LEN";
-monitor copyBASE_LEN; evflag copyBASE_LENMon; sync copyBASE_LEN copyBASE_LENMon;
+int     CopyBaselineFilterLength; assign CopyBaselineFilterLength to "{P}CopyBaselineFilterLength";
+monitor CopyBaselineFilterLength; evflag CopyBaselineFilterLengthMon; sync CopyBaselineFilterLength CopyBaselineFilterLengthMon;
 
-double  PGAIN[MAX_DETECTORS]; 
-assign  PGAIN to {"","","","","","","","","","","","","","","","",
+double  PreampGain[MAX_DETECTORS]; 
+assign  PreampGain to {"","","","","","","","","","","","","","","","",
                   "","","","","","","","","","","","","","","",""};
-int     copyPGAIN; assign copyPGAIN to "{P}CopyPGAIN";
-monitor copyPGAIN; evflag copyPGAINMon; sync copyPGAIN copyPGAINMon;
+int     CopyPreampGain; assign CopyPreampGain to "{P}CopyPreampGain";
+monitor CopyPreampGain; evflag CopyPreampGainMon; sync CopyPreampGain CopyPreampGainMon;
 
-double  EMAX[MAX_DETECTORS]; 
-assign  EMAX to {"","","","","","","","","","","","","","","","",
+double  MaxEnergy[MAX_DETECTORS]; 
+assign  MaxEnergy to {"","","","","","","","","","","","","","","","",
                  "","","","","","","","","","","","","","","",""};
-int     copyEMAX; assign copyEMAX to "{P}CopyEMAX";
-monitor copyEMAX; evflag copyEMAXMon; sync copyEMAX copyEMAXMon;
+int     CopyMaxEnergy; assign CopyMaxEnergy to "{P}CopyMaxEnergy";
+monitor CopyMaxEnergy; evflag CopyMaxEnergyMon; sync CopyMaxEnergy CopyMaxEnergyMon;
 
-double  ADC_RULE[MAX_DETECTORS]; 
-assign  ADC_RULE to {"","","","","","","","","","","","","","","","",
+double  ADCPercentRule[MAX_DETECTORS]; 
+assign  ADCPercentRule to {"","","","","","","","","","","","","","","","",
                      "","","","","","","","","","","","","","","",""};
-int     copyADC_RULE; assign copyADC_RULE to "{P}CopyADC_RULE";
-monitor copyADC_RULE; evflag copyADC_RULEMon; sync copyADC_RULE copyADC_RULEMon;
+int     CopyADCPercentRule; assign CopyADCPercentRule to "{P}CopyADCPercentRule";
+monitor CopyADCPercentRule; evflag CopyADCPercentRuleMon; sync CopyADCPercentRule CopyADCPercentRuleMon;
 
-int     readDXP[MAX_DETECTORS]; 
-assign  readDXP to {"","","","","","","","","","","","","","","","",
-                    "","","","","","","","","","","","","","","",""};
-int     readDXPs; assign readDXPs to "{P}DoReadDXPs";
-monitor readDXPs; evflag readDXPsMon; sync readDXPs readDXPsMon;
+/*int     ReadDXP[MAX_DETECTORS];  */
+/*assign  ReadDXP to {"","","","","","","","","","","","","","","","", */
+/*                    "","","","","","","","","","","","","","","",""}; */
+/*int     ReadDXPs; assign ReadDXPs to "{P}DoReadDXPs"; */
+/*monitor ReadDXPs; evflag ReadDXPsMon; sync ReadDXPs ReadDXPsMon; */
 
-int     readDXPBaseline[MAX_DETECTORS]; 
-assign  readDXPBaseline to {"","","","","","","","","","","","","","","","",
+int     ReadBaselineHistogram[MAX_DETECTORS]; 
+assign  ReadBaselineHistogram to {"","","","","","","","","","","","","","","","",
                             "","","","","","","","","","","","","","","",""};
-int     readDXPBaselines; assign readDXPBaselines to "{P}DoReadDXPBaselines";
-monitor readDXPBaselines; evflag readDXPBaselinesMon; sync readDXPBaselines readDXPBaselinesMon;
+int     ReadBaselineHistograms; assign ReadBaselineHistograms to "{P}DoReadBaselineHistograms";
+monitor ReadBaselineHistograms; evflag ReadBaselineHistogramsMon; sync ReadBaselineHistograms ReadBaselineHistogramsMon;
 
-int     readDXPBaselineHistory[MAX_DETECTORS]; 
-assign  readDXPBaselineHistory to {"","","","","","","","","","","","","","","","",
-                                   "","","","","","","","","","","","","","","",""};
-int     readDXPBaselineHistories; assign readDXPBaselineHistories to "{P}DoReadDXPBaselineHistories";
-monitor readDXPBaselineHistories; evflag readDXPBaselineHistoriesMon; sync readDXPBaselineHistories readDXPBaselineHistoriesMon;
-
-int     readDXPTrace[MAX_DETECTORS]; 
-assign  readDXPTrace to {"","","","","","","","","","","","","","","","",
+int     ReadTrace[MAX_DETECTORS]; 
+assign  ReadTrace to {"","","","","","","","","","","","","","","","",
                          "","","","","","","","","","","","","","","",""};
-int     readDXPTraces; assign readDXPTraces to "{P}DoReadDXPTraces";
-monitor readDXPTraces; evflag readDXPTracesMon; sync readDXPTraces readDXPTracesMon;
+int     ReadTraces; assign ReadTraces to "{P}DoReadTraces";
+monitor ReadTraces; evflag ReadTracesMon; sync ReadTraces ReadTracesMon;
 
-double  DXPTraceWait[MAX_DETECTORS]; 
-assign  DXPTraceWait to {"","","","","","","","","","","","","","","","",
+double  TraceTime[MAX_DETECTORS]; 
+assign  TraceTime to {"","","","","","","","","","","","","","","","",
                          "","","","","","","","","","","","","","","",""};
-double  DXPTraceWaits; assign DXPTraceWaits to "{P}TraceWaits";
-monitor DXPTraceWaits; evflag DXPTraceWaitsMon; sync DXPTraceWaits DXPTraceWaitsMon;
+double  TraceTimes; assign TraceTimes to "{P}TraceTimes";
+monitor TraceTimes; evflag TraceTimesMon; sync TraceTimes TraceTimesMon;
 
-double  DXPBaselineHistoryTime[MAX_DETECTORS]; 
-assign  DXPBaselineHistoryTime to {"","","","","","","","","","","","","","","","",
-                                   "","","","","","","","","","","","","","","",""};
-double  DXPBaselineHistoryTimes; assign DXPBaselineHistoryTimes to "{P}BaselineHistoryTimes";
-monitor DXPBaselineHistoryTimes; evflag DXPBaselineHistoryTimesMon; sync DXPBaselineHistoryTimes DXPBaselineHistoryTimesMon;
+int     TraceMode[MAX_DETECTORS]; 
+assign  TraceMode to {"","","","","","","","","","","","","","","","",
+                         "","","","","","","","","","","","","","","",""};
+int     TraceModes; assign TraceModes to "{P}TraceModes";
+monitor TraceModes; evflag TraceModesMon; sync TraceModes TraceModesMon;
 
-int     readMCA[MAX_DETECTORS]; 
-assign  readMCA to {"","","","","","","","","","","","","","","","",
+int     ReadMCA[MAX_DETECTORS]; 
+assign  ReadMCA to {"","","","","","","","","","","","","","","","",
                     "","","","","","","","","","","","","","","",""};
 int     ReadMCAs; assign ReadMCAs to "{P}DoReadAll";
 monitor ReadMCAs; evflag ReadMCAsMon; sync ReadMCAs ReadMCAsMon;
-int     readMCAAll; assign readMCAAll to "";
+int     ReadMCAAll; assign ReadMCAAll to "";
 
 int     statusMCA[MAX_DETECTORS];
 assign  statusMCA to {"","","","","","","","","","","","","","","","",
@@ -341,7 +329,7 @@ assign dxpSCAHigh to {"","","","","","","","","","","","","","","","",
                       "","","","","","","","","","","","","","","","",
                       "","","","","","","","","","","","","","","",""};
 
-int     AcquireBusy; assign AcquireBusy to "{P}AcquireBusy";
+int AcquireBusy; assign AcquireBusy to "{P}AcquireBusy";
 
 ss dxp_control {
     state init {
@@ -362,50 +350,46 @@ ss dxp_control {
             }
             for (i=0; i<nDetectors; i++) {
                det = i+1;
-               sprintf(temp, "%s%s%d.TRIG_PKTIM", prefix, dxp, det);
-               pvAssign(TRIG_PKTIM[i], temp);
-               sprintf(temp, "%s%s%d.TRIG_GAPTIM", prefix, dxp, det);
-               pvAssign(TRIG_GAPTIM[i], temp);
-               sprintf(temp, "%s%s%d.FAST_TRIG", prefix, dxp, det);
-               pvAssign(FAST_TRIG[i], temp);
-               sprintf(temp, "%s%s%d.PKTIM", prefix, dxp, det);
-               pvAssign(PKTIM[i], temp);
-               sprintf(temp, "%s%s%d.GAPTIM", prefix, dxp, det);
-               pvAssign(GAPTIM[i], temp);
-               sprintf(temp, "%s%s%d.SLOW_TRIG", prefix, dxp, det);
-               pvAssign(SLOW_TRIG[i], temp);
-               sprintf(temp, "%s%s%d.MAXWIDTH", prefix, dxp, det);
-               pvAssign(MAX_WIDTH[i], temp);
-               sprintf(temp, "%s%s%d.BASE_CUT_PCT", prefix, dxp, det);
-               pvAssign(BASE_CUT_PCT[i], temp);
-               sprintf(temp, "%s%s%d.T11V", prefix, dxp, det);
-               pvAssign(BASE_CUT_ENBL[i], temp);
-               sprintf(temp, "%s%s%d.BASE_THRESH", prefix, dxp, det);
-               pvAssign(BASE_THRESH[i], temp);
-               sprintf(temp, "%s%s%d.T14V", prefix, dxp, det);
-               pvAssign(BASE_THRESH_ENBL[i], temp);
-               sprintf(temp, "%s%s%d.BASE_LEN", prefix, dxp, det);
-               pvAssign(BASE_LEN[i], temp);
-               sprintf(temp, "%s%s%d.PGAIN", prefix, dxp, det);
-               pvAssign(PGAIN[i], temp);
-               sprintf(temp, "%s%s%d.EMAX", prefix, dxp, det);
-               pvAssign(EMAX[i], temp);
-               sprintf(temp, "%s%s%d.ADC_RULE", prefix, dxp, det);
-               pvAssign(ADC_RULE[i], temp);
-               sprintf(temp, "%s%s%d:ReadParams.PROC", prefix, dxp, det);
-               pvAssign(readDXP[i], temp);
-               sprintf(temp, "%s%s%d:ReadHistogram.PROC", prefix, dxp, det);
-               pvAssign(readDXPBaseline[i], temp);
-               sprintf(temp, "%s%s%d:ReadHistory.PROC", prefix, dxp, det);
-               pvAssign(readDXPBaselineHistory[i], temp);
-               sprintf(temp, "%s%s%d:ReadTrace.PROC", prefix, dxp, det);
-               pvAssign(readDXPTrace[i], temp);
-               sprintf(temp, "%s%s%d.TRACE_WAIT", prefix, dxp, det);
-               pvAssign(DXPTraceWait[i], temp);
-               sprintf(temp, "%s%s%d.BHIST_TIME", prefix, dxp, det);
-               pvAssign(DXPBaselineHistoryTime[i], temp);
+               sprintf(temp, "%s%s%d:TriggerPeakingTime", prefix, dxp, det);
+               pvAssign(TriggerPeakingTime[i], temp);
+               sprintf(temp, "%s%s%d:TriggerGapTime", prefix, dxp, det);
+               pvAssign(TriggerGapTime[i], temp);
+               sprintf(temp, "%s%s%d:TriggerThreshold", prefix, dxp, det);
+               pvAssign(TriggerThreshold[i], temp);
+               sprintf(temp, "%s%s%d:PeakingTime", prefix, dxp, det);
+               pvAssign(PeakingTime[i], temp);
+               sprintf(temp, "%s%s%d:GapTime", prefix, dxp, det);
+               pvAssign(GapTime[i], temp);
+               sprintf(temp, "%s%s%d:EnergyThreshold", prefix, dxp, det);
+               pvAssign(EnergyThreshold[i], temp);
+               sprintf(temp, "%s%s%d:MaxWidth", prefix, dxp, det);
+               pvAssign(MaxWidth[i], temp);
+               sprintf(temp, "%s%s%d:BaselineCutPercent", prefix, dxp, det);
+               pvAssign(BaselineCutPercent[i], temp);
+               sprintf(temp, "%s%s%d:BaselineCutEnable", prefix, dxp, det);
+               pvAssign(BaselineCutEnable[i], temp);
+               sprintf(temp, "%s%s%d:BaselineThreshold", prefix, dxp, det);
+               pvAssign(BaselineThreshold[i], temp);
+               sprintf(temp, "%s%s%d:BaselineFilterLength", prefix, dxp, det);
+               pvAssign(BaselineFilterLength[i], temp);
+               sprintf(temp, "%s%s%d:PreampGain", prefix, dxp, det);
+               pvAssign(PreampGain[i], temp);
+               sprintf(temp, "%s%s%d:MaxEnergy", prefix, dxp, det);
+               pvAssign(MaxEnergy[i], temp);
+               sprintf(temp, "%s%s%d:ADCPercentRule", prefix, dxp, det);
+               pvAssign(ADCPercentRule[i], temp);
+/*               sprintf(temp, "%s%s%d:ReadParams.PROC", prefix, dxp, det); */
+/*               pvAssign(ReadDXP[i], temp); */
+               sprintf(temp, "%s%s%d:BaselineHistogram.PROC", prefix, dxp, det);
+               pvAssign(ReadBaselineHistogram[i], temp);
+               sprintf(temp, "%s%s%d:TraceData.PROC", prefix, dxp, det);
+               pvAssign(ReadTrace[i], temp);
+               sprintf(temp, "%s%s%d:TraceTime", prefix, dxp, det);
+               pvAssign(TraceTime[i], temp);
+               sprintf(temp, "%s%s%d:TraceMode", prefix, dxp, det);
+               pvAssign(TraceMode[i], temp);
                sprintf(temp, "%s%s%d.READ", prefix, mca, det);
-               pvAssign(readMCA[i], temp);
+               pvAssign(ReadMCA[i], temp);
                sprintf(temp, "%s%s%d.PROC", prefix, mca, det);
                pvAssign(statusMCA[i], temp);
                sprintf(temp, "%s%s%d.ACQG", prefix, mca, det);
@@ -417,6 +401,7 @@ ss dxp_control {
                sprintf(temp, "%s%s%d.IDTIM", prefix, mca, det);
                pvAssign(mcaDeadTime[i], temp);
                pvMonitor(mcaDeadTime[i]);
+/*
                for (j=0; j<MAX_SCAS; j++) {
                    k = i*MAX_SCAS + j;
                    sprintf(temp, "%s%s%d.R%iLO", prefix, mca, det, j);
@@ -430,11 +415,12 @@ ss dxp_control {
                    sprintf(temp, "%s%s%d.SCA%i_HI", prefix, dxp, det, j);
                    pvAssign(dxpSCAHigh[k], temp);
                }
+*/
            }
            sprintf(temp, "%s%sAll.PROC", prefix, mca);
            pvAssign(statusMCAAll, temp);
            sprintf(temp, "%s%sAll.READ", prefix, mca);
-           pvAssign(readMCAAll, temp);
+           pvAssign(ReadMCAAll, temp);
            sprintf(temp, "%s%sAll.ACQG", prefix, mca);
            pvAssign(Acquiring, temp);
            prevAcquiring = Acquiring;
@@ -462,220 +448,201 @@ ss dxp_control {
           printf ("dxpMED: Not all channels connected.\n");
         } state waitConnected
 
-        when(efTestAndClear(copyTRIG_PKTIMMon) && (copyTRIG_PKTIM == 1)) {
-            pvGet(TRIG_PKTIM[0]);
-            for (i=1; i<nDetectors; i++) {
-                TRIG_PKTIM[i] = TRIG_PKTIM[0];
-                pvPut(TRIG_PKTIM[i]);
-            }
-            copyTRIG_PKTIM = 0;
-            pvPut(copyTRIG_PKTIM);
-        } state monitor_changes
-
-        when(efTestAndClear(copyTRIG_GAPTIMMon) && (copyTRIG_GAPTIM == 1)) {
-            pvGet(TRIG_GAPTIM[0]);
-            for (i=1; i<nDetectors; i++) {
-                TRIG_GAPTIM[i] = TRIG_GAPTIM[0];
-                pvPut(TRIG_GAPTIM[i]);
-            }
-            copyTRIG_GAPTIM = 0;
-            pvPut(copyTRIG_GAPTIM);
-        } state monitor_changes
-
-        when(efTestAndClear(copyFAST_TRIGMon) && (copyFAST_TRIG == 1)) {
-            pvGet(FAST_TRIG[0]);
-            for (i=1; i<nDetectors; i++) {
-                FAST_TRIG[i] = FAST_TRIG[0];
-                pvPut(FAST_TRIG[i]);
-            }
-            copyFAST_TRIG = 0;
-            pvPut(copyFAST_TRIG);
-        } state monitor_changes
-
-        when(efTestAndClear(copyPKTIMMon) && (copyPKTIM == 1)) {
-            pvGet(PKTIM[0]);
-            for (i=1; i<nDetectors; i++) {
-                PKTIM[i] = PKTIM[0];
-                pvPut(PKTIM[i]);
-            }
-            copyPKTIM = 0;
-            pvPut(copyPKTIM);
-        } state monitor_changes
-
-        when(efTestAndClear(copyGAPTIMMon) && (copyGAPTIM == 1)) {
-            pvGet(GAPTIM[0]);
-            for (i=1; i<nDetectors; i++) {
-                GAPTIM[i] = GAPTIM[0];
-                pvPut(GAPTIM[i]);
-            }
-            copyGAPTIM = 0;
-            pvPut(copyGAPTIM);
-        } state monitor_changes
-
-        when(efTestAndClear(copySLOW_TRIGMon) && (copySLOW_TRIG == 1)) {
-            pvGet(SLOW_TRIG[0]);
-            for (i=1; i<nDetectors; i++) {
-                SLOW_TRIG[i] = SLOW_TRIG[0];
-                pvPut(SLOW_TRIG[i]);
-            }
-            copySLOW_TRIG = 0;
-            pvPut(copySLOW_TRIG);
-        } state monitor_changes
-
-        when(efTestAndClear(copyMAX_WIDTHMon) && (copyMAX_WIDTH == 1)) {
-            pvGet(MAX_WIDTH[0]);
-            for (i=1; i<nDetectors; i++) {
-                MAX_WIDTH[i] = MAX_WIDTH[0];
-                pvPut(MAX_WIDTH[i]);
-            }
-            copyMAX_WIDTH = 0;
-            pvPut(copyMAX_WIDTH);
-        } state monitor_changes
-
-        when(efTestAndClear(copyBASE_CUT_PCTMon) && (copyBASE_CUT_PCT == 1)) {
-            pvGet(BASE_CUT_PCT[0]);
-            for (i=1; i<nDetectors; i++) {
-                BASE_CUT_PCT[i] = BASE_CUT_PCT[0];
-                pvPut(BASE_CUT_PCT[i]);
-            }
-            copyBASE_CUT_PCT = 0;
-            pvPut(copyBASE_CUT_PCT);
-        } state monitor_changes
-
-        when(efTestAndClear(copyBASE_CUT_ENBLMon) && (copyBASE_CUT_ENBL == 1)) {
-            pvGet(BASE_CUT_ENBL[0]);
-            for (i=1; i<nDetectors; i++) {
-                BASE_CUT_ENBL[i] = BASE_CUT_ENBL[0];
-                pvPut(BASE_CUT_ENBL[i]);
-            }
-            copyBASE_CUT_ENBL = 0;
-            pvPut(copyBASE_CUT_ENBL);
-        } state monitor_changes
-
-        when(efTestAndClear(copyBASE_THRESHMon) && (copyBASE_THRESH == 1)) {
-            pvGet(BASE_THRESH[0]);
-            for (i=1; i<nDetectors; i++) {
-                BASE_THRESH[i] = BASE_THRESH[0];
-                pvPut(BASE_THRESH[i]);
-            }
-            copyBASE_THRESH = 0;
-            pvPut(copyBASE_THRESH);
-        } state monitor_changes
-
-        when(efTestAndClear(copyBASE_THRESH_ENBLMon) && (copyBASE_THRESH_ENBL == 1)) {
-            pvGet(BASE_THRESH_ENBL[0]);
-            for (i=1; i<nDetectors; i++) {
-                BASE_THRESH_ENBL[i] = BASE_THRESH_ENBL[0];
-                pvPut(BASE_THRESH_ENBL[i]);
-            }
-            copyBASE_THRESH_ENBL = 0;
-            pvPut(copyBASE_THRESH_ENBL);
-        } state monitor_changes
-
-        when(efTestAndClear(copyBASE_LENMon) && (copyBASE_LEN == 1)) {
-            pvGet(BASE_LEN[0]);
-            for (i=1; i<nDetectors; i++) {
-                BASE_LEN[i] = BASE_LEN[0];
-                pvPut(BASE_LEN[i]);
-            }
-            copyBASE_LEN = 0;
-            pvPut(copyBASE_LEN);
-        } state monitor_changes
-
-        when(efTestAndClear(copyPGAINMon) && (copyPGAIN == 1)) {
-            pvGet(PGAIN[0]);
-            for (i=1; i<nDetectors; i++) {
-                PGAIN[i] = PGAIN[0];
-                pvPut(PGAIN[i]);
-            }
-            copyPGAIN = 0;
-            pvPut(copyPGAIN);
-        } state monitor_changes
-
-        when(efTestAndClear(copyEMAXMon) && (copyEMAX == 1)) {
-            pvGet(EMAX[0]);
-            for (i=1; i<nDetectors; i++) {
-                EMAX[i] = EMAX[0];
-                pvPut(EMAX[i]);
-            }
-            copyEMAX = 0;
-            pvPut(copyEMAX);
-        } state monitor_changes
-
-        when(efTestAndClear(copyADC_RULEMon) && (copyADC_RULE == 1)) {
-            pvGet(ADC_RULE[0]);
-            for (i=1; i<nDetectors; i++) {
-                ADC_RULE[i] = ADC_RULE[0];
-                pvPut(ADC_RULE[i]);
-            }
-            copyADC_RULE = 0;
-            pvPut(copyADC_RULE);
-        } state monitor_changes
-
-        when(efTestAndClear(readDXPsMon) && (readDXPs == 1)) {
+        when(efTestAndClear(CopyTriggerPeakingTimeMon) && (CopyTriggerPeakingTime == 1)) {
+            pvGet(TriggerPeakingTime[0]);
             for (i=0; i<nDetectors; i++) {
-                readDXP[i] = 1;
-                pvPut(readDXP[i]);
+                TriggerPeakingTime[i] = TriggerPeakingTime[0];
+                pvPut(TriggerPeakingTime[i]);
             }
-            readDXPs = 0;
-            pvPut(readDXPs);
+            CopyTriggerPeakingTime = 0;
+            pvPut(CopyTriggerPeakingTime);
         } state monitor_changes
 
-        when(efTestAndClear(readDXPBaselinesMon) && (readDXPBaselines == 1)) {
+        when(efTestAndClear(CopyTriggerGapTimeMon) && (CopyTriggerGapTime == 1)) {
+            pvGet(TriggerGapTime[0]);
             for (i=0; i<nDetectors; i++) {
-                readDXPBaseline[i] = 1;
-                pvPut(readDXPBaseline[i]);
+                TriggerGapTime[i] = TriggerGapTime[0];
+                pvPut(TriggerGapTime[i]);
             }
-            readDXPBaselines = 0;
-            pvPut(readDXPBaselines);
+            CopyTriggerGapTime = 0;
+            pvPut(CopyTriggerGapTime);
         } state monitor_changes
 
-        when(efTestAndClear(readDXPBaselineHistoriesMon) && (readDXPBaselineHistories == 1)) {
+        when(efTestAndClear(CopyTriggerThresholdMon) && (CopyTriggerThreshold == 1)) {
+            pvGet(TriggerThreshold[0]);
             for (i=0; i<nDetectors; i++) {
-                readDXPBaselineHistory[i] = 1;
-                pvPut(readDXPBaselineHistory[i]);
+                TriggerThreshold[i] = TriggerThreshold[0];
+                pvPut(TriggerThreshold[i]);
             }
-            readDXPBaselineHistories = 0;
-            pvPut(readDXPBaselineHistories);
+            CopyTriggerThreshold = 0;
+            pvPut(CopyTriggerThreshold);
         } state monitor_changes
 
-        when(efTestAndClear(readDXPTracesMon) && (readDXPTraces == 1)) {
+        when(efTestAndClear(CopyPeakingTimeMon) && (CopyPeakingTime == 1)) {
+            pvGet(PeakingTime[0]);
             for (i=0; i<nDetectors; i++) {
-                readDXPTrace[i] = 1;
-                pvPut(readDXPTrace[i]);
+                PeakingTime[i] = PeakingTime[0];
+                pvPut(PeakingTime[i]);
             }
-            readDXPTraces = 0;
-            pvPut(readDXPTraces);
+            CopyPeakingTime = 0;
+            pvPut(CopyPeakingTime);
         } state monitor_changes
 
-        when(efTestAndClear(DXPTraceWaitsMon)) {
+        when(efTestAndClear(CopyGapTimeMon) && (CopyGapTime == 1)) {
+            pvGet(GapTime[0]);
             for (i=0; i<nDetectors; i++) {
-                DXPTraceWait[i] = DXPTraceWaits;
-                pvPut(DXPTraceWait[i]);
+                GapTime[i] = GapTime[0];
+                pvPut(GapTime[i]);
+            }
+            CopyGapTime = 0;
+            pvPut(CopyGapTime);
+        } state monitor_changes
+
+        when(efTestAndClear(CopyEnergyThresholdMon) && (CopyEnergyThreshold == 1)) {
+            pvGet(EnergyThreshold[0]);
+            for (i=0; i<nDetectors; i++) {
+                EnergyThreshold[i] = EnergyThreshold[0];
+                pvPut(EnergyThreshold[i]);
+            }
+            CopyEnergyThreshold = 0;
+            pvPut(CopyEnergyThreshold);
+        } state monitor_changes
+
+        when(efTestAndClear(CopyMaxWidthMon) && (CopyMaxWidth == 1)) {
+            pvGet(MaxWidth[0]);
+            for (i=0; i<nDetectors; i++) {
+                MaxWidth[i] = MaxWidth[0];
+                pvPut(MaxWidth[i]);
+            }
+            CopyMaxWidth = 0;
+            pvPut(CopyMaxWidth);
+        } state monitor_changes
+
+        when(efTestAndClear(CopyBaselineCutPercentMon) && (CopyBaselineCutPercent == 1)) {
+            pvGet(BaselineCutPercent[0]);
+            for (i=0; i<nDetectors; i++) {
+                BaselineCutPercent[i] = BaselineCutPercent[0];
+                pvPut(BaselineCutPercent[i]);
+            }
+            CopyBaselineCutPercent = 0;
+            pvPut(CopyBaselineCutPercent);
+        } state monitor_changes
+
+        when(efTestAndClear(CopyBaselineCutEnableMon) && (CopyBaselineCutEnable == 1)) {
+            pvGet(BaselineCutEnable[0]);
+            for (i=0; i<nDetectors; i++) {
+                BaselineCutEnable[i] = BaselineCutEnable[0];
+                pvPut(BaselineCutEnable[i]);
+            }
+            CopyBaselineCutEnable = 0;
+            pvPut(CopyBaselineCutEnable);
+        } state monitor_changes
+
+        when(efTestAndClear(CopyBaselineThresholdMon) && (CopyBaselineThreshold == 1)) {
+            pvGet(BaselineThreshold[0]);
+            for (i=0; i<nDetectors; i++) {
+                BaselineThreshold[i] = BaselineThreshold[0];
+                pvPut(BaselineThreshold[i]);
+            }
+            CopyBaselineThreshold = 0;
+            pvPut(CopyBaselineThreshold);
+        } state monitor_changes
+
+        when(efTestAndClear(CopyBaselineFilterLengthMon) && (CopyBaselineFilterLength == 1)) {
+            pvGet(BaselineFilterLength[0]);
+            for (i=0; i<nDetectors; i++) {
+                BaselineFilterLength[i] = BaselineFilterLength[0];
+                pvPut(BaselineFilterLength[i]);
+            }
+            CopyBaselineFilterLength = 0;
+            pvPut(CopyBaselineFilterLength);
+        } state monitor_changes
+
+        when(efTestAndClear(CopyPreampGainMon) && (CopyPreampGain == 1)) {
+            pvGet(PreampGain[0]);
+            for (i=0; i<nDetectors; i++) {
+                PreampGain[i] = PreampGain[0];
+                pvPut(PreampGain[i]);
+            }
+            CopyPreampGain = 0;
+            pvPut(CopyPreampGain);
+        } state monitor_changes
+
+        when(efTestAndClear(CopyMaxEnergyMon) && (CopyMaxEnergy == 1)) {
+            pvGet(MaxEnergy[0]);
+            for (i=0; i<nDetectors; i++) {
+                MaxEnergy[i] = MaxEnergy[0];
+                pvPut(MaxEnergy[i]);
+            }
+            CopyMaxEnergy = 0;
+            pvPut(CopyMaxEnergy);
+        } state monitor_changes
+
+        when(efTestAndClear(CopyADCPercentRuleMon) && (CopyADCPercentRule == 1)) {
+            pvGet(ADCPercentRule[0]);
+            for (i=0; i<nDetectors; i++) {
+                ADCPercentRule[i] = ADCPercentRule[0];
+                pvPut(ADCPercentRule[i]);
+            }
+            CopyADCPercentRule = 0;
+            pvPut(CopyADCPercentRule);
+        } state monitor_changes
+
+/*        when(efTestAndClear(ReadDXPsMon) && (ReadDXPs == 1)) {
+            for (i=0; i<nDetectors; i++) {
+                ReadDXP[i] = 1;
+                pvPut(ReadDXP[i]);
+            }
+            ReadDXPs = 0;
+            pvPut(ReadDXPs);
+        } state monitor_changes  */
+
+        when(efTestAndClear(ReadBaselineHistogramsMon) && (ReadBaselineHistograms == 1)) {
+            for (i=0; i<nDetectors; i++) {
+                ReadBaselineHistogram[i] = 1;
+                pvPut(ReadBaselineHistogram[i]);
+            }
+            ReadBaselineHistograms = 0;
+            pvPut(ReadBaselineHistograms);
+        } state monitor_changes
+
+        when(efTestAndClear(ReadTracesMon) && (ReadTraces == 1)) {
+            for (i=0; i<nDetectors; i++) {
+                ReadTrace[i] = 1;
+                pvPut(ReadTrace[i]);
+            }
+            ReadTraces = 0;
+            pvPut(ReadTraces);
+        } state monitor_changes
+
+        when(efTestAndClear(TraceTimesMon)) {
+            for (i=0; i<nDetectors; i++) {
+                TraceTime[i] = TraceTimes;
+                pvPut(TraceTime[i]);
             }
         } state monitor_changes
 
-        when(efTestAndClear(DXPBaselineHistoryTimesMon)) {
+        when(efTestAndClear(TraceModesMon)) {
             for (i=0; i<nDetectors; i++) {
-                DXPBaselineHistoryTime[i] = DXPBaselineHistoryTimes;
-                pvPut(DXPBaselineHistoryTime[i]);
+                TraceMode[i] = TraceModes;
+                pvPut(TraceMode[i]);
             }
         } state monitor_changes
 
         when(efTestAndClear(ReadMCAsMon) && (ReadMCAs == 1)) {
-            /* printf("dxpMED: read MCAs\n"); */
+            /* printf("dxpMED: Read MCAs\n"); */
             for (i=0; i<nDetectors; i++) {
-                readMCA[i] = 1;
-                pvPut(readMCA[i]);
+                ReadMCA[i] = 1;
+                pvPut(ReadMCA[i]);
             }
-            readMCAAll = 1;
-            pvPut(readMCAAll);
+            ReadMCAAll = 1;
+            pvPut(ReadMCAAll);
             ReadMCAs = 0;
             pvPut(ReadMCAs);
         } state monitor_changes
 
         when(efTestAndClear(StatusMCAsMon) && (StatusMCAs == 1)) {
-            /* printf("dxpMED: read MCA status\n"); */
+            /* printf("dxpMED: Read MCA status\n"); */
             for (i=0; i<nDetectors; i++) {
                 statusMCA[i] = 1;
                 pvPut(statusMCA[i]);
@@ -703,10 +670,10 @@ ss dxp_control {
             for (i=0; i<nDetectors; i++) {
                 if (mcaAcquiring[i]) allDone = 0;
             }
-            /* If all individual MCAs are done, but mcaAll is not done, then force read on mcaAll */
+            /* If all individual MCAs are done, but mcaAll is not done, then force Read on mcaAll */
             if (allDone && Acquiring) {
-               readMCAAll = 1;
-               pvPut(readMCAAll);
+               ReadMCAAll = 1;
+               pvPut(ReadMCAAll);
             }
         } state monitor_changes
 
@@ -732,8 +699,9 @@ ss dxp_control {
             pvPut(DeadTime);
         } state monitor_changes
  
+        /* Copy ROIs to SCAs */
+ /*
         when(efTestAndClear(mcaROILowMon) || efTestAndClear(mcaROIHighMon)) {
-            /* Copy ROIs to SCAs */
             for (i=0; i<nDetectors; i++) {
                 for (j=0; j<MAX_SCAS; j++) {
                     k = i*MAX_SCAS + j;
@@ -747,8 +715,8 @@ ss dxp_control {
                     pvPut(dxpSCAHigh[k]);
                 }
             }
-            pvPut(DeadTime);
         } state monitor_changes
+*/
  
    }
 }
