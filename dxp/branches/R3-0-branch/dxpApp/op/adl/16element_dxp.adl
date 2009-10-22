@@ -1,7 +1,7 @@
 
 file {
-	name="/home/epics/devel/dxp/2-5beta/dxpApp/op/adl/16element_dxp.adl"
-	version=030000
+	name="/home/epics/devel/dxp/3-0/dxpApp/op/adl/16element_dxp.adl"
+	version=030102
 }
 display {
 	object {
@@ -401,11 +401,6 @@ text {
 		args="P=$(P), D=$(D)"
 	}
 	display[2] {
-		label="Baseline History"
-		name="16element_history.adl"
-		args="P=$(P), D=$(D)"
-	}
-	display[3] {
 		label="ADC Trace"
 		name="16element_trace.adl"
 		args="P=$(P), D=$(D)"
