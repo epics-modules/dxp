@@ -26,6 +26,7 @@ USR_CFLAGS += -DEXCLUDE_UDXPS
 
 # The following are compiled and added to the Support library
 dxp_SRCS += NDDxp.cpp
+dxp_SRCS += dxpMED.st
 dxp_SRCS += registrarNDDxp.c
 
 dxp_LIBS += handel
