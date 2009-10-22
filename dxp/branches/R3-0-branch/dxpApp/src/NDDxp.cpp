@@ -55,23 +55,9 @@ static char *NDDxpTraceCommands[] = {"adc_trace", "baseline_history",
                                      "baseline_samples", "energy_samples"};
 
 
-// This structure holds state information for each channel
-// This may or may not be needed.  It was used in old MCA driver
-typedef struct {
-    double preal;
-    double ereal;
-    double plive;
-    double elive;
-    double ptotal;
-    double etotal;
-    int acquiring;
-    int prev_acquiring;
-    int erased;
-} dxpChannel_t;
-
 typedef enum NDDxpParam_t {
     NDDxpXMAPMode = lastMcaCommand,     /** < Change mode of the XMAP (0=mca; 1=mapping; 2=sca) (int32 read/write) addr: all/any */
-    NDDxpStartMode,                     /** < Start mode. (0=clear on start; 1=resume spectrum) */
+    NDDxpErased,                        /** < Erased flag. (0=not erased, 1=erased) */
     NDDxpXMAPRunState,                  /** < XMAP reporting it's runtime state (int bitmap) */
     NDDxpCurrentPixel,                  /** < XMAP mapping mode only: read the current pixel that is being acquired into (int) */
     NDDxpNextPixel,                     /** < XMAP mapping mode only: force a pixel increment in the xmap buffer (write only int). Value is ignored. */
@@ -134,7 +120,7 @@ typedef enum NDDxpParam_t {
 
 static asynParamString_t NDDxpParamString[] = {
     {NDDxpXMAPMode,                 "DxpXMAPMode"},
-    {NDDxpStartMode,                "DxpStartMode"},
+    {NDDxpErased,                   "DxpErased"},
     {NDDxpXMAPRunState,             "DxpXMAPRunState"},
     {NDDxpCurrentPixel,             "DxpCurrentPixel"},
     {NDDxpNextPixel,                "DxpNextPixel"},
@@ -270,7 +256,6 @@ private:
     epicsInt32 *traceBuffer;
     epicsInt32 *baselineBuffer;
 
-    dxpChannel_t *pChannel;
     char polling;
 
 };
@@ -321,15 +306,12 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
         break;
     }
 
-    this->pChannel = (dxpChannel_t *) calloc(sizeof(dxpChannel_t), this->nChannels);
-
     /* Register the epics exit function to be called when the IOC exits... */
     xiastatus = epicsAtExit(c_shutdown, (void*)this);
     printf("  epicsAtExit registered: %d\n", xiastatus);
 
     /* Set the parameters from the camera in our areaDetector param lib */
     printf("  Setting the detector parameters...        ");
-    status |= setIntegerParam(NDDxpStartMode, 0);
     status |= setIntegerParam(NDDxpXMAPMode, 0);
     printf("OK\n");
 
@@ -430,7 +412,7 @@ asynStatus NDDxp::writeInt32( asynUser *pasynUser, epicsInt32 value)
     asynStatus status = asynSuccess;
     int function = pasynUser->reason;
     int channel, rbValue, xiastatus, chStep = 1;
-    int addr;
+    int addr, i;
     int acquiring, numChans, mode;
     const char* functionName = "writeInt32";
     int firstCh, ignored;
@@ -451,11 +433,6 @@ asynStatus NDDxp::writeInt32( asynUser *pasynUser, epicsInt32 value)
             status = this->changeMode(pasynUser, value);
             break;
 
-        case NDDxpStartMode:
-            if (value == 1 || value == 0) {status = asynSuccess;}
-            else {status = asynError;}
-            break;
-
         case NDDxpNextPixel:
             if (this->deviceType == NDDxpModelXMAP) chStep = XMAP_NCHANS_MODULE;
             for (firstCh = 0; firstCh < this->nChannels; firstCh += chStep)
@@ -466,16 +443,16 @@ asynStatus NDDxp::writeInt32( asynUser *pasynUser, epicsInt32 value)
             break;
 
         case mcaErase:
-            setIntegerParam(addr, NDDxpStartMode, 0);
+            setIntegerParam(addr, NDDxpErased, 1);
             getIntegerParam(addr, mcaNumChannels, &numChans);
             getIntegerParam(addr, mcaAcquiring, &acquiring);
             if (acquiring) {
                 xiaStopRun(channel);
-                setIntegerParam(addr, NDDxpStartMode, 1);
-                CALLHANDEL(xiaStartRun(channel, 0), "xiaStartRun(channel, 1)");
+                CALLHANDEL(xiaStartRun(channel, 0), "xiaStartRun(channel, 0)");
             }
             if (channel == DXP_ALL) {
                 memset(this->pMcaRaw[0], 0, this->nChannels * numChans * sizeof(epicsUInt32));
+                for (i=0; i<this->nChannels; i++) setIntegerParam(i, NDDxpErased, 1);
             } else {
                 memset(this->pMcaRaw[addr], 0, numChans * sizeof(epicsUInt32));
             }
@@ -865,7 +842,6 @@ asynStatus NDDxp::setDxpParam(asynUser *pasynUser, int addr, int function, doubl
             xiastatus = xiaSetAcquisitionValues(channel, "reset_delay", &dvalue);
             break;
         case NDDxpGapTime:
-printf("Setting minimum_gap_time = %f\n", dvalue);
             if (this->deviceType == NDDxpModelXMAP) {
                 /* On the xMAP the parameter that can be written is minimum_gap_time */
                 xiastatus = xiaSetAcquisitionValues(channel, "minimum_gap_time", &dvalue);
@@ -923,6 +899,10 @@ printf("Setting minimum_gap_time = %f\n", dvalue);
             dvalue = value * 1000. / 2.;
             xiastatus = xiaSetAcquisitionValues(channel, "calibration_energy", &dvalue);
             status = this->xia_checkError(pasynUser, xiastatus, "setting calibration_energy");
+            /* Must re-apply the ADC percent rule when changing calibration energy */
+            getDoubleParam(addr, NDDxpADCPercentRule, &dvalue);
+            xiastatus = xiaSetAcquisitionValues(channel, "adc_percent_rule", &dvalue);
+            status = this->xia_checkError(pasynUser, xiastatus, "setting adc_percent_rule");
             break;
     }
     this->apply(channel);
@@ -1152,7 +1132,7 @@ asynStatus NDDxp::getAcquisitionStatistics(asynUser *pasynUser, int addr)
     int ivalue;
     int acquiring=0;
     int channel=addr;
-    int resume;
+    int erased;
     int i;
     const char *functionName = "getAcquisitionStatistics";
 
@@ -1200,9 +1180,8 @@ asynStatus NDDxp::getAcquisitionStatistics(asynUser *pasynUser, int addr)
         asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, 
             "%s::%s start channel %d\n", 
             driverName, functionName, addr);
-        getIntegerParam(addr, NDDxpStartMode, &resume);
-        //if (this->pChannel[addr].erased) {
-        if (resume == 0) {
+        getIntegerParam(addr, NDDxpErased, &erased);
+        if (erased) {
             setDoubleParam(addr, mcaElapsedLiveTime, 0);
             setDoubleParam(addr, mcaElapsedRealTime, 0);
             setIntegerParam(addr, NDDxpEvents, 0);
@@ -1331,10 +1310,13 @@ asynStatus NDDxp::getDxpParams(asynUser *pasynUser, int addr)
         setDoubleParam(channel, NDDxpBaselineThreshold, dvalue);
         xiaGetAcquisitionValues(channel, "maxwidth", &dvalue);
         setDoubleParam(channel, NDDxpMaxWidth, dvalue);
-        if (this->deviceType != NDDxpModelXMAP) {
-           xiaGetAcquisitionValues(channel, "baseline_cut", &dvalue);
+        if (this->deviceType == NDDxpModelXMAP) {
+            setDoubleParam(channel, NDDxpBaselineCut, 0.0);
+            setIntegerParam(channel, NDDxpEnableBaselineCut, 0);
+        } else {
+            xiaGetAcquisitionValues(channel, "baseline_cut", &dvalue);
             setDoubleParam(channel, NDDxpBaselineCut, dvalue);
-           xiaGetAcquisitionValues(channel, "enable_baseline_cut", &dvalue);
+            xiaGetAcquisitionValues(channel, "enable_baseline_cut", &dvalue);
             setIntegerParam(channel, NDDxpEnableBaselineCut, (int)dvalue);
         }
         xiaGetAcquisitionValues(channel, "adc_percent_rule", &dvalue);
@@ -1663,18 +1645,19 @@ asynStatus NDDxp::drvUserCreate( asynUser *pasynUser, const char *drvInfo, const
 asynStatus NDDxp::startAcquiring(asynUser *pasynUser)
 {
     asynStatus status = asynSuccess;
-    int resume, xiastatus;
+    int xiastatus;
     int channel, addr, i;
-    int acquiring;
+    int acquiring, erased, resume=1;
     const char *functionName = "startAcquire";
 
     channel = this->getChannel(pasynUser, &addr);
-    getIntegerParam(addr, NDDxpStartMode, &resume);
     getIntegerParam(addr, mcaAcquiring, &acquiring);
+    getIntegerParam(addr, NDDxpErased, &erased);
+    if (erased) resume=0;
 
     asynPrint(pasynUser, ASYN_TRACE_FLOW,
-        "%s::%s ch=%d acquiring=%d resume=%d\n",
-        driverName, functionName, channel, acquiring, resume);
+        "%s::%s ch=%d acquiring=%d\n",
+        driverName, functionName, channel, acquiring);
     /* if already acquiring we just ignore and return */
     if (acquiring) return status;
 
@@ -1684,12 +1667,13 @@ asynStatus NDDxp::startAcquiring(asynUser *pasynUser)
     // do xiaStart command
     CALLHANDEL( xiaStartRun(channel, resume), "xiaStartRun()" )
 
-    setIntegerParam(addr, NDDxpStartMode, 1); /* reset the resume flag */
+    setIntegerParam(addr, NDDxpErased, 0); /* reset the resume flag */
     setIntegerParam(addr, mcaAcquiring, 1); /* Set the acquiring flag */
 
     if (channel == DXP_ALL) {
         for (i=0; i<this->nChannels; i++) {
-            setIntegerParam(addr, mcaAcquiring, 1);
+            setIntegerParam(i, mcaAcquiring, 1);
+            setIntegerParam(i, NDDxpErased, 0);
             callParamCallbacks(i, i);
         }
     }
