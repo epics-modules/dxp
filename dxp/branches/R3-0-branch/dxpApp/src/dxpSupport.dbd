@@ -2,4 +2,4 @@
 # REGISTRATION
 ################
 registrar(NDDxpRegister)
- 
+registrar(dxpMEDRegistrar) 
