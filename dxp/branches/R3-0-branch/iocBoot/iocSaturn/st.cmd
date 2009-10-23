@@ -22,8 +22,8 @@ xiaInit("saturn.ini")
 xiaStartSystem
 
 NDDxpConfig("DXP1", 1, 10, 42000000)
-#asynSetTraceIOMask("DXP1", 0, 0x2)
-#asynSetTraceMask("DXP1", 0, 0x9)
+asynSetTraceIOMask("DXP1", 0, 2)
+#asynSetTraceMask("DXP1", 0, 255)
 
 dbLoadRecords("$(DXP)/dxpApp/Db/dxp.template","P=dxpSaturn:,R=dxp1:,PORT=DXP1,ADDR=0,TIMEOUT=1,PINI=YES")
 dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=dxpSaturn:, M=mca1, DTYP=asynMCA,INP=@asyn(DXP1 0),NCHAN=2048")
