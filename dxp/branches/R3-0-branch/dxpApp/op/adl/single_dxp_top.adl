@@ -645,32 +645,6 @@ text {
 	limits {
 	}
 }
-text {
-	object {
-		x=465
-		y=379
-		width=120
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Auto thresh."
-	align="horiz. centered"
-}
-menu {
-	object {
-		x=588
-		y=379
-		width=75
-		height=20
-	}
-	control {
-		chan="$(P)$(D).T14V"
-		clr=14
-		bclr=51
-	}
-}
 composite {
 	object {
 		x=588
