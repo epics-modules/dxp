@@ -25,7 +25,6 @@ dbLoadTemplate("4element.substitutions")
 #xiaSetLogLevel(4)
 #asynSetTraceMask DXP1 0 255
 #asynSetTraceIOMask DXP1 0 2
-#var dxpRecordDebug 10
 
 ### Scan-support software
 # crate-resident scan.  This executes 1D, 2D, 3D, and 4D scans, and caches
@@ -34,7 +33,7 @@ dbLoadRecords("$(SSCAN)/sscanApp/Db/scan.db","P=dxpXMAP:,MAXPTS1=2000,MAXPTS2=10
 
 iocInit
 
-#seq dxpMED, "P=dxpXMAP:, DXP=dxp, MCA=mca, N_DETECTORS=4"
+seq dxpMED, "P=dxpXMAP:, DXP=dxp, MCA=mca, N_DETECTORS=4"
 
 ### Start up the autosave task and tell it what to do.
 # Save settings every thirty seconds
