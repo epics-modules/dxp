@@ -17,15 +17,14 @@ xiaSetLogLevel(2)
 xiaInit("xmap12.ini")
 xiaStartSystem
 
-# DXPConfig(serverName, ndetectors, ngroups, pollFrequency)
-DXPConfig("DXP1",  12, 1, 100)
+# DXPConfig(serverName, ndetectors, maxBuffers, maxMemory)
+NDDxpConfig("DXP1",  12, -1, -1)
 
-dbLoadTemplate("12element.template")
+dbLoadTemplate("12element.substitutions")
 
 #xiaSetLogLevel(4)
 #asynSetTraceMask DXP1 0 255
 #asynSetTraceIOMask DXP1 0 2
-#var dxpRecordDebug 10
 
 ### Scan-support software
 # crate-resident scan.  This executes 1D, 2D, 3D, and 4D scans, and caches
