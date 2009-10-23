@@ -86,9 +86,7 @@ typedef enum NDDxpParam_t {
     NDDxpForceRead,            /** < Force reading MCA spectra - used for mcaData when addr=ALL */
 
     /* runtime statistics */
-    NDDxpElapsedRealTime,                  /** < real time in seconds (double) */
-    NDDxpElapsedTriggerLiveTime,           /** < live time in seconds (double) */
-    NDDxpElapsedLiveTime,            /** < live time in seconds (double) */
+    NDDxpElapsedTriggerLiveTime,    /** < live time in seconds (double) */
     NDDxpTriggers,                  /** < number of triggers received (double) */
     NDDxpEvents,                    /** < total number of events registered (double) */
     NDDxpInputCountRate,            /** < input count rate in Hz (double) */
@@ -147,9 +145,7 @@ static asynParamString_t NDDxpParamString[] = {
     {NDDxpPollActive,               "DxpPollActive"},
     {NDDxpForceRead,                "DxpForceRead"},
 
-    {NDDxpElapsedRealTime,          "DxpElapsedRealTime"},
     {NDDxpElapsedTriggerLiveTime,   "DxpElapsedTriggerLiveTime"},
-    {NDDxpElapsedLiveTime,          "DxpElapsedLiveTime"},
     {NDDxpTriggers,                 "DxpTriggers"},
     {NDDxpEvents,                   "DxpEvents"},
     {NDDxpInputCountRate,           "DxpInputCountRate"},
@@ -308,22 +304,16 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
 
     /* Register the epics exit function to be called when the IOC exits... */
     xiastatus = epicsAtExit(c_shutdown, (void*)this);
-    printf("  epicsAtExit registered: %d\n", xiastatus);
 
     /* Set the parameters from the camera in our areaDetector param lib */
-    printf("  Setting the detector parameters...        ");
     status |= setIntegerParam(NDDxpXMAPMode, 0);
-    printf("OK\n");
 
     /* Create the start and stop events that will be used to signal our
      * acquisitionTask when to start/stop polling the HW     */
-    printf("  C++ epicsEvent....                         ");
     this->cmdStartEvent = new epicsEvent();
     this->cmdStopEvent = new epicsEvent();
     this->stoppedEvent = new epicsEvent();
-    printf("OK\n");
 
-    printf("  Allocating MCA spectrum memory...          ");
     /* allocate a memory pointer for each of the channels */
     this->pMcaRaw = (epicsUInt32**) calloc(this->nChannels, sizeof(epicsUInt32*));
     /* allocate a memory area for each spectrum */
@@ -346,20 +336,15 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
 
     this->tmpStats = (epicsFloat64*)calloc(28, sizeof(epicsFloat64));
     this->currentBuf = (epicsUInt32*)calloc(this->nChannels, sizeof(epicsUInt32));
-    printf("OK\n");
 
-    printf("  Getting adc_trace_length...                 ");
     xiastatus = xiaGetSpecialRunData(0, "adc_trace_length", (void *) &(this->traceLength));
     if (xiastatus != XIA_SUCCESS) printf("Error calling xiaGetSpecialRunData for adc_trace_length");
-    printf("%d\n", this->traceLength);
 
     /* Allocate a buffer for the trace data */
     this->traceBuffer = (epicsInt32 *)malloc(this->traceLength * sizeof(epicsInt32));
 
-    printf("Getting baseline_length...                     ");
     xiastatus = xiaGetRunData(0, "baseline_length", (void *) &(this->baselineLength));
     if (xiastatus != XIA_SUCCESS) printf("Error calling xiaGetRunData for baseline_length");
-    printf("%d\n", this->baselineLength);
 
     /* Allocate a buffer for the baseline histogram data */
     this->baselineBuffer = (epicsInt32 *)malloc(this->baselineLength * sizeof(epicsInt32));
@@ -368,13 +353,10 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
      * The XMAP buffer takes up 2MB of 16bit words. Unfortunatly the transfer over PCI
      * uses 32bit words so the data we receive from from the Handel library is 2x2MB large.
      * Thus the 2MB buffer: XMAP_MAX_MAPBUF_SIZE = 2 * 1024 * 1024; */
-    printf("  Allocating mapping memory buffer...          ");
     this->pMapRaw = (epicsUInt32*)malloc(2*XMAP_MAX_MAPBUF_SIZE);
     this->pMapSmallWord = (epicsUInt16*)calloc(XMAP_MAX_MAPBUF_SIZE, sizeof(epicsUInt16));
-    printf("%p\n", this->pMapRaw);
 
     /* Start up acquisition thread */
-    printf("  Starting up acquisition task...          ");
     this->polling = 1;
     status = (epicsThreadCreate("acquisitionTask",
                 epicsThreadPriorityMedium,
@@ -385,7 +367,7 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
         printf("%s:%s epicsThreadCreate failure for image task\n",
                 driverName, functionName);
         return;
-    } else printf("OK\n");
+    }
 
     /* Set default values for parameters that cannot be read from Handel */
     for (i=0; i<this->nChannels; i++) {
@@ -395,15 +377,9 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
 
     for (ch=0; ch < this->nChannels; ch++) CALLHANDEL( xiaStopRun(ch), "xiaStopRun" )
     /* Read the MCA and DXP parameters once */
-    printf("  Calling getDxpParams with DXP_ALL              ");
     this->getDxpParams(this->pasynUserSelf, DXP_ALL);
-    printf("OK\n");
-    printf("  Calling getAcquisitionStatus with DXP_ALL      ");
     this->getAcquisitionStatus(this->pasynUserSelf, DXP_ALL);
-    printf("OK\n");
-    printf("  Calling getAcquisitionStatistics with DXP_ALL  ");
     this->getAcquisitionStatistics(this->pasynUserSelf, DXP_ALL);
-    printf("OK\n");
 }
 
 /* virtual methods to override from ADDriver */
@@ -443,18 +419,23 @@ asynStatus NDDxp::writeInt32( asynUser *pasynUser, epicsInt32 value)
             break;
 
         case mcaErase:
-            setIntegerParam(addr, NDDxpErased, 1);
             getIntegerParam(addr, mcaNumChannels, &numChans);
             getIntegerParam(addr, mcaAcquiring, &acquiring);
             if (acquiring) {
                 xiaStopRun(channel);
                 CALLHANDEL(xiaStartRun(channel, 0), "xiaStartRun(channel, 0)");
-            }
-            if (channel == DXP_ALL) {
-                memset(this->pMcaRaw[0], 0, this->nChannels * numChans * sizeof(epicsUInt32));
-                for (i=0; i<this->nChannels; i++) setIntegerParam(i, NDDxpErased, 1);
             } else {
-                memset(this->pMcaRaw[addr], 0, numChans * sizeof(epicsUInt32));
+                setIntegerParam(addr, NDDxpErased, 1);
+                if (channel == DXP_ALL) {
+                    for (i=0; i<this->nChannels; i++) {
+                        setIntegerParam(i, NDDxpErased, 1);
+                        memset(this->pMcaRaw[i], 0, numChans * sizeof(epicsUInt32));
+                    }
+                } else {
+                    memset(this->pMcaRaw[addr], 0, numChans * sizeof(epicsUInt32));
+                }
+                /* Need to call getAcquisitionStatistics to set elapsed values to 0 */
+                this->getAcquisitionStatistics(pasynUser, addr);
             }
             break;
 
@@ -793,6 +774,18 @@ asynStatus NDDxp::setDxpParam(asynUser *pasynUser, int addr, int function, doubl
         case NDDxpPeakingTime:
             xiastatus = xiaSetAcquisitionValues(channel, "peaking_time", &dvalue);
             status = this->xia_checkError(pasynUser, xiastatus, "setting peaking_time");
+            /* Sometimes the gap time is rejected because the peaking time has not yet been 
+             * accepted, so we set it again here */
+            getDoubleParam(addr, NDDxpGapTime, &dvalue);
+            if (this->deviceType == NDDxpModelXMAP) {
+                /* On the xMAP the parameter that can be written is minimum_gap_time */
+                xiastatus = xiaSetAcquisitionValues(channel, "minimum_gap_time", &dvalue);
+                status = this->xia_checkError(pasynUser, xiastatus, "minimum_gap_time");
+            } else {
+               /* On the Saturn and DXP2X it is gap_time */
+                xiastatus = xiaSetAcquisitionValues(channel, "gap_time", &dvalue);
+                status = this->xia_checkError(pasynUser, xiastatus, "setting gap_time");
+            }
             break;
         case NDDxpDynamicRange:
             /* dynamic_range is only supported on the xMAP */
@@ -1070,9 +1063,9 @@ asynStatus NDDxp::changeMode(asynUser *pasynUser, epicsInt32 mode)
             for (i=0; i < XMAP_NCHANS_MODULE; i++)
             {
                 setDoubleParam(firstCh+i, NDDxpTriggers, 0);
-                setDoubleParam(firstCh+i, NDDxpElapsedRealTime, 0);
+                setDoubleParam(firstCh+i, mcaElapsedRealTime, 0);
                 setDoubleParam(firstCh+i, NDDxpElapsedTriggerLiveTime, 0);
-                setDoubleParam(firstCh+i, NDDxpElapsedLiveTime, 0);
+                setDoubleParam(firstCh+i, mcaElapsedLiveTime, 0);
                 callParamCallbacks(firstCh+i, firstCh+i);
             }
         }
@@ -1099,8 +1092,7 @@ asynStatus NDDxp::getAcquisitionStatus(asynUser *pasynUser, int addr)
     //    "%s::%s addr=%d channel=%d\n", 
     //    driverName, functionName, addr, channel);
     if (channel == DXP_ALL) { /* All channels */
-        if (this->deviceType == NDDxpModelXMAP) chStep = XMAP_NCHANS_MODULE;
-        for (i=0; i<this->nChannels; i+=chStep) {
+        for (i=0; i<this->nChannels; i++) {
             /* Call ourselves recursively but with a specific channel */
             this->getAcquisitionStatus(pasynUser, i);
             getIntegerParam(i, mcaAcquiring, &ivalue);
@@ -1108,6 +1100,7 @@ asynStatus NDDxp::getAcquisitionStatus(asynUser *pasynUser, int addr)
         }
         setIntegerParam(addr, mcaAcquiring, acquiring);
     } else {
+        //if (this->deviceType == NDDxpModelXMAP) chStep = XMAP_NCHANS_MODULE;
         /* Get the run time status from the handel library - informs whether the
          * HW is acquiring or not.        */
         CALLHANDEL( xiaGetRunData(channel, "run_active", &run_active), "xiaGetRunData (run_active)" )
@@ -1656,8 +1649,8 @@ asynStatus NDDxp::startAcquiring(asynUser *pasynUser)
     if (erased) resume=0;
 
     asynPrint(pasynUser, ASYN_TRACE_FLOW,
-        "%s::%s ch=%d acquiring=%d\n",
-        driverName, functionName, channel, acquiring);
+        "%s::%s ch=%d acquiring=%d, erased=%d\n",
+        driverName, functionName, channel, acquiring, erased);
     /* if already acquiring we just ignore and return */
     if (acquiring) return status;
 
@@ -1667,7 +1660,7 @@ asynStatus NDDxp::startAcquiring(asynUser *pasynUser)
     // do xiaStart command
     CALLHANDEL( xiaStartRun(channel, resume), "xiaStartRun()" )
 
-    setIntegerParam(addr, NDDxpErased, 0); /* reset the resume flag */
+    setIntegerParam(addr, NDDxpErased, 0); /* reset the erased flag */
     setIntegerParam(addr, mcaAcquiring, 1); /* Set the acquiring flag */
 
     if (channel == DXP_ALL) {
@@ -1715,12 +1708,6 @@ void NDDxp::acquisitionTask()
 
         if (!acquiring)
         {
-            /* Wait for a signal that tells this thread that the transmission
-             * has started and we can start asking for data...     */
-            asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW,
-                "%s::%s [%s]: waiting for acquire to start\n", 
-                driverName, functionName, this->portName);
-
             /* Release the lock while we wait for an event that says acquire has started, then lock again */
             this->unlock();
             /* Wait for someone to signal the cmdStartEvent */
@@ -1741,9 +1728,6 @@ void NDDxp::acquisitionTask()
         this->getAcquisitionStatus(this->pasynUserSelf, DXP_ALL);
         getIntegerParam(this->nChannels, mcaAcquiring, &acquiring);
         getIntegerParam(NDDxpXMAPMode, &mode);
-        //asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-        //    "%s::%s prevAcquiring=%d acquiring=%d mode=%d\n",
-        //    driverName, functionName, prevAcquiring, acquiring, mode);
         if (mode == NDDxpModeNormal && (!acquiring))
         {
             /* There must have just been a transition from acquiring to not acquiring */
@@ -1755,14 +1739,13 @@ void NDDxp::acquisitionTask()
                 "%s::%s Detected acquisition stop! Now reading data\n",
                 driverName, functionName);
             this->getMcaData(this->pasynUserSelf, DXP_ALL);
-            //printf("acquisition task, detected stop, called getAcquisitionStatistics and getMcaData\n");
         } else if (mode == NDDxpModeMapping)
         {
             this->pollMappingMode();
         }
 
         /* Do callbacks for all channels */
-        asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, 
+        asynPrint(pasynUser, ASYN_TRACE_FLOW, 
             "%s::%s Doing callbacks\n",
             driverName, functionName);
         for (i=0; i<=this->nChannels; i++) callParamCallbacks(i, i);
@@ -1772,7 +1755,7 @@ void NDDxp::acquisitionTask()
         sleeptime = pollTime - dtmp;
         if (sleeptime > 0.0)
         {
-            asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, 
+            asynPrint(pasynUser, ASYN_TRACE_FLOW, 
                 "%s::%s Sleeping for %f seconds\n",
                 driverName, functionName, sleeptime);
             this->unlock();
