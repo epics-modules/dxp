@@ -479,7 +479,7 @@ record(waveform, "$(P)$(R)BaselineHistogram") {
 # This is really redundant with the MCA_ELAPSED_REAL parameter
 record(ai, "$(P)$(R)ElapsedRealTime") {
   field(DTYP, "asynFloat64")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpElapsedRealTime")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_ELAPSED_REAL")
   field(DESC, "number of triggers")
   field(SCAN, "I/O Intr")
 }
@@ -494,7 +494,7 @@ record(ai, "$(P)$(R)ElapsedTriggerLiveTime") {
 # This is really redundant with the MCA_ELAPSED_LIVE parameter
 record(ai, "$(P)$(R)ElapsedLiveTime") {
   field(DTYP, "asynFloat64")
-  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpElapsedLiveTime")
+  field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_ELAPSED_LIVE")
   field(DESC, "Energy live time")
   field(SCAN, "I/O Intr")
 }
