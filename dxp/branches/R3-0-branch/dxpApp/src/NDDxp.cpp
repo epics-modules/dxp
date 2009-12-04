@@ -12,11 +12,14 @@
 #include <epicsMutex.h>
 #include <epicsExit.h>
 #include <envDefs.h>
+#include <iocsh.h>
+#include <epicsExport.h>
 
 /* Handel includes */
 #include <handel.h>
 #include <handel_errors.h>
 #include <handel_generic.h>
+#include <xerxes_generic.h>
 #include <md_generic.h>
 #include <handel_constants.h>
 
@@ -54,124 +57,78 @@ static char *NDDxpTraceCommands[] = {"adc_trace", "baseline_history",
                                      "trigger_filter", "baseline_filter", "energy_filter",
                                      "baseline_samples", "energy_samples"};
 
+typedef struct moduleStatistics {
+    double realTime;
+    double triggerLiveTime;
+    double energyLiveTime;
+    double triggers;
+    double events;
+    double icr;
+    double ocr;
+} moduleStatistics;
 
 typedef enum NDDxpParam_t {
-    NDDxpXMAPMode = lastMcaCommand,     /** < Change mode of the XMAP (0=mca; 1=mapping; 2=sca) (int32 read/write) addr: all/any */
-    NDDxpErased,                        /** < Erased flag. (0=not erased, 1=erased) */
-    NDDxpXMAPRunState,                  /** < XMAP reporting it's runtime state (int bitmap) */
-    NDDxpCurrentPixel,                  /** < XMAP mapping mode only: read the current pixel that is being acquired into (int) */
-    NDDxpNextPixel,                     /** < XMAP mapping mode only: force a pixel increment in the xmap buffer (write only int). Value is ignored. */
-    NDDxpPixelsPerBuffer,
-    NDDxpBufferOverrun,
-    NDDxpMBytesReceived,
-    NDDxpReadSpeed,
-
-    NDDxpReadDXPParams,        /** < Read back values of DXP parameters */
-    NDDxpPresetNumPixels,      /** < Preset value how many pixels to acquire in one run (r/w) mapping mode*/
-    NDDxpPixelCounter,         /** < Count how many pixels have been acquired (read) mapping mode */
-    NDDxpBufferCounter,        /** < Count how many buffers have been collected (read) mapping mode */
-    NDDxpPollTime,             /** < Status/data polling time in seconds */
-    NDDxpArrayCallbacks,       /** < Enable/disable array callbacks */
-    NDDxpDataType,             /** < DataType in NDDataType terms */
-    NDDxpArrayData,            /** < Array data: one spectrum in normal/mca mode; One full buffer (incl) headers in mapping mode */
-    NDDxpArraySize,            /** < Number of words/items in the array. Multiply with DataType to get bytesize. */
-    NDDxpNumPixelsInBuffer,    /** < Number of pixels in on buffer. Intended as read-only but can potentially be write-able (why would you?) */
-    NDDxpPresetCountMode,      /** < Sets which type of preset count to send to the HW: either events or triggers (xmap) */
-    NDDxpTraceMode,            /** < Select what type of trace to do: ADC, baseline hist, .. etc. */
-    NDDxpTraceTime,            /** < Set the trace sample time in us. */
-    NDDxpTrace,                /** < The trace array data (read) */
-    NDDxpBaselineHistogram,    /** < The baseline histogram array data (read) */
-    NDDxpMaxEnergy,            /** < Maximum energy */
-    NDDxpPollActive,           /** < Polling the HW for status and data is active/inactive (read)*/
-    NDDxpForceRead,            /** < Force reading MCA spectra - used for mcaData when addr=ALL */
-
-    /* runtime statistics */
-    NDDxpElapsedTriggerLiveTime,    /** < live time in seconds (double) */
-    NDDxpTriggers,                  /** < number of triggers received (double) */
-    NDDxpEvents,                    /** < total number of events registered (double) */
-    NDDxpInputCountRate,            /** < input count rate in Hz (double) */
-    NDDxpOutputCountRate,           /** < output count rate in Hz (double) */
-
-    NDDxpPeakingTime,
-    NDDxpDynamicRange,
-    NDDxpTriggerThreshold,
-    NDDxpBaselineThreshold,
-    NDDxpEnergyThreshold,
-    NDDxpCalibrationEnergy,
-    NDDxpADCPercentRule,
-    NDDxpMCABinWidth,
-    NDDxpPreampGain,
-    NDDxpNumMCAChannels,
-    NDDxpDetectorPolarity,
-    NDDxpResetDelay,
-    NDDxpDecayTime,
-    NDDxpGapTime,
-    NDDxpTriggerPeakingTime,
-    NDDxpTriggerGapTime,
-    NDDxpBaselineAverage,
-    NDDxpBaselineCut,
-    NDDxpEnableBaselineCut,
-    NDDxpMaxWidth,
-
-    NDDxpLastDriverParam
 } NDDxpParam_t;
 
-static asynParamString_t NDDxpParamString[] = {
-    {NDDxpXMAPMode,                 "DxpXMAPMode"},
-    {NDDxpErased,                   "DxpErased"},
-    {NDDxpXMAPRunState,             "DxpXMAPRunState"},
-    {NDDxpCurrentPixel,             "DxpCurrentPixel"},
-    {NDDxpNextPixel,                "DxpNextPixel"},
-    {NDDxpBufferOverrun,            "DxpBufferOverrun"},
-    {NDDxpMBytesReceived,           "DxpMBytesReceived"},
-    {NDDxpReadSpeed,                "DxpReadSpeed"},
+#define NDDxpXMAPModeString                 "DxpXMAPMode"
+#define NDDxpErasedString                   "DxpErased"
+#define NDDxpXMAPRunStateString             "DxpXMAPRunState"
+#define NDDxpCurrentPixelString             "DxpCurrentPixel"
+#define NDDxpNextPixelString                "DxpNextPixel"
+#define NDDxpPixelsPerBufferString          "NDDxpPixelsPerBuffer"
+#define NDDxpBufferOverrunString            "DxpBufferOverrun"
+#define NDDxpMBytesReceivedString           "DxpMBytesReceived"
+#define NDDxpReadSpeedString                "DxpReadSpeed"
 
-    {NDDxpReadDXPParams,            "DxpReadDXPParams"},
-    {NDDxpPresetNumPixels,          "DxpPresetNumPixels"},
-    {NDDxpPixelCounter,             "DxpPixelCounter"},
-    {NDDxpBufferCounter,            "DxpBufferCounter"},
-    {NDDxpPollTime,                 "DxpPollTime"},
-    {NDDxpArrayCallbacks,           "DxpArrayCallbacks"},
-    {NDDxpDataType,                 "DxpDataType"},
-    {NDDxpArrayData,                "DxpArrayData"},
-    {NDDxpArraySize,                "DxpArraySize"},
-    {NDDxpNumPixelsInBuffer,        "DxpNumPixelsInBuffer"},
-    {NDDxpPresetCountMode,          "DxpPresetCountMode"},
-    {NDDxpTraceMode,                "DxpTraceMode"},
-    {NDDxpTraceTime,                "DxpTraceTime"},
-    {NDDxpTrace,                    "DxpTrace"},
-    {NDDxpBaselineHistogram,        "DxpBaselineHistogram"},
-    {NDDxpMaxEnergy,                "DxpMaxEnergy"},
-    {NDDxpPollActive,               "DxpPollActive"},
-    {NDDxpForceRead,                "DxpForceRead"},
+#define NDDxpReadDXPParamsString            "DxpReadDXPParams"
+#define NDDxpPresetNumPixelsString          "DxpPresetNumPixels"
+#define NDDxpPixelCounterString             "DxpPixelCounter"
+#define NDDxpBufferCounterString            "DxpBufferCounter"
+#define NDDxpPollTimeString                 "DxpPollTime"
+#define NDDxpArrayCallbacksString           "DxpArrayCallbacks"
+#define NDDxpDataTypeString                 "DxpDataType"
+#define NDDxpArrayDataString                "DxpArrayData"
+#define NDDxpArraySizeString                "DxpArraySize"
+#define NDDxpNumPixelsInBufferString        "DxpNumPixelsInBuffer"
+#define NDDxpPresetCountModeString          "DxpPresetCountMode"
+#define NDDxpTraceModeString                "DxpTraceMode"
+#define NDDxpTraceTimeString                "DxpTraceTime"
+#define NDDxpTraceString                    "DxpTrace"
+#define NDDxpBaselineHistogramString        "DxpBaselineHistogram"
+#define NDDxpMaxEnergyString                "DxpMaxEnergy"
+#define NDDxpPollActiveString               "DxpPollActive"
+#define NDDxpForceReadString                "DxpForceRead"
 
-    {NDDxpElapsedTriggerLiveTime,   "DxpElapsedTriggerLiveTime"},
-    {NDDxpTriggers,                 "DxpTriggers"},
-    {NDDxpEvents,                   "DxpEvents"},
-    {NDDxpInputCountRate,           "DxpInputCountRate"},
-    {NDDxpOutputCountRate,          "DxpOutputCountRate"},
+#define NDDxpElapsedTriggerLiveTimeString   "DxpElapsedTriggerLiveTime"
+#define NDDxpTriggersString                 "DxpTriggers"
+#define NDDxpEventsString                   "DxpEvents"
+#define NDDxpInputCountRateString           "DxpInputCountRate"
+#define NDDxpOutputCountRateString          "DxpOutputCountRate"
 
-    {NDDxpPeakingTime,              "DxpPeakingTime"},
-    {NDDxpDynamicRange,             "DxpDynamicRange"},
-    {NDDxpTriggerThreshold,         "DxpTriggerThreshold"},
-    {NDDxpBaselineThreshold,        "DxpBaselineThreshold"},
-    {NDDxpEnergyThreshold,          "DxpEnergyThreshold"},
-    {NDDxpCalibrationEnergy,        "DxpCalibrationEnergy"},
-    {NDDxpADCPercentRule,           "DxpADCPercentRule"},
-    {NDDxpMCABinWidth,              "DxpMCABinWidth"},
-    {NDDxpPreampGain,               "DxpPreampGain"},
-    {NDDxpNumMCAChannels,           "DxpNumMCAChannels"},
-    {NDDxpDetectorPolarity,         "DxpDetectorPolarity"},
-    {NDDxpResetDelay,               "DxpResetDelay"},
-    {NDDxpDecayTime,                "DxpDecayTime"},
-    {NDDxpGapTime,                  "DxpGapTime"},
-    {NDDxpTriggerPeakingTime,       "DxpTriggerPeakingTime"},
-    {NDDxpTriggerGapTime,           "DxpTriggerGapTime"},
-    {NDDxpBaselineAverage,          "DxpBaselineAverage"},
-    {NDDxpBaselineCut,              "DxpBaselineCut"},
-    {NDDxpEnableBaselineCut,        "DxpEnableBaselineCut"},
-    {NDDxpMaxWidth,                 "DxpMaxWidth"}
-};
+#define NDDxpPeakingTimeString              "DxpPeakingTime"
+#define NDDxpDynamicRangeString             "DxpDynamicRange"
+#define NDDxpTriggerThresholdString         "DxpTriggerThreshold"
+#define NDDxpBaselineThresholdString        "DxpBaselineThreshold"
+#define NDDxpEnergyThresholdString          "DxpEnergyThreshold"
+#define NDDxpCalibrationEnergyString        "DxpCalibrationEnergy"
+#define NDDxpADCPercentRuleString           "DxpADCPercentRule"
+#define NDDxpMCABinWidthString              "DxpMCABinWidth"
+#define NDDxpPreampGainString               "DxpPreampGain"
+#define NDDxpNumMCAChannelsString           "DxpNumMCAChannels"
+#define NDDxpDetectorPolarityString         "DxpDetectorPolarity"
+#define NDDxpResetDelayString               "DxpResetDelay"
+#define NDDxpDecayTimeString                "DxpDecayTime"
+#define NDDxpGapTimeString                  "DxpGapTime"
+#define NDDxpTriggerPeakingTimeString       "DxpTriggerPeakingTime"
+#define NDDxpTriggerGapTimeString           "DxpTriggerGapTime"
+#define NDDxpBaselineAverageString          "DxpBaselineAverage"
+#define NDDxpBaselineCutString              "DxpBaselineCut"
+#define NDDxpEnableBaselineCutString        "DxpEnableBaselineCut"
+#define NDDxpMaxWidthString                 "DxpMaxWidth"
+    
+#define NDDxpSaveSystemFileString           "DxpSaveSystemFile"
+#define NDDxpSaveSystemString               "DxpSaveSystem"
+#define NDDxpAcquiringString                "NDDxpAcquiring"  /* Internal use only !!! */
 
 typedef struct NDDxpBuffers_t {
     char bufChar[2];
@@ -185,9 +142,6 @@ static NDDxpBuffers_t NDDxpBuffers[] =
         {"b", "buffer_full_b", "buffer_b"},
 };
 
-/** Number of asyn parameters (asyn commands) this driver supports. */
-#define NDDxp_N_PARAMS (sizeof( NDDxpParamString)/ sizeof(NDDxpParamString[0]))
-
 
 class NDDxp : public asynNDArrayDriver
 {
@@ -198,7 +152,6 @@ public:
     virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
     virtual asynStatus writeFloat64(asynUser *pasynUser, epicsFloat64 value);
     virtual asynStatus readInt32Array(asynUser *pasynUser, epicsInt32 *value, size_t nElements, size_t *nIn);
-    virtual asynStatus drvUserCreate( asynUser *pasynUser, const char *drvInfo, const char **pptypeName, size_t *psize);
     void report(FILE *fp, int details);
 
     /* Local methods to this class */
@@ -214,6 +167,7 @@ public:
     asynStatus setDxpParam(asynUser *pasynUser, int addr, int function, double value);
     asynStatus getDxpParams(asynUser *pasynUser, int addr);
     asynStatus getAcquisitionStatus(asynUser *pasynUser, int addr);
+    asynStatus getModuleStatistics(asynUser *pasynUser, int addr, moduleStatistics *stats);
     asynStatus getAcquisitionStatistics(asynUser *pasynUser, int addr);
     asynStatus getMcaData(asynUser *pasynUser, int addr);
     asynStatus getMappingData(asynUser *pasynUser, int addr);
@@ -228,6 +182,69 @@ public:
     asynStatus stopAcquiring(asynUser *pasynUser);
 
     asynStatus xmapGetModuleChannels(int currentChannel, int* firstChannel, int* nChannels);
+
+protected:
+    int NDDxpXMAPMode;                      /** < Change mode of the XMAP (0=mca; 1=mapping; 2=sca) (int32 read/write) addr: all/any */
+    #define FIRST_DXP_PARAM NDDxpXMAPMode
+    int NDDxpErased;                        /** < Erased flag. (0=not erased; 1=erased) */
+    int NDDxpXMAPRunState;                  /** < XMAP reporting it's runtime state (int bitmap) */
+    int NDDxpCurrentPixel;                  /** < XMAP mapping mode only: read the current pixel that is being acquired into (int) */
+    int NDDxpNextPixel;                     /** < XMAP mapping mode only: force a pixel increment in the xmap buffer (write only int). Value is ignored. */
+    int NDDxpPixelsPerBuffer;
+    int NDDxpBufferOverrun;
+    int NDDxpMBytesReceived;
+    int NDDxpReadSpeed;
+
+    int NDDxpReadDXPParams;        /** < Read back values of DXP parameters */
+    int NDDxpPresetNumPixels;      /** < Preset value how many pixels to acquire in one run (r/w) mapping mode*/
+    int NDDxpPixelCounter;         /** < Count how many pixels have been acquired (read) mapping mode */
+    int NDDxpBufferCounter;        /** < Count how many buffers have been collected (read) mapping mode */
+    int NDDxpPollTime;             /** < Status/data polling time in seconds */
+    int NDDxpArrayCallbacks;       /** < Enable/disable array callbacks */
+    int NDDxpDataType;             /** < DataType in NDDataType terms */
+    int NDDxpArrayData;            /** < Array data: one spectrum in normal/mca mode; One full buffer (incl) headers in mapping mode */
+    int NDDxpArraySize;            /** < Number of words/items in the array. Multiply with DataType to get bytesize. */
+    int NDDxpNumPixelsInBuffer;    /** < Number of pixels in on buffer. Intended as read-only but can potentially be write-able (why would you?) */
+    int NDDxpPresetCountMode;      /** < Sets which type of preset count to send to the HW: either events or triggers (xmap) */
+    int NDDxpTraceMode;            /** < Select what type of trace to do: ADC, baseline hist, .. etc. */
+    int NDDxpTraceTime;            /** < Set the trace sample time in us. */
+    int NDDxpTrace;                /** < The trace array data (read) */
+    int NDDxpBaselineHistogram;    /** < The baseline histogram array data (read) */
+    int NDDxpMaxEnergy;            /** < Maximum energy */
+    int NDDxpPollActive;           /** < Polling the HW for status and data is active/inactive (read)*/
+    int NDDxpForceRead;            /** < Force reading MCA spectra - used for mcaData when addr=ALL */
+
+    /* runtime statistics */
+    int NDDxpElapsedTriggerLiveTime;    /** < live time in seconds (double) */
+    int NDDxpTriggers;                  /** < number of triggers received (double) */
+    int NDDxpEvents;                    /** < total number of events registered (double) */
+    int NDDxpInputCountRate;            /** < input count rate in Hz (double) */
+    int NDDxpOutputCountRate;           /** < output count rate in Hz (double) */
+
+    int NDDxpPeakingTime;
+    int NDDxpDynamicRange;
+    int NDDxpTriggerThreshold;
+    int NDDxpBaselineThreshold;
+    int NDDxpEnergyThreshold;
+    int NDDxpCalibrationEnergy;
+    int NDDxpADCPercentRule;
+    int NDDxpMCABinWidth;
+    int NDDxpPreampGain;
+    int NDDxpNumMCAChannels;
+    int NDDxpDetectorPolarity;
+    int NDDxpResetDelay;
+    int NDDxpDecayTime;
+    int NDDxpGapTime;
+    int NDDxpTriggerPeakingTime;
+    int NDDxpTriggerGapTime;
+    int NDDxpBaselineAverage;
+    int NDDxpBaselineCut;
+    int NDDxpEnableBaselineCut;
+    int NDDxpMaxWidth;
+    int NDDxpSaveSystemFile;
+    int NDDxpSaveSystem;
+    int NDDxpAcquiring;                 /** Internal acquiring flag, not exposed via drvUser */
+    #define LAST_DXP_PARAM NDDxpAcquiring
 
 private:
     /* Data */
@@ -251,10 +268,23 @@ private:
     int baselineLength;
     epicsInt32 *traceBuffer;
     epicsInt32 *baselineBuffer;
+    
+    /* These values are needed temporarily until Handel adds "module_statistics" for Saturn and DXP2X */
+    moduleStatistics moduleStats[XMAP_NCHANS_MODULE];
+    double clockSpeed;
+    unsigned short numParams;
+    unsigned short *paramValues;
+    char **paramNames;
+    int triggerOffsets[2], eventOffsets[2];
+    int realTimeOffsets[3], triggerLiveTimeOffsets[3];
+    int overFlowOffsets[2], underFlowOffsets[2];
 
     char polling;
 
 };
+
+/** Number of asyn parameters (asyn commands) this driver supports. */
+#define NUM_DXP_PARAMS (&LAST_DXP_PARAM - &FIRST_DXP_PARAM + 1)
 
 static void c_shutdown(void* arg)
 {
@@ -277,7 +307,7 @@ extern "C" int NDDxp_config(const char *portName, int nChannels,
 }
 
 NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemory)
-    : asynNDArrayDriver(portName, nChannels + 1, NDDxpLastDriverParam, maxBuffers, maxMemory,
+    : asynNDArrayDriver(portName, nChannels + 1, NUM_DXP_PARAMS, maxBuffers, maxMemory,
             asynFloat64Mask | asynInt32ArrayMask | asynGenericPointerMask | asynOctetMask | asynInt32Mask | asynDrvUserMask,
             asynFloat64Mask | asynInt32ArrayMask | asynGenericPointerMask | asynOctetMask | asynInt32Mask,
             ASYN_MULTIDEVICE | ASYN_CANBLOCK, 1, 0, 0),
@@ -288,6 +318,63 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     int xiastatus = 0;
     asynUser *pasynUser = this->pasynUserSelf;
     const char *functionName = "NDDxp";
+
+
+    addParam(NDDxpXMAPModeString,               &NDDxpXMAPMode);
+    addParam(NDDxpErasedString,                 &NDDxpErased);
+    addParam(NDDxpXMAPRunStateString,           &NDDxpXMAPRunState);
+    addParam(NDDxpCurrentPixelString,           &NDDxpCurrentPixel);
+    addParam(NDDxpNextPixelString,              &NDDxpNextPixel);
+    addParam(NDDxpPixelsPerBufferString,        &NDDxpPixelsPerBuffer);
+    addParam(NDDxpBufferOverrunString,          &NDDxpBufferOverrun);
+    addParam(NDDxpMBytesReceivedString,         &NDDxpMBytesReceived);
+    addParam(NDDxpReadSpeedString,              &NDDxpReadSpeed);
+    addParam(NDDxpReadDXPParamsString,          &NDDxpReadDXPParams);
+    addParam(NDDxpPresetNumPixelsString,        &NDDxpPresetNumPixels);
+    addParam(NDDxpPixelCounterString,           &NDDxpPixelCounter);
+    addParam(NDDxpBufferCounterString,          &NDDxpBufferCounter);
+    addParam(NDDxpPollTimeString,               &NDDxpPollTime);
+    addParam(NDDxpArrayCallbacksString,         &NDDxpArrayCallbacks);
+    addParam(NDDxpDataTypeString,               &NDDxpDataType);
+    addParam(NDDxpArrayDataString,              &NDDxpArrayData);
+    addParam(NDDxpArraySizeString,              &NDDxpArraySize);
+    addParam(NDDxpNumPixelsInBufferString,      &NDDxpNumPixelsInBuffer);
+    addParam(NDDxpPresetCountModeString,        &NDDxpPresetCountMode);
+    addParam(NDDxpTraceModeString,              &NDDxpTraceMode);
+    addParam(NDDxpTraceTimeString,              &NDDxpTraceTime);
+    addParam(NDDxpTraceString,                  &NDDxpTrace);
+    addParam(NDDxpBaselineHistogramString,      &NDDxpBaselineHistogram);
+    addParam(NDDxpMaxEnergyString,              &NDDxpMaxEnergy);
+    addParam(NDDxpPollActiveString,             &NDDxpPollActive);
+    addParam(NDDxpForceReadString,              &NDDxpForceRead);
+    addParam(NDDxpElapsedTriggerLiveTimeString, &NDDxpElapsedTriggerLiveTime);
+    addParam(NDDxpTriggersString,               &NDDxpTriggers);
+    addParam(NDDxpEventsString,                 &NDDxpEvents);
+    addParam(NDDxpInputCountRateString,         &NDDxpInputCountRate);
+    addParam(NDDxpOutputCountRateString,        &NDDxpOutputCountRate);
+    addParam(NDDxpPeakingTimeString,            &NDDxpPeakingTime);
+    addParam(NDDxpDynamicRangeString,           &NDDxpDynamicRange);
+    addParam(NDDxpTriggerThresholdString,       &NDDxpTriggerThreshold);
+    addParam(NDDxpBaselineThresholdString,      &NDDxpBaselineThreshold);
+    addParam(NDDxpEnergyThresholdString,        &NDDxpEnergyThreshold);
+    addParam(NDDxpCalibrationEnergyString,      &NDDxpCalibrationEnergy);
+    addParam(NDDxpADCPercentRuleString,         &NDDxpADCPercentRule);
+    addParam(NDDxpMCABinWidthString,            &NDDxpMCABinWidth);
+    addParam(NDDxpPreampGainString,             &NDDxpPreampGain);
+    addParam(NDDxpNumMCAChannelsString,         &NDDxpNumMCAChannels);
+    addParam(NDDxpDetectorPolarityString,       &NDDxpDetectorPolarity);
+    addParam(NDDxpResetDelayString,             &NDDxpResetDelay);
+    addParam(NDDxpDecayTimeString,              &NDDxpDecayTime);
+    addParam(NDDxpGapTimeString,                &NDDxpGapTime);
+    addParam(NDDxpTriggerPeakingTimeString,     &NDDxpTriggerPeakingTime);
+    addParam(NDDxpTriggerGapTimeString,         &NDDxpTriggerGapTime);
+    addParam(NDDxpBaselineAverageString,        &NDDxpBaselineAverage);
+    addParam(NDDxpBaselineCutString,            &NDDxpBaselineCut);
+    addParam(NDDxpEnableBaselineCutString,      &NDDxpEnableBaselineCut);
+    addParam(NDDxpMaxWidthString,               &NDDxpMaxWidth);
+    addParam(NDDxpSaveSystemFileString,         &NDDxpSaveSystemFile);
+    addParam(NDDxpSaveSystemString,             &NDDxpSaveSystem);
+    addParam(NDDxpAcquiringString,              &NDDxpAcquiring);
 
     this->deviceType = (NDDxpModel_t) this->getModuleType();
     this->nChannels = nChannels;
@@ -301,7 +388,7 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
         this->nCards = this->nChannels;
         break;
     }
-
+    
     /* Register the epics exit function to be called when the IOC exits... */
     xiastatus = epicsAtExit(c_shutdown, (void*)this);
 
@@ -392,6 +479,7 @@ asynStatus NDDxp::writeInt32( asynUser *pasynUser, epicsInt32 value)
     int acquiring, numChans, mode;
     const char* functionName = "writeInt32";
     int firstCh, ignored;
+    char fileName[MAX_FILENAME_LEN];
 
     channel = this->getChannel(pasynUser, &addr);
     asynPrint(pasynUser, ASYN_TRACE_FLOW, 
@@ -401,88 +489,81 @@ asynStatus NDDxp::writeInt32( asynUser *pasynUser, epicsInt32 value)
     /* Set the parameter and readback in the parameter library.  This may be overwritten later but that's OK */
     status = setIntegerParam(addr, function, value);
 
-    switch(function) {
-        case NDDxpXMAPMode:
-            asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-                "%s::%s change mode to %d\n",
-                driverName, functionName, value);
-            status = this->changeMode(pasynUser, value);
-            break;
-
-        case NDDxpNextPixel:
-            if (this->deviceType == NDDxpModelXMAP) chStep = XMAP_NCHANS_MODULE;
-            for (firstCh = 0; firstCh < this->nChannels; firstCh += chStep)
-            {
-                CALLHANDEL( xiaBoardOperation(firstCh, "mapping_pixel_next", (void*)&ignored), "mapping_pixel_next" )
-            }
-            setIntegerParam(addr, function, 0);
-            break;
-
-        case mcaErase:
-            getIntegerParam(addr, mcaNumChannels, &numChans);
-            getIntegerParam(addr, mcaAcquiring, &acquiring);
-            if (acquiring) {
-                xiaStopRun(channel);
-                CALLHANDEL(xiaStartRun(channel, 0), "xiaStartRun(channel, 0)");
-            } else {
-                setIntegerParam(addr, NDDxpErased, 1);
-                if (channel == DXP_ALL) {
-                    for (i=0; i<this->nChannels; i++) {
-                        setIntegerParam(i, NDDxpErased, 1);
-                        memset(this->pMcaRaw[i], 0, numChans * sizeof(epicsUInt32));
-                    }
-                } else {
-                    memset(this->pMcaRaw[addr], 0, numChans * sizeof(epicsUInt32));
+    if (function == NDDxpXMAPMode) {
+        asynPrint(pasynUser, ASYN_TRACE_FLOW, 
+            "%s::%s change mode to %d\n",
+            driverName, functionName, value);
+        status = this->changeMode(pasynUser, value);
+    } else if (function == NDDxpNextPixel) {
+        if (this->deviceType == NDDxpModelXMAP) chStep = XMAP_NCHANS_MODULE;
+        for (firstCh = 0; firstCh < this->nChannels; firstCh += chStep)
+        {
+            CALLHANDEL( xiaBoardOperation(firstCh, "mapping_pixel_next", (void*)&ignored), "mapping_pixel_next" )
+        }
+        setIntegerParam(addr, function, 0);
+    } else if (function == mcaErase) {
+        getIntegerParam(addr, mcaNumChannels, &numChans);
+        getIntegerParam(addr, mcaAcquiring, &acquiring);
+        if (acquiring) {
+            xiaStopRun(channel);
+            CALLHANDEL(xiaStartRun(channel, 0), "xiaStartRun(channel, 0)");
+        } else {
+            setIntegerParam(addr, NDDxpErased, 1);
+            if (channel == DXP_ALL) {
+                for (i=0; i<this->nChannels; i++) {
+                    setIntegerParam(i, NDDxpErased, 1);
+                    memset(this->pMcaRaw[i], 0, numChans * sizeof(epicsUInt32));
                 }
-                /* Need to call getAcquisitionStatistics to set elapsed values to 0 */
-                this->getAcquisitionStatistics(pasynUser, addr);
+            } else {
+                memset(this->pMcaRaw[addr], 0, numChans * sizeof(epicsUInt32));
             }
-            break;
-
-        case mcaStartAcquire:
-            status = this->startAcquiring(pasynUser);
-            break;
-
-        case mcaStopAcquire:
-            CALLHANDEL(xiaStopRun(channel), "xiaStopRun(detChan)");
-            //status = this->stopAcquiring(pasynUser);
-            break;
-
-
-        case mcaNumChannels:
-            // rbValue not used here, call setIntegerParam if needed.
-            status = this->setNumChannels(pasynUser, value, &rbValue);
-            break;
-
-        case mcaReadStatus:
-            getIntegerParam(NDDxpXMAPMode, &mode);
-            asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-                "%s::%s mcaReadStatus [%d] mode=%d\n", 
-                driverName, functionName, function, mode);
-            status = this->getAcquisitionStatus(pasynUser, addr);
-            if (mode == NDDxpModeNormal) {
-                /* If we are acquiring then read the statistics, else we use the cached values */
-                getIntegerParam(addr, mcaAcquiring, &acquiring);
-                if (acquiring) status = this->getAcquisitionStatistics(pasynUser, addr);
+            /* Need to call getAcquisitionStatistics to set elapsed values to 0 */
+            this->getAcquisitionStatistics(pasynUser, addr);
+        }
+    } else if (function == mcaStartAcquire) {
+        status = this->startAcquiring(pasynUser);
+    } else if (function == mcaStopAcquire) {
+        CALLHANDEL(xiaStopRun(channel), "xiaStopRun(detChan)");
+    } else if (function == mcaNumChannels) {
+        // rbValue not used here, call setIntegerParam if needed.
+        status = this->setNumChannels(pasynUser, value, &rbValue);
+    } else if (function == mcaReadStatus) {
+        getIntegerParam(NDDxpXMAPMode, &mode);
+        asynPrint(pasynUser, ASYN_TRACE_FLOW, 
+            "%s::%s mcaReadStatus [%d] mode=%d\n", 
+            driverName, functionName, function, mode);
+        /* We let the polling task set the acquiring flag, so that we can be sure that
+         * the statistics and data have been read when needed.  DON'T READ ACQUIRE STATUS HERE */
+        getIntegerParam(addr, mcaAcquiring, &acquiring);
+        if (mode == NDDxpModeNormal) {
+            /* If we are acquiring then read the statistics, else we use the cached values */
+            if (acquiring) status = this->getAcquisitionStatistics(pasynUser, addr);
+        }
+    } else if ((function == mcaPresetCounts) ||
+               (function == NDDxpPresetCountMode)) {
+        this->setPresets(pasynUser, addr);
+    } else if (function == NDDxpReadDXPParams) {
+        this->getDxpParams(pasynUser, addr);
+    } else if ((function == NDDxpDetectorPolarity) ||
+               (function == NDDxpEnableBaselineCut)||
+               (function == NDDxpBaselineAverage)) {
+        this->setDxpParam(pasynUser, addr, function, (double)value);
+    } else if (function == NDDxpSaveSystem) {
+        if (value) {
+            callParamCallbacks(addr, addr);
+            status = getStringParam(NDDxpSaveSystemFile, sizeof(fileName), fileName);
+            if (status || (strlen(fileName) == 0)) {
+                asynPrint(pasynUser, ASYN_TRACE_ERROR,
+                    "%s::%s error, bad system file name, status=%d, fileName=%s\n",
+                    driverName, functionName, status, fileName);
+                goto done;
             }
-            break;
-
-        case mcaPresetCounts:
-        case NDDxpPresetCountMode:
-            this->setPresets(pasynUser, addr);
-            break;
-
-        case NDDxpReadDXPParams:
-            this->getDxpParams(pasynUser, addr);
-            break;
-
-        case NDDxpDetectorPolarity:
-        case NDDxpEnableBaselineCut:
-        case NDDxpBaselineAverage:
-            this->setDxpParam(pasynUser, addr, function, (double)value);
-            break;
+            CALLHANDEL(xiaSaveSystem("handel_ini", fileName), "xiaSaveSystem(handel_ini, fileName)");
+            /* Set the save command back to 0 */
+            setIntegerParam(addr, NDDxpSaveSystem, 0);
+        }
     }
-
+    done:
 
     /* Call the callback */
     callParamCallbacks(addr, addr);
@@ -505,29 +586,29 @@ asynStatus NDDxp::writeFloat64( asynUser *pasynUser, epicsFloat64 value)
     /* Set the parameter and readback in the parameter library.  This may be overwritten later but that's OK */
     status = setDoubleParam(addr, function, value);
 
-    switch(function) {
-        case mcaPresetRealTime:
-        case mcaPresetLiveTime:
-            this->setPresets(pasynUser, addr);
-            break;
-        case NDDxpPeakingTime:
-        case NDDxpDynamicRange:
-        case NDDxpTriggerThreshold:
-        case NDDxpBaselineThreshold:
-        case NDDxpEnergyThreshold:
-        case NDDxpCalibrationEnergy:
-        case NDDxpADCPercentRule:
-        case NDDxpPreampGain:
-        case NDDxpDetectorPolarity:
-        case NDDxpResetDelay:
-        case NDDxpGapTime:
-        case NDDxpTriggerPeakingTime:
-        case NDDxpTriggerGapTime:
-        case NDDxpBaselineCut:
-        case NDDxpMaxWidth:
-        case NDDxpMaxEnergy:
-            this->setDxpParam(pasynUser, addr, function, value);
-            break;
+    if ((function == mcaPresetRealTime) ||
+        (function == mcaPresetLiveTime)) 
+    {
+        this->setPresets(pasynUser, addr);
+    } else if 
+       ((function == NDDxpPeakingTime) ||
+        (function == NDDxpDynamicRange) ||
+        (function == NDDxpTriggerThreshold) ||
+        (function == NDDxpBaselineThreshold) ||
+        (function == NDDxpEnergyThreshold) ||
+        (function == NDDxpCalibrationEnergy) ||
+        (function == NDDxpADCPercentRule) ||
+        (function == NDDxpPreampGain) ||
+        (function == NDDxpDetectorPolarity) ||
+        (function == NDDxpResetDelay) ||
+        (function == NDDxpGapTime) ||
+        (function == NDDxpTriggerPeakingTime) ||
+        (function == NDDxpTriggerGapTime) ||
+        (function == NDDxpBaselineCut) ||
+        (function == NDDxpMaxWidth) ||
+        (function == NDDxpMaxEnergy)) 
+    {
+        this->setDxpParam(pasynUser, addr, function, value);
     }
 
     /* Call the callback */
@@ -551,65 +632,64 @@ asynStatus NDDxp::readInt32Array(asynUser *pasynUser, epicsInt32 *value, size_t 
     asynPrint(pasynUser, ASYN_TRACE_FLOW, 
         "%s::%s addr=%d channel=%d function=%d\n",
         driverName, functionName, addr, channel, function);
-    switch (function) {
-        case NDDxpTrace:
-            status = this->getTrace(pasynUser, channel, value, nElements, nIn);
-            break;
+    if (function == NDDxpTrace) 
+    {
+        status = this->getTrace(pasynUser, channel, value, nElements, nIn);
 
-        case NDDxpBaselineHistogram:
-            status = this->getBaselineHistogram(pasynUser, channel, value, nElements, nIn);
-            break;
+    } else if (function == NDDxpBaselineHistogram) 
+    {
+        status = this->getBaselineHistogram(pasynUser, channel, value, nElements, nIn);
 
-        case mcaData:
-            if (channel == DXP_ALL)
+    } else if (function == mcaData) 
+    {
+        if (channel == DXP_ALL)
+        {
+            // if the MCA ALL channel is being read - force reading of all individual
+            // channels using the NDDxpForceRead command.
+            for (ch = 0; ch < this->nChannels; ch++)
             {
-                // if the MCA ALL channel is being read - force reading of all individual
-                // channels using the NDDxpForceRead command.
-                for (ch = 0; ch < this->nChannels; ch++)
-                {
-                    setIntegerParam(ch, NDDxpForceRead, 1);
-                    callParamCallbacks(ch, ch);
-                    setIntegerParam(ch, NDDxpForceRead, 0);
-                    callParamCallbacks(ch, ch);
-                }
-                break;
+                setIntegerParam(ch, NDDxpForceRead, 1);
+                callParamCallbacks(ch, ch);
+                setIntegerParam(ch, NDDxpForceRead, 0);
+                callParamCallbacks(ch, ch);
             }
-            getIntegerParam(channel, mcaNumChannels, &nBins);
-            if (nBins > (int)nElements) nBins = (int)nElements;
-            getIntegerParam(channel, mcaAcquiring, &acquiring);
-            asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-                "%s::%s getting mcaData. ch=%d mcaNumChannels=%d mcaAcquiring=%d\n",
-                driverName, functionName, channel, nBins, acquiring);
-            *nIn = nBins;
-            getIntegerParam(NDDxpXMAPMode, &mode);
+            goto done;
+        }
+        getIntegerParam(channel, mcaNumChannels, &nBins);
+        if (nBins > (int)nElements) nBins = (int)nElements;
+        getIntegerParam(channel, mcaAcquiring, &acquiring);
+        asynPrint(pasynUser, ASYN_TRACE_FLOW, 
+            "%s::%s getting mcaData. ch=%d mcaNumChannels=%d mcaAcquiring=%d\n",
+            driverName, functionName, channel, nBins, acquiring);
+        *nIn = nBins;
+        getIntegerParam(NDDxpXMAPMode, &mode);
 
-            asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-                "%s::%s mode=%d acquiring=%d\n",
-                driverName, functionName, mode, acquiring);
-            if (acquiring)
+        asynPrint(pasynUser, ASYN_TRACE_FLOW, 
+            "%s::%s mode=%d acquiring=%d\n",
+            driverName, functionName, mode, acquiring);
+        if (acquiring)
+        {
+            if (mode == NDDxpModeNormal)
             {
-                if (mode == NDDxpModeNormal)
-                {
-                    /* While acquiring we'll force reading the data from the HW */
-                    this->getMcaData(pasynUser, addr);
-                } else if (mode == NDDxpModeMapping)
-                {
-                    /* TODO: need a function call here to parse the latest received
-                     * data and post the result here... */
-                }
+                /* While acquiring we'll force reading the data from the HW */
+                this->getMcaData(pasynUser, addr);
+            } else if (mode == NDDxpModeMapping)
+            {
+                /* TODO: need a function call here to parse the latest received
+                 * data and post the result here... */
             }
+        }
 
-            /* Not sure if we should do this when in mapping mode but we need it in MCA mode... */
-            memcpy(value, pMcaRaw[addr], nBins * sizeof(epicsUInt32));
-            break;
-
-        default:
+        /* Not sure if we should do this when in mapping mode but we need it in MCA mode... */
+        memcpy(value, pMcaRaw[addr], nBins * sizeof(epicsUInt32));
+    } else {
             asynPrint(pasynUser, ASYN_TRACE_ERROR,
                 "%s::%s Function not implemented: [%d]\n",
                 driverName, functionName, function);
             status = asynError;
-            break;
     }
+    done:
+    
     return(status);
 }
 
@@ -763,6 +843,7 @@ asynStatus NDDxp::setDxpParam(asynUser *pasynUser, int addr, int function, doubl
     int numMcaChannels;
     int xiastatus;
     asynStatus status=asynSuccess;
+    //static const char *functionName = "setDxpParam";
 
     if (addr == this->nChannels) channel = DXP_ALL;
     if (channel == DXP_ALL) channel0 = 0; else channel0 = channel;
@@ -770,133 +851,114 @@ asynStatus NDDxp::setDxpParam(asynUser *pasynUser, int addr, int function, doubl
     xiaGetRunData(channel0, "run_active", &runActive);
     xiaStopRun(channel);
 
-    switch (function) {
-        case NDDxpPeakingTime:
-            xiastatus = xiaSetAcquisitionValues(channel, "peaking_time", &dvalue);
-            status = this->xia_checkError(pasynUser, xiastatus, "setting peaking_time");
-            /* Sometimes the gap time is rejected because the peaking time has not yet been 
-             * accepted, so we set it again here */
-            getDoubleParam(addr, NDDxpGapTime, &dvalue);
-            if (this->deviceType == NDDxpModelXMAP) {
-                /* On the xMAP the parameter that can be written is minimum_gap_time */
-                xiastatus = xiaSetAcquisitionValues(channel, "minimum_gap_time", &dvalue);
-                status = this->xia_checkError(pasynUser, xiastatus, "minimum_gap_time");
-            } else {
-               /* On the Saturn and DXP2X it is gap_time */
-                xiastatus = xiaSetAcquisitionValues(channel, "gap_time", &dvalue);
-                status = this->xia_checkError(pasynUser, xiastatus, "setting gap_time");
-            }
-            break;
-        case NDDxpDynamicRange:
-            /* dynamic_range is only supported on the xMAP */
-            if (this->deviceType == NDDxpModelXMAP) {
-                /* Convert from eV to keV */
-                dvalue = value * 1000.;
-                xiastatus = xiaSetAcquisitionValues(channel, "dynamic_range", &dvalue);
-                status = this->xia_checkError(pasynUser, xiastatus, "setting dynamic_range");
-            }
-            break;
-        case NDDxpTriggerThreshold:
-            /* Convert from keV to eV */
+    if (function == NDDxpPeakingTime) {
+        xiastatus = xiaSetAcquisitionValues(channel, "peaking_time", &dvalue);
+        status = this->xia_checkError(pasynUser, xiastatus, "setting peaking_time");
+        /* Sometimes the gap time is rejected because the peaking time has not yet been 
+         * accepted, so we set it again here */
+        getDoubleParam(addr, NDDxpGapTime, &dvalue);
+        if (this->deviceType == NDDxpModelXMAP) {
+            /* On the xMAP the parameter that can be written is minimum_gap_time */
+            xiastatus = xiaSetAcquisitionValues(channel, "minimum_gap_time", &dvalue);
+            status = this->xia_checkError(pasynUser, xiastatus, "minimum_gap_time");
+        } else {
+           /* On the Saturn and DXP2X it is gap_time */
+            xiastatus = xiaSetAcquisitionValues(channel, "gap_time", &dvalue);
+            status = this->xia_checkError(pasynUser, xiastatus, "setting gap_time");
+        }
+    } else if (function == NDDxpDynamicRange) {
+        /* dynamic_range is only supported on the xMAP */
+        if (this->deviceType == NDDxpModelXMAP) {
+            /* Convert from eV to keV */
             dvalue = value * 1000.;
-            xiastatus = xiaSetAcquisitionValues(channel, "trigger_threshold", &dvalue);
-            status = this->xia_checkError(pasynUser, xiastatus, "setting trigger_threshold");
-            break;
-        case NDDxpBaselineThreshold:
-             dvalue = value * 1000.;    /* Convert to eV */
-             xiastatus = xiaSetAcquisitionValues(channel, "baseline_threshold", &dvalue);
-             status = this->xia_checkError(pasynUser, xiastatus, "setting baseline_threshold");
-             break;
-        case NDDxpEnergyThreshold:
-            /* Convert from keV to eV */
-            dvalue = value * 1000.;
-            xiastatus = xiaSetAcquisitionValues(channel, "energy_threshold", &dvalue);
-            status = this->xia_checkError(pasynUser, xiastatus, "setting energy_threshold");
-            break;
-        case NDDxpCalibrationEnergy:
-            /* Convert from keV to eV */
-            dvalue = value * 1000.;
-            xiastatus = xiaSetAcquisitionValues(channel, "calibration_energy", &dvalue);
-            status = this->xia_checkError(pasynUser, xiastatus, "setting calibration_energy");
-            break;
-        case NDDxpADCPercentRule:
-            xiastatus = xiaSetAcquisitionValues(channel, "adc_percent_rule", &dvalue);
-            status = this->xia_checkError(pasynUser, xiastatus, "setting adc_percent_rule");
-            break;
-        case NDDxpPreampGain:
-            xiastatus = xiaSetAcquisitionValues(channel, "preamp_gain", &dvalue);
-            status = this->xia_checkError(pasynUser, xiastatus, "setting preamp_gain");
-            break;
-        case NDDxpDetectorPolarity:
-            xiastatus = xiaSetAcquisitionValues(channel, "detector_polarity", &dvalue);
-            status = this->xia_checkError(pasynUser, xiastatus, "setting detector_polarity");
-            break;
-        case NDDxpResetDelay:
-            xiastatus = xiaSetAcquisitionValues(channel, "reset_delay", &dvalue);
-            break;
-        case NDDxpGapTime:
-            if (this->deviceType == NDDxpModelXMAP) {
-                /* On the xMAP the parameter that can be written is minimum_gap_time */
-                xiastatus = xiaSetAcquisitionValues(channel, "minimum_gap_time", &dvalue);
-                status = this->xia_checkError(pasynUser, xiastatus, "minimum_gap_time");
-            } else {
-               /* On the Saturn and DXP2X it is gap_time */
-                xiastatus = xiaSetAcquisitionValues(channel, "gap_time", &dvalue);
-                status = this->xia_checkError(pasynUser, xiastatus, "setting gap_time");
-            }
-            break;
-        case NDDxpTriggerPeakingTime:
-            xiastatus = xiaSetAcquisitionValues(channel, "trigger_peaking_time", &dvalue);
-            status = this->xia_checkError(pasynUser, xiastatus, "setting trigger_peaking_time");
-            break;
-        case NDDxpTriggerGapTime:
-            xiastatus = xiaSetAcquisitionValues(channel, "trigger_gap_time", &dvalue);
-            status = this->xia_checkError(pasynUser, xiastatus, "setting trigger_gap_time");
-            break;
-        case NDDxpBaselineAverage:
-            if (this->deviceType == NDDxpModelXMAP) {
-                xiastatus = xiaSetAcquisitionValues(channel, "baseline_average", &dvalue);
-                status = this->xia_checkError(pasynUser, xiastatus, "setting baseline_average");
-            } else {
-                xiastatus = xiaSetAcquisitionValues(channel, "baseline_filter_length", &dvalue);
-                status = this->xia_checkError(pasynUser, xiastatus, "setting baseline_filter_length");
-            }
-            break;
-        case NDDxpMaxWidth:
-            xiastatus = xiaSetAcquisitionValues(channel, "maxwidth", &dvalue);
-            status = this->xia_checkError(pasynUser, xiastatus, "setting maxwidth");
-            break;
-        case NDDxpBaselineCut:
-            /* The xMAP does not support this yet */
-            if (this->deviceType != NDDxpModelXMAP) {
-                xiastatus = xiaSetAcquisitionValues(channel, "baseline_cut", &dvalue);
-                status = this->xia_checkError(pasynUser, xiastatus, "setting baseline_cut");
-                break;
-            }
-        case NDDxpEnableBaselineCut:
-            /* The xMAP does not support this yet */
-            if (this->deviceType != NDDxpModelXMAP) {
-                xiastatus = xiaSetAcquisitionValues(channel, "enable_baseline_cut", &dvalue);
-                status = this->xia_checkError(pasynUser, xiastatus, "setting enable_baseline_cut");
-            }
-            break;
-        case NDDxpMaxEnergy:
-            getIntegerParam(addr, mcaNumChannels, &numMcaChannels);
-            if (numMcaChannels <= 0.)
-                numMcaChannels = 2048;
-            /* Set the bin width in eV */
-            dvalue = value * 1000. / numMcaChannels;
-            xiastatus = xiaSetAcquisitionValues(channel, "mca_bin_width", &dvalue);
-            status = this->xia_checkError(pasynUser, xiastatus, "setting mca_bin_width");
-            /* We always make the calibration energy be 50% of MaxEnergy */
-            dvalue = value * 1000. / 2.;
-            xiastatus = xiaSetAcquisitionValues(channel, "calibration_energy", &dvalue);
-            status = this->xia_checkError(pasynUser, xiastatus, "setting calibration_energy");
-            /* Must re-apply the ADC percent rule when changing calibration energy */
-            getDoubleParam(addr, NDDxpADCPercentRule, &dvalue);
-            xiastatus = xiaSetAcquisitionValues(channel, "adc_percent_rule", &dvalue);
-            status = this->xia_checkError(pasynUser, xiastatus, "setting adc_percent_rule");
-            break;
+            xiastatus = xiaSetAcquisitionValues(channel, "dynamic_range", &dvalue);
+            status = this->xia_checkError(pasynUser, xiastatus, "setting dynamic_range");
+        }
+    } else if (function == NDDxpTriggerThreshold) {
+        /* Convert from keV to eV */
+        dvalue = value * 1000.;
+        xiastatus = xiaSetAcquisitionValues(channel, "trigger_threshold", &dvalue);
+        status = this->xia_checkError(pasynUser, xiastatus, "setting trigger_threshold");
+    } else if (function == NDDxpBaselineThreshold) {
+         dvalue = value * 1000.;    /* Convert to eV */
+         xiastatus = xiaSetAcquisitionValues(channel, "baseline_threshold", &dvalue);
+         status = this->xia_checkError(pasynUser, xiastatus, "setting baseline_threshold");
+    } else if (function == NDDxpEnergyThreshold) {
+        /* Convert from keV to eV */
+        dvalue = value * 1000.;
+        xiastatus = xiaSetAcquisitionValues(channel, "energy_threshold", &dvalue);
+        status = this->xia_checkError(pasynUser, xiastatus, "setting energy_threshold");
+    } else if (function == NDDxpCalibrationEnergy) {
+        /* Convert from keV to eV */
+        dvalue = value * 1000.;
+        xiastatus = xiaSetAcquisitionValues(channel, "calibration_energy", &dvalue);
+        status = this->xia_checkError(pasynUser, xiastatus, "setting calibration_energy");
+    } else if (function == NDDxpADCPercentRule) {
+        xiastatus = xiaSetAcquisitionValues(channel, "adc_percent_rule", &dvalue);
+        status = this->xia_checkError(pasynUser, xiastatus, "setting adc_percent_rule");
+    } else if (function == NDDxpPreampGain) {
+        xiastatus = xiaSetAcquisitionValues(channel, "preamp_gain", &dvalue);
+        status = this->xia_checkError(pasynUser, xiastatus, "setting preamp_gain");
+    } else if (function == NDDxpDetectorPolarity) {
+        xiastatus = xiaSetAcquisitionValues(channel, "detector_polarity", &dvalue);
+        status = this->xia_checkError(pasynUser, xiastatus, "setting detector_polarity");
+    } else if (function == NDDxpResetDelay) {
+        xiastatus = xiaSetAcquisitionValues(channel, "reset_delay", &dvalue);
+    } else if (function == NDDxpGapTime) {
+        if (this->deviceType == NDDxpModelXMAP) {
+            /* On the xMAP the parameter that can be written is minimum_gap_time */
+            xiastatus = xiaSetAcquisitionValues(channel, "minimum_gap_time", &dvalue);
+            status = this->xia_checkError(pasynUser, xiastatus, "minimum_gap_time");
+        } else {
+           /* On the Saturn and DXP2X it is gap_time */
+            xiastatus = xiaSetAcquisitionValues(channel, "gap_time", &dvalue);
+            status = this->xia_checkError(pasynUser, xiastatus, "setting gap_time");
+        }
+    } else if (function == NDDxpTriggerPeakingTime) {
+         xiastatus = xiaSetAcquisitionValues(channel, "trigger_peaking_time", &dvalue);
+         status = this->xia_checkError(pasynUser, xiastatus, "setting trigger_peaking_time");
+    } else if (function == NDDxpTriggerGapTime) {
+        xiastatus = xiaSetAcquisitionValues(channel, "trigger_gap_time", &dvalue);
+        status = this->xia_checkError(pasynUser, xiastatus, "setting trigger_gap_time");
+    } else if (function == NDDxpBaselineAverage) {
+        if (this->deviceType == NDDxpModelXMAP) {
+            xiastatus = xiaSetAcquisitionValues(channel, "baseline_average", &dvalue);
+            status = this->xia_checkError(pasynUser, xiastatus, "setting baseline_average");
+        } else {
+            xiastatus = xiaSetAcquisitionValues(channel, "baseline_filter_length", &dvalue);
+            status = this->xia_checkError(pasynUser, xiastatus, "setting baseline_filter_length");
+        }
+    } else if (function == NDDxpMaxWidth) {
+        xiastatus = xiaSetAcquisitionValues(channel, "maxwidth", &dvalue);
+        status = this->xia_checkError(pasynUser, xiastatus, "setting maxwidth");
+    } else if (function == NDDxpBaselineCut) {
+        /* The xMAP does not support this yet */
+        if (this->deviceType != NDDxpModelXMAP) {
+            xiastatus = xiaSetAcquisitionValues(channel, "baseline_cut", &dvalue);
+            status = this->xia_checkError(pasynUser, xiastatus, "setting baseline_cut");
+        }
+    } else if (function == NDDxpEnableBaselineCut) {
+        /* The xMAP does not support this yet */
+        if (this->deviceType != NDDxpModelXMAP) {
+            xiastatus = xiaSetAcquisitionValues(channel, "enable_baseline_cut", &dvalue);
+            status = this->xia_checkError(pasynUser, xiastatus, "setting enable_baseline_cut");
+        }
+    } else if (function == NDDxpMaxEnergy) {
+        getIntegerParam(addr, mcaNumChannels, &numMcaChannels);
+        if (numMcaChannels <= 0.)
+            numMcaChannels = 2048;
+        /* Set the bin width in eV */
+        dvalue = value * 1000. / numMcaChannels;
+        xiastatus = xiaSetAcquisitionValues(channel, "mca_bin_width", &dvalue);
+        status = this->xia_checkError(pasynUser, xiastatus, "setting mca_bin_width");
+        /* We always make the calibration energy be 50% of MaxEnergy */
+        dvalue = value * 1000. / 2.;
+        xiastatus = xiaSetAcquisitionValues(channel, "calibration_energy", &dvalue);
+        status = this->xia_checkError(pasynUser, xiastatus, "setting calibration_energy");
+        /* Must re-apply the ADC percent rule when changing calibration energy */
+        getDoubleParam(addr, NDDxpADCPercentRule, &dvalue);
+        xiastatus = xiaSetAcquisitionValues(channel, "adc_percent_rule", &dvalue);
+        status = this->xia_checkError(pasynUser, xiastatus, "setting adc_percent_rule");
     }
     this->apply(channel);
     this->getDxpParams(pasynUser, addr);
@@ -1085,6 +1147,10 @@ asynStatus NDDxp::getAcquisitionStatus(asynUser *pasynUser, int addr)
     int xiastatus;
     int i, chStep = 1;
     const char *functionName = "getAcquisitionStatus";
+    
+    /* Note: we use the internal parameter NDDxpAcquiring rather than mcaAcquiring here
+     * because we need to do callbacks in acquisitionTask() on all other parameters before
+     * we do callbacks on mcaAcquiring, and callParamCallbacks does not allow control over the order. */
 
     if (addr == this->nChannels) channel = DXP_ALL;
     else if (addr == DXP_ALL) addr = this->nChannels;
@@ -1092,15 +1158,15 @@ asynStatus NDDxp::getAcquisitionStatus(asynUser *pasynUser, int addr)
     //    "%s::%s addr=%d channel=%d\n", 
     //    driverName, functionName, addr, channel);
     if (channel == DXP_ALL) { /* All channels */
-        for (i=0; i<this->nChannels; i++) {
+        //if (this->deviceType == NDDxpModelXMAP) chStep = XMAP_NCHANS_MODULE;
+        for (i=0; i<this->nChannels; i+=chStep) {
             /* Call ourselves recursively but with a specific channel */
             this->getAcquisitionStatus(pasynUser, i);
-            getIntegerParam(i, mcaAcquiring, &ivalue);
+            getIntegerParam(i, NDDxpAcquiring, &ivalue);
             acquiring = MAX(acquiring, ivalue);
         }
-        setIntegerParam(addr, mcaAcquiring, acquiring);
+        setIntegerParam(addr, NDDxpAcquiring, acquiring);
     } else {
-        //if (this->deviceType == NDDxpModelXMAP) chStep = XMAP_NCHANS_MODULE;
         /* Get the run time status from the handel library - informs whether the
          * HW is acquiring or not.        */
         CALLHANDEL( xiaGetRunData(channel, "run_active", &run_active), "xiaGetRunData (run_active)" )
@@ -1110,7 +1176,7 @@ asynStatus NDDxp::getAcquisitionStatus(asynUser *pasynUser, int addr)
             CALLHANDEL( xiaStopRun(channel), "xiaStopRun")
         /* Get the acquiring state from the XIA hardware */
         acquiring = (run_active & XIA_RUN_HARDWARE);
-        setIntegerParam(addr, mcaAcquiring, acquiring);
+        setIntegerParam(addr, NDDxpAcquiring, acquiring);
     }
     asynPrint(pasynUser, ASYN_TRACE_FLOW,
         "%s::%s addr=%d channel=%d: acquiring=%d\n",
@@ -1118,12 +1184,117 @@ asynStatus NDDxp::getAcquisitionStatus(asynUser *pasynUser, int addr)
     return(asynSuccess);
 }
 
+static int lookupParam(char **paramNames, unsigned short numParams, char *name) 
+{
+    int i;
+    for (i=0; i<numParams; i++) {
+        if (strcmp(paramNames[i], name) == 0) {
+            return(i);
+        }
+    }
+    return(-1);
+}
+
+static double dxp_to_double(unsigned short *values, int numOffsets, int *offsets)
+{
+  double d;
+  
+  if (numOffsets == 3) { 
+    d = values[offsets[2]] * 65536. * 65536. +
+        values[offsets[0]] * 65536. + 
+        values[offsets[1]];
+  } else {
+    d = values[offsets[0]] * 65536 + 
+        values[offsets[1]];
+  }
+  return d;
+}
+
+asynStatus NDDxp::getModuleStatistics(asynUser *pasynUser, int addr, moduleStatistics *stats)
+{
+    /* This function returns the module statistics with a single block read.
+     * It is more than 30 times faster on the USB Saturn than reading individual
+     * parameters.  This is a temporary fix until Handel adds a "module_statistics"
+     * acquisition parameter on the Saturn and DXP2X */
+     static int firstTime = 1;
+     int i;
+     double totalEvents, underFlows, overFlows;
+     int status;
+     
+     if (this->deviceType == NDDxpModelXMAP) {
+        status = xiaGetRunData(addr, "module_statistics", (double *)stats);
+        /* It appears that the xMAP sometimes returns 0 energy live time when it should not.
+         * Fix this here */
+        for (i=0; i<XMAP_NCHANS_MODULE; i++) {
+            if (stats[i].energyLiveTime == 0.) {
+                if ((stats[i].triggers > 0.) && (stats[i].events > 0)) 
+                    stats[i].energyLiveTime = stats[i].triggerLiveTime * stats[i].events / stats[i].triggers;
+                else
+                    stats[i].energyLiveTime = stats[i].triggerLiveTime;
+            }
+        }
+        return((asynStatus)status);
+     }
+     
+     if (firstTime) {
+        firstTime = 0;
+        status = xiaGetNumParams(addr, &numParams);
+        paramValues = (unsigned short *) calloc(numParams, sizeof(*paramValues));
+        paramNames = (char **) calloc(numParams, sizeof(char *));
+        for (i=0; i<numParams; i++) {
+            paramNames[i] = (char *) malloc(MAX_DSP_PARAM_NAME_LEN * sizeof(char *));
+            status = xiaGetParamName(0, i, paramNames[i]);
+        }
+        status = xiaGetParamData(addr, "values", paramValues);
+        /* Determine the speed of the realtime and livetime clocks.
+         * It is 16 times less than the system clock speed. */
+        i = lookupParam(paramNames, numParams, "SYSMICROSEC");
+        clockSpeed = (paramValues[i] * 1e6) / 16.;
+        realTimeOffsets[0] = lookupParam(paramNames, numParams, "REALTIME0");
+        realTimeOffsets[1] = lookupParam(paramNames, numParams, "REALTIME1");
+        realTimeOffsets[2] = lookupParam(paramNames, numParams, "REALTIME2");
+        triggerLiveTimeOffsets[0] = lookupParam(paramNames, numParams, "LIVETIME0");
+        triggerLiveTimeOffsets[1] = lookupParam(paramNames, numParams, "LIVETIME1");
+        triggerLiveTimeOffsets[2] = lookupParam(paramNames, numParams, "LIVETIME2");
+        eventOffsets[0] = lookupParam(paramNames, numParams, "EVTSINRUN0");
+        eventOffsets[1] = lookupParam(paramNames, numParams, "EVTSINRUN1");
+        underFlowOffsets[0] = lookupParam(paramNames, numParams, "UNDRFLOWS0");
+        underFlowOffsets[1] = lookupParam(paramNames, numParams, "UNDRFLOWS1");
+        overFlowOffsets[0] = lookupParam(paramNames, numParams, "OVERFLOWS0");
+        overFlowOffsets[1] = lookupParam(paramNames, numParams, "OVERFLOWS1");
+        triggerOffsets[0] = lookupParam(paramNames, numParams, "FASTPEAKS0");
+        triggerOffsets[1] = lookupParam(paramNames, numParams, "FASTPEAKS1");
+    }
+    status = xiaGetParamData(addr, "values", paramValues);
+    stats->triggers        = dxp_to_double(paramValues, 2, triggerOffsets);
+    stats->events          = dxp_to_double(paramValues, 2, eventOffsets);
+    underFlows             = dxp_to_double(paramValues, 2, underFlowOffsets);
+    overFlows              = dxp_to_double(paramValues, 2, overFlowOffsets);
+    totalEvents = stats->events + underFlows + overFlows;
+    stats->realTime        = dxp_to_double(paramValues, 3, realTimeOffsets) / clockSpeed;
+    stats->triggerLiveTime = dxp_to_double(paramValues, 3, triggerLiveTimeOffsets) / clockSpeed;
+    if (stats->triggers > 0.) 
+        stats->energyLiveTime = stats->triggerLiveTime * totalEvents / stats->triggers;
+    else
+        stats->energyLiveTime = stats->triggerLiveTime;
+    if (stats->triggerLiveTime > 0.)
+        stats->icr = stats->triggers / stats->triggerLiveTime;
+    else
+        stats->icr = 0.;
+    if (stats->realTime > 0.)
+        stats->ocr = totalEvents / stats->realTime;
+    else
+        stats->ocr = 0.;
+    return((asynStatus)status);
+}     
+     
+
 asynStatus NDDxp::getAcquisitionStatistics(asynUser *pasynUser, int addr)
 {
     double dvalue, triggerLiveTime=0, energyLiveTime=0, realTime=0, icr=0, ocr=0;
+    moduleStatistics *stats;
     int events=0, triggers=0;
     int ivalue;
-    int acquiring=0;
     int channel=addr;
     int erased;
     int i;
@@ -1155,8 +1326,6 @@ asynStatus NDDxp::getAcquisitionStatistics(asynUser *pasynUser, int addr)
             icr = MAX(icr, dvalue);
             getDoubleParam(i, NDDxpOutputCountRate, &dvalue);
             ocr = MAX(ocr, dvalue);
-            getIntegerParam(i, mcaAcquiring, &ivalue);
-            acquiring = MAX(acquiring, ivalue);
         }
         setDoubleParam(addr, mcaElapsedLiveTime, energyLiveTime);
         setDoubleParam(addr, NDDxpElapsedTriggerLiveTime, triggerLiveTime);
@@ -1165,7 +1334,6 @@ asynStatus NDDxp::getAcquisitionStatistics(asynUser *pasynUser, int addr)
         setIntegerParam(addr, NDDxpTriggers, triggers);
         setDoubleParam(addr, NDDxpInputCountRate, icr);
         setDoubleParam(addr, NDDxpOutputCountRate, ocr);
-        setIntegerParam(addr, mcaAcquiring, acquiring);
         asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
             "%s::%s end DXP_ALL\n", 
             driverName, functionName);
@@ -1183,78 +1351,42 @@ asynStatus NDDxp::getAcquisitionStatistics(asynUser *pasynUser, int addr)
             setIntegerParam(addr, NDDxpTriggers, 0);
             setDoubleParam(addr, NDDxpElapsedTriggerLiveTime, 0);
         } else {
-            xiaGetRunData(channel, "runtime", &realTime);
-            setDoubleParam(addr, mcaElapsedRealTime, realTime);
-            asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, 
-                "%s::%s  channel %d runtime=%f\n", 
-                driverName, functionName, addr, realTime);
             if (this->deviceType == NDDxpModelXMAP) {
-                xiaGetRunData(channel, "trigger_livetime", &triggerLiveTime);
+                /* We only read the module statistics data if this is the first channel in a module.
+                 * This assumes we are reading in numerical order, else we may get stale data! */
+                if ((channel % XMAP_NCHANS_MODULE) == 0) getModuleStatistics(pasynUser, channel, &moduleStats[0]);
+                stats = &moduleStats[channel % XMAP_NCHANS_MODULE];
             } else {
-                xiaGetRunData(channel, "livetime", &triggerLiveTime);
+                stats = &moduleStats[0];
+                getModuleStatistics(pasynUser, channel, &moduleStats[0]);
             }
-            setDoubleParam(addr, NDDxpElapsedTriggerLiveTime, triggerLiveTime);
-            asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, 
-                "%s::%s  channel %d trigger livetime=%f\n", 
-                driverName, functionName, addr, triggerLiveTime);
-
-            xiaGetRunData(channel, "events_in_run", &events);
-            setIntegerParam(addr, NDDxpEvents, events);
-            asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, 
-                "%s::%s  channel %d events=%d\n", 
-                driverName, functionName, addr, events);
-
-            if (this->deviceType == NDDxpModelXMAP) {
-                // We cannot read triggers on the xMAP unless we read module_statistics which is too
-                // complex for now.  Instead read ICR and compute triggers
-                xiaGetRunData(channel, "input_count_rate", &icr);
-                triggers = (int)(ocr * triggerLiveTime);
-            } else {
-               xiaGetRunData(channel, "triggers", &triggers);
-            }
-            asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, 
-                "%s::%s  channel %d triggers=%d\n", 
-                driverName, functionName, addr, triggers);
-            setIntegerParam(addr, NDDxpTriggers, triggers);
-            
-            /* Note - we could read ICR and OCR, but these can be computed from 
-             * the above values, and it takes 10msec each to read them, so don't */
-            icr = triggers/triggerLiveTime;
-            ocr = events/realTime; 
-
-            //xiaGetRunData(channel, "input_count_rate", &icr);
-            setDoubleParam(addr, NDDxpInputCountRate, icr);
-            asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
-                "%s::%s  channel %d ICR=%f\n", 
-                driverName, functionName, addr, icr);
-            //xiaGetRunData(channel, "output_count_rate", &ocr);
-            setDoubleParam(addr, NDDxpOutputCountRate, ocr);
-            asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, 
-                "%s::%s  channel %d OCR=%f\n", 
-                driverName, functionName, addr, ocr);
-
-            if (this->deviceType == NDDxpModelXMAP) {
-                // On the xMAP we can read the energy live time.  We need to determine if this is more
-                // accurate than the computed value we use on the Saturn below
-                xiaGetRunData(channel, "livetime", &energyLiveTime);
-            } else {
-                // The Saturn and DXP4C-2X don't have an energy livetime readout.
-                if (icr < 1.0) icr = 1.0;
-                energyLiveTime = realTime * ocr/icr;
-            }
-            setDoubleParam(addr, mcaElapsedLiveTime, energyLiveTime);
-            asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, 
-                "%s::%s  channel %d energy livetime=%f\n", 
-                driverName, functionName, addr, energyLiveTime);
+            setIntegerParam(addr, NDDxpTriggers, (int)stats->triggers);
+            setIntegerParam(addr, NDDxpEvents, (int)stats->events);
+            setDoubleParam(addr, mcaElapsedRealTime, stats->realTime);
+            setDoubleParam(addr, mcaElapsedLiveTime, stats->energyLiveTime);
+            setDoubleParam(addr, NDDxpElapsedTriggerLiveTime, stats->triggerLiveTime);
+            setDoubleParam(addr, NDDxpInputCountRate, stats->icr);
+            setDoubleParam(addr, NDDxpOutputCountRate, stats->ocr);
 
             asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, 
-                "%s::%s end channel %d\n", 
-                driverName, functionName, addr);
+                "%s::%s  channel %d \n"
+                "              events=%f\n" 
+                "            triggers=%f\n" 
+                "           real time=%f\n" 
+                "     energy livetime=%f\n" 
+                "    trigger livetime=%f\n" 
+                "    input count rate=%f\n" 
+                "   output count rate=%f\n",
+                driverName, functionName, addr, 
+                stats->events,
+                stats->triggers,
+                stats->realTime,
+                stats->energyLiveTime,
+                stats->triggerLiveTime,
+                stats->icr,
+                stats->ocr);
         }
     }
-    //asynPrint(pasynUser, ASYN_TRACE_FLOW,
-    //    "%s::%s addr=%d channel=%d: acquiring=%d\n",
-    //    driverName, functionName, addr, channel, acquiring);
     return(asynSuccess);
 }
 
@@ -1584,56 +1716,6 @@ asynStatus NDDxp::getBaselineHistogram(asynUser* pasynUser, int addr,
 }
 
 
-/** Create an asyn user for the driver.
- * Maps the integer/enum asyn commands on to a string representation that
- * can be used to indicate a certain command in in the INP/OUT field of a record.
- * \param pasynUser
- * \param drvInfo
- * \param pptypeName
- * \param psize
- * \return asynStatus Either asynError or asynSuccess
- */
-asynStatus NDDxp::drvUserCreate( asynUser *pasynUser, const char *drvInfo, const char **pptypeName, size_t *psize)
-{
-    asynStatus status = asynError;
-    int param;
-    const char *functionName = "drvUserCreate";
-
-    status = findParam((asynParamString_t *)mcaCommands, MAX_MCA_COMMANDS, drvInfo, &param);
-    if (status == asynSuccess)
-    {
-        pasynUser->reason = param;
-        if (pptypeName) { *pptypeName = epicsStrDup(drvInfo); }
-        if (psize) { *psize = sizeof(param); }
-        asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-            "%s:%s: (mca) drvInfo=%s, param=%d\n",
-            driverName, functionName, drvInfo, param);
-    }
-
-    /* Secondly see if this is one of the drivers local parameters */
-    if (status != asynSuccess)
-    {
-        status = findParam(NDDxpParamString, NDDxp_N_PARAMS, drvInfo, &param);
-        if (status == asynSuccess)
-        {
-            pasynUser->reason = param;
-            if (pptypeName) { *pptypeName = epicsStrDup(drvInfo); }
-            if (psize) { *psize = sizeof(param); }
-            asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-                "%s:%s: (NDDxp) drvInfo=%s, param=%d\n",
-                driverName, functionName, drvInfo, param);
-        }
-    }
-
-    if (status != asynSuccess)
-    {
-        asynPrint(pasynUser, ASYN_TRACE_ERROR, 
-            "%s::%s ERROR did not find reason %s in either mcaCommands nor NDDxpParams table!\n",
-            driverName, functionName, drvInfo);
-    }
-
-    return status;
-}
 
 asynStatus NDDxp::startAcquiring(asynUser *pasynUser)
 {
@@ -1692,7 +1774,7 @@ void NDDxp::acquisitionTask()
     epicsTimeStamp now, start;
     const char* functionName = "acquisitionTask";
 
-    setDoubleParam(NDDxpPollTime, 0.01);
+    setDoubleParam(NDDxpPollTime, 0.001);
 
     asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, 
         "%s:%s acquisition task started!\n",
@@ -1726,7 +1808,7 @@ void NDDxp::acquisitionTask()
          * If a transition from acquiring to done is detected then we read the statistics
          * and the data. */
         this->getAcquisitionStatus(this->pasynUserSelf, DXP_ALL);
-        getIntegerParam(this->nChannels, mcaAcquiring, &acquiring);
+        getIntegerParam(this->nChannels, NDDxpAcquiring, &acquiring);
         getIntegerParam(NDDxpXMAPMode, &mode);
         if (mode == NDDxpModeNormal && (!acquiring))
         {
@@ -1744,11 +1826,18 @@ void NDDxp::acquisitionTask()
             this->pollMappingMode();
         }
 
-        /* Do callbacks for all channels */
+        /* Do callbacks for all channels for everything except mcaAcquiring*/
         asynPrint(pasynUser, ASYN_TRACE_FLOW, 
             "%s::%s Doing callbacks\n",
             driverName, functionName);
         for (i=0; i<=this->nChannels; i++) callParamCallbacks(i, i);
+        /* Copy internal acquiring flag to mcaAcquiring */
+        for (i=0; i<=this->nChannels; i++) {
+            getIntegerParam(i, NDDxpAcquiring, &acquiring);
+            setIntegerParam(i, mcaAcquiring, acquiring);
+            callParamCallbacks(i, i);
+        }
+        
         paramStatus |= getDoubleParam(NDDxpPollTime, &pollTime);
         epicsTimeGetCurrent(&now);
         dtmp = epicsTimeDiffInSeconds(&now, &start);
@@ -1856,3 +1945,70 @@ int NDDxp::getModuleType()
     return(-1);
 }
 
+static const iocshArg NDDxpConfigArg0 = {"Asyn port name", iocshArgString};
+static const iocshArg NDDxpConfigArg1 = {"Number of channels", iocshArgInt};
+static const iocshArg NDDxpConfigArg2 = {"Maximum number of buffers", iocshArgInt};
+static const iocshArg NDDxpConfigArg3 = {"Maximum amount of memory (bytes)", iocshArgInt};
+static const iocshArg * const NDDxpConfigArgs[] =  {&NDDxpConfigArg0,
+                                                    &NDDxpConfigArg1,
+                                                    &NDDxpConfigArg2,
+                                                    &NDDxpConfigArg3};
+static const iocshFuncDef configNDDxp = {"NDDxpConfig", 4, NDDxpConfigArgs};
+static void configNDDxpCallFunc(const iocshArgBuf *args)
+{
+    NDDxp_config(args[0].sval, args[1].ival, args[2].ival, args[3].ival);
+}
+
+static const iocshArg xiaLogLevelArg0 = { "logging level",iocshArgInt};
+static const iocshArg * const xiaLogLevelArgs[1] = {&xiaLogLevelArg0};
+static const iocshFuncDef xiaLogLevelFuncDef = {"xiaSetLogLevel",1,xiaLogLevelArgs};
+static void xiaLogLevelCallFunc(const iocshArgBuf *args)
+{
+    xiaSetLogLevel(args[0].ival);
+}
+
+static const iocshArg xiaLogOutputArg0 = { "logging output file",iocshArgString};
+static const iocshArg * const xiaLogOutputArgs[1] = {&xiaLogOutputArg0};
+static const iocshFuncDef xiaLogOutputFuncDef = {"xiaSetLogOutput",1,xiaLogOutputArgs};
+static void xiaLogOutputCallFunc(const iocshArgBuf *args)
+{
+    xiaSetLogOutput(args[0].sval);
+}
+
+static const iocshArg xiaInitArg0 = { "ini file",iocshArgString};
+static const iocshArg * const xiaInitArgs[1] = {&xiaInitArg0};
+static const iocshFuncDef xiaInitFuncDef = {"xiaInit",1,xiaInitArgs};
+static void xiaInitCallFunc(const iocshArgBuf *args)
+{
+    xiaInit(args[0].sval);
+}
+
+static const iocshFuncDef xiaStartSystemFuncDef = {"xiaStartSystem",0,0};
+static void xiaStartSystemCallFunc(const iocshArgBuf *args)
+{
+    xiaStartSystem();
+}
+
+static const iocshArg xiaSaveSystemArg0 = { "ini file",iocshArgString};
+static const iocshArg * const xiaSaveSystemArgs[1] = {&xiaSaveSystemArg0};
+static const iocshFuncDef xiaSaveSystemFuncDef = {"xiaSaveSystem",1,xiaSaveSystemArgs};
+static void xiaSaveSystemCallFunc(const iocshArgBuf *args)
+{
+    xiaSaveSystem("handel_ini", args[0].sval);
+}
+
+
+
+static void NDDxpRegister(void)
+{
+    iocshRegister(&configNDDxp, configNDDxpCallFunc);
+    iocshRegister(&xiaInitFuncDef,xiaInitCallFunc);
+    iocshRegister(&xiaLogLevelFuncDef,xiaLogLevelCallFunc);
+    iocshRegister(&xiaLogOutputFuncDef,xiaLogOutputCallFunc);
+    iocshRegister(&xiaStartSystemFuncDef,xiaStartSystemCallFunc);
+    iocshRegister(&xiaSaveSystemFuncDef,xiaSaveSystemCallFunc);
+}
+
+extern "C" {
+epicsExportRegistrar(NDDxpRegister);
+}
