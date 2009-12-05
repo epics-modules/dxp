@@ -244,7 +244,33 @@ protected:
     int NDDxpSaveSystemFile;
     int NDDxpSaveSystem;
     int NDDxpAcquiring;                 /** Internal acquiring flag, not exposed via drvUser */
-    #define LAST_DXP_PARAM NDDxpAcquiring
+
+    /* Commands from MCA interface */
+    int mcaData;                   /* int32Array, write/read */
+    int mcaStartAcquire;           /* int32, write */
+    int mcaStopAcquire;            /* int32, write */
+    int mcaErase;                  /* int32, write */
+    int mcaReadStatus;             /* int32, write */
+    int mcaChannelAdvanceInternal; /* int32, write */
+    int mcaChannelAdvanceExternal; /* int32, write */
+    int mcaNumChannels;            /* int32, write */
+    int mcaModePHA;                /* int32, write */
+    int mcaModeMCS;                /* int32, write */
+    int mcaModeList;               /* int32, write */
+    int mcaSequence;               /* int32, write */
+    int mcaPrescale;               /* int32, write */
+    int mcaPresetSweeps;           /* int32, write */
+    int mcaPresetLowChannel;       /* int32, write */
+    int mcaPresetHighChannel;      /* int32, write */
+    int mcaDwellTime;              /* float64, write/read */
+    int mcaPresetLiveTime;         /* float64, write */
+    int mcaPresetRealTime;         /* float64, write */
+    int mcaPresetCounts;           /* float64, write */
+    int mcaAcquiring;              /* int32, read */
+    int mcaElapsedLiveTime;        /* float64, read */
+    int mcaElapsedRealTime;        /* float64, read */
+    int mcaElapsedCounts;          /* float64, read */
+    #define LAST_DXP_PARAM mcaElapsedCounts
 
 private:
     /* Data */
@@ -375,6 +401,31 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     addParam(NDDxpSaveSystemFileString,         &NDDxpSaveSystemFile);
     addParam(NDDxpSaveSystemString,             &NDDxpSaveSystem);
     addParam(NDDxpAcquiringString,              &NDDxpAcquiring);
+
+    addParam(mcaDataString,                     &mcaData);
+    addParam(mcaStartAcquireString,             &mcaStartAcquire);
+    addParam(mcaStopAcquireString,              &mcaStopAcquire);
+    addParam(mcaEraseString,                    &mcaErase);
+    addParam(mcaReadStatusString,               &mcaReadStatus);
+    addParam(mcaChannelAdvanceInternalString,   &mcaChannelAdvanceInternal);
+    addParam(mcaChannelAdvanceExternalString,   &mcaChannelAdvanceExternal);
+    addParam(mcaNumChannelsString,              &mcaNumChannels);
+    addParam(mcaModePHAString,                  &mcaModePHA);
+    addParam(mcaModeMCSString,                  &mcaModeMCS);
+    addParam(mcaModeListString,                 &mcaModeList);
+    addParam(mcaSequenceString,                 &mcaSequence);
+    addParam(mcaPrescaleString,                 &mcaPrescale);
+    addParam(mcaPresetSweepsString,             &mcaPresetSweeps);
+    addParam(mcaPresetLowChannelString,         &mcaPresetLowChannel);
+    addParam(mcaPresetHighChannelString,        &mcaPresetHighChannel);
+    addParam(mcaDwellTimeString,                &mcaDwellTime);
+    addParam(mcaPresetLiveTimeString,           &mcaPresetLiveTime);
+    addParam(mcaPresetRealTimeString,           &mcaPresetRealTime);
+    addParam(mcaPresetCountsString,             &mcaPresetCounts);
+    addParam(mcaAcquiringString,                &mcaAcquiring);
+    addParam(mcaElapsedLiveTimeString,          &mcaElapsedLiveTime);
+    addParam(mcaElapsedRealTimeString,          &mcaElapsedRealTime);
+    addParam(mcaElapsedCountsString,            &mcaElapsedCounts);
 
     this->deviceType = (NDDxpModel_t) this->getModuleType();
     this->nChannels = nChannels;
