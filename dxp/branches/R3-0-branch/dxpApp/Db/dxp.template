@@ -119,7 +119,7 @@ record(bo, "$(P)$(R)BaselineCutEnable") {
 }
 
 record(bi, "$(P)$(R)BaselineCutEnable_RBV") {
-   field(PINI, "1")
+#   field(PINI, "RUNNING")
    field(DTYP, "asynInt32")
    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpEnableBaselineCut")
    field(ZNAM, "No")
@@ -551,5 +551,34 @@ record(mbbi, "$(P)$(R)PresetCountMode_RBV") {
   field(ZRST, "events")
   field(ONST, "triggers")
   field(SCAN, "I/O Intr")
+}
+
+record(bo, "$(P)SaveSystem") {
+  field(PINI, "NO")
+  field(DESC, "save system information")
+  field(SCAN, "Passive")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),0,$(TIMEOUT))DxpSaveSystem")
+  field(ZNAM, "Done")
+  field(ONAM, "Save")
+}
+
+record(bi, "$(P)SaveSystem_RBV") {
+#   field(PINI, "RUNNING")
+   field(DTYP, "asynInt32")
+   field(INP, "@asyn($(PORT),0,$(TIMEOUT))DxpSaveSystem")
+   field(ZNAM, "Done")
+   field(ONAM, "Save")
+   field(SCAN, "I/O Intr")
+}
+
+
+record(waveform, "$(P)SaveSystemFile")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynOctetWrite")
+    field(INP,  "@asyn($(PORT),0,$(TIMEOUT))DxpSaveSystemFile")
+    field(FTVL, "UCHAR")
+    field(NELM, "256")
 }
 
