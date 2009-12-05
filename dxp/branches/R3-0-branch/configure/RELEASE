@@ -12,9 +12,10 @@ TEMPLATE_TOP=$(EPICS_BASE)/templates/makeBaseApp/top
 SNCSEQ=/corvette/home/epics/devel/seq/2-0-12
 
 ASYN=/corvette/home/epics/devel/asyn/4-13
+AREA_DETECTOR=/corvette/home/epics/devel/areaDetector/1-6
 MCA=/corvette/home/epics/devel/mca/6-12
 CAMAC=/corvette/home/epics/devel/camac/2-5
-DXP=/corvette/home/epics/devel/dxp/2-11
+DXP=/corvette/home/epics/devel/dxp/3-0
 
 # The following are needed only to support the ioc
 CALC=/corvette/home/epics/devel/calc/2-8
