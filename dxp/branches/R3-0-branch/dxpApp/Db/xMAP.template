@@ -1,0 +1,97 @@
+record(mbbo, "$(P)CollectMode") {
+  field(DESC, "Mode select")
+  field(DTYP, "asynInt32")
+  field(OUT,  "$(INP)DxpCollectMode")
+  field(PINI, "YES")
+  field(ZRVL, "0")
+  field(ZRST, "MCA")
+  field(ONVL, "1")
+  field(ONST, "Mapping")
+  field(IVOA, "Don't drive outputs")
+}
+
+record(mbbi, "$(P)CollectMode_RBV") {
+  field(DESC, "Mode select")
+  field(DTYP, "asynInt32")
+  field(INP,  "$(INP)DxpCollectMode")
+  field(PINI, "YES")
+  field(ZRVL, "0")
+  field(ZRST, "MCA")
+  field(ONVL, "1")
+  field(ONST, "Mapping")
+  field(SCAN, "I/O Intr")
+}
+
+record(bo, "$(P)NextPixel") {
+  field(DESC, "Next map pixel")
+  field(VAL,  "1")
+  field(DTYP, "asynInt32")
+  field(OUT,  "$(INP)DxpNextPixel")
+  field(ZNAM, "Next")
+  field(ONAM, "Next")
+}
+
+record(mbbo, "$(P)PixelAdvanceMode") {
+  field(DESC, "Pixel advance mode select")
+  field(DTYP, "asynInt32")
+  field(OUT,  "$(INP)DxpPixelAdvanceMode")
+  field(PINI, "YES")
+  field(ZRVL, "0")
+  field(ZRST, "Gate")
+  field(ONVL, "1")
+  field(ONST, "SYNC")
+  field(TWVL, "2")
+  field(TWST, "Software")
+  field(IVOA, "Don't drive outputs")
+}
+
+record(mbbi, "$(P)PixelAdvanceMode_RBV") {
+  field(DESC, "Pixel advance mode select")
+  field(DTYP, "asynInt32")
+  field(INP,  "$(INP)DxpPixelAdvanceMode")
+  field(ZRVL, "0")
+  field(ZRST, "Gate")
+  field(ONVL, "1")
+  field(ONST, "SYNC")
+  field(TWVL, "2")
+  field(TWST, "Software")
+  field(SCAN, "I/O Intr")
+}
+
+record(longout, "$(P)PixelsPerRun") {
+  field(DESC, "Pixels per run")
+  field(VAL,  "1")
+  field(DTYP, "asynInt32")
+  field(OUT,  "$(INP)DxpPixelsPerRun")
+  field(PINI, "YES")
+}
+
+record(longin, "$(P)PixelsPerRun_RBV") {
+  field(DESC, "Pixels per run")
+  field(DTYP, "asynInt32")
+  field(INP,  "$(INP)DxpPixelsPerRun")
+  field(SCAN, "I/O Intr")
+}
+
+record(longout, "$(P)PixelsPerBuffer") {
+  field(DESC, "Pixels per mapping buffer")
+  field(VAL,  "-1")
+  field(PINI, "YES")
+  field(DTYP, "asynInt32")
+  field(OUT,  "$(INP)DxpPixelsPerBuffer")
+}
+
+record(longin, "$(P)PixelsPerBuffer_RBV") {
+  field(DESC, "Pixels per mapping buffer")
+  field(DTYP, "asynInt32")
+  field(INP,  "$(INP)DxpPixelsPerBuffer")
+  field(SCAN, "I/O Intr")
+}
+
+record(longin, "$(P)BufferSize_RBV") {
+  field(DESC, "Buffer size")
+  field(DTYP, "asynInt32")
+  field(INP,  "$(INP)DxpArraySize")
+  field(SCAN, "I/O Intr")
+}
+
