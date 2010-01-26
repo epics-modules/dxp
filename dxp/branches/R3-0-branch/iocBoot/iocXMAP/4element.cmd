@@ -14,7 +14,8 @@ set_pass1_restoreFile("auto_settings4.sav")
 
 # Set logging level (1=ERROR, 2=WARNING, 3=INFO, 4=DEBUG)
 xiaSetLogLevel(2)
-xiaInit("xmap4.ini")
+#xiaInit("xmap4.ini")
+xiaInit("xmap4_test.ini")
 xiaStartSystem
 
 # DXPConfig(serverName, ndetectors, maxBuffers, maxMemory)
@@ -22,9 +23,15 @@ NDDxpConfig("DXP1",  4, -1, -1)
 
 dbLoadTemplate("4element.substitutions")
 
+# Create a netCDF file saving plugin
+NDFileNetCDFConfigure("DXP1NetCDF", 100, 0, "DXP1", 0)
+dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=dxpXMAP:,R=netCDF1:,PORT=DXP1NetCDF,ADDR=0,TIMEOUT=1,NDARRAY_PORT=DXP1,NDARRAY_ADDR=0")
+dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFile.template",      "P=dxpXMAP:,R=netCDF1:,PORT=DXP1NetCDF,ADDR=0,TIMEOUT=1")
+dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFileNetCDF.template","P=dxpXMAP:,R=netCDF1:,PORT=DXP1NetCDF,ADDR=0,TIMEOUT=1")
+
 #xiaSetLogLevel(4)
 #asynSetTraceMask DXP1 0 255
-#asynSetTraceIOMask DXP1 0 2
+asynSetTraceIOMask DXP1 0 2
 
 ### Scan-support software
 # crate-resident scan.  This executes 1D, 2D, 3D, and 4D scans, and caches
