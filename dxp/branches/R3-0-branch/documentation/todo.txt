@@ -1,19 +1,38 @@
                        DXP 3-0 Things to do
 
-- Get non-root access working on colorado
+- Get non-root access to USB Saturn systems working on Linux.  
+  udev does not seem to be working like it did previously?
 
-- Make everything work on Saturn
-  - Elapsed live time
-  - ICR, OCR, Input counts, output counts
-  - SCAs
+- Make option to use INI values rather than save/restore
+   - Remove save/restore for parameters
+   - Set PINI=NO for DXP parameter records
 
-- Make option to use INI rather than save/restore
+- Implement correct horizontal axis scaling of baseline histogram and diagnostic traces
   
-- Test performance on Saturn, make at least as good as 2-11
+- Make a saturn.template file that changes the allowed trace mode values to those that the Saturn actually supports
 
-- Make everything work on xMAP
-  - All-channel operations, without SNL program if possible
+- Implement SCAs
+  
+- When using the EPICS sscan record to do rapid data collection, the scan occasionally
+  hangs up (every few hunded points) because the MCA record did not complete processing (?). 
+  There are also occasional data dropouts (elapsed times and spectra are 0).
+  
+- Test performance when doing rapid scanning on all models, make at least as good as 2-11 corrected for small additional 
+  overhead to read extra parameters to do accurate live time correction.
 
-- Test performance on xMAP, make at least as good as 2-11
+- Implement preset events and preset triggers on xMAP
 
-- Implement mapping mode on xMAP
+- Don't always "apply" on xMAP when a parameter is written
+  - during initialization - make PV for "autoApply", leave 0 in startup, set to 1 at end
+  - When setting SCAs turn off and back on again for speed
+  
+- 4th xMAP module in my crate not working correctly - hardware problem?
+
+- Mapping mode:
+  - Add sync divisor parameter and PV
+  - Added read rate, MBytes to medm screen
+  - IDL routine to parse files
+  - Test gate and sync modes
+  - Implement and test SCA mapping mode
+  - Implement and test list mode if it is supported
+  - See if buffer_len reports partial buffers, if so read it every time
