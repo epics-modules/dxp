@@ -1,8 +1,15 @@
 file "$(DXP)/dxpApp/Db/dxpMED.template"
 {
 pattern
-{P,        MCAALL,    INP          } 
+{P,        MCAALL,      INP       } 
 {dxpXMAP:, mcaAll, "@asyn(DXP1,4)"}
+}
+
+file "$(DXP)/dxpApp/Db/xMAP.template"
+{
+pattern
+{P,               INP     } 
+{dxpXMAP:, "@asyn(DXP1,0)"}
 }
 
 file "$(MCA)/mcaApp/Db/simple_mca.db"
