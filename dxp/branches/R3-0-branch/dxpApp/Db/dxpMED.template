@@ -51,6 +51,35 @@ record(ao,"$(P)PresetLive") {
     field(PREC, "2")
 }
 
+record(mbbo, "$(P)PresetCountMode") {
+  field(DESC, "set preset type")
+  field(ZRVL, "0")
+  field(ZRST, "Disabled")
+  field(ONVL, "1")
+  field(ONST, "Real time [s]")
+  field(TWVL, "2")
+  field(TWST, "Live time [s]")
+  field(THVL, "3")
+  field(THST, "Events [n]")
+  field(FRVL, "4")
+  field(FRST, "Triggers [n]")
+}
+
+record(mbbi, "$(P)PresetCountMode_RBV") {
+  field(DESC, "set preset type for preset counts")
+  field(ZRVL, "0")
+  field(ZRST, "Disabled")
+  field(ONVL, "1")
+  field(ONST, "Real time [s]")
+  field(TWVL, "2")
+  field(TWST, "Live time [s]")
+  field(THVL, "3")
+  field(THST, "Events [n]")
+  field(FRVL, "4")
+  field(FRST, "Triggers [n]")
+  field(SCAN, "I/O Intr")
+}
+
 record(bi,"$(P)Acquiring") {
     field("INP", "$(P)$(MCAALL).ACQG CP MS")
     field("ZNAM","Done")
@@ -121,6 +150,25 @@ record(bo,"$(P)ReadDXPs") {
 record(bo,"$(P)DoReadDXPs") {
     field(ZNAM, "Done")
     field(ONAM, "Read")
+}
+
+# Status polling rate (and data readout speed in normal/mca mode)
+record(ao, "$(P)PollTime") {
+    field(DTYP, "asynFloat64")
+    field(OUT, "$(INP)DxpPollTime")
+    field(VAL, "0.01")
+    field(PINI, "YES")
+    field(PREC, "3")
+    field(EGU, "s")
+}
+
+record(ai, "$(P)PollTime_RBV") {
+    field(PINI, "YES")
+    field(DTYP, "asynFloat64")
+    field(INP, "$(INP)DxpPollTime")
+    field(PREC, "3")
+    field(EGU, "s")
+    field(SCAN, "I/O Intr")
 }
 
 record(bo,"$(P)ReadBaselineHistograms") {
