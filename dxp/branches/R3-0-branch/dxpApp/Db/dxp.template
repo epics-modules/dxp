@@ -1,23 +1,42 @@
 # dxp.template
 # Database for XIA DXP detectors (DXP-2X, Saturn, and xMAP).
-# This database does not contain the records that are specific
-# to the xMAP mapping mode, those are in dxp_mapping.template
+# This database contains records for each dxp channel, i.e. this file
+# gets loaded once for each channel.
+# The global records, i.e. 1 per system are contained in dxpMED.template.
+# The global records that are specific to the xMAP are contained in xMAP.template.
 
-# Changes from original
-#  - Energy units changed from eV to keV
-#  - Set all output links to PINI=YES.  If 1 then save/restore is used, if 0 then ini file is used
-#  - Set a reasonable default value for all outputs
-#  - asynUInt32Digital interface changed to asynInt32
-#  - No fanouts in database
-#  - Each link is of the form "@asyn($(PORT),$(ADDR),$(TIMEOUT))"
-#  - No forward links, all readbacks are I/O Intr scanned
-#  - Changed xmap_trace to NDDxpTraceMode and NDDxpTraceTime
-#  - Changed trace time units from ns to us
-#  - Deleted APPLY record, driver should do apply automatically
-#  - Deletect mca_bin_width, replaced with NDDxpMaxEnergy
-#  - No record for number_mca_channels, that is set by MCA_NUM_CHANNELS
-#  - Added preamp_gain, detector_polarity, reset_delay, gap_time, trigger_peaking_time, 
-#    trigger_gap_time, baseline_average 
+record(mbbo, "$(P)($R)PresetCountMode") {
+  field(DESC, "set preset type")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR),2.0)DxpPresetCountMode")
+  field(ZRVL, "0")
+  field(ZRST, "disabled")
+  field(ONVL, "1")
+  field(ONST, "real time [s]")
+  field(TWVL, "2")
+  field(TWST, "live time [s]")
+  field(THVL, "3")
+  field(THST, "events [n]")
+  field(FRVL, "4")
+  field(FRST, "triggers [n]")
+}
+
+record(mbbi, "$(P)$(R)PresetCountMode_RBV") {
+  field(DESC, "set preset type for preset counts")
+  field(DTYP, "asynInt32")
+  field(INP,  "@asyn($(PORT),$(ADDR),2.0)DxpPresetCountMode")
+  field(ZRVL, "0")
+  field(ZRST, "disabled")
+  field(ONVL, "1")
+  field(ONST, "real time [s]")
+  field(TWVL, "2")
+  field(TWST, "live time [s]")
+  field(THVL, "3")
+  field(THST, "events [n]")
+  field(FRVL, "4")
+  field(FRST, "triggers [n]")
+  field(SCAN, "I/O Intr")
+}
 
 record(ao, "$(P)$(R)PeakingTime") {
   field(PINI, $(PINI))
@@ -580,5 +599,12 @@ record(waveform, "$(P)SaveSystemFile")
     field(INP,  "@asyn($(PORT),0,$(TIMEOUT))DxpSaveSystemFile")
     field(FTVL, "UCHAR")
     field(NELM, "256")
+}
+
+record(longin, "$(P)$(R)CurrentPixel") {
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpCurrentPixel")
+    field(DESC, "Current pixel #")
+    field(SCAN, "I/O Intr")
 }
 
