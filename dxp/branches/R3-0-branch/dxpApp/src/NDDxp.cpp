@@ -35,7 +35,11 @@
 #define XMAP_NCHANS_MODULE         4
 #define XMAP_MAX_MCA_BINS      16384
 #define XMAP_MCA_BIN_RES         256
-#define XMAP_MAX_MAPBUF_SIZE 2097152   /** < The maximum number of bytes in the 2MB mapping mode buffer */
+/** < The maximum number of bytes in the 2MB mapping mode buffer */
+#define XMAP_MAPBUF_SIZE 2097152
+/** < The XMAP buffer takes up 2MB of 16bit words. Unfortunatly the transfer over PCI
+  * uses 32bit words, so the data we receive from from the Handel library is 2x2MB. */
+#define XMAP_MAPBUF_READ_SIZE 2*XMAP_MAPBUF_SIZE
 #define MEGABYTE             1048576
 
 #define CALLHANDEL( handel_call, msg ) { \
@@ -65,7 +69,6 @@ typedef enum {
 typedef enum {
     NDDxpPixelAdvanceGate,
     NDDxpPixelAdvanceSync,
-    NDDxpPixelAdvanceSoftware
 } NDDxpPixelAdvanceMode_t;
 
 typedef enum {
@@ -82,6 +85,10 @@ static char *NDDxpTraceCommands[] = {"adc_trace", "baseline_history",
                                      "trigger_filter", "baseline_filter", "energy_filter",
                                      "baseline_samples", "energy_samples"};
 
+static char *NDDxpBufferCharString[2] = {"a", "b"};
+static char *NDDxpBufferFullString[2] = {"buffer_full_a", "buffer_full_b"};
+static char *NDDxpBufferString[2]     = {"buffer_a", "buffer_b"};
+
 typedef struct moduleStatistics {
     double realTime;
     double triggerLiveTime;
@@ -92,8 +99,8 @@ typedef struct moduleStatistics {
     double ocr;
 } moduleStatistics;
 
+/* Mapping mode parameters */
 #define NDDxpCollectModeString              "DxpCollectMode"
-#define NDDxpErasedString                   "DxpErased"
 #define NDDxpXMAPRunStateString             "DxpXMAPRunState"
 #define NDDxpPixelAdvanceModeString         "DxpPixelAdvanceMode"
 #define NDDxpCurrentPixelString             "DxpCurrentPixel"
@@ -103,26 +110,33 @@ typedef struct moduleStatistics {
 #define NDDxpBufferOverrunString            "DxpBufferOverrun"
 #define NDDxpMBytesReceivedString           "DxpMBytesReceived"
 #define NDDxpReadSpeedString                "DxpReadSpeed"
+#define NDDxpIgnoreGateString               "DxpIgnoreGate"
+#define NDDxpSyncCountString                "DxpSyncCount"
+#define NDDxpInputLogicPolarityString       "DxpInputLogicPolarity"
 
+/* Internal asyn driver parameters */
+#define NDDxpErasedString                   "DxpErased"
+#define NDDxpAcquiringString                "NDDxpAcquiring"  /* Internal use only !!! */
 #define NDDxpReadDXPParamsString            "DxpReadDXPParams"
 #define NDDxpPixelCounterString             "DxpPixelCounter"
 #define NDDxpBufferCounterString            "DxpBufferCounter"
 #define NDDxpPollTimeString                 "DxpPollTime"
-#define NDDxpPresetCountModeString          "DxpPresetCountMode"
+#define NDDxpForceReadString                "DxpForceRead"
+
+/* Diagnostic trace parameters */
 #define NDDxpTraceModeString                "DxpTraceMode"
 #define NDDxpTraceTimeString                "DxpTraceTime"
 #define NDDxpTraceString                    "DxpTrace"
 #define NDDxpBaselineHistogramString        "DxpBaselineHistogram"
-#define NDDxpMaxEnergyString                "DxpMaxEnergy"
-#define NDDxpPollActiveString               "DxpPollActive"
-#define NDDxpForceReadString                "DxpForceRead"
 
+/* Runtime statistics */
 #define NDDxpElapsedTriggerLiveTimeString   "DxpElapsedTriggerLiveTime"
 #define NDDxpTriggersString                 "DxpTriggers"
 #define NDDxpEventsString                   "DxpEvents"
 #define NDDxpInputCountRateString           "DxpInputCountRate"
 #define NDDxpOutputCountRateString          "DxpOutputCountRate"
 
+/* DXP parameters */
 #define NDDxpPeakingTimeString              "DxpPeakingTime"
 #define NDDxpDynamicRangeString             "DxpDynamicRange"
 #define NDDxpTriggerThresholdString         "DxpTriggerThreshold"
@@ -131,6 +145,7 @@ typedef struct moduleStatistics {
 #define NDDxpCalibrationEnergyString        "DxpCalibrationEnergy"
 #define NDDxpADCPercentRuleString           "DxpADCPercentRule"
 #define NDDxpMCABinWidthString              "DxpMCABinWidth"
+#define NDDxpMaxEnergyString                "DxpMaxEnergy"
 #define NDDxpPreampGainString               "DxpPreampGain"
 #define NDDxpNumMCAChannelsString           "DxpNumMCAChannels"
 #define NDDxpDetectorPolarityString         "DxpDetectorPolarity"
@@ -143,23 +158,11 @@ typedef struct moduleStatistics {
 #define NDDxpBaselineCutString              "DxpBaselineCut"
 #define NDDxpEnableBaselineCutString        "DxpEnableBaselineCut"
 #define NDDxpMaxWidthString                 "DxpMaxWidth"
-    
+#define NDDxpPresetCountModeString          "DxpPresetCountMode"
+
+/* INI file parameters */
 #define NDDxpSaveSystemFileString           "DxpSaveSystemFile"
 #define NDDxpSaveSystemString               "DxpSaveSystem"
-#define NDDxpAcquiringString                "NDDxpAcquiring"  /* Internal use only !!! */
-
-typedef struct NDDxpBuffers_t {
-    char bufChar[2];
-    char bufFull[14];
-    char buffer[9];
-} NDDxpBuffers_t;
-
-static NDDxpBuffers_t NDDxpBuffers[] =
-{
-        {"a", "buffer_full_a", "buffer_a"},
-        {"b", "buffer_full_b", "buffer_b"},
-};
-
 
 class NDDxp : public asynNDArrayDriver
 {
@@ -188,7 +191,7 @@ public:
     asynStatus getModuleStatistics(asynUser *pasynUser, int addr, moduleStatistics *stats);
     asynStatus getAcquisitionStatistics(asynUser *pasynUser, int addr);
     asynStatus getMcaData(asynUser *pasynUser, int addr);
-    asynStatus getMappingData(asynUser *pasynUser, int addr);
+    asynStatus getMappingData();
     asynStatus getTrace(asynUser* pasynUser, int addr,
                         epicsInt32* data, size_t maxLen, size_t *actualLen);
     asynStatus getBaselineHistogram(asynUser* pasynUser, int addr,
@@ -202,9 +205,9 @@ public:
     asynStatus xmapGetModuleChannels(int currentChannel, int* firstChannel, int* nChannels);
 
 protected:
+    /* Mapping mode parameters */
     int NDDxpCollectMode;                   /** < Change mode of the XMAP (0=mca; 1=spectra mapping; 2=sca mapping) (int32 read/write) addr: all/any */
     #define FIRST_DXP_PARAM NDDxpCollectMode
-    int NDDxpErased;                        /** < Erased flag. (0=not erased; 1=erased) */
     int NDDxpXMAPRunState;                  /** < XMAP reporting it's runtime state (int bitmap) */
     int NDDxpPixelAdvanceMode;             /** < XMAP mapping mode only: pixel advance mode (int) */
     int NDDxpCurrentPixel;                  /** < XMAP mapping mode only: read the current pixel that is being acquired into (int) */
@@ -214,27 +217,33 @@ protected:
     int NDDxpBufferOverrun;
     int NDDxpMBytesReceived;
     int NDDxpReadSpeed;
+    int NDDxpIgnoreGate;
+    int NDDxpSyncCount;
+    int NDDxpInputLogicPolarity;
 
-    int NDDxpReadDXPParams;        /** < Read back values of DXP parameters */
+    /* Internal asyn driver parameters */
+    int NDDxpErased;                        /** < Erased flag. (0=not erased; 1=erased) */
+    int NDDxpAcquiring;                 /** Internal acquiring flag, not exposed via drvUser */
+    int NDDxpReadDXPParams;        /** < Force read of values of DXP parameters */
     int NDDxpPixelCounter;         /** < Count how many pixels have been acquired (read) mapping mode */
     int NDDxpBufferCounter;        /** < Count how many buffers have been collected (read) mapping mode */
     int NDDxpPollTime;             /** < Status/data polling time in seconds */
-    int NDDxpPresetCountMode;      /** < Sets which type of preset count to send to the HW: either events or triggers (xmap) */
+    int NDDxpForceRead;            /** < Force reading MCA spectra - used for mcaData when addr=ALL */
+
+    /* Diagnostic trace parameters */
     int NDDxpTraceMode;            /** < Select what type of trace to do: ADC, baseline hist, .. etc. */
     int NDDxpTraceTime;            /** < Set the trace sample time in us. */
     int NDDxpTrace;                /** < The trace array data (read) */
     int NDDxpBaselineHistogram;    /** < The baseline histogram array data (read) */
-    int NDDxpMaxEnergy;            /** < Maximum energy */
-    int NDDxpPollActive;           /** < Polling the HW for status and data is active/inactive (read)*/
-    int NDDxpForceRead;            /** < Force reading MCA spectra - used for mcaData when addr=ALL */
 
-    /* runtime statistics */
+    /* Runtime statistics */
     int NDDxpElapsedTriggerLiveTime;    /** < live time in seconds (double) */
     int NDDxpTriggers;                  /** < number of triggers received (double) */
     int NDDxpEvents;                    /** < total number of events registered (double) */
     int NDDxpInputCountRate;            /** < input count rate in Hz (double) */
     int NDDxpOutputCountRate;           /** < output count rate in Hz (double) */
 
+    /* DXP parameters */
     int NDDxpPeakingTime;
     int NDDxpDynamicRange;
     int NDDxpTriggerThreshold;
@@ -243,6 +252,7 @@ protected:
     int NDDxpCalibrationEnergy;
     int NDDxpADCPercentRule;
     int NDDxpMCABinWidth;
+    int NDDxpMaxEnergy;            /** < Maximum energy */
     int NDDxpPreampGain;
     int NDDxpNumMCAChannels;
     int NDDxpDetectorPolarity;
@@ -255,9 +265,11 @@ protected:
     int NDDxpBaselineCut;
     int NDDxpEnableBaselineCut;
     int NDDxpMaxWidth;
+    int NDDxpPresetCountMode;      /** < Sets which type of preset count to send to the HW: either events or triggers (xmap) */
+
+    /* INI file parameters */
     int NDDxpSaveSystemFile;
     int NDDxpSaveSystem;
-    int NDDxpAcquiring;                 /** Internal acquiring flag, not exposed via drvUser */
 
     /* Commands from MCA interface */
     int mcaData;                   /* int32Array, write/read */
@@ -288,16 +300,15 @@ protected:
 
 private:
     /* Data */
-    NDArray *pRaw;
     epicsUInt32 **pMcaRaw;
     epicsUInt32 **pXmapMcaRaw;
     epicsUInt32 *pMapRaw;
-    epicsUInt16 *pMapSmallWord;
     epicsFloat64 *tmpStats;
 
     NDDxpModel_t deviceType;
     int nCards;
     int nChannels;
+    int supportsMapping;
 
     epicsEvent *cmdStartEvent;
     epicsEvent *cmdStopEvent;
@@ -351,8 +362,7 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     : asynNDArrayDriver(portName, nChannels + 1, NUM_DXP_PARAMS, maxBuffers, maxMemory,
             asynFloat64Mask | asynInt32ArrayMask | asynGenericPointerMask | asynOctetMask | asynInt32Mask | asynDrvUserMask,
             asynFloat64Mask | asynInt32ArrayMask | asynGenericPointerMask | asynOctetMask | asynInt32Mask,
-            ASYN_MULTIDEVICE | ASYN_CANBLOCK, 1, 0, 0),
-    pRaw(NULL)
+            ASYN_MULTIDEVICE | ASYN_CANBLOCK, 1, 0, 0)
 {
     int status = asynSuccess;
     int i, ch;
@@ -360,8 +370,8 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     asynUser *pasynUser = this->pasynUserSelf;
     const char *functionName = "NDDxp";
 
+    /* Mapping mode parameters */
     createParam(NDDxpCollectModeString,            asynParamInt32,   &NDDxpCollectMode);
-    createParam(NDDxpErasedString,                 asynParamInt32,   &NDDxpErased);
     createParam(NDDxpXMAPRunStateString,           asynParamInt32,   &NDDxpXMAPRunState);
     createParam(NDDxpPixelAdvanceModeString,       asynParamInt32,   &NDDxpPixelAdvanceMode);
     createParam(NDDxpCurrentPixelString,           asynParamInt32,   &NDDxpCurrentPixel);
@@ -371,23 +381,34 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     createParam(NDDxpBufferOverrunString,          asynParamInt32,   &NDDxpBufferOverrun);
     createParam(NDDxpMBytesReceivedString,         asynParamFloat64, &NDDxpMBytesReceived);
     createParam(NDDxpReadSpeedString,              asynParamFloat64, &NDDxpReadSpeed);
+    createParam(NDDxpIgnoreGateString,             asynParamInt32,   &NDDxpIgnoreGate);
+    createParam(NDDxpSyncCountString,              asynParamInt32,   &NDDxpSyncCount);
+    createParam(NDDxpInputLogicPolarityString,     asynParamInt32,   &NDDxpInputLogicPolarity);
+
+
+    /* Internal asyn driver parameters */
+    createParam(NDDxpErasedString,                 asynParamInt32,   &NDDxpErased);
+    createParam(NDDxpAcquiringString,              asynParamInt32,   &NDDxpAcquiring);
     createParam(NDDxpReadDXPParamsString,          asynParamInt32,   &NDDxpReadDXPParams);
     createParam(NDDxpPixelCounterString,           asynParamInt32,   &NDDxpPixelCounter);
     createParam(NDDxpBufferCounterString,          asynParamInt32,   &NDDxpBufferCounter);
     createParam(NDDxpPollTimeString,               asynParamFloat64, &NDDxpPollTime);
-    createParam(NDDxpPresetCountModeString,        asynParamInt32,   &NDDxpPresetCountMode);
+    createParam(NDDxpForceReadString,              asynParamInt32,   &NDDxpForceRead);
+
+    /* Diagnostic trace parameters */
     createParam(NDDxpTraceModeString,              asynParamInt32,   &NDDxpTraceMode);
     createParam(NDDxpTraceTimeString,              asynParamFloat64, &NDDxpTraceTime);
     createParam(NDDxpTraceString,                  asynParamInt32Array, &NDDxpTrace);
     createParam(NDDxpBaselineHistogramString,      asynParamInt32Array, &NDDxpBaselineHistogram);
-    createParam(NDDxpMaxEnergyString,              asynParamFloat64, &NDDxpMaxEnergy);
-    createParam(NDDxpPollActiveString,             asynParamInt32,   &NDDxpPollActive);
-    createParam(NDDxpForceReadString,              asynParamInt32,   &NDDxpForceRead);
+
+    /* Runtime statistics */
     createParam(NDDxpElapsedTriggerLiveTimeString, asynParamFloat64, &NDDxpElapsedTriggerLiveTime);
     createParam(NDDxpTriggersString,               asynParamInt32,   &NDDxpTriggers);
     createParam(NDDxpEventsString,                 asynParamInt32,   &NDDxpEvents);
     createParam(NDDxpInputCountRateString,         asynParamFloat64, &NDDxpInputCountRate);
     createParam(NDDxpOutputCountRateString,        asynParamFloat64, &NDDxpOutputCountRate);
+
+    /* DXP parameters */
     createParam(NDDxpPeakingTimeString,            asynParamFloat64, &NDDxpPeakingTime);
     createParam(NDDxpDynamicRangeString,           asynParamFloat64, &NDDxpDynamicRange);
     createParam(NDDxpTriggerThresholdString,       asynParamFloat64, &NDDxpTriggerThreshold);
@@ -396,6 +417,7 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     createParam(NDDxpCalibrationEnergyString,      asynParamFloat64, &NDDxpCalibrationEnergy);
     createParam(NDDxpADCPercentRuleString,         asynParamFloat64, &NDDxpADCPercentRule);
     createParam(NDDxpMCABinWidthString,            asynParamFloat64, &NDDxpMCABinWidth);
+    createParam(NDDxpMaxEnergyString,              asynParamFloat64, &NDDxpMaxEnergy);
     createParam(NDDxpPreampGainString,             asynParamFloat64, &NDDxpPreampGain);
     createParam(NDDxpNumMCAChannelsString,         asynParamInt32,   &NDDxpNumMCAChannels);
     createParam(NDDxpDetectorPolarityString,       asynParamInt32,   &NDDxpDetectorPolarity);
@@ -408,10 +430,13 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     createParam(NDDxpBaselineCutString,            asynParamFloat64, &NDDxpBaselineCut);
     createParam(NDDxpEnableBaselineCutString,      asynParamInt32,   &NDDxpEnableBaselineCut);
     createParam(NDDxpMaxWidthString,               asynParamFloat64, &NDDxpMaxWidth);
+    createParam(NDDxpPresetCountModeString,        asynParamInt32,   &NDDxpPresetCountMode);
+
+    /* INI file parameters */
     createParam(NDDxpSaveSystemFileString,         asynParamOctet,   &NDDxpSaveSystemFile);
     createParam(NDDxpSaveSystemString,             asynParamInt32,   &NDDxpSaveSystem);
-    createParam(NDDxpAcquiringString,              asynParamInt32,   &NDDxpAcquiring);
 
+    /* Commands from MCA interface */
     createParam(mcaDataString,                     asynParamInt32Array, &mcaData);
     createParam(mcaStartAcquireString,             asynParamInt32,   &mcaStartAcquire);
     createParam(mcaStopAcquireString,              asynParamInt32,   &mcaStopAcquire);
@@ -442,11 +467,16 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     switch (this->deviceType)
     {
     case NDDxpModelXMAP:
+        this->supportsMapping = 1;
         /* TODO: this solution is a bit crude and not always correct... */
-        this->nCards = this->nChannels / XMAP_NCHANS_MODULE;
+        this->nCards = ((this->nChannels-1) / XMAP_NCHANS_MODULE) + 1;
+    case NDDxpModel4C2X:
+        this->supportsMapping = 0;
+        this->nCards = ((this->nChannels-1) / XMAP_NCHANS_MODULE) + 1;
         break;
-    default:
-        this->nCards = this->nChannels;
+    case NDDxpModelSaturn:
+        this->supportsMapping = 0;
+        this->nCards = 1;
         break;
     }
     
@@ -469,14 +499,13 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
         this->pMcaRaw[ch] = (epicsUInt32*)calloc(XMAP_MAX_MCA_BINS, sizeof(epicsUInt32));
     if (this->deviceType == NDDxpModelXMAP)
     {
-        int numxMAPs = (this->nChannels-1)/ XMAP_NCHANS_MODULE + 1;
         int spectSize = XMAP_MAX_MCA_BINS * sizeof(epicsUInt32);
         int xmapSize = spectSize * XMAP_NCHANS_MODULE;
         char *buff;
-        this->pXmapMcaRaw = (epicsUInt32**)calloc(numxMAPs, sizeof(epicsUInt32*));
+        this->pXmapMcaRaw = (epicsUInt32**)calloc(this->nCards, sizeof(epicsUInt32*));
         /* Allocate one big block of memory that is large enough for all channels */
-        buff = (char *)malloc(numxMAPs * xmapSize);
-        for( i = 0; i < numxMAPs; i++)
+        buff = (char *)malloc(this->nCards * xmapSize);
+        for( i = 0; i < this->nCards; i++)
             this->pXmapMcaRaw[i] = (epicsUInt32 *)(buff + i*xmapSize);
         for( i = 0; i < this->nChannels; i++)
             this->pMcaRaw[i] = (epicsUInt32 *)(buff + i*spectSize);
@@ -497,12 +526,8 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     /* Allocate a buffer for the baseline histogram data */
     this->baselineBuffer = (epicsInt32 *)malloc(this->baselineLength * sizeof(epicsInt32));
 
-    /* Allocating a temporary buffer for use when collecting mapped MCA spectrums.
-     * The XMAP buffer takes up 2MB of 16bit words. Unfortunatly the transfer over PCI
-     * uses 32bit words so the data we receive from from the Handel library is 2x2MB large.
-     * Thus the 2MB buffer: XMAP_MAX_MAPBUF_SIZE = 2 * 1024 * 1024; */
-    this->pMapRaw = (epicsUInt32*)malloc(2*XMAP_MAX_MAPBUF_SIZE);
-    this->pMapSmallWord = (epicsUInt16*)calloc(XMAP_MAX_MAPBUF_SIZE, sizeof(epicsUInt16));
+    /* Allocating a temporary buffer for use in mapping mode. */
+    this->pMapRaw = (epicsUInt32*)malloc(XMAP_MAPBUF_READ_SIZE);
 
     /* Start up acquisition thread */
     this->polling = 1;
@@ -556,6 +581,9 @@ asynStatus NDDxp::writeInt32( asynUser *pasynUser, epicsInt32 value)
     if ((function == NDDxpCollectMode) ||
         (function == NDDxpPixelsPerRun) ||
         (function == NDDxpPixelsPerBuffer) ||
+        (function == NDDxpSyncCount) ||
+        (function == NDDxpIgnoreGate) ||
+        (function == NDDxpInputLogicPolarity) ||
         (function == NDDxpPixelAdvanceMode)) 
     {
         status = this->configureCollectMode();
@@ -1154,12 +1182,19 @@ asynStatus NDDxp::configureCollectMode()
     case NDDxpModeMapping:
         int pixelsPerBuffer;
         int pixelsPerRun;
+        int syncCount;
+        int ignoreGate;
+        int inputLogicPolarity;
         NDDxpPixelAdvanceMode_t pixelAdvanceMode;
 
         getIntegerParam(NDDxpPixelAdvanceMode, (int *)&pixelAdvanceMode);
         getIntegerParam(NDDxpPixelsPerRun, &pixelsPerRun);
         getIntegerParam(NDDxpPixelsPerBuffer, &pixelsPerBuffer);
         if (pixelsPerBuffer <= 0.) pixelsPerBuffer = -1;  /* Handel will compute maximum */
+        getIntegerParam(NDDxpSyncCount, &syncCount);
+        if (syncCount < 1) syncCount = 1;
+        getIntegerParam(NDDxpIgnoreGate, &ignoreGate);
+        getIntegerParam(NDDxpInputLogicPolarity, &inputLogicPolarity);
         setIntegerParam(NDDataType, NDUInt16);
             
         if (this->deviceType == NDDxpModelXMAP) chStep = XMAP_NCHANS_MODULE;
@@ -1176,18 +1211,28 @@ asynStatus NDDxp::configureCollectMode()
                 xiastatus = xiaSetAcquisitionValues(firstCh, "pixel_advance_mode", (void*)&dTmp);
                 status = this->xia_checkError(pasynUserSelf, xiastatus, "pixel_advance_mode");
                 break;
-            case NDDxpPixelAdvanceSoftware:
-                dTmp = 0;
-                xiastatus = xiaSetAcquisitionValues(firstCh, "mapping_pixel_next", (void*)&dTmp);
-                status = this->xia_checkError(pasynUserSelf, xiastatus, "mapping_pixel_next");
-                break;
             }
             dTmp = pixelsPerRun;
             xiastatus = xiaSetAcquisitionValues(firstCh, "num_map_pixels", (void*)&dTmp);
             status = this->xia_checkError(pasynUserSelf, xiastatus, "num_map_pixels");
+
             dTmp = pixelsPerBuffer;
             xiastatus = xiaSetAcquisitionValues(firstCh, "num_map_pixels_per_buffer", (void*)&dTmp);
             status = this->xia_checkError(pasynUserSelf, xiastatus, "num_map_pixels_per_buffer");
+
+            dTmp = syncCount;
+            xiastatus = xiaSetAcquisitionValues(firstCh, "sync_count", (void*)&dTmp);
+            status = this->xia_checkError(pasynUserSelf, xiastatus, "sync_count");
+
+            dTmp = ignoreGate;
+            xiastatus = xiaSetAcquisitionValues(firstCh, "gate_ignore", (void*)&dTmp);
+            status = this->xia_checkError(pasynUserSelf, xiastatus, "gate_ignore");
+
+            dTmp = inputLogicPolarity;
+            xiastatus = xiaSetAcquisitionValues(firstCh, "input_logic_polarity", (void*)&dTmp);
+            status = this->xia_checkError(pasynUserSelf, xiastatus, "input_logic_polarity");
+
+            /* Apply the values */
             xiastatus = xiaBoardOperation(firstCh, "apply", (void*)&dTmp);
             status = this->xia_checkError(pasynUserSelf, xiastatus, "apply");
             
@@ -1217,7 +1262,6 @@ asynStatus NDDxp::configureCollectMode()
                 "%s::%s [%d] Got buffer_len = %u\n", 
                 driverName, functionName, firstCh, bufLen);
             setIntegerParam(firstCh, NDArraySize, (int)bufLen);
-printf("%s:%s arraySize = %d\n", driverName, functionName, (int)bufLen);
 
             /* Clear the normal mapping mode status settings */
             for (i=0; i < XMAP_NCHANS_MODULE; i++)
@@ -1593,6 +1637,7 @@ asynStatus NDDxp::getMcaData(asynUser *pasynUser, int addr)
     int channel=addr;
     int spectrumCounter;
     int i;
+    NDArray *pArray;
     NDDataType_t dataType;
     epicsTimeStamp now;
     const char* functionName = "getMcaData";
@@ -1632,111 +1677,111 @@ asynStatus NDDxp::getMcaData(asynUser *pasynUser, int addr)
             "%s::%s Got MCA spectrum channel:%d ptr:%p\n",
             driverName, functionName, channel, pMcaRaw[addr]);
 
-        if (arrayCallbacks)
+        if (arrayCallbacks);
         {
             /* Allocate a buffer for callback
              * -and just telling it where to find the data in the pMcaRaw buffer... */
-            this->pRaw = this->pNDArrayPool->alloc(1, &nChannels, dataType, 0, (void*)(pMcaRaw[addr]) );
-            this->pRaw->timeStamp = now.secPastEpoch + now.nsec / 1.e9;
-            this->pRaw->uniqueId = spectrumCounter;
+            pArray = this->pNDArrayPool->alloc(1, &nChannels, dataType, 0, (void*)(pMcaRaw[addr]) );
+            pArray->timeStamp = now.secPastEpoch + now.nsec / 1.e9;
+            pArray->uniqueId = spectrumCounter;
             //this->unlock();
-            doCallbacksGenericPointer(this->pRaw, NDArrayData, addr);
+            doCallbacksGenericPointer(pArray, NDArrayData, addr);
             //this->lock();
-            this->pRaw->release();
+            pArray->release();
         }
     }
     return status;
 }
 
-asynStatus NDDxp::getMappingData(asynUser *pasynUser, int addr)
+/** Reads the mapping data for all of the modules in the system */
+asynStatus NDDxp::getMappingData()
 {
     asynStatus status = asynSuccess;
-    int xiastatus, paramStatus=asynSuccess;
+    int xiastatus;
     int arrayCallbacks;
-    int channel=addr;
-    int ch, chStep = 1;
     NDDataType_t dataType;
-    int buf = 0, i;
-    epicsUInt32 *data = this->pMapRaw, *pIn;
-    epicsUInt16 *pOut;
-    int dims[1], pixelCounter, bufferCounter, arraySize;
+    int buf = 0, channel, i;
+    NDArray *pArray=NULL;
+    epicsUInt32 *pIn=NULL;
+    epicsUInt16 *pOut=NULL;
+    int dims[2], pixelCounter, bufferCounter, arraySize;
     epicsTimeStamp now, after;
     double mBytesRead;
     double readoutTime, readoutBurstSpeed, MBbufSize;
     const char* functionName = "getMappingData";
 
-    if (addr == this->nChannels) channel = DXP_ALL;
-    if (this->deviceType == NDDxpModelXMAP) chStep = XMAP_NCHANS_MODULE;
-
-    if (channel == DXP_ALL) /* All channels */
-    {
-        for (ch=0; ch<this->nChannels; ch+=chStep)
-        {
-            /* Call ourselves recursively but with a specific channel */
-            status = this->getMappingData(pasynUser, ch);
-        }
-        return status;
-    }
-
-    paramStatus |= getIntegerParam(NDDataType, (int *)&dataType);
-    paramStatus |= getIntegerParam(NDDxpPixelCounter, &pixelCounter);
-    paramStatus |= getIntegerParam(NDDxpBufferCounter, &bufferCounter);
-    paramStatus |= getIntegerParam(NDArraySize, &arraySize);
-printf("%s:%s arraySize = %d\n", driverName, functionName, arraySize);
-    paramStatus |= getDoubleParam(NDDxpMBytesReceived, &mBytesRead);
+    getIntegerParam(NDDataType, (int *)&dataType);
+    getIntegerParam(NDDxpPixelCounter, &pixelCounter);
+    getIntegerParam(NDDxpBufferCounter, &bufferCounter);
+    bufferCounter++;
+    setIntegerParam(NDDxpBufferCounter, bufferCounter);
+    getIntegerParam(NDArraySize, &arraySize);
+    getDoubleParam(NDDxpMBytesReceived, &mBytesRead);
+    getIntegerParam(NDArrayCallbacks, &arrayCallbacks);
     MBbufSize = (double)((arraySize)*sizeof(epicsUInt16)) / (double)MEGABYTE;
 
-    epicsTimeGetCurrent(&now);
-    bufferCounter++;
-    buf = this->currentBuf[channel];
-
-    /* The buffer is full so read it out */
-    CALLHANDEL( xiaGetRunData(channel, NDDxpBuffers[buf].buffer, (void*)data), "NDDxpBuffers[buf].buffer" )
-    epicsTimeGetCurrent(&after);
-    paramStatus |= getIntegerParam(NDArrayCallbacks, &arrayCallbacks);
-
-    readoutTime = epicsTimeDiffInSeconds(&after, &now);
-    readoutBurstSpeed = MBbufSize / readoutTime;
-    mBytesRead += MBbufSize;
-    asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, 
-        "%s::%s Got data! size=%.3fMB (%d) dt=%.3fs speed=%.3fMB/s\n",
-        driverName, functionName, MBbufSize, arraySize, readoutTime, readoutBurstSpeed);
-
-    if (arrayCallbacks)
+    /* First read and reset the buffers, do this as quickly as possible */
+    for (channel = 0; channel < this->nChannels; channel+= XMAP_NCHANS_MODULE)
     {
-        dims[0] = arraySize;
-        this->pRaw = this->pNDArrayPool->alloc(1, dims, dataType, 0, NULL );
+        buf = this->currentBuf[channel];
 
-        /* First get rid of the empty parts of the 32 bit words. The Handel library
-         * provides a 4MB 32 bit/word wide buffer -even though the data only takes up
-         * 2MB 16bit word size. So we strip off the empty top 16bit of each 32 bit
-         * word and is left with 16 bit valid data... */
-        pIn = data;
-        pOut = (epicsUInt16 *)this->pRaw->pData;
-        for (i = 0; i < arraySize; i++)
-        {
-            *pOut++ = (epicsUInt16) *pIn++;
-        }
-
-        this->pRaw->timeStamp = now.secPastEpoch + now.nsec / 1.e9;
-        this->pRaw->uniqueId = bufferCounter;
-        //this->unlock();
-        doCallbacksGenericPointer(this->pRaw, NDArrayData, channel);
-        //this->lock();
-        this->pRaw->release();
-
+        /* The buffer is full so read it out */
+        epicsTimeGetCurrent(&now);
+        xiastatus = xiaGetRunData(channel, NDDxpBufferString[buf], (void*)this->pMapRaw);
+        status = xia_checkError(this->pasynUserSelf, xiastatus, "GetRunData mapping");
+        epicsTimeGetCurrent(&after);
+        readoutTime = epicsTimeDiffInSeconds(&after, &now);
+        readoutBurstSpeed = MBbufSize / readoutTime;
+        mBytesRead += MBbufSize;
         setDoubleParam(NDDxpMBytesReceived, mBytesRead);
         setDoubleParam(NDDxpReadSpeed, readoutBurstSpeed);
+        /* Notify XMAP that we read out the buffer */
+        xiastatus = xiaBoardOperation(channel, "buffer_done", (void*)NDDxpBufferCharString[buf]);
+        status = xia_checkError(this->pasynUserSelf, xiastatus, "buffer_done");
+        if (buf == 0) this->currentBuf[channel] = 1;
+        else this->currentBuf[channel] = 0;
         callParamCallbacks();
-    }
+        asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, 
+            "%s::%s Got data! size=%.3fMB (%d) dt=%.3fs speed=%.3fMB/s\n",
+            driverName, functionName, MBbufSize, arraySize, readoutTime, readoutBurstSpeed);
+    
+        if (arrayCallbacks)
+        {
+            /* Now rearrange the data and do the callbacks */
+            /* If this is the first module then allocate an NDArray for the callback */
+            if (channel == 0)
+            {
+               dims[0] = arraySize;
+               dims[1] = this->nCards;
+               pArray = this->pNDArrayPool->alloc(2, dims, dataType, 0, NULL );
+               pOut = (epicsUInt16 *)pArray->pData;
+            }
 
+            /* First get rid of the empty parts of the 32 bit words. The Handel library
+             * provides a 4MB 32 bit/word wide buffer, but the only data is in the low-order
+             * 16 bits of each word. So we strip off the empty top 16 bits of each 32 bit
+             * word. */
+            pIn = this->pMapRaw;
+            for (i = 0; i < arraySize; i++)
+            {
+                *pOut++ = (epicsUInt16) *pIn++;
+            }
+printf("%s:%s: arraySize=%d, data=%d %d %d %d\n",
+driverName, functionName, arraySize, *(pOut-arraySize), *(pOut-arraySize+1), *(pOut-arraySize+2), *(pOut-arraySize+3));
+        }
+    }
+    if (arrayCallbacks) 
+    {
+        pArray->timeStamp = now.secPastEpoch + now.nsec / 1.e9;
+        pArray->uniqueId = bufferCounter;
+        //this->unlock();
+        doCallbacksGenericPointer(pArray, NDArrayData, 0);
+        //this->lock();
+        pArray->release();
+    }
     asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, 
         "%s::%s Done reading! Ch=%d bufchar=%s\n",
-        driverName, functionName, channel, NDDxpBuffers[buf].bufChar);
-    /* Notify XMAP that we read out the buffer */
-    CALLHANDEL( xiaBoardOperation(channel, "buffer_done", (void*)NDDxpBuffers[buf].bufChar), "buffer_done" )
-    if (buf == 0) this->currentBuf[channel] = 1;
-    else this->currentBuf[channel] = 0;
+        driverName, functionName, channel, NDDxpBufferCharString[buf]);
 
     return status;
 }
@@ -1956,7 +2001,7 @@ asynStatus NDDxp::pollMappingMode()
     asynStatus status = asynSuccess;
     asynUser *pasynUser = this->pasynUserSelf;
     int xiastatus;
-    int ch, chStep = 1, buf, isfull = 0;
+    int ch, chStep = 1, buf, isfull, allFull=1;
     int currentPixel = 0;
     const char* functionName = "pollMappingMode";
 
@@ -1970,14 +2015,16 @@ asynStatus NDDxp::pollMappingMode()
         CALLHANDEL( xiaGetRunData(ch, "current_pixel", (void*)&currentPixel) , "current_pixel" )
         setIntegerParam(ch, NDDxpCurrentPixel, (int)currentPixel);
         callParamCallbacks(ch, ch);
-        CALLHANDEL( xiaGetRunData(ch, NDDxpBuffers[buf].bufFull, (void*)&isfull), "NDDxpBuffers[buf].bufFull" )
+        CALLHANDEL( xiaGetRunData(ch, NDDxpBufferFullString[buf], (void*)&isfull), "NDDxpBufferFullString[buf]" )
         asynPrint(pasynUser, ASYN_TRACE_FLOW, 
             "%s::%s %s isfull=%d\n",
-            driverName, functionName, NDDxpBuffers[buf].bufFull, isfull);
-        if (isfull)
-        {
-            status = this->getMappingData(pasynUser, (int)ch);
-        }
+            driverName, functionName, NDDxpBufferFullString[buf], isfull);
+        if (!isfull) allFull = 0;
+    }
+    /* If all of the modules have full buffers then read them all out */
+    if (allFull)
+    {
+        status = this->getMappingData();
     }
     return status;
 }
