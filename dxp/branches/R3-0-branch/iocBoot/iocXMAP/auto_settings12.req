@@ -1,3 +1,4 @@
+file "xMAP_settings.req",               P=$(P)
 file "dxpMED_settings.req"              P=$(P)
 file "simple_mca_settings.req",         P=$(P), M=mca1
 file "dxp_settings.req",                P=$(P), R=dxp1:
@@ -23,6 +24,9 @@ file "simple_mca_settings.req",         P=$(P), M=mca11
 file "dxp_settings.req",                P=$(P), R=dxp11:
 file "simple_mca_settings.req",         P=$(P), M=mca12
 file "dxp_settings.req",                P=$(P), R=dxp12:
+
+file "NDPluginBase_settings.req",       P=$(P), R=netCDF1:
+file "NDFile_settings.req",             P=$(P), R=netCDF1:
 
 file scan_settings.req                  P=$(P),S=scan1
 file scan_settings.req                  P=$(P),S=scan2
