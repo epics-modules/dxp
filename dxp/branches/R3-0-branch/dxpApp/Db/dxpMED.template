@@ -77,7 +77,6 @@ record(mbbi, "$(P)PresetCountMode_RBV") {
   field(THST, "Events [n]")
   field(FRVL, "4")
   field(FRST, "Triggers [n]")
-  field(SCAN, "I/O Intr")
 }
 
 record(bi,"$(P)Acquiring") {
