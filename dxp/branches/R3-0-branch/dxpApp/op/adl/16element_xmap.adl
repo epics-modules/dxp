@@ -5,8 +5,8 @@ file {
 }
 display {
 	object {
-		x=388
-		y=30
+		x=224
+		y=48
 		width=900
 		height=352
 	}
@@ -921,7 +921,7 @@ menu {
 rectangle {
 	object {
 		x=573
-		y=38
+		y=37
 		width=300
 		height=314
 	}
@@ -934,7 +934,7 @@ rectangle {
 text {
 	object {
 		x=686
-		y=50
+		y=46
 		width=70
 		height=20
 	}
@@ -945,8 +945,8 @@ text {
 }
 menu {
 	object {
-		x=593
-		y=80
+		x=588
+		y=71
 		width=80
 		height=20
 	}
@@ -958,8 +958,8 @@ menu {
 }
 text {
 	object {
-		x=678
-		y=80
+		x=673
+		y=71
 		width=110
 		height=20
 	}
@@ -970,8 +970,8 @@ text {
 }
 text {
 	object {
-		x=678
-		y=105
+		x=673
+		y=96
 		width=110
 		height=20
 	}
@@ -982,8 +982,8 @@ text {
 }
 menu {
 	object {
-		x=593
-		y=105
+		x=588
+		y=96
 		width=80
 		height=20
 	}
@@ -995,8 +995,8 @@ menu {
 }
 "text entry" {
 	object {
-		x=593
-		y=155
+		x=588
+		y=196
 		width=80
 		height=22
 	}
@@ -1010,8 +1010,8 @@ menu {
 }
 text {
 	object {
-		x=678
-		y=155
+		x=673
+		y=196
 		width=90
 		height=20
 	}
@@ -1022,8 +1022,8 @@ text {
 }
 "text entry" {
 	object {
-		x=593
-		y=180
+		x=588
+		y=221
 		width=80
 		height=22
 	}
@@ -1037,8 +1037,8 @@ text {
 }
 text {
 	object {
-		x=678
-		y=180
+		x=673
+		y=221
 		width=90
 		height=20
 	}
@@ -1049,8 +1049,8 @@ text {
 }
 "text update" {
 	object {
-		x=593
-		y=130
+		x=588
+		y=171
 		width=80
 		height=20
 	}
@@ -1063,76 +1063,10 @@ text {
 	limits {
 	}
 }
-"message button" {
-	object {
-		x=593
-		y=230
-		width=80
-		height=20
-	}
-	control {
-		chan="$(P)NextPixel"
-		clr=14
-		bclr=51
-	}
-	label="Next pixel"
-	press_msg="1"
-}
-text {
-	object {
-		x=678
-		y=230
-		width=90
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Pixel advance"
-}
-composite {
-	object {
-		x=593
-		y=255
-		width=175
-		height=20
-	}
-	"composite name"=""
-	children {
-		"text update" {
-			object {
-				x=593
-				y=255
-				width=80
-				height=20
-			}
-			monitor {
-				chan="$(P)dxp1:CurrentPixel"
-				clr=54
-				bclr=4
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		text {
-			object {
-				x=678
-				y=255
-				width=90
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Current pixel"
-		}
-	}
-}
 "text update" {
 	object {
-		x=593
-		y=205
+		x=588
+		y=246
 		width=80
 		height=20
 	}
@@ -1147,8 +1081,8 @@ composite {
 }
 text {
 	object {
-		x=678
-		y=205
+		x=673
+		y=246
 		width=90
 		height=20
 	}
@@ -1159,8 +1093,8 @@ text {
 }
 "related display" {
 	object {
-		x=596
-		y=278
+		x=788
+		y=322
 		width=79
 		height=21
 	}
@@ -1172,4 +1106,136 @@ text {
 	clr=14
 	bclr=51
 	label="More"
+}
+"message button" {
+	object {
+		x=588
+		y=121
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)NextPixel"
+		clr=14
+		bclr=51
+	}
+	label="Next pixel"
+	press_msg="1"
+}
+text {
+	object {
+		x=673
+		y=121
+		width=90
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Pixel advance"
+}
+"text update" {
+	object {
+		x=588
+		y=146
+		width=80
+		height=20
+	}
+	monitor {
+		chan="$(P)dxp1:CurrentPixel"
+		clr=54
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+text {
+	object {
+		x=673
+		y=146
+		width=90
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Current pixel"
+}
+text {
+	object {
+		x=673
+		y=271
+		width=90
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Ignore gate"
+}
+menu {
+	object {
+		x=588
+		y=271
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)IgnoreGate"
+		clr=14
+		bclr=51
+	}
+}
+menu {
+	object {
+		x=588
+		y=296
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)InputLogicPolarity"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=673
+		y=296
+		width=90
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Input logic polarity"
+}
+"text entry" {
+	object {
+		x=588
+		y=321
+		width=80
+		height=22
+	}
+	control {
+		chan="$(P)SyncCount"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=673
+		y=321
+		width=90
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Sync count"
 }
