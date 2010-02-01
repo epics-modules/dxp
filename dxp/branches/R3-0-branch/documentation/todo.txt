@@ -29,10 +29,6 @@
 - 4th xMAP module in my crate not working correctly - hardware problem?
 
 - Mapping mode:
-  - Add sync divisor parameter and PV
   - Added read rate, MBytes to medm screen
-  - IDL routine to parse files
-  - Test gate and sync modes
-  - Implement and test SCA mapping mode
-  - Implement and test list mode if it is supported
-  - See if buffer_len reports partial buffers, if so read it every time
+  - Test gate and sync modes together
+  - Implement and test SCA mapping mode once SCAs are implemented
