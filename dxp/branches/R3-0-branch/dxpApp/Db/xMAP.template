@@ -40,8 +40,6 @@ record(mbbo, "$(P)PixelAdvanceMode") {
   field(ZRST, "Gate")
   field(ONVL, "1")
   field(ONST, "SYNC")
-  field(TWVL, "2")
-  field(TWST, "Software")
   field(IVOA, "Don't drive outputs")
 }
 
@@ -53,8 +51,6 @@ record(mbbi, "$(P)PixelAdvanceMode_RBV") {
   field(ZRST, "Gate")
   field(ONVL, "1")
   field(ONST, "SYNC")
-  field(TWVL, "2")
-  field(TWST, "Software")
   field(SCAN, "I/O Intr")
 }
 
@@ -91,7 +87,68 @@ record(longin, "$(P)PixelsPerBuffer_RBV") {
 record(longin, "$(P)BufferSize_RBV") {
   field(DESC, "Buffer size")
   field(DTYP, "asynInt32")
-  field(INP,  "$(INP)DxpArraySize")
+  field(INP,  "$(INP)Array_Size")
+  field(SCAN, "I/O Intr")
+}
+
+record(mbbo, "$(P)IgnoreGate") {
+  field(DESC, "Ignore gate")
+  field(DTYP, "asynInt32")
+  field(OUT,  "$(INP)DxpIgnoreGate")
+  field(PINI, "YES")
+  field(ZRVL, "0")
+  field(ZRST, "No")
+  field(ONVL, "1")
+  field(ONST, "Yes")
+  field(IVOA, "Don't drive outputs")
+}
+
+record(mbbi, "$(P)IgnoreGate_RBV") {
+  field(DESC, "Ignore gate")
+  field(DTYP, "asynInt32")
+  field(INP,  "$(INP)DxpIgnoreGate")
+  field(ZRVL, "0")
+  field(ZRST, "No")
+  field(ONVL, "1")
+  field(ONST, "Yes")
+  field(SCAN, "I/O Intr")
+}
+
+record(longout, "$(P)SyncCount") {
+  field(DESC, "Sync divider count")
+  field(VAL,  "1")
+  field(PINI, "YES")
+  field(DTYP, "asynInt32")
+  field(OUT,  "$(INP)DxpSyncCount")
+}
+
+record(longin, "$(P)SyncCount_RBV") {
+  field(DESC, "Sync divider count")
+  field(DTYP, "asynInt32")
+  field(INP,  "$(INP)DxpSyncCount")
+  field(SCAN, "I/O Intr")
+}
+
+record(mbbo, "$(P)InputLogicPolarity") {
+  field(DESC, "Input logic polarity")
+  field(DTYP, "asynInt32")
+  field(OUT,  "$(INP)DxpInputLogicPolarity")
+  field(PINI, "YES")
+  field(ZRVL, "0")
+  field(ZRST, "Normal")
+  field(ONVL, "1")
+  field(ONST, "Inverted")
+  field(IVOA, "Don't drive outputs")
+}
+
+record(mbbi, "$(P)InputLogicPolarity_RBV") {
+  field(DESC, "Input logic polarity")
+  field(DTYP, "asynInt32")
+  field(INP,  "$(INP)DxpInputLogicPolarity")
+  field(ZRVL, "0")
+  field(ZRST, "Normal")
+  field(ONVL, "1")
+  field(ONST, "Inverted")
   field(SCAN, "I/O Intr")
 }
 
