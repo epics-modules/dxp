@@ -14,8 +14,7 @@ set_pass1_restoreFile("auto_settings4.sav")
 
 # Set logging level (1=ERROR, 2=WARNING, 3=INFO, 4=DEBUG)
 xiaSetLogLevel(2)
-#xiaInit("xmap4.ini")
-xiaInit("xmap4_test.ini")
+xiaInit("xmap4.ini")
 xiaStartSystem
 
 # DXPConfig(serverName, ndetectors, maxBuffers, maxMemory)
@@ -40,7 +39,7 @@ dbLoadRecords("$(SSCAN)/sscanApp/Db/scan.db","P=dxpXMAP:,MAXPTS1=2000,MAXPTS2=10
 
 iocInit
 
-seq dxpMED, "P=dxpXMAP:, DXP=dxp, MCA=mca, N_DETECTORS=4"
+seq dxpMED, "P=dxpXMAP:, DXP=dxp, MCA=mca, N_DETECTORS=4, N_SCAS=4"
 
 ### Start up the autosave task and tell it what to do.
 # Save settings every thirty seconds
