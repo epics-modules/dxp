@@ -61,7 +61,8 @@ typedef enum {
 
 typedef enum {
     NDDxpModeMCA, 
-    NDDxpModeMapping 
+    NDDxpModeSpectraMapping,
+    NDDxpModeSCAMapping
 } NDDxpMode_t;
 
 typedef enum {
@@ -203,6 +204,7 @@ public:
     asynStatus getDxpParams(asynUser *pasynUser, int addr);
     asynStatus setSCAs(asynUser *pasynUser, int addr);
     asynStatus getSCAs(asynUser *pasynUser, int addr);
+    asynStatus getSCAData(asynUser *pasynUser, int addr);
     asynStatus getAcquisitionStatus(asynUser *pasynUser, int addr);
     asynStatus getModuleStatistics(asynUser *pasynUser, int addr, moduleStatistics *stats);
     asynStatus getAcquisitionStatistics(asynUser *pasynUser, int addr);
@@ -459,11 +461,11 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     /* SCA parameters */
     createParam(NDDxpNumSCAsString,                asynParamInt32,   &NDDxpNumSCAs);
     for (sca=0; sca<DXP_MAX_SCAS; sca++) {
-        sprintf(scaStr, "NDSCA%dLow", sca);
+        sprintf(scaStr, "DxpSCA%dLow", sca);
         createParam(scaStr,                        asynParamInt32,   &NDDxpSCALow[sca]);
-        sprintf(scaStr, "NDSCA%dHigh", sca);
+        sprintf(scaStr, "DxpSCA%dHigh", sca);
         createParam(scaStr,                        asynParamInt32,   &NDDxpSCAHigh[sca]);
-        sprintf(scaStr, "NDSCA%dCounts", sca);
+        sprintf(scaStr, "DxpSCA%dCounts", sca);
         createParam(scaStr,                        asynParamInt32,   &NDDxpSCACounts[sca]);
     }
 
@@ -697,12 +699,15 @@ asynStatus NDDxp::writeInt32( asynUser *pasynUser, epicsInt32 value)
     } 
     else if ((function == NDDxpDetectorPolarity) ||
              (function == NDDxpEnableBaselineCut)||
-             (function == NDDxpBaselineAverage)  ||
-             (function == NDDxpNumSCAs)          ||
+             (function == NDDxpBaselineAverage)) 
+    {
+        this->setDxpParam(pasynUser, addr, function, (double)value);
+    }
+    else if ((function == NDDxpNumSCAs)    ||
              ((function >= NDDxpSCALow[0]) &&
               (function <= NDDxpSCAHigh[DXP_MAX_SCAS-1]))) 
     {
-        this->setDxpParam(pasynUser, addr, function, (double)value);
+        this->setSCAs(pasynUser, addr);
     }
     else if (function == NDDxpSaveSystem) 
     {
@@ -830,7 +835,7 @@ asynStatus NDDxp::readInt32Array(asynUser *pasynUser, epicsInt32 *value, size_t 
             {
                 /* While acquiring we'll force reading the data from the HW */
                 this->getMcaData(pasynUser, addr);
-            } else if (mode == NDDxpModeMapping)
+            } else if ((mode == NDDxpModeSpectraMapping) || (mode == NDDxpModeSCAMapping))
             {
                 /* TODO: need a function call here to parse the latest received
                  * data and post the result here... */
@@ -1144,12 +1149,12 @@ asynStatus NDDxp::setSCAs(asynUser *pasynUser, int addr)
     getIntegerParam(addr, NDDxpNumSCAs, &numSCAs);
     dTmp = numSCAs;
     CALLHANDEL(xiaSetAcquisitionValues(channel, "number_of_scas", &dTmp), "number_of_scas");
-    this->apply(channel);;
+    //this->apply(channel);;
     for (i=0; i<numSCAs; i++) {
         getIntegerParam(addr, NDDxpSCALow[i], &low);
         if (low < 0) {
             low = 0;
-           setIntegerParam(addr, NDDxpSCALow[i], low);
+            setIntegerParam(addr, NDDxpSCALow[i], low);
         }
         getIntegerParam(addr, NDDxpSCAHigh[i], &high);
         if (high < 0) {
@@ -1162,11 +1167,12 @@ asynStatus NDDxp::setSCAs(asynUser *pasynUser, int addr)
         }
         dTmp = (double) low;
         CALLHANDEL(xiaSetAcquisitionValues(channel, SCA_NameLow[i], &dTmp), SCA_NameLow[i]);
-        this->apply(channel);
+        //this->apply(channel);
         dTmp = (double) high;
         CALLHANDEL(xiaSetAcquisitionValues(channel, SCA_NameHigh[i], &dTmp), SCA_NameHigh[i]);
-        this->apply(channel);
+        //this->apply(channel);
     }
+    this->apply(channel);
     getSCAs(pasynUser, addr);
     if (runActive) xiaStartRun(channel, 1);
     return(status);
@@ -1189,12 +1195,48 @@ asynStatus NDDxp::getSCAs(asynUser *pasynUser, int addr)
     numSCAs = (int) dTmp;
     setIntegerParam(addr, NDDxpNumSCAs, numSCAs);
     for (i=0; i<numSCAs; i++) {
-        CALLHANDEL(xiaSetAcquisitionValues(channel, SCA_NameLow[i], &dTmp), SCA_NameLow[i]);
+        CALLHANDEL(xiaGetAcquisitionValues(channel, SCA_NameLow[i], &dTmp), SCA_NameLow[i]);
         low = (int) dTmp;
         setIntegerParam(addr, NDDxpSCALow[i], low);
-        CALLHANDEL(xiaSetAcquisitionValues(channel, SCA_NameHigh[i], &dTmp), SCA_NameHigh[i]);
+        CALLHANDEL(xiaGetAcquisitionValues(channel, SCA_NameHigh[i], &dTmp), SCA_NameHigh[i]);
         high = (int) dTmp;
         setIntegerParam(addr, NDDxpSCAHigh[i], high);
+    }
+    return(status);
+}
+
+asynStatus NDDxp::getSCAData(asynUser *pasynUser, int addr)
+{
+    int channel = addr;
+    asynStatus status=asynSuccess;
+    int xiastatus;
+    int i;
+    int scaCounts[DXP_MAX_SCAS];
+    int numSCAs;
+    
+    if (addr == this->nChannels) channel = DXP_ALL;
+    if (channel == DXP_ALL) {  /* All channels */
+        for (i=0; i<this->nChannels; i++) {
+            /* Call ourselves recursively but with a specific channel */
+            this->getSCAData(pasynUser, i);
+        }
+    } else {
+        /* The SCA data on the xMAP is double, it is long on other products */
+        getIntegerParam(addr, NDDxpNumSCAs, &numSCAs);
+        if (this->deviceType == NDDxpModelXMAP) {
+            double dTmp[DXP_MAX_SCAS];
+            CALLHANDEL(xiaGetRunData(channel, "sca", dTmp), "sca");
+            for (i=0; i<numSCAs; i++)
+            {
+                scaCounts[i] = (int) dTmp[i];
+            }
+        } else {
+            CALLHANDEL(xiaGetRunData(channel, "sca", scaCounts), "sca");
+        }
+        for (i=0; i<numSCAs; i++) 
+        {
+            setIntegerParam(addr, NDDxpSCACounts[i], scaCounts[i]);
+        }
     }
     return(status);
 }
@@ -1252,7 +1294,7 @@ asynStatus NDDxp::setNumChannels(asynUser* pasynUser, epicsInt32 value, epicsInt
     /* If in mapping mode we need to modify the Y size as well in order to fit in the 2MB buffer!
      * We also need to read out the new lenght of the mapping buffer because that can possibly change... */
     getIntegerParam(NDDxpCollectMode, &mode);
-    if (mode == NDDxpModeMapping) configureCollectMode();
+    if (mode != NDDxpModeMCA) configureCollectMode();
     this->apply(DXP_ALL);
 
     return status;
@@ -1274,7 +1316,7 @@ asynStatus NDDxp::configureCollectMode()
         "%s::%s Changing mode to %d\n",
         driverName, functionName, mode);
 
-    if (mode < 0 || mode > 1) return asynError;
+    if (mode < NDDxpModeMCA || mode > NDDxpModeSCAMapping) return asynError;
     getIntegerParam(mcaAcquiring, &acquiring);
     if (acquiring) return asynError;
 
@@ -1300,7 +1342,8 @@ asynStatus NDDxp::configureCollectMode()
             callParamCallbacks(i,i);
         }
         break;
-    case NDDxpModeMapping:
+    case NDDxpModeSpectraMapping:
+    case NDDxpModeSCAMapping:
         int pixelsPerBuffer;
         int pixelsPerRun;
         int syncCount;
@@ -1889,6 +1932,9 @@ asynStatus NDDxp::getMappingData()
             }
         }
     }
+printf("%s:%s: first 16 ROIs =", driverName, functionName);
+for (i=0; i<32; i++) printf("%d ", this->pMapRaw[256+64+i]);
+printf("\n");
     if (arrayCallbacks) 
     {
         pArray->timeStamp = now.secPastEpoch + now.nsec / 1.e9;
@@ -2081,7 +2127,8 @@ void NDDxp::acquisitionTask()
                 "%s::%s Detected acquisition stop! Now reading data\n",
                 driverName, functionName);
             this->getMcaData(this->pasynUserSelf, DXP_ALL);
-        } else if (mode == NDDxpModeMapping)
+            this->getSCAData(this->pasynUserSelf, DXP_ALL);
+        } else if ((mode == NDDxpModeSpectraMapping) || (mode == NDDxpModeSCAMapping))
         {
             this->pollMappingMode();
         }
