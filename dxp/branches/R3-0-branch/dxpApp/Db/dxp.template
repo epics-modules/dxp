@@ -591,7 +591,6 @@ record(bi, "$(P)SaveSystem_RBV") {
    field(SCAN, "I/O Intr")
 }
 
-
 record(waveform, "$(P)SaveSystemFile")
 {
     field(PINI, "YES")
@@ -605,6 +604,21 @@ record(longin, "$(P)$(R)CurrentPixel") {
     field(DTYP, "asynInt32")
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpCurrentPixel")
     field(DESC, "Current pixel #")
+    field(SCAN, "I/O Intr")
+}
+
+record(longout, "$(P)$(R)NumSCAs") {
+    field(PINI, $(PINI))
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpNumSCAs")
+    field(DESC, "Number of SCAs")
+    field(VAL,  "0")
+}
+
+record(longin, "$(P)$(R)NumSCAs_RBV") {
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpNumSCAs")
+    field(DESC, "Number of SCAs")
     field(SCAN, "I/O Intr")
 }
 
