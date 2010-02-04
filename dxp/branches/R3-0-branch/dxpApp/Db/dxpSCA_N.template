@@ -1,0 +1,35 @@
+record(longout, "$(P)$(R)SCA$(SCA)Low") {
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpSCA$(SCA)Low")
+    field(DESC, "SCA $(SCA) low channel")
+    field(VAL,  "0")
+}
+
+record(longin, "$(P)$(R)SCA$(SCA)Low_RBV") {
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpSCA$(SCA)Low")
+    field(DESC, "SCA $(SCA) low channel")
+    field(SCAN, "I/O Intr")
+}
+
+record(longout, "$(P)$(R)SCA$(SCA)High") {
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpSCA$(SCA)High")
+    field(DESC, "SCA $(SCA) high channel")
+    field(VAL,  "0")
+}
+
+record(longin, "$(P)$(R)SCA$(SCA)High_RBV") {
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpSCA$(SCA)High")
+    field(DESC, "SCA $(SCA) high channel")
+    field(SCAN, "I/O Intr")
+}
+
+record(longin, "$(P)$(R)SCA$(SCA)Counts") {
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DxpSCA$(SCA)Counts")
+    field(DESC, "SCA $(SCA) counts")
+    field(SCAN, "I/O Intr")
+}
+
