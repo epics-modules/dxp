@@ -1,4 +1,4 @@
-program dxpMED("P=13GE2:med:,DXP=dxp,MCA=mca,N_DETECTORS=16")
+program dxpMED("P=13GE2:med:,DXP=dxp,MCA=mca,N_DETECTORS=16,N_SCAS=16")
 
 /*  This sequencer program works with dxp.db and dxpMED.db. 
  *  It supports Copying PVs from the first DXP to all of the DXPs
@@ -30,6 +30,7 @@ int k;
 int chan;
 int det;
 int nDetectors;
+int nSCAs;
 int prevAcquiring;
 int allDone;
 char temp[100];
@@ -191,6 +192,9 @@ assign  mcaDeadTime to {"","","","","","","","","","","","","","","","",
 double  DeadTime; assign DeadTime to "{P}DeadTime";
 evflag  DeadTimeMon; sync mcaDeadTime DeadTimeMon;
 
+double  numSCAs[MAX_DETECTORS]; 
+assign  numSCAs to {"","","","","","","","","","","","","","","","",
+                    "","","","","","","","","","","","","","","",""};
 int     mcaROILow[MAX_ROIS]; 
 assign  mcaROILow to {"","","","","","","","","","","","","","","","",
                       "","","","","","","","","","","","","","","","",
@@ -348,6 +352,11 @@ ss dxp_control {
               printf ("N_DETECTORS, MAX_SCAS and MAX_ROIS are inconsistent.\n");
               nDetectors = 0;
             }
+            nSCAs = atoi(macValueGet("N_SCAS"));
+            if ((nSCAs <= 0) || (nSCAs > MAX_SCAS)) {
+              printf ("N_SCAS is illegal.\n");
+              nSCAs = 0;
+            }
             for (i=0; i<nDetectors; i++) {
                det = i+1;
                sprintf(temp, "%s%s%d:TriggerPeakingTime", prefix, dxp, det);
@@ -401,21 +410,21 @@ ss dxp_control {
                sprintf(temp, "%s%s%d.IDTIM", prefix, mca, det);
                pvAssign(mcaDeadTime[i], temp);
                pvMonitor(mcaDeadTime[i]);
-/*
-               for (j=0; j<MAX_SCAS; j++) {
+               sprintf(temp, "%s%s%d:NumSCAs", prefix, dxp, det);
+               pvAssign(numSCAs[i], temp);
+               for (j=0; j<nSCAs; j++) {
                    k = i*MAX_SCAS + j;
-                   sprintf(temp, "%s%s%d.R%iLO", prefix, mca, det, j);
+                   sprintf(temp, "%s%s%d.R%dLO", prefix, mca, det, j);
                    pvAssign(mcaROILow[k], temp);
                    pvMonitor(mcaROILow[k]);
-                   sprintf(temp, "%s%s%d.R%iHI", prefix, mca, det, j);
+                   sprintf(temp, "%s%s%d.R%dHI", prefix, mca, det, j);
                    pvAssign(mcaROIHigh[k], temp);
                    pvMonitor(mcaROIHigh[k]);
-                   sprintf(temp, "%s%s%d.SCA%i_LO", prefix, dxp, det, j);
+                   sprintf(temp, "%s%s%d:SCA%dLow", prefix, dxp, det, j);
                    pvAssign(dxpSCALow[k], temp);
-                   sprintf(temp, "%s%s%d.SCA%i_HI", prefix, dxp, det, j);
+                   sprintf(temp, "%s%s%d:SCA%dHigh", prefix, dxp, det, j);
                    pvAssign(dxpSCAHigh[k], temp);
                }
-*/
            }
            sprintf(temp, "%s%sAll.PROC", prefix, mca);
            pvAssign(statusMCAAll, temp);
@@ -434,6 +443,10 @@ ss dxp_control {
 
         when (pvAssignCount () == pvConnectCount ()) {
           printf ("dxpMED: All channels connected.\n");
+          for (i=0; i<nDetectors; i++) {
+              numSCAs[i] = nSCAs;
+              pvPut(numSCAs[i]);
+          }
         } state monitor_changes
 
     }
@@ -700,10 +713,9 @@ ss dxp_control {
         } state monitor_changes
  
         /* Copy ROIs to SCAs */
- /*
         when(efTestAndClear(mcaROILowMon) || efTestAndClear(mcaROIHighMon)) {
             for (i=0; i<nDetectors; i++) {
-                for (j=0; j<MAX_SCAS; j++) {
+                for (j=0; j<nSCAs; j++) {
                     k = i*MAX_SCAS + j;
                     chan = mcaROILow[k];
                     if (chan < 0) chan = 0;
@@ -716,7 +728,7 @@ ss dxp_control {
                 }
             }
         } state monitor_changes
-*/
+
  
    }
 }
