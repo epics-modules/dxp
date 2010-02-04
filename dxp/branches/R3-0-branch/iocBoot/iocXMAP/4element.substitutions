@@ -12,6 +12,41 @@ pattern
 {dxpXMAP:, "@asyn(DXP1,0)"}
 }
 
+# DXP parameters
+file "$(DXP)/dxpApp/Db/dxp.template"
+{
+pattern
+{      P,        R,    PINI, PORT,   ADDR,    TIMEOUT}
+{dxpXMAP:,    dxp1:,    YES,  DXP1,      0,         1}
+{dxpXMAP:,    dxp2:,    YES,  DXP1,      1,         1}
+{dxpXMAP:,    dxp3:,    YES,  DXP1,      2,         1}
+{dxpXMAP:,    dxp4:,    YES,  DXP1,      3,         1}
+}
+
+# SCA parameters
+file "$(DXP)/dxpApp/Db/dxpSCA_N.template"
+{
+pattern
+{      P,        R,    PORT,    ADDR,   SCA, TIMEOUT}
+{dxpXMAP:,    dxp1:,   DXP1,      0,     0,    1}
+{dxpXMAP:,    dxp1:,   DXP1,      0,     1,    1}
+{dxpXMAP:,    dxp1:,   DXP1,      0,     2,    1}
+{dxpXMAP:,    dxp1:,   DXP1,      0,     3,    1}
+{dxpXMAP:,    dxp2:,   DXP1,      1,     0,    1}
+{dxpXMAP:,    dxp2:,   DXP1,      1,     1,    1}
+{dxpXMAP:,    dxp2:,   DXP1,      1,     2,    1}
+{dxpXMAP:,    dxp2:,   DXP1,      1,     3,    1}
+{dxpXMAP:,    dxp3:,   DXP1,      2,     0,    1}
+{dxpXMAP:,    dxp3:,   DXP1,      2,     1,    1}
+{dxpXMAP:,    dxp3:,   DXP1,      2,     2,    1}
+{dxpXMAP:,    dxp3:,   DXP1,      2,     3,    1}
+{dxpXMAP:,    dxp4:,   DXP1,      3,     0,    1}
+{dxpXMAP:,    dxp4:,   DXP1,      3,     1,    1}
+{dxpXMAP:,    dxp4:,   DXP1,      3,     2,    1}
+{dxpXMAP:,    dxp4:,   DXP1,      3,     3,    1}
+}
+
+
 file "$(MCA)/mcaApp/Db/simple_mca.db"
 {
 pattern
@@ -23,14 +58,3 @@ pattern
 {dxpXMAP:, mcaAll,  "asynMCA",   "@asyn(DXP1,4)",     2,     2048}
 }
 
-# DXP records
-file "$(DXP)/dxpApp/Db/dxp.template"
-{
-pattern
-{      P,        R,    PINI, PORT,   ADDR,    TIMEOUT}
-{dxpXMAP:,    dxp1:,    YES,  DXP1,      0,         1}
-{dxpXMAP:,    dxp2:,    YES,  DXP1,      1,         1}
-{dxpXMAP:,    dxp3:,    YES,  DXP1,      2,         1}
-{dxpXMAP:,    dxp4:,    YES,  DXP1,      3,         1}
-#{dxpXMAP:  dxpAll:,     NO,  DXP1,      4,         1}
-}
