@@ -6,7 +6,9 @@ record(mbbo, "$(P)CollectMode") {
   field(ZRVL, "0")
   field(ZRST, "MCA")
   field(ONVL, "1")
-  field(ONST, "Mapping")
+  field(ONST, "MCA mapping")
+  field(TWVL, "2")
+  field(TWST, "SCA mapping")
   field(IVOA, "Don't drive outputs")
 }
 
@@ -14,11 +16,12 @@ record(mbbi, "$(P)CollectMode_RBV") {
   field(DESC, "Mode select")
   field(DTYP, "asynInt32")
   field(INP,  "$(INP)DxpCollectMode")
-  field(PINI, "YES")
   field(ZRVL, "0")
   field(ZRST, "MCA")
   field(ONVL, "1")
-  field(ONST, "Mapping")
+  field(ONST, "MCA mapping")
+  field(TWVL, "2")
+  field(TWST, "SCA mapping")
   field(SCAN, "I/O Intr")
 }
 
