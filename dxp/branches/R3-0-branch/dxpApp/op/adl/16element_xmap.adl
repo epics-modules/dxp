@@ -1,6 +1,6 @@
 
 file {
-	name="/home/epics/devel/dxp/3-0/dxpApp/op/adl/16element_xmap.adl"
+	name="/home/epics/devel/dxp-3-0/dxpApp/op/adl/16element_xmap.adl"
 	version=030102
 }
 display {
@@ -922,7 +922,7 @@ rectangle {
 	object {
 		x=573
 		y=37
-		width=300
+		width=320
 		height=314
 	}
 	"basic attribute" {
@@ -947,7 +947,7 @@ menu {
 	object {
 		x=588
 		y=71
-		width=80
+		width=90
 		height=20
 	}
 	control {
@@ -956,35 +956,11 @@ menu {
 		bclr=51
 	}
 }
-text {
-	object {
-		x=673
-		y=71
-		width=110
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Collection mode"
-}
-text {
-	object {
-		x=673
-		y=96
-		width=110
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Pixel advance mode"
-}
 menu {
 	object {
 		x=588
 		y=96
-		width=80
+		width=90
 		height=20
 	}
 	control {
@@ -997,7 +973,7 @@ menu {
 	object {
 		x=588
 		y=196
-		width=80
+		width=90
 		height=22
 	}
 	control {
@@ -1008,23 +984,11 @@ menu {
 	limits {
 	}
 }
-text {
-	object {
-		x=673
-		y=196
-		width=90
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Pixels per buffer"
-}
 "text entry" {
 	object {
 		x=588
 		y=221
-		width=80
+		width=90
 		height=22
 	}
 	control {
@@ -1034,18 +998,6 @@ text {
 	}
 	limits {
 	}
-}
-text {
-	object {
-		x=673
-		y=221
-		width=90
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Pixels per run"
 }
 "text update" {
 	object {
@@ -1079,39 +1031,11 @@ text {
 	limits {
 	}
 }
-text {
-	object {
-		x=673
-		y=246
-		width=90
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Buffer size"
-}
-"related display" {
-	object {
-		x=788
-		y=322
-		width=79
-		height=21
-	}
-	display[0] {
-		label="netCDF file plugin"
-		name="NDFileNetCDF.adl"
-		args="P=$(P), R=netCDF1:"
-	}
-	clr=14
-	bclr=51
-	label="More"
-}
 "message button" {
 	object {
 		x=588
 		y=121
-		width=80
+		width=90
 		height=20
 	}
 	control {
@@ -1121,18 +1045,6 @@ text {
 	}
 	label="Next pixel"
 	press_msg="1"
-}
-text {
-	object {
-		x=673
-		y=121
-		width=90
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Pixel advance"
 }
 "text update" {
 	object {
@@ -1150,35 +1062,11 @@ text {
 	limits {
 	}
 }
-text {
-	object {
-		x=673
-		y=146
-		width=90
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Current pixel"
-}
-text {
-	object {
-		x=673
-		y=271
-		width=90
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Ignore gate"
-}
 menu {
 	object {
 		x=588
 		y=271
-		width=80
+		width=90
 		height=20
 	}
 	control {
@@ -1191,7 +1079,7 @@ menu {
 	object {
 		x=588
 		y=296
-		width=80
+		width=90
 		height=20
 	}
 	control {
@@ -1200,23 +1088,11 @@ menu {
 		bclr=51
 	}
 }
-text {
-	object {
-		x=673
-		y=296
-		width=90
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Input logic polarity"
-}
 "text entry" {
 	object {
 		x=588
 		y=321
-		width=80
+		width=90
 		height=22
 	}
 	control {
@@ -1227,15 +1103,150 @@ text {
 	limits {
 	}
 }
-text {
+composite {
 	object {
-		x=673
-		y=321
-		width=90
-		height=20
+		x=683
+		y=71
+		width=194
+		height=272
 	}
-	"basic attribute" {
-		clr=14
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=683
+				y=71
+				width=110
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Collection mode"
+		}
+		text {
+			object {
+				x=683
+				y=96
+				width=110
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Pixel advance mode"
+		}
+		text {
+			object {
+				x=683
+				y=121
+				width=90
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Pixel advance"
+		}
+		text {
+			object {
+				x=683
+				y=146
+				width=90
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Current pixel"
+		}
+		text {
+			object {
+				x=683
+				y=196
+				width=90
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Pixels per buffer"
+		}
+		text {
+			object {
+				x=683
+				y=221
+				width=90
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Pixels per run"
+		}
+		text {
+			object {
+				x=683
+				y=246
+				width=90
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Buffer size"
+		}
+		text {
+			object {
+				x=683
+				y=271
+				width=90
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Ignore gate"
+		}
+		text {
+			object {
+				x=683
+				y=296
+				width=90
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Input logic polarity"
+		}
+		text {
+			object {
+				x=683
+				y=321
+				width=90
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Sync count"
+		}
+		"related display" {
+			object {
+				x=798
+				y=322
+				width=79
+				height=21
+			}
+			display[0] {
+				label="netCDF file plugin"
+				name="NDFileNetCDF.adl"
+				args="P=$(P), R=netCDF1:"
+			}
+			clr=14
+			bclr=51
+			label="More"
+		}
 	}
-	textix="Sync count"
 }
