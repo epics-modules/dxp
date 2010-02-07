@@ -1,6 +1,6 @@
 
 file {
-	name="/home/epics/devel/dxp/3-0/dxpApp/op/adl/16element_dxp.adl"
+	name="/home/epics/devel/dxp-3-0/dxpApp/op/adl/16element_dxp.adl"
 	version=030102
 }
 display {
@@ -782,80 +782,6 @@ text {
 	label="Read"
 	press_msg="1"
 }
-text {
-	object {
-		x=403
-		y=194
-		width=70
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Scan"
-}
-"related display" {
-	object {
-		x=328
-		y=194
-		width=70
-		height=20
-	}
-	display[0] {
-		label="Scan 1"
-		name="scan_more.adl"
-		args="P=$(P), S=scan1, N=1, DW=Dwait1, PW=Pwait1"
-	}
-	display[1] {
-		label="Scan 2"
-		name="scan_more.adl"
-		args="P=$(P), S=scan2, N=2, DW=Dwait2, PW=Pwait2"
-	}
-	display[2] {
-		label="Scan 3"
-		name="scan_more.adl"
-		args="P=$(P), S=scan3, N=3, DW=Dwait3, PW=Pwait3"
-	}
-	display[3] {
-		label="Scan 4"
-		name="scan_more.adl"
-		args="P=$(P), S=scan4, N=4, DW=Dwait4, PW=Pwait4"
-	}
-	display[4] {
-		label="Scan H"
-		name="scan_more.adl"
-		args="P=$(P), S=scanH, N=1, DW=DwaitH, PW=PwaitH"
-	}
-	clr=14
-	bclr=51
-}
-"related display" {
-	object {
-		x=328
-		y=219
-		width=70
-		height=20
-	}
-	display[0] {
-		label="Save/restore"
-		name="save_restoreStatus_more.adl"
-		args="P=$(P)"
-	}
-	clr=14
-	bclr=51
-}
-text {
-	object {
-		x=403
-		y=219
-		width=110
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Save/restore"
-}
 "related display" {
 	object {
 		x=328
@@ -917,4 +843,105 @@ text {
 		clr=14
 	}
 	textix="ROI/SCA 8-15"
+}
+text {
+	object {
+		x=403
+		y=219
+		width=70
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Scan"
+}
+"related display" {
+	object {
+		x=328
+		y=219
+		width=70
+		height=20
+	}
+	display[0] {
+		label="Scan 1"
+		name="scan_more.adl"
+		args="P=$(P), S=scan1, N=1, DW=Dwait1, PW=Pwait1"
+	}
+	display[1] {
+		label="Scan 2"
+		name="scan_more.adl"
+		args="P=$(P), S=scan2, N=2, DW=Dwait2, PW=Pwait2"
+	}
+	display[2] {
+		label="Scan 3"
+		name="scan_more.adl"
+		args="P=$(P), S=scan3, N=3, DW=Dwait3, PW=Pwait3"
+	}
+	display[3] {
+		label="Scan 4"
+		name="scan_more.adl"
+		args="P=$(P), S=scan4, N=4, DW=Dwait4, PW=Pwait4"
+	}
+	display[4] {
+		label="Scan H"
+		name="scan_more.adl"
+		args="P=$(P), S=scanH, N=1, DW=DwaitH, PW=PwaitH"
+	}
+	clr=14
+	bclr=51
+}
+"related display" {
+	object {
+		x=328
+		y=244
+		width=70
+		height=20
+	}
+	display[0] {
+		label="Save/restore"
+		name="save_restoreStatus_more.adl"
+		args="P=$(P)"
+	}
+	clr=14
+	bclr=51
+}
+text {
+	object {
+		x=403
+		y=244
+		width=110
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Save/restore"
+}
+"related display" {
+	object {
+		x=327
+		y=194
+		width=70
+		height=20
+	}
+	display[0] {
+		label="xMAP control"
+		name="xMAP_control.adl"
+		args="P=$(P)"
+	}
+	clr=14
+	bclr=51
+}
+text {
+	object {
+		x=402
+		y=194
+		width=70
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="xMAP settings"
 }
