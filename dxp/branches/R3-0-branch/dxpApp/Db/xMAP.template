@@ -42,7 +42,7 @@ record(mbbo, "$(P)PixelAdvanceMode") {
   field(ZRVL, "0")
   field(ZRST, "Gate")
   field(ONVL, "1")
-  field(ONST, "SYNC")
+  field(ONST, "Sync")
   field(IVOA, "Don't drive outputs")
 }
 
@@ -53,7 +53,7 @@ record(mbbi, "$(P)PixelAdvanceMode_RBV") {
   field(ZRVL, "0")
   field(ZRST, "Gate")
   field(ONVL, "1")
-  field(ONST, "SYNC")
+  field(ONST, "Sync")
   field(SCAN, "I/O Intr")
 }
 
@@ -69,6 +69,29 @@ record(longin, "$(P)PixelsPerRun_RBV") {
   field(DESC, "Pixels per run")
   field(DTYP, "asynInt32")
   field(INP,  "$(INP)DxpPixelsPerRun")
+  field(SCAN, "I/O Intr")
+}
+
+record(mbbo, "$(P)AutoPixelsPerBuffer") {
+  field(DESC, "Max. pixels per buffer")
+  field(DTYP, "asynInt32")
+  field(OUT,  "$(INP)DxpAutoPixelsPerBuffer")
+  field(PINI, "YES")
+  field(ZRVL, "0")
+  field(ZRST, "Manual")
+  field(ONVL, "1")
+  field(ONST, "Auto")
+  field(IVOA, "Don't drive outputs")
+}
+
+record(mbbi, "$(P)AutoPixelsPerBuffer_RBV") {
+  field(DESC, "Max. pixels per buffer")
+  field(DTYP, "asynInt32")
+  field(INP,  "$(INP)DxpAutoPixelsPerBuffer")
+  field(ZRVL, "0")
+  field(ZRST, "Manual")
+  field(ONVL, "1")
+  field(ONST, "Auto")
   field(SCAN, "I/O Intr")
 }
 
@@ -154,4 +177,36 @@ record(mbbi, "$(P)InputLogicPolarity_RBV") {
   field(ONST, "Inverted")
   field(SCAN, "I/O Intr")
 }
+
+record(mbbo, "$(P)AutoApply") {
+  field(DESC, "Auto apply on xMAP")
+  field(DTYP, "asynInt32")
+  field(OUT,  "$(INP)DxpXMAPAutoApply")
+  field(PINI, "YES")
+  field(ZRVL, "0")
+  field(ZRST, "No")
+  field(ONVL, "1")
+  field(ONST, "Yes")
+  field(IVOA, "Don't drive outputs")
+}
+
+record(mbbi, "$(P)AutoApply_RBV") {
+  field(DESC, "Auto apply on xMAP")
+  field(DTYP, "asynInt32")
+  field(INP,  "$(INP)DxpXMAPAutoApply")
+  field(ZRVL, "0")
+  field(ZRST, "No")
+  field(ONVL, "1")
+  field(ONST, "Yes")
+  field(SCAN, "I/O Intr")
+}
+
+record(longout, "$(P)Apply") {
+  field(DESC, "Force xMAP apply")
+  field(VAL,  "1")
+  field(PINI, "NO")
+  field(DTYP, "asynInt32")
+  field(OUT,  "$(INP)DxpXMAPApply")
+}
+
 
