@@ -1,6 +1,6 @@
 
 file {
-	name="/home/epics/devel/dxp/3-0/dxpApp/op/adl/dxpTop.adl"
+	name="/home/epics/devel/dxp-3-0/dxpApp/op/adl/dxpTop.adl"
 	version=030102
 }
 display {
@@ -128,12 +128,12 @@ text {
 	}
 	display[4] {
 		label="xMAP 16-element MED"
-		name="16element_xmap.adl"
+		name="16element_dxp.adl"
 		args="P=dxpXMAP:, M=mca, D=dxp"
 	}
 	display[5] {
 		label="xMAP 4-element MED"
-		name="4element_xmap.adl"
+		name="4element_dxp.adl"
 		args="P=dxpXMAP:, M=mca, D=dxp"
 	}
 	display[6] {
