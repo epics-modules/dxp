@@ -1,6 +1,7 @@
 $(P)CollectMode
 $(P)PixelAdvanceMode
 $(P)PixelsPerRun
+$(P)AutoPixelsPerBuffer
 $(P)PixelsPerBuffer
 $(P)IgnoreGate
 $(P)SyncCount
