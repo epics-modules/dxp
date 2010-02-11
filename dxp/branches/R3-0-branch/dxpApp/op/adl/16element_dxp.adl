@@ -143,7 +143,7 @@ rectangle {
 	object {
 		x=4
 		y=37
-		width=300
+		width=310
 		height=314
 	}
 	"basic attribute" {
@@ -484,7 +484,7 @@ menu {
 		height=20
 	}
 	control {
-		chan="$(P)ReadDXPs.SCAN"
+		chan="$(P)ReadLLParams.SCAN"
 		clr=14
 		bclr=51
 	}
@@ -499,7 +499,7 @@ text {
 	"basic attribute" {
 		clr=14
 	}
-	textix="DXP Read rate"
+	textix="Low-level params"
 }
 menu {
 	object {
@@ -775,7 +775,7 @@ text {
 		height=20
 	}
 	control {
-		chan="$(P)ReadDXPs.PROC"
+		chan="$(P)ReadLLParams.PROC"
 		clr=14
 		bclr=51
 	}
