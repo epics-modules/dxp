@@ -1,6 +1,6 @@
 
 file {
-	name="/home/epics/devel/dxp/3-0/dxpApp/op/adl/single_dxp_top.adl"
+	name="/home/epics/devel/dxp-3-0/dxpApp/op/adl/single_dxp_top.adl"
 	version=030102
 }
 display {
@@ -793,8 +793,8 @@ text {
 		height=22
 	}
 	display[0] {
-		label="DXP parameters"
-		name="dxp.adl"
+		label="DXP low-level parameters"
+		name="dxpLowLevel.adl"
 		args="P=$(P), R=$(D)"
 	}
 	display[1] {
@@ -1327,7 +1327,7 @@ menu {
 		height=20
 	}
 	control {
-		chan="$(P)$(D)ReadDXPParams.SCAN"
+		chan="$(P)$(D)ReadLLParams.SCAN"
 		clr=14
 		bclr=51
 	}
@@ -1342,7 +1342,7 @@ text {
 	"basic attribute" {
 		clr=14
 	}
-	textix="DXP Params. Read Rate"
+	textix="Low-level Parameters"
 }
 menu {
 	object {
@@ -1532,7 +1532,7 @@ text {
 		height=20
 	}
 	control {
-		chan="$(P)$(D)ReadDXPParams.PROC"
+		chan="$(P)$(D)ReadLLParams.PROC"
 		clr=14
 		bclr=51
 	}
