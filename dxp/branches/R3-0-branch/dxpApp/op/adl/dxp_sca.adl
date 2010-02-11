@@ -873,7 +873,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R)SCA13_CTS"
+		chan="$(P)$(R)SCA13Counts"
 		clr=54
 		bclr=3
 	}
@@ -889,7 +889,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R)SCA12_CTS"
+		chan="$(P)$(R)SCA12Counts"
 		clr=54
 		bclr=3
 	}
@@ -905,7 +905,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R)SCA11_CTS"
+		chan="$(P)$(R)SCA11Counts"
 		clr=54
 		bclr=3
 	}
@@ -921,7 +921,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R)SCA10_CTS"
+		chan="$(P)$(R)SCA10Counts"
 		clr=54
 		bclr=3
 	}
@@ -937,7 +937,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R)SCA9_CTS"
+		chan="$(P)$(R)SCA9Counts"
 		clr=54
 		bclr=3
 	}
@@ -953,7 +953,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R)SCA8_CTS"
+		chan="$(P)$(R)SCA8Counts"
 		clr=54
 		bclr=3
 	}
@@ -969,7 +969,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R)SCA7_CTS"
+		chan="$(P)$(R)SCA7Counts"
 		clr=54
 		bclr=3
 	}
@@ -985,7 +985,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R)SCA6_CTS"
+		chan="$(P)$(R)SCA6Counts"
 		clr=54
 		bclr=3
 	}
@@ -1001,7 +1001,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R)SCA5_CTS"
+		chan="$(P)$(R)SCA5Counts"
 		clr=54
 		bclr=3
 	}
@@ -1017,7 +1017,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R)SCA4_CTS"
+		chan="$(P)$(R)SCA4Counts"
 		clr=54
 		bclr=3
 	}
@@ -1033,7 +1033,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R)SCA3_CTS"
+		chan="$(P)$(R)SCA3Counts"
 		clr=54
 		bclr=3
 	}
@@ -1049,7 +1049,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R)SCA2_CTS"
+		chan="$(P)$(R)SCA2Counts"
 		clr=54
 		bclr=3
 	}
@@ -1065,7 +1065,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R)SCA1_CTS"
+		chan="$(P)$(R)SCA1Counts"
 		clr=54
 		bclr=3
 	}
@@ -1081,7 +1081,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R)SCA14_CTS"
+		chan="$(P)$(R)SCA14Counts"
 		clr=54
 		bclr=3
 	}
@@ -1097,7 +1097,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R)SCA15_CTS"
+		chan="$(P)$(R)SCA15Counts"
 		clr=54
 		bclr=3
 	}
@@ -1157,7 +1157,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R)SCA0_CTS"
+		chan="$(P)$(R)SCA0Counts"
 		clr=54
 		bclr=3
 	}
