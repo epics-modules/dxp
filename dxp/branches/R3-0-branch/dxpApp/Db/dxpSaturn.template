@@ -1,0 +1,45 @@
+# Redefine the TraceMode choices, eliminating all but the first 2  
+# dxpHighLevel.template is for the xMAP.  Must load this file after that one.
+record(mbbo, "$(P)$(R)TraceMode") {
+    field(TWST, "")
+    field(THST, "")
+    field(FRST, "")
+    field(FVST, "")
+    field(SXST, "")
+}
+
+record(mbbi, "$(P)$(R)TraceMode_RBV") {
+    field(TWST, "")
+    field(THST, "")
+    field(FRST, "")
+    field(FVST, "")
+    field(SXST, "")
+}
+
+record(bo, "$(P)SaveSystem") {
+    field(PINI, "NO")
+    field(DESC, "save system information")
+    field(SCAN, "Passive")
+    field(DTYP, "asynInt32")
+    field(OUT,  "$(IO)DxpSaveSystem")
+    field(ZNAM, "Done")
+    field(ONAM, "Save")
+}
+
+record(bi, "$(P)SaveSystem_RBV") {
+    field(DTYP, "asynInt32")
+    field(INP, "$(IO)DxpSaveSystem")
+    field(ZNAM, "Done")
+    field(ONAM, "Save")
+    field(SCAN, "I/O Intr")
+}
+
+record(waveform, "$(P)SaveSystemFile")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynOctetWrite")
+    field(INP,  "$(IO)DxpSaveSystemFile")
+    field(FTVL, "UCHAR")
+    field(NELM, "256")
+}
+
