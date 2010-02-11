@@ -2,7 +2,7 @@
 record(ai,"$(P)$(R)ReadCallback") {
        field(SCAN,"I/O Intr")
        field(DTYP, "asynInt32")
-       field(INP, "$(INP)MCA_ACQUIRING")
+       field(INP, "$(IO)MCA_ACQUIRING")
        field(FLNK, "$(P)$(R)ReadStatusOnce PP MS")
 }
 
@@ -16,7 +16,7 @@ record(ai, "$(P)$(R)CollectData") {
        field(DTYP, "asynInt32")
        field(VAL, "0")
        field(PINI, "YES")
-       field(INP, "$(INP)DxpForceRead")
+       field(INP, "$(IO)DxpForceRead")
        field(FLNK, "$(P)$(R)ReadDataOnce PP MS")
 }
 
