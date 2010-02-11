@@ -39,7 +39,7 @@ dbLoadRecords("$(SSCAN)/sscanApp/Db/scan.db","P=dxpXMAP:,MAXPTS1=2000,MAXPTS2=10
 
 iocInit
 
-seq dxpMED, "P=dxpXMAP:, DXP=dxp, MCA=mca, N_DETECTORS=4, N_SCAS=4"
+seq dxpMED, "P=dxpXMAP:, DXP=dxp, MCA=mca, N_DETECTORS=4, N_SCAS=16"
 
 ### Start up the autosave task and tell it what to do.
 # Save settings every thirty seconds
@@ -47,4 +47,10 @@ create_monitor_set("auto_settings4.req", 30, "P=dxpXMAP:")
 
 ### Start the saveData task.
 saveData_Init("saveData.req", "P=dxpXMAP:")
+
+# Sleep for 10 seconds to let initialization complete and then turn on AutoApply and do Apply manually once
+epicsThreadSleep(10.)
+dbpf("dxpXMAP:AutoApply", "1")
+dbpf("dxpXMAP:Apply", "1")
+dbtr("dxpXMAP:PixelsPerRun");
 
