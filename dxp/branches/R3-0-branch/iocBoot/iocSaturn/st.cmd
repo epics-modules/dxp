@@ -25,9 +25,12 @@ NDDxpConfig("DXP1", 1, 10, 42000000)
 asynSetTraceIOMask("DXP1", 0, 2)
 #asynSetTraceMask("DXP1", 0, 255)
 
-dbLoadRecords("$(DXP)/dxpApp/Db/dxp.template","P=dxpSaturn:,R=dxp1:,PORT=DXP1,ADDR=0,TIMEOUT=1,PINI=YES")
-dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=dxpSaturn:, M=mca1, DTYP=asynMCA,INP=@asyn(DXP1 0),NCHAN=2048")
-dbLoadRecords("$(DXP)/dxpApp/Db/mcaCallback.template", "P=dxpSaturn:, R=mca1, INP=@asyn(DXP1 0)")
+dbLoadRecords("$(DXP)/dxpApp/Db/dxpHighLevel.template","P=dxpSaturn:, R=dxp1:,IO=@asyn(DXP1 0 1)")
+dbLoadRecords("$(DXP)/dxpApp/Db/dxpSaturn.template",   "P=dxpSaturn:, R=dxp1:,IO=@asyn(DXP1 0 1)")
+dbLoadRecords("$(DXP)/dxpApp/Db/dxpLowLevel.template", "P=dxpSaturn:, R=dxp1:,IO=@asyn(DXP1 0 1)")
+dbLoadRecords("$(DXP)/dxpApp/Db/dxpSCA_16.template",   "P=dxpSaturn:, R=dxp1:,IO=@asyn(DXP1 0 1)")
+dbLoadRecords("$(DXP)/dxpApp/Db/mcaCallback.template", "P=dxpSaturn:, R=mca1, IO=@asyn(DXP1 0 1)")
+dbLoadRecords("$(MCA)/mcaApp/Db/mca.db",               "P=dxpSaturn:, M=mca1, DTYP=asynMCA,INP=@asyn(DXP1 0),NCHAN=2048")
 
 # Template to copy MCA ROIs to DXP SCAs
 dbLoadTemplate("roi_to_sca.substitutions")
