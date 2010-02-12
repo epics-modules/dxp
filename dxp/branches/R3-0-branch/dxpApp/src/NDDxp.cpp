@@ -68,7 +68,7 @@ typedef enum {
     NDDxpModeMCA, 
     NDDxpModeSpectraMapping,
     NDDxpModeSCAMapping
-} NDDxpMode_t;
+} NDDxpCollectMode_t;
 
 typedef enum {
     NDDxpPresetCountModeEvents,
@@ -215,7 +215,7 @@ public:
     asynStatus setPresets(asynUser *pasynUser, int addr);
     asynStatus setDxpParam(asynUser *pasynUser, int addr, int function, double value);
     asynStatus getDxpParams(asynUser *pasynUser, int addr);
-    asynStatus setLLDxpParam(asynUser *pasynUser, int addr, int function, unsigned short value);
+    asynStatus setLLDxpParam(asynUser *pasynUser, int addr, int value);
     asynStatus getLLDxpParams(asynUser *pasynUser, int addr);
     asynStatus setSCAs(asynUser *pasynUser, int addr);
     asynStatus getSCAs(asynUser *pasynUser, int addr);
@@ -538,7 +538,6 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
                 numLLParams, DXP_MAX_LL_PARAMS);
     }
     createParam(NDDxpNumLLParamsString,            asynParamInt32,   &NDDxpNumLLParams);
-    setIntegerParam(NDDxpNumLLParams, numLLParams);
     createParam(NDDxpReadLLParamsString,           asynParamInt32,   &NDDxpReadLLParams);
     for (i=0; i<DXP_MAX_LL_PARAMS; i++) {
         if (i < numLLParams) {
@@ -552,6 +551,7 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     }
     
     for (ch=0; ch<this->nChannels; ch++) {
+        setIntegerParam(ch, NDDxpNumLLParams, numLLParams);
         for (i=0; i<numLLParams; i++) {
             setStringParam(ch, NDDxpLLParamNames[i], this->LLParamNames[i]);
         }
@@ -579,7 +579,7 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     }
     
     /* Register the epics exit function to be called when the IOC exits... */
-    xiastatus = epicsAtExit(c_shutdown, (void*)this);
+    xiastatus = epicsAtExit(c_shutdown, this);
 
     /* Set the parameters in param lib */
     status |= setIntegerParam(NDDxpCollectMode, 0);
@@ -612,13 +612,13 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     this->tmpStats = (epicsFloat64*)calloc(28, sizeof(epicsFloat64));
     this->currentBuf = (epicsUInt32*)calloc(this->nChannels, sizeof(epicsUInt32));
 
-    xiastatus = xiaGetSpecialRunData(0, "adc_trace_length", (void *) &(this->traceLength));
+    xiastatus = xiaGetSpecialRunData(0, "adc_trace_length",  &(this->traceLength));
     if (xiastatus != XIA_SUCCESS) printf("Error calling xiaGetSpecialRunData for adc_trace_length");
 
     /* Allocate a buffer for the trace data */
     this->traceBuffer = (epicsInt32 *)malloc(this->traceLength * sizeof(epicsInt32));
 
-    xiastatus = xiaGetRunData(0, "baseline_length", (void *) &(this->baselineLength));
+    xiastatus = xiaGetRunData(0, "baseline_length",  &(this->baselineLength));
     if (xiastatus != XIA_SUCCESS) printf("Error calling xiaGetRunData for baseline_length");
 
     /* Allocate a buffer for the baseline histogram data */
@@ -628,7 +628,7 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     this->pMapRaw = (epicsUInt32*)malloc(XMAP_MAPBUF_READ_SIZE);
 
     /* On the Saturn enable special timing mode in RUNTASKS so we can use ROI pulse output
-     * Hardcoding this here should be TEMPORARY until low-level parameters can be controlled by EPICS */
+     * Hardcoding this here should be TEMPORARY until low-level parameters can be controlled by EPICS? */
     if (this->deviceType == NDDxpModelSaturn) {
         xiastatus = xiaGetParameter(0, "RUNTASKS", &runTasks);
         if (xiastatus != XIA_SUCCESS) printf("Error calling xiaGetParameter for RUNTASKS");
@@ -639,6 +639,7 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     }
 
     /* Start up acquisition thread */
+    setDoubleParam(NDDxpPollTime, 0.001);
     this->polling = 1;
     status = (epicsThreadCreate("acquisitionTask",
                 epicsThreadPriorityMedium,
@@ -649,6 +650,29 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
         printf("%s:%s epicsThreadCreate failure for image task\n",
                 driverName, functionName);
         return;
+    }
+
+    /* Read actual values of all parameters from Handel.  
+     * Reading low-level parameters also reads high-level parameters */
+    getLLDxpParams(this->pasynUserSelf, DXP_ALL);
+
+    /* If this is an xMAP read the current mapping mode, temporarily switch to MCA mapping to
+     * force mapping firmware to download, and then switch back to previous mode.  
+     * This allows getDxpParams() to read the Handel values for mapping parameters */
+    if (this->deviceType == NDDxpModelXMAP) {
+        double mappingMode, prevMappingMode;
+        xiastatus = xiaGetAcquisitionValues(0, "mapping_mode", &prevMappingMode);
+        status = this->xia_checkError(pasynUserSelf, xiastatus, "get mapping_mode");
+        mappingMode = NDDxpModeSpectraMapping;
+        xiastatus = xiaSetAcquisitionValues(0, "mapping_mode", &mappingMode);
+        status = this->xia_checkError(pasynUserSelf, xiastatus, "set mapping_mode");
+        xiastatus = xiaBoardOperation(0, "apply", &mappingMode);
+        status = this->xia_checkError(pasynUserSelf, xiastatus, "apply");
+        this->getDxpParams(this->pasynUserSelf, DXP_ALL);
+        xiastatus = xiaSetAcquisitionValues(0, "mapping_mode", &prevMappingMode);
+        status = this->xia_checkError(pasynUserSelf, xiastatus, "set mapping_mode");
+        xiastatus = xiaBoardOperation(0, "apply", &mappingMode);
+        status = this->xia_checkError(pasynUserSelf, xiastatus, "apply");
     }
 
     /* Set default values for parameters that cannot be read from Handel */
@@ -706,7 +730,7 @@ asynStatus NDDxp::writeInt32( asynUser *pasynUser, epicsInt32 value)
         if (this->deviceType == NDDxpModelXMAP) chStep = XMAP_NCHANS_MODULE;
         for (firstCh=0; firstCh<this->nChannels; firstCh+=chStep)
         {
-            CALLHANDEL( xiaBoardOperation(firstCh, "mapping_pixel_next", (void*)&ignored), "mapping_pixel_next" )
+            CALLHANDEL( xiaBoardOperation(firstCh, "mapping_pixel_next", &ignored), "mapping_pixel_next" )
         }
         setIntegerParam(addr, function, 0);
     }
@@ -993,11 +1017,11 @@ asynStatus NDDxp::apply(int channel, int forceApply)
     if (channel == DXP_ALL) {
         for (i=0; i<this->nChannels; i+=XMAP_NCHANS_MODULE)
         {
-            xiastatus = xiaBoardOperation(i, "apply", (void *)&ignore);
+            xiastatus = xiaBoardOperation(i, "apply", &ignore);
             status = this->xia_checkError(this->pasynUserSelf, xiastatus, "apply");
         }
     } else {
-        xiastatus = xiaBoardOperation(channel, "apply", (void *)&ignore);
+        xiastatus = xiaBoardOperation(channel, "apply", &ignore);
         status = this->xia_checkError(this->pasynUserSelf, xiastatus, "apply");
     }
     return(status);
@@ -1360,7 +1384,7 @@ asynStatus NDDxp::setNumChannels(asynUser* pasynUser, epicsInt32 value, epicsInt
         asynPrint(pasynUser, ASYN_TRACE_FLOW, 
             "xiaSetAcquisitinValues ch=%d nbins=%.1f\n", 
             i, dblNbins);
-        xiastatus = xiaSetAcquisitionValues(i, "number_mca_channels", (void*)&dblNbins);
+        xiastatus = xiaSetAcquisitionValues(i, "number_mca_channels", &dblNbins);
         status = this->xia_checkError(pasynUser, xiastatus, "number_mca_channels");
         if (status == asynError)
             {
@@ -1382,32 +1406,40 @@ asynStatus NDDxp::setNumChannels(asynUser* pasynUser, epicsInt32 value, epicsInt
     return status;
 }
 
+
 asynStatus NDDxp::configureCollectMode()
 {
     asynStatus status = asynSuccess;
-    NDDxpMode_t mode;
+    NDDxpCollectMode_t collectMode;
     int xiastatus, acquiring;
     int i;
     int firstCh, chStep = 1, bufLen;
     double dTmp;
+    int pixelsPerBuffer;
+    int autoPixelsPerBuffer;
+    int pixelsPerRun;
+    int syncCount;
+    int ignoreGate;
+    int inputLogicPolarity;
+    NDDxpPixelAdvanceMode_t pixelAdvanceMode;
     const char* functionName = "configureCollectMode";
     
-    getIntegerParam(NDDxpCollectMode, (int *)&mode);
+    getIntegerParam(NDDxpCollectMode, (int *)&collectMode);
 
     asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-        "%s::%s Changing mode to %d\n",
-        driverName, functionName, mode);
+        "%s::%s Changing collectMode to %d\n",
+        driverName, functionName, collectMode);
 
-    if (mode < NDDxpModeMCA || mode > NDDxpModeSCAMapping) return asynError;
+    if (collectMode < NDDxpModeMCA || collectMode > NDDxpModeSCAMapping) return asynError;
     getIntegerParam(mcaAcquiring, &acquiring);
     if (acquiring) return asynError;
 
-    dTmp = (double)mode;
-    xiastatus = xiaSetAcquisitionValues(DXP_ALL, "mapping_mode", (void*)&dTmp);
+    dTmp = (double)collectMode;
+    xiastatus = xiaSetAcquisitionValues(DXP_ALL, "mapping_mode", &dTmp);
     status = this->xia_checkError(pasynUserSelf, xiastatus, "mapping_mode");
     if (status == asynError) return status;
 
-    switch(mode)
+    switch(collectMode)
     {
     case NDDxpModeMCA:
         getIntegerParam(mcaNumChannels, (int*)&bufLen);
@@ -1426,21 +1458,13 @@ asynStatus NDDxp::configureCollectMode()
         break;
     case NDDxpModeSpectraMapping:
     case NDDxpModeSCAMapping:
-        int pixelsPerBuffer;
-        int autoPixelsPerBuffer;
-        int pixelsPerRun;
-        int syncCount;
-        int ignoreGate;
-        int inputLogicPolarity;
-        NDDxpPixelAdvanceMode_t pixelAdvanceMode;
-
         getIntegerParam(NDDxpPixelAdvanceMode, (int *)&pixelAdvanceMode);
         getIntegerParam(NDDxpPixelsPerRun, &pixelsPerRun);
         getIntegerParam(NDDxpPixelsPerBuffer, &pixelsPerBuffer);
         getIntegerParam(NDDxpAutoPixelsPerBuffer, &autoPixelsPerBuffer);
         if (autoPixelsPerBuffer) pixelsPerBuffer = -1;  /* Handel will compute maximum */
         getIntegerParam(NDDxpSyncCount, &syncCount);
-        if (syncCount < 0) syncCount = 0;
+        if (syncCount < 1) syncCount = 1;
         getIntegerParam(NDDxpIgnoreGate, &ignoreGate);
         getIntegerParam(NDDxpInputLogicPolarity, &inputLogicPolarity);
         setIntegerParam(NDDataType, NDUInt16);
@@ -1448,67 +1472,35 @@ asynStatus NDDxp::configureCollectMode()
         if (this->deviceType == NDDxpModelXMAP) chStep = XMAP_NCHANS_MODULE;
         for (firstCh=0; firstCh<this->nChannels; firstCh+=chStep)
         {
-            switch (pixelAdvanceMode) {
-            case NDDxpPixelAdvanceGate:
-                dTmp = XIA_MAPPING_CTL_GATE;
-                xiastatus = xiaSetAcquisitionValues(firstCh, "pixel_advance_mode", (void*)&dTmp);
-                status = this->xia_checkError(pasynUserSelf, xiastatus, "pixel_advance_mode");
-                break;
-            case NDDxpPixelAdvanceSync:
-                dTmp = XIA_MAPPING_CTL_SYNC;
-                xiastatus = xiaSetAcquisitionValues(firstCh, "pixel_advance_mode", (void*)&dTmp);
-                status = this->xia_checkError(pasynUserSelf, xiastatus, "pixel_advance_mode");
-                break;
-            }
+            dTmp = XIA_MAPPING_CTL_SYNC;
+            if (pixelAdvanceMode == NDDxpPixelAdvanceGate) dTmp = XIA_MAPPING_CTL_GATE;
+            xiastatus = xiaSetAcquisitionValues(firstCh, "pixel_advance_mode", &dTmp);
+            status = this->xia_checkError(pasynUserSelf, xiastatus, "pixel_advance_mode");
+
             dTmp = pixelsPerRun;
-            xiastatus = xiaSetAcquisitionValues(firstCh, "num_map_pixels", (void*)&dTmp);
+            xiastatus = xiaSetAcquisitionValues(firstCh, "num_map_pixels", &dTmp);
             status = this->xia_checkError(pasynUserSelf, xiastatus, "num_map_pixels");
 
             dTmp = pixelsPerBuffer;
-            xiastatus = xiaSetAcquisitionValues(firstCh, "num_map_pixels_per_buffer", (void*)&dTmp);
+            xiastatus = xiaSetAcquisitionValues(firstCh, "num_map_pixels_per_buffer", &dTmp);
             status = this->xia_checkError(pasynUserSelf, xiastatus, "num_map_pixels_per_buffer");
 
-            dTmp = syncCount;
-            xiastatus = xiaSetAcquisitionValues(firstCh, "sync_count", (void*)&dTmp);
+            /* The xMAP actually divides the sync input by N+1, e.g. sync_count=0 does no division
+             * of sync clock.  We subtract 1 so user-units are intuitive. */
+            dTmp = syncCount-1;
+            xiastatus = xiaSetAcquisitionValues(firstCh, "sync_count", &dTmp);
             status = this->xia_checkError(pasynUserSelf, xiastatus, "sync_count");
 
             dTmp = ignoreGate;
-            xiastatus = xiaSetAcquisitionValues(firstCh, "gate_ignore", (void*)&dTmp);
+            xiastatus = xiaSetAcquisitionValues(firstCh, "gate_ignore", &dTmp);
             status = this->xia_checkError(pasynUserSelf, xiastatus, "gate_ignore");
 
             dTmp = inputLogicPolarity;
-            xiastatus = xiaSetAcquisitionValues(firstCh, "input_logic_polarity", (void*)&dTmp);
+            xiastatus = xiaSetAcquisitionValues(firstCh, "input_logic_polarity", &dTmp);
             status = this->xia_checkError(pasynUserSelf, xiastatus, "input_logic_polarity");
 
             /* Apply the values */
             this->apply(firstCh);
-
-            // Read back actual values
-            dTmp = 0;
-            xiastatus = xiaGetAcquisitionValues(firstCh, "num_map_pixels", (void*)&dTmp);
-            status = this->xia_checkError(pasynUserSelf, xiastatus, "GET num_map_pixels");
-            asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-                "%s::%s [%d] Got num_map_pixels = %.1f\n", 
-                driverName, functionName, firstCh, dTmp);
-            pixelsPerRun = (int)dTmp;
-            setIntegerParam(NDDxpPixelsPerRun, pixelsPerRun);
-
-            dTmp = 0;
-            xiastatus = xiaGetAcquisitionValues(firstCh, "num_map_pixels_per_buffer", (void*)&dTmp);
-            status = this->xia_checkError(pasynUserSelf, xiastatus, "GET num_map_pixels_per_buffer");
-            asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-                "%s::%s [%d] Got num_map_pixels_per_buffer = %.1f\n", 
-                driverName, functionName, firstCh, dTmp);
-            pixelsPerBuffer = (int)dTmp;
-            setIntegerParam(NDDxpPixelsPerBuffer, pixelsPerBuffer);
-
-            bufLen = 0;
-            xiastatus = xiaGetRunData(firstCh, "buffer_len", (void*)&bufLen);
-            status = this->xia_checkError(pasynUserSelf, xiastatus, "GET buffer_len");
-            asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-                "%s::%s [%d] Got buffer_len = %u\n", 
-                driverName, functionName, firstCh, bufLen);
-            setIntegerParam(firstCh, NDArraySize, (int)bufLen);
 
             /* Clear the normal mapping mode status settings */
             for (i=0; i<XMAP_NCHANS_MODULE; i++)
@@ -1519,12 +1511,15 @@ asynStatus NDDxp::configureCollectMode()
                 setDoubleParam(firstCh+i, mcaElapsedLiveTime, 0);
                 callParamCallbacks(firstCh+i, firstCh+i);
             }
+            /* Read back the actual settings */
+            getDxpParams(this->pasynUserSelf, firstCh);
         }
         break;
     }
 
     return status;
 }
+
 
 asynStatus NDDxp::getAcquisitionStatus(asynUser *pasynUser, int addr)
 {
@@ -1778,6 +1773,18 @@ asynStatus NDDxp::getDxpParams(asynUser *pasynUser, int addr)
     double dvalue;
     double emax;
     int channel=addr;
+    asynStatus status = asynSuccess;
+    int xiastatus;
+    int bufLen;
+    double dTmp;
+    int collectMode;
+    int pixelsPerBuffer;
+    int pixelsPerRun;
+    int syncCount;
+    int ignoreGate;
+    int inputLogicPolarity;
+    NDDxpPixelAdvanceMode_t pixelAdvanceMode;
+    const char* functionName = "getDxpParams";
 
     if (addr == this->nChannels) channel = DXP_ALL;
     if (channel == DXP_ALL) {  /* All channels */
@@ -1846,6 +1853,85 @@ asynStatus NDDxp::getDxpParams(asynUser *pasynUser, int addr)
         setDoubleParam(channel, NDDxpDecayTime, dvalue);
         xiaGetAcquisitionValues(channel, "reset_delay", &dvalue);
         setDoubleParam(channel, NDDxpResetDelay, dvalue);
+        
+        /* If this is an xMAP and this is channel 0 then read the mapping parameters */
+        if ((channel == 0) && (this->deviceType == NDDxpModelXMAP)) {
+            // Read mapping parameters, which are assumed to be the same for all modules 
+            dTmp = 0;
+            xiastatus = xiaGetAcquisitionValues(channel, "mapping_mode", &dTmp);
+            status = this->xia_checkError(pasynUserSelf, xiastatus, "GET mapping_mode");
+            asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                "%s::%s [%d] Got mapping_mode = %.1f\n", 
+                driverName, functionName, channel, dTmp);
+            collectMode = (int)dTmp;
+            setIntegerParam(NDDxpCollectMode, collectMode);
+
+            if (collectMode != NDDxpModeMCA) {
+                dTmp = 0;
+                xiastatus = xiaGetAcquisitionValues(channel, "pixel_advance_mode", &dTmp);
+                status = this->xia_checkError(pasynUserSelf, xiastatus, "GET pixel_advance_mode");
+                asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                    "%s::%s [%d] Got pixel_advance_mode = %.1f\n", 
+                    driverName, functionName, channel, dTmp);
+                pixelAdvanceMode = NDDxpPixelAdvanceSync;
+                if (dTmp == XIA_MAPPING_CTL_GATE) pixelAdvanceMode = NDDxpPixelAdvanceGate;
+                setIntegerParam(NDDxpPixelAdvanceMode, pixelAdvanceMode);
+
+                dTmp = 0;
+                xiastatus = xiaGetAcquisitionValues(channel, "num_map_pixels", &dTmp);
+                status = this->xia_checkError(pasynUserSelf, xiastatus, "GET num_map_pixels");
+                asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                    "%s::%s [%d] Got num_map_pixels = %.1f\n", 
+                    driverName, functionName, channel, dTmp);
+                pixelsPerRun = (int)dTmp;
+                setIntegerParam(NDDxpPixelsPerRun, pixelsPerRun);
+
+                dTmp = 0;
+                xiastatus = xiaGetAcquisitionValues(channel, "num_map_pixels_per_buffer", &dTmp);
+                status = this->xia_checkError(pasynUserSelf, xiastatus, "GET num_map_pixels_per_buffer");
+                asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                    "%s::%s [%d] Got num_map_pixels_per_buffer = %.1f\n", 
+                    driverName, functionName, channel, dTmp);
+                pixelsPerBuffer = (int)dTmp;
+                setIntegerParam(NDDxpPixelsPerBuffer, pixelsPerBuffer);
+
+                dTmp = 0;
+                xiastatus = xiaGetAcquisitionValues(channel, "sync_count", &dTmp);
+                status = this->xia_checkError(pasynUserSelf, xiastatus, "GET sync_count");
+                asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                    "%s::%s [%d] Got sync_count = %.1f\n", 
+                    driverName, functionName, channel, dTmp);
+                /* We add 1 to sync count because xMAP actually divides by N+1 */
+                syncCount = (int)dTmp + 1;
+                setIntegerParam(NDDxpSyncCount, syncCount);
+
+                dTmp = 0;
+                xiastatus = xiaGetAcquisitionValues(channel, "gate_ignore", &dTmp);
+                status = this->xia_checkError(pasynUserSelf, xiastatus, "GET gate_ignore");
+                asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                    "%s::%s [%d] Got gate_ignore = %.1f\n", 
+                    driverName, functionName, channel, dTmp);
+                ignoreGate = (int)dTmp;
+                setIntegerParam(NDDxpIgnoreGate, ignoreGate);
+
+                dTmp = 0;
+                xiastatus = xiaGetAcquisitionValues(channel, "input_logic_polarity", &dTmp);
+                status = this->xia_checkError(pasynUserSelf, xiastatus, "GET input_logic_polarity");
+                asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                    "%s::%s [%d] Got input_logic_polarity = %.1f\n", 
+                    driverName, functionName, channel, dTmp);
+                inputLogicPolarity = (int)dTmp;
+                setIntegerParam(NDDxpInputLogicPolarity, inputLogicPolarity);
+
+                bufLen = 0;
+                xiastatus = xiaGetRunData(channel, "buffer_len", &bufLen);
+                status = this->xia_checkError(pasynUserSelf, xiastatus, "GET buffer_len");
+                asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                    "%s::%s [%d] Got buffer_len = %u\n", 
+                    driverName, functionName, channel, bufLen);
+                setIntegerParam(channel, NDArraySize, (int)bufLen);
+            }
+        }
     }
     return(asynSuccess);
 }
@@ -1855,11 +1941,10 @@ asynStatus NDDxp::getLLDxpParams(asynUser *pasynUser, int addr)
 {
     int i, numParams, param;
     int status;
-    int channel=addr;
+    int channel = ((addr < this->nChannels) ? addr : DXP_ALL);
     
     getIntegerParam(NDDxpNumLLParams, &numParams);
 
-    if (addr == this->nChannels) channel = DXP_ALL;
     if (channel == DXP_ALL) {  /* All channels */
         addr = this->nChannels;
         for (i=0; i<this->nChannels; i++) {
@@ -1876,6 +1961,35 @@ asynStatus NDDxp::getLLDxpParams(asynUser *pasynUser, int addr)
         callParamCallbacks(addr, addr);
     }
     return(asynSuccess);
+}
+        
+
+asynStatus NDDxp::setLLDxpParam(asynUser *pasynUser, int addr, int value)
+{
+    int i;
+    int function = pasynUser->reason;
+    asynStatus status = asynSuccess;
+    int xiastatus;
+    char paramName[MAXSYMBOL_LEN];
+    int channel = ((addr < this->nChannels) ? addr : DXP_ALL);
+    //static const char* functionName = "setLLDxpParam";
+
+    if (channel == DXP_ALL) {  /* All channels */
+        for (i=0; i<this->nChannels; i++) {
+            /* Call ourselves recursively but with a specific channel */
+            this->setLLDxpParam(pasynUser, i, value);
+        }
+    } else {
+        /* Note: we need to get the parameter Name, given pasynUser->reason, which is the index of the
+         * parameter Value.  We rely on the fact that createParam is called in the order Name, Value for
+         * each low-level parameter, so the index is just one less than pasynUser->reason; */
+        getStringParam(addr, function-1, sizeof(paramName), paramName);
+        xiastatus = xiaSetParameter(channel, paramName, (unsigned short)value);
+        status = xia_checkError(pasynUser, xiastatus, "xiaSetParameter");
+        /* Read back the parameters  */
+        getLLDxpParams(pasynUser, addr);
+    }
+    return(status);
 }
         
 
@@ -1922,13 +2036,13 @@ asynStatus NDDxp::getMcaData(asynUser *pasynUser, int addr)
         /* Read the MCA spectrum from Handel.
         * For most devices this means getting 1 channel spectrum here.
         * For the XMAP we get all 4 channels on the board in one go here */
-        CALLHANDEL( xiaGetRunData(addr, "mca", (void*)this->pMcaRaw[addr]),"xiaGetRunData")
+        CALLHANDEL( xiaGetRunData(addr, "mca", this->pMcaRaw[addr]),"xiaGetRunData")
         spectrumCounter++;
         asynPrintIO(pasynUser, ASYN_TRACEIO_DRIVER, (const char *)pMcaRaw[addr], nChannels*sizeof(epicsUInt32),
             "%s::%s Got MCA spectrum channel:%d ptr:%p\n",
             driverName, functionName, channel, pMcaRaw[addr]);
 
-        if (arrayCallbacks);
+        if (arrayCallbacks)
         {
             /* Allocate a buffer for callback */
             pArray = this->pNDArrayPool->alloc(1, &nChannels, dataType, 0, NULL);
@@ -1978,7 +2092,7 @@ asynStatus NDDxp::getMappingData()
 
         /* The buffer is full so read it out */
         epicsTimeGetCurrent(&now);
-        xiastatus = xiaGetRunData(channel, NDDxpBufferString[buf], (void*)this->pMapRaw);
+        xiastatus = xiaGetRunData(channel, NDDxpBufferString[buf], this->pMapRaw);
         status = xia_checkError(this->pasynUserSelf, xiastatus, "GetRunData mapping");
         epicsTimeGetCurrent(&after);
         readoutTime = epicsTimeDiffInSeconds(&after, &now);
@@ -1987,7 +2101,7 @@ asynStatus NDDxp::getMappingData()
         setDoubleParam(NDDxpMBytesReceived, mBytesRead);
         setDoubleParam(NDDxpReadSpeed, readoutBurstSpeed);
         /* Notify XMAP that we read out the buffer */
-        xiastatus = xiaBoardOperation(channel, "buffer_done", (void*)NDDxpBufferCharString[buf]);
+        xiastatus = xiaBoardOperation(channel, "buffer_done", NDDxpBufferCharString[buf]);
         status = xia_checkError(this->pasynUserSelf, xiastatus, "buffer_done");
         if (buf == 0) this->currentBuf[channel] = 1;
         else this->currentBuf[channel] = 0;
@@ -2060,14 +2174,14 @@ asynStatus NDDxp::getTrace(asynUser* pasynUser, int addr,
         /* Convert from us to ns */
         info[1] = traceTime * 1000.;
 
-        xiastatus = xiaDoSpecialRun(channel, NDDxpTraceCommands[traceMode], (void*)info);
+        xiastatus = xiaDoSpecialRun(channel, NDDxpTraceCommands[traceMode], info);
         status = this->xia_checkError(pasynUser, xiastatus, NDDxpTraceCommands[traceMode]);
         if (status == asynError) return asynError;
 
         *actualLen = this->traceLength;
         if (maxLen < *actualLen) *actualLen = maxLen;
 
-        xiastatus = xiaGetSpecialRunData(channel, "adc_trace", (void*)this->traceBuffer);
+        xiastatus = xiaGetSpecialRunData(channel, "adc_trace", this->traceBuffer);
         status = this->xia_checkError( pasynUser, xiastatus, "adc_trace" );
         if (status == asynError) return status;
 
@@ -2164,8 +2278,6 @@ void NDDxp::acquisitionTask()
     epicsTimeStamp now, start;
     const char* functionName = "acquisitionTask";
 
-    setDoubleParam(NDDxpPollTime, 0.001);
-
     asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, 
         "%s:%s acquisition task started!\n",
         driverName, functionName);
@@ -2173,7 +2285,7 @@ void NDDxp::acquisitionTask()
 
     this->lock();
 
-    while (this->polling) /* ... round and round and round we go ... */
+    while (this->polling) /* ... round and round and round we go until the IOC is shut down */
     {
 
         getIntegerParam(this->nChannels, mcaAcquiring, &acquiring);
@@ -2262,10 +2374,10 @@ asynStatus NDDxp::pollMappingMode()
     {
         buf = this->currentBuf[ch];
 
-        CALLHANDEL( xiaGetRunData(ch, "current_pixel", (void*)&currentPixel) , "current_pixel" )
+        CALLHANDEL( xiaGetRunData(ch, "current_pixel", &currentPixel) , "current_pixel" )
         setIntegerParam(ch, NDDxpCurrentPixel, (int)currentPixel);
         callParamCallbacks(ch, ch);
-        CALLHANDEL( xiaGetRunData(ch, NDDxpBufferFullString[buf], (void*)&isfull), "NDDxpBufferFullString[buf]" )
+        CALLHANDEL( xiaGetRunData(ch, NDDxpBufferFullString[buf], &isfull), "NDDxpBufferFullString[buf]" )
         asynPrint(pasynUser, ASYN_TRACE_FLOW, 
             "%s::%s %s isfull=%d\n",
             driverName, functionName, NDDxpBufferFullString[buf], isfull);
@@ -2300,14 +2412,17 @@ asynStatus NDDxp::xia_checkError( asynUser* pasynUser, epicsInt32 xiastatus, cha
 void NDDxp::shutdown()
 {
     int status;
+    double pollTime;
+    
+    getDoubleParam(NDDxpPollTime, &pollTime);
     asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, 
-        "%s: shutting down...\n", driverName);
+        "%s: shutting down in %f seconds\n", driverName, 2*pollTime);
     this->polling = 0;
-    epicsThreadSleep(1.0);
+    epicsThreadSleep(2*pollTime);
     status = xiaExit();
     if (status == XIA_SUCCESS)
     {
-        printf("%s closed down successfully. You can now exit the iocshell ###\n",
+        printf("%s shut down successfully.\n",
             driverName);
         return;
     }
