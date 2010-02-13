@@ -41,14 +41,6 @@ record(bo,"$(P)StopAll") {
     field(OUT,"$(P)$(MCAALL).STOP CA MS")
 }
 
-record(ao,"$(P)PresetReal") {
-    field(PREC, "2")
-}
-
-record(ao,"$(P)PresetLive") {
-    field(PREC, "2")
-}
-
 record(mbbo, "$(P)PresetMode") {
     field(DESC, "set preset type")
     field(ZRVL, "0")
