@@ -1,14 +1,14 @@
 
 file {
-	name="/home/epics/devel/dxp/2-5beta/dxpApp/op/adl/16element_ROI_SCA.adl"
-	version=030000
+	name="/home/epics/devel/dxp-3-0/dxpApp/op/adl/16element_ROI_SCA.adl"
+	version=030102
 }
 display {
 	object {
-		x=25
-		y=123
+		x=121
+		y=60
 		width=950
-		height=540
+		height=620
 	}
 	clr=14
 	bclr=4
@@ -3435,4 +3435,91 @@ composite {
 			}
 		}
 	}
+}
+text {
+	object {
+		x=174
+		y=542
+		width=520
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="Copy all detector 1 ROIs to all detectors by channel"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=174
+		y=567
+		width=510
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="Copy all detector 1 ROIs to all detectors by energy"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=174
+		y=592
+		width=390
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="Copy all ROIs to SCAs for all detectors"
+	align="horiz. centered"
+}
+"message button" {
+	object {
+		x=47
+		y=543
+		width=120
+		height=18
+	}
+	control {
+		chan="$(P)CopyROIChannel"
+		clr=14
+		bclr=51
+	}
+	label="Copy 1->All"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=47
+		y=568
+		width=120
+		height=18
+	}
+	control {
+		chan="$(P)CopyROIEnergy"
+		clr=14
+		bclr=51
+	}
+	label="Copy 1->All"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=47
+		y=593
+		width=120
+		height=18
+	}
+	control {
+		chan="$(P)CopyROI_SCA"
+		clr=14
+		bclr=51
+	}
+	label="Copy ROIs to SCAs"
+	press_msg="1"
 }
