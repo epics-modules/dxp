@@ -14,6 +14,9 @@ $(P)$(R)GapTime
 $(P)$(R)TriggerPeakingTime
 $(P)$(R)TriggerGapTime
 $(P)$(R)MaxWidth
+$(P)$(R)PresetMode
+$(P)$(R)PresetEvents
+$(P)$(R)PresetTriggers
 $(P)$(R)ReadLLParams.SCAN
 $(P)$(R)TraceMode
 $(P)$(R)TraceTime
