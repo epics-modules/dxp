@@ -1,6 +1,4 @@
-# dxpMED.db
 # Author:  Mark Rivers
-# Date:    January 9, 2005
 # Database for DXP multi-element detector (e.g. xMAP or DXP4C2X)
 
 record(bo,"$(P)EraseAll") {
@@ -51,32 +49,34 @@ record(ao,"$(P)PresetLive") {
     field(PREC, "2")
 }
 
-record(mbbo, "$(P)PresetCountMode") {
-  field(DESC, "set preset type")
-  field(ZRVL, "0")
-  field(ZRST, "Disabled")
-  field(ONVL, "1")
-  field(ONST, "Real time [s]")
-  field(TWVL, "2")
-  field(TWST, "Live time [s]")
-  field(THVL, "3")
-  field(THST, "Events [n]")
-  field(FRVL, "4")
-  field(FRST, "Triggers [n]")
+record(mbbo, "$(P)PresetMode") {
+    field(DESC, "set preset type")
+    field(ZRVL, "0")
+    field(ZRST, "No preset")
+    field(ONVL, "1")
+    field(ONST, "Real time")
+    field(TWVL, "2")
+    field(TWST, "Live time")
+    field(THVL, "3")
+    field(THST, "Events")
+    field(FRVL, "4")
+    field(FRST, "Triggers")
 }
 
-record(mbbi, "$(P)PresetCountMode_RBV") {
-  field(DESC, "set preset type for preset counts")
-  field(ZRVL, "0")
-  field(ZRST, "Disabled")
-  field(ONVL, "1")
-  field(ONST, "Real time [s]")
-  field(TWVL, "2")
-  field(TWST, "Live time [s]")
-  field(THVL, "3")
-  field(THST, "Events [n]")
-  field(FRVL, "4")
-  field(FRST, "Triggers [n]")
+record(ao,"$(P)PresetReal") {
+    field(PREC, "2")
+}
+
+record(ao,"$(P)PresetLive") {
+    field(PREC, "2")
+}
+
+record(longout, "$(P)PresetTriggers") {
+    field(DESC, "Preset triggers")
+}
+
+record(longout, "$(P)PresetEvents") {
+    field(DESC, "Preset events")
 }
 
 record(bi,"$(P)Acquiring") {
@@ -119,7 +119,7 @@ record(bo,"$(P)DoStatusAll") {
 record(ai,"$(P)ReadCallback") {
     field(SCAN,"I/O Intr")
     field(DTYP, "asynInt32")
-    field(INP, "$(IO)MCA_ACQUIRING")
+    field(INP, "$(DETALL)MCA_ACQUIRING")
     field(FLNK, "$(P)ReadAllOnce PP MS")
 }
 
@@ -141,29 +141,27 @@ record(bo,"$(P)DoReadAll") {
 }
 
 record(bo, "$(P)ReadLLParams") {
-  field(PINI, "NO")
-  field(DESC, "Read low-level params")
-  field(SCAN, "Passive")
-  field(DTYP, "asynInt32")
-  field(OUT,  "$(IO)DxpReadLLParams")
-  field(ZNAM, "Done")
-  field(ONAM, "Read")
+    field(DESC, "Read low-level params")
+    field(SCAN, "Passive")
+    field(DTYP, "asynInt32")
+    field(OUT,  "$(DETALL)DxpReadLLParams")
+    field(ZNAM, "Done")
+    field(ONAM, "Read")
 }
 
 # Status polling rate (and data readout speed in normal/mca mode)
 record(ao, "$(P)PollTime") {
-    field(DTYP, "asynFloat64")
-    field(OUT, "$(IO)DxpPollTime")
-    field(VAL, "0.01")
     field(PINI, "YES")
+    field(DTYP, "asynFloat64")
+    field(OUT, "$(DET0)DxpPollTime")
+    field(VAL, "0.01")
     field(PREC, "3")
     field(EGU, "s")
 }
 
 record(ai, "$(P)PollTime_RBV") {
-    field(PINI, "YES")
     field(DTYP, "asynFloat64")
-    field(INP, "$(IO)DxpPollTime")
+    field(INP, "$(DET0)DxpPollTime")
     field(PREC, "3")
     field(EGU, "s")
     field(SCAN, "I/O Intr")
@@ -284,30 +282,43 @@ record(bo,"$(P)CopyADCPercentRule") {
     field(ONAM, "Copy")
 }
 
+record(bo,"$(P)CopyROIChannel") {
+    field(ZNAM, "Done")
+    field(ONAM, "Copy")
+}
+
+record(bo,"$(P)CopyROIEnergy") {
+    field(ZNAM, "Done")
+    field(ONAM, "Copy")
+}
+
+record(bo,"$(P)CopyROI_SCA") {
+    field(ZNAM, "Done")
+    field(ONAM, "Copy")
+}
+
 record(bo, "$(P)SaveSystem") {
-  field(PINI, "NO")
-  field(DESC, "save system information")
-  field(SCAN, "Passive")
-  field(DTYP, "asynInt32")
-  field(OUT,  "$(IO)DxpSaveSystem")
-  field(ZNAM, "Done")
-  field(ONAM, "Save")
+    field(DESC, "save system information")
+    field(SCAN, "Passive")
+    field(DTYP, "asynInt32")
+    field(OUT,  "$(DET0)DxpSaveSystem")
+    field(ZNAM, "Done")
+    field(ONAM, "Save")
 }
 
 record(bi, "$(P)SaveSystem_RBV") {
-#   field(PINI, "RUNNING")
-   field(DTYP, "asynInt32")
-   field(INP, "$(IO)DxpSaveSystem")
-   field(ZNAM, "Done")
-   field(ONAM, "Save")
-   field(SCAN, "I/O Intr")
+    field(DTYP, "asynInt32")
+    field(INP, "$(DET0)DxpSaveSystem")
+    field(ZNAM, "Done")
+    field(ONAM, "Save")
+    field(SCAN, "I/O Intr")
 }
 
 record(waveform, "$(P)SaveSystemFile")
 {
     field(PINI, "YES")
     field(DTYP, "asynOctetWrite")
-    field(INP,  "$(IO)DxpSaveSystemFile")
+    field(INP,  "$(DET0)DxpSaveSystemFile")
     field(FTVL, "UCHAR")
     field(NELM, "256")
 }
