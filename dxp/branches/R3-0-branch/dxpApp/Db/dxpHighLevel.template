@@ -5,36 +5,64 @@
 # The global records that are specific to the xMAP are contained in xMAP.template and for the Saturn in
 # dxpSaturn.template
 
-record(mbbo, "$(P)($R)PresetCountMode") {
+record(mbbo, "$(P)$(R)PresetMode") {
     field(DESC, "set preset type")
     field(DTYP, "asynInt32")
-    field(OUT,  "$(IO)DxpPresetCountMode")
+    field(OUT,  "$(IO)DxpPresetMode")
     field(ZRVL, "0")
     field(ZRST, "Disabled")
     field(ONVL, "1")
-    field(ONST, "Real time [s]")
+    field(ONST, "Real time")
     field(TWVL, "2")
-    field(TWST, "Live time [s]")
+    field(TWST, "Live time")
     field(THVL, "3")
-    field(THST, "Events [n]")
+    field(THST, "Events")
     field(FRVL, "4")
-    field(FRST, "Triggers [n]")
+    field(FRST, "Triggers")
 }
 
-record(mbbi, "$(P)$(R)PresetCountMode_RBV") {
+record(mbbi, "$(P)$(R)PresetMode_RBV") {
     field(DESC, "set preset type for preset counts")
     field(DTYP, "asynInt32")
-    field(INP,  "$(IO)DxpPresetCountMode")
+    field(INP,  "$(IO)DxpPresetMode")
     field(ZRVL, "0")
     field(ZRST, "Disabled")
     field(ONVL, "1")
-    field(ONST, "Real time [s]")
+    field(ONST, "Real time")
     field(TWVL, "2")
-    field(TWST, "Live time [s]")
+    field(TWST, "Live time")
     field(THVL, "3")
-    field(THST, "Events [n]")
+    field(THST, "Events")
     field(FRVL, "4")
-    field(FRST, "Triggers [n]")
+    field(FRST, "Triggers")
+    field(SCAN, "I/O Intr")
+}
+
+record(longout, "$(P)$(R)PresetTriggers") {
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT, "$(IO)DxpPresetTriggers")
+    field(DESC, "Preset triggers")
+}
+
+record(longin, "$(P)$(R)PresetTriggers_RBV") {
+    field(DTYP, "asynInt32")
+    field(INP, "$(IO)DxpPresetTriggers")
+    field(DESC, "Preset triggers")
+    field(SCAN, "I/O Intr")
+}
+
+record(longout, "$(P)$(R)PresetEvents") {
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT, "$(IO)DxpPresetEvents")
+    field(DESC, "Preset events")
+}
+
+record(longin, "$(P)$(R)PresetEvents_RBV") {
+    field(DTYP, "asynInt32")
+    field(INP, "$(IO)DxpPresetEvents")
+    field(DESC, "Preset events")
     field(SCAN, "I/O Intr")
 }
 
@@ -495,30 +523,6 @@ record(ai, "$(P)$(R)OutputCountRate") {
     field(INP, "$(IO)DxpOutputCountRate")
     field(DESC, "output count rate")
     field(PREC, "1")
-    field(SCAN, "I/O Intr")
-}
-
-# The convention is that the MCA presets: preset live takes precedence over real, both 0=None
-# MCA has preset counts, this just allows choice of count for events or triggers
-record(mbbo, "$(P)$(R)PresetCountMode") {
-    field(PINI, "YES")
-    field(DESC, "set preset type for preset counts")
-    field(DTYP, "asynInt32")
-    field(OUT, "$(IO)DxpPresetCountMode")
-    field(ZRVL, "0")
-    field(ONVL, "1")
-    field(ZRST, "events")
-    field(ONST, "triggers")
-}
-
-record(mbbi, "$(P)$(R)PresetCountMode_RBV") {
-    field(DESC, "set preset type for preset counts")
-    field(DTYP, "asynInt32")
-    field(INP, "$(IO)DxpPresetCountMode")
-    field(ZRVL, "0")
-    field(ONVL, "1")
-    field(ZRST, "events")
-    field(ONST, "triggers")
     field(SCAN, "I/O Intr")
 }
 
