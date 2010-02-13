@@ -71,9 +71,12 @@ typedef enum {
 } NDDxpCollectMode_t;
 
 typedef enum {
-    NDDxpPresetCountModeEvents,
-    NDDxpPresetCountModeTriggers
-} NDDxpPresetCountMode_t;
+    NDDxpPresetModeNone,
+    NDDxpPresetModeReal,
+    NDDxpPresetModeLive,
+    NDDxpPresetModeEvents,
+    NDDxpPresetModeTriggers
+} NDDxpPresetMode_t;
 
 typedef enum {
     NDDxpPixelAdvanceGate,
@@ -171,7 +174,9 @@ typedef struct moduleStatistics {
 #define NDDxpBaselineCutString              "DxpBaselineCut"
 #define NDDxpEnableBaselineCutString        "DxpEnableBaselineCut"
 #define NDDxpMaxWidthString                 "DxpMaxWidth"
-#define NDDxpPresetCountModeString          "DxpPresetCountMode"
+#define NDDxpPresetModeString               "DxpPresetMode"
+#define NDDxpPresetEventsString             "DxpPresetEvents"
+#define NDDxpPresetTriggersString           "DxpPresetTriggers"
 
 /* SCA parameters */
 #define NDDxpNumSCAsString                  "DXPNumSCAs"
@@ -298,7 +303,9 @@ protected:
     int NDDxpBaselineCut;
     int NDDxpEnableBaselineCut;
     int NDDxpMaxWidth;
-    int NDDxpPresetCountMode;      /** < Sets which type of preset count to send to the HW: either events or triggers (xmap) */
+    int NDDxpPresetMode;
+    int NDDxpPresetEvents;
+    int NDDxpPresetTriggers;
 
     /* SCA parameters */
     int NDDxpNumSCAs;
@@ -484,7 +491,9 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     createParam(NDDxpBaselineCutString,            asynParamFloat64, &NDDxpBaselineCut);
     createParam(NDDxpEnableBaselineCutString,      asynParamInt32,   &NDDxpEnableBaselineCut);
     createParam(NDDxpMaxWidthString,               asynParamFloat64, &NDDxpMaxWidth);
-    createParam(NDDxpPresetCountModeString,        asynParamInt32,   &NDDxpPresetCountMode);
+    createParam(NDDxpPresetModeString,             asynParamInt32,   &NDDxpPresetMode);
+    createParam(NDDxpPresetEventsString,           asynParamInt32,   &NDDxpPresetEvents);
+    createParam(NDDxpPresetTriggersString,         asynParamInt32,   &NDDxpPresetTriggers);
 
     /* SCA parameters */
     createParam(NDDxpNumSCAsString,                asynParamInt32,   &NDDxpNumSCAs);
@@ -786,8 +795,9 @@ asynStatus NDDxp::writeInt32( asynUser *pasynUser, epicsInt32 value)
             if (acquiring) status = this->getAcquisitionStatistics(pasynUser, addr);
         }
     }
-    else if ((function == mcaPresetCounts) ||
-             (function == NDDxpPresetCountMode)) 
+    else if ((function == NDDxpPresetMode)   ||
+             (function == NDDxpPresetEvents) ||
+             (function == NDDxpPresetTriggers)) 
     {
         this->setPresets(pasynUser, addr);
     } 
@@ -855,7 +865,8 @@ asynStatus NDDxp::writeFloat64( asynUser *pasynUser, epicsFloat64 value)
         (function == mcaPresetLiveTime)) 
     {
         this->setPresets(pasynUser, addr);
-    } else if 
+    } 
+    else if 
        ((function == NDDxpPeakingTime) ||
         (function == NDDxpDynamicRange) ||
         (function == NDDxpTriggerThreshold) ||
@@ -900,12 +911,12 @@ asynStatus NDDxp::readInt32Array(asynUser *pasynUser, epicsInt32 *value, size_t 
     if (function == NDDxpTrace) 
     {
         status = this->getTrace(pasynUser, channel, value, nElements, nIn);
-
-    } else if (function == NDDxpBaselineHistogram) 
+    } 
+    else if (function == NDDxpBaselineHistogram) 
     {
         status = this->getBaselineHistogram(pasynUser, channel, value, nElements, nIn);
-
-    } else if (function == mcaData) 
+    } 
+    else if (function == mcaData) 
     {
         if (channel == DXP_ALL)
         {
@@ -947,7 +958,8 @@ asynStatus NDDxp::readInt32Array(asynUser *pasynUser, epicsInt32 *value, size_t 
 
         /* Not sure if we should do this when in mapping mode but we need it in MCA mode... */
         memcpy(value, pMcaRaw[addr], nBins * sizeof(epicsUInt32));
-    } else {
+    } 
+    else {
             asynPrint(pasynUser, ASYN_TRACE_ERROR,
                 "%s::%s Function not implemented: [%d]\n",
                 driverName, functionName, function);
@@ -984,7 +996,8 @@ asynStatus NDDxp::xmapGetModuleChannels(int currentChannel, int* firstChannel, i
     {
         *firstChannel = currentChannel;
         *nChannels = this->nChannels;
-    } else
+    } 
+    else
     {
         if (currentChannel == DXP_ALL)
         {
@@ -1030,78 +1043,84 @@ asynStatus NDDxp::apply(int channel, int forceApply)
 
 asynStatus NDDxp::setPresets(asynUser *pasynUser, int addr)
 {
-    NDDxpPresetCountMode_t presetCountMode;
+    asynStatus status = asynSuccess;
+    NDDxpPresetMode_t presetMode;
     double presetReal;
     double presetLive;
-    int presetCounts;
+    int presetEvents;
+    int presetTriggers;
     double presetValue;
     double presetType;
     int runActive=0;
-    double time;
     int channel=addr;
     int channel0;
+    char presetString[40];
     const char* functionName = "setPresets";
 
     if (addr == this->nChannels) channel = DXP_ALL;
     if (channel == DXP_ALL) channel0 = 0; else channel0 = channel;
 
-    getDoubleParam(addr, mcaPresetRealTime, &presetReal);
-    getDoubleParam(addr, mcaPresetLiveTime, &presetLive);
-    getIntegerParam(addr, mcaPresetCounts, &presetCounts);
-    getIntegerParam(addr, NDDxpPresetCountMode, (int *)&presetCountMode);
+    getDoubleParam(addr,  mcaPresetRealTime,   &presetReal);
+    getDoubleParam(addr,  mcaPresetLiveTime,   &presetLive);
+    getIntegerParam(addr, NDDxpPresetEvents,   &presetEvents);
+    getIntegerParam(addr, NDDxpPresetTriggers, &presetTriggers);
+    getIntegerParam(addr, NDDxpPresetMode,     (int *)&presetMode);
 
     xiaGetRunData(channel0, "run_active", &runActive);
     xiaStopRun(channel);
-
-    /* If preset live and real time are both zero set to count forever */
-    if ((presetLive == 0.) && (presetReal == 0.)) {
-        presetValue = 0.;
-        if (this->deviceType == NDDxpModelXMAP) {
+    
+    switch (presetMode) {
+        case  NDDxpPresetModeNone:
+            presetValue = 0;
             presetType = XIA_PRESET_NONE;
-            xiaSetAcquisitionValues(channel, "preset_type", &presetType);
-            xiaSetAcquisitionValues(channel, "preset_value", &presetValue);
-            this->apply(channel);
-        } else {
-            xiaSetAcquisitionValues(channel, "preset_standard", &presetValue);
-        }
-        asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
-            "%s:%s: addr=%d channel=%d cleared preset live and real time\n",
-            driverName, functionName, addr, channel);
-    }
-    /* If preset live time is zero and real time is non-zero use real time */
-    if ((presetLive == 0.) && (presetReal != 0.)) {
-        time = presetReal;
-        if (this->deviceType == NDDxpModelXMAP) {
+            strcpy(presetString, "preset_standard");
+            break;
+
+        case NDDxpPresetModeReal:
+            presetValue = presetReal;
             presetType = XIA_PRESET_FIXED_REAL;
-            presetValue = time; /* *1.e6;  xMAP presets are in microseconds */
-            xiaSetAcquisitionValues(channel, "preset_type", &presetType);
-            xiaSetAcquisitionValues(channel, "preset_value", &presetValue);
-            this->apply(channel);
-        } else {
-            xiaSetAcquisitionValues(channel, "preset_runtime", &time);
-        }
-        asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
-            "%s:%s: addr=%d channel=%d set preset real time = %f\n",
-            driverName, functionName, addr, channel, time);
-    }
-    /* If preset live time is non-zero use live time */
-    if (presetLive != 0.) {
-        time = presetLive;
-        if (this->deviceType == NDDxpModelXMAP) {
+            strcpy(presetString, "preset_runtime");
+            break;
+
+        case NDDxpPresetModeLive:
+            presetValue = presetLive;
             presetType = XIA_PRESET_FIXED_LIVE;
-            presetValue = time; /* 1.e6;  xMAP presets are in microseconds */
-            xiaSetAcquisitionValues(channel, "preset_type", &presetType);
-            xiaSetAcquisitionValues(channel, "preset_value", &presetValue);
-            this->apply(channel);
-        } else {
-            xiaSetAcquisitionValues(channel, "preset_livetime", &time);
-        }
-        asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
-            "%s:%s: addr=%d channel=%d set preset live time = %f\n",
-            driverName, functionName, addr, channel, time);
+            strcpy(presetString, "preset_livetime");
+            break;
+
+        case NDDxpPresetModeEvents:
+            presetValue = presetEvents;
+            presetType = XIA_PRESET_FIXED_EVENTS;
+            strcpy(presetString, "error");
+            break;
+
+        case NDDxpPresetModeTriggers:
+            presetValue = presetTriggers;
+            presetType = XIA_PRESET_FIXED_TRIGGERS;
+            strcpy(presetString, "error");
+            break;
     }
+
+    if (this->deviceType == NDDxpModelXMAP) {
+        xiaSetAcquisitionValues(channel, "preset_type", &presetType);
+        xiaSetAcquisitionValues(channel, "preset_value", &presetValue);
+        this->apply(channel);
+    } else {
+        if (strcmp(presetString, "error") == 0) {
+            asynPrint(pasynUser, ASYN_TRACE_ERROR,
+                "%s:%s: error, preset events and triggers are only available on the xMAP\n",
+                driverName, functionName);
+            status = asynError;
+        } else {            
+            xiaSetAcquisitionValues(channel, presetString, &presetValue);
+        }
+    }
+    asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
+        "%s:%s: addr=%d channel=%d set presets mode=%d, value=%f\n",
+        driverName, functionName, addr, channel, presetMode, presetValue);
+
     if (runActive) xiaStartRun(channel, 1);
-    return(asynSuccess);
+    return(status);
 }
 
 asynStatus NDDxp::setDxpParam(asynUser *pasynUser, int addr, int function, double value)
