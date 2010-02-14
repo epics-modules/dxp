@@ -17,10 +17,6 @@ $(P)$(R)MaxWidth
 $(P)$(R)PresetMode
 $(P)$(R)PresetEvents
 $(P)$(R)PresetTriggers
-$(P)$(R)ReadLLParams.SCAN
 $(P)$(R)TraceMode
 $(P)$(R)TraceTime
-$(P)$(R)BaselineHistogram.SCAN
-$(P)$(R)TraceData.SCAN
 $(P)$(R)NumSCAs
-$(P)SaveSystemFile
