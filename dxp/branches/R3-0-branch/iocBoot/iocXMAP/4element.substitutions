@@ -1,49 +1,46 @@
-file "$(DXP)/dxpApp/Db/dxpMED.template"
-{
-pattern
-{P,        MCAALL,      INP       } 
-{dxpXMAP:, mcaAll, "@asyn(DXP1,4)"}
+file "$(DXP)/dxpApp/Db/dxpSystem.template" {
+{P=dxpXMAP:, IO="@asyn(DXP1,0)"}
 }
 
-file "$(DXP)/dxpApp/Db/xMAP.template"
-{
-pattern
-{P,               INP     } 
-{dxpXMAP:, "@asyn(DXP1,0)"}
+file "$(DXP)/dxpApp/Db/dxpMED.template" {
+{P=dxpXMAP:, mcaAll=MCAALL, DET0="@asyn(DXP1,0,1)", DETALL"@asyn(DXP1,4,1)"} 
+}
+
+file "$(DXP)/dxpApp/Db/dxpXMAP.template" {
+{P=dxpXMAP:, IO="@asyn(DXP1,0)"}
 }
 
 # DXP parameters
-file "$(DXP)/dxpApp/Db/dxp.template"
+file "$(DXP)/dxpApp/Db/dxpHighLevel.template" 
 {
 pattern
-{      P,        R,    PINI, PORT,   ADDR,    TIMEOUT}
-{dxpXMAP:,    dxp1:,    YES,  DXP1,      0,         1}
-{dxpXMAP:,    dxp2:,    YES,  DXP1,      1,         1}
-{dxpXMAP:,    dxp3:,    YES,  DXP1,      2,         1}
-{dxpXMAP:,    dxp4:,    YES,  DXP1,      3,         1}
+{       P,       R,           IO}
+{dxpXMAP:,    dxp1:,  "@asyn(DXP1,0,1)"}
+{dxpXMAP:,    dxp2:,  "@asyn(DXP1,1,1)"}
+{dxpXMAP:,    dxp3:,  "@asyn(DXP1,2,1)"}
+{dxpXMAP:,    dxp4:,  "@asyn(DXP1,3,1)"}
+}
+
+# Low-level parameters
+file "$(DXP)/dxpApp/Db/dxpLowLevel.template"
+{
+pattern
+{       P,       R,        IO}
+{dxpXMAP:,    dxp1:,  "@asyn(DXP1,0,1)"}
+{dxpXMAP:,    dxp2:,  "@asyn(DXP1,1,1)"}
+{dxpXMAP:,    dxp3:,  "@asyn(DXP1,2,1)"}
+{dxpXMAP:,    dxp4:,  "@asyn(DXP1,3,1)"}
 }
 
 # SCA parameters
-file "$(DXP)/dxpApp/Db/dxpSCA_N.template"
+file "$(DXP)/dxpApp/Db/dxpSCA_16.template"
 {
 pattern
-{      P,        R,    PORT,    ADDR,   SCA, TIMEOUT}
-{dxpXMAP:,    dxp1:,   DXP1,      0,     0,    1}
-{dxpXMAP:,    dxp1:,   DXP1,      0,     1,    1}
-{dxpXMAP:,    dxp1:,   DXP1,      0,     2,    1}
-{dxpXMAP:,    dxp1:,   DXP1,      0,     3,    1}
-{dxpXMAP:,    dxp2:,   DXP1,      1,     0,    1}
-{dxpXMAP:,    dxp2:,   DXP1,      1,     1,    1}
-{dxpXMAP:,    dxp2:,   DXP1,      1,     2,    1}
-{dxpXMAP:,    dxp2:,   DXP1,      1,     3,    1}
-{dxpXMAP:,    dxp3:,   DXP1,      2,     0,    1}
-{dxpXMAP:,    dxp3:,   DXP1,      2,     1,    1}
-{dxpXMAP:,    dxp3:,   DXP1,      2,     2,    1}
-{dxpXMAP:,    dxp3:,   DXP1,      2,     3,    1}
-{dxpXMAP:,    dxp4:,   DXP1,      3,     0,    1}
-{dxpXMAP:,    dxp4:,   DXP1,      3,     1,    1}
-{dxpXMAP:,    dxp4:,   DXP1,      3,     2,    1}
-{dxpXMAP:,    dxp4:,   DXP1,      3,     3,    1}
+{       P,       R,          IO}
+{dxpXMAP:,    dxp1:,  "@asyn(DXP1,0,1)"}
+{dxpXMAP:,    dxp2:,  "@asyn(DXP1,1,1)"}
+{dxpXMAP:,    dxp3:,  "@asyn(DXP1,2,1)"}
+{dxpXMAP:,    dxp4:,  "@asyn(DXP1,3,1)"}
 }
 
 
