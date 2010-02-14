@@ -1,16 +1,72 @@
-file "$(DXP)/dxpApp/Db/dxpMED.template"
-{
-pattern
-{P,           MCAALL,    INP          } 
-{dxpXMAP: mcaAll, "@asyn(DXP1,12)"}
+file "$(DXP)/dxpApp/Db/dxpSystem.template" {
+{P=dxpXMAP:, IO="@asyn(DXP1,0)"}
 }
 
-file "$(DXP)/dxpApp/Db/xMAP.template"
+file "$(DXP)/dxpApp/Db/dxpMED.template" {
+{P=dxpXMAP:, mcaAll=MCAALL, DET0="@asyn(DXP1,0,1)", DETALL"@asyn(DXP1,12,1)"} 
+}
+
+file "$(DXP)/dxpApp/Db/dxpXMAP.template" {
+{P=dxpXMAP:, IO="@asyn(DXP1,0)"}
+}
+
+# DXP parameters
+file "$(DXP)/dxpApp/Db/dxpHighLevel.template"
 {
 pattern
-{P,               INP     } 
-{dxpXMAP:, "@asyn(DXP1,0)"}
+{       P,       R,           IO}
+{dxpXMAP:,    dxp1:,  "@asyn(DXP1,0,1)"}
+{dxpXMAP:,    dxp2:,  "@asyn(DXP1,1,1)"}
+{dxpXMAP:,    dxp3:,  "@asyn(DXP1,2,1)"}
+{dxpXMAP:,    dxp4:,  "@asyn(DXP1,3,1)"}
+{dxpXMAP:,    dxp5:,  "@asyn(DXP1,4,1)"}
+{dxpXMAP:,    dxp6:,  "@asyn(DXP1,5,1)"}
+{dxpXMAP:,    dxp7:,  "@asyn(DXP1,6,1)"}
+{dxpXMAP:,    dxp8:,  "@asyn(DXP1,7,1)"}
+{dxpXMAP:,    dxp9:,  "@asyn(DXP1,8,1)"}
+{dxpXMAP:,   dxp10:,  "@asyn(DXP1,9,1)"}
+{dxpXMAP:,   dxp11:,  "@asyn(DXP1,10,1)"}
+{dxpXMAP:,   dxp12:,  "@asyn(DXP1,11,1)"}
 }
+
+# Low-level parameters
+file "$(DXP)/dxpApp/Db/dxpLowLevel.template"
+{
+pattern
+{       P,       R,        IO}
+{dxpXMAP:,    dxp1:,  "@asyn(DXP1,0,1)"}
+{dxpXMAP:,    dxp2:,  "@asyn(DXP1,1,1)"}
+{dxpXMAP:,    dxp3:,  "@asyn(DXP1,2,1)"}
+{dxpXMAP:,    dxp4:,  "@asyn(DXP1,3,1)"}
+{dxpXMAP:,    dxp5:,  "@asyn(DXP1,4,1)"}
+{dxpXMAP:,    dxp6:,  "@asyn(DXP1,5,1)"}
+{dxpXMAP:,    dxp7:,  "@asyn(DXP1,6,1)"}
+{dxpXMAP:,    dxp8:,  "@asyn(DXP1,7,1)"}
+{dxpXMAP:,    dxp9:,  "@asyn(DXP1,8,1)"}
+{dxpXMAP:,   dxp10:,  "@asyn(DXP1,9,1)"}
+{dxpXMAP:,   dxp11:,  "@asyn(DXP1,10,1)"}
+{dxpXMAP:,   dxp12:,  "@asyn(DXP1,11,1)"}
+}
+
+# SCA parameters
+file "$(DXP)/dxpApp/Db/dxpSCA_16.template"
+{
+pattern
+{       P,       R,          IO}
+{dxpXMAP:,    dxp1:,  "@asyn(DXP1,0,1)"}
+{dxpXMAP:,    dxp2:,  "@asyn(DXP1,1,1)"}
+{dxpXMAP:,    dxp3:,  "@asyn(DXP1,2,1)"}
+{dxpXMAP:,    dxp4:,  "@asyn(DXP1,3,1)"}
+{dxpXMAP:,    dxp5:,  "@asyn(DXP1,4,1)"}
+{dxpXMAP:,    dxp6:,  "@asyn(DXP1,5,1)"}
+{dxpXMAP:,    dxp7:,  "@asyn(DXP1,6,1)"}
+{dxpXMAP:,    dxp8:,  "@asyn(DXP1,7,1)"}
+{dxpXMAP:,    dxp9:,  "@asyn(DXP1,8,1)"}
+{dxpXMAP:,   dxp10:,  "@asyn(DXP1,9,1)"}
+{dxpXMAP:,   dxp11:,  "@asyn(DXP1,10,1)"}
+{dxpXMAP:,   dxp12:,  "@asyn(DXP1,11,1)"}
+}
+
 
 file "$(MCA)/mcaApp/Db/simple_mca.db"
 {
@@ -25,28 +81,9 @@ pattern
 {dxpXMAP:,   mca7,  "asynMCA",   "@asyn(DXP1,6)",     2,     2048}
 {dxpXMAP:,   mca8,  "asynMCA",   "@asyn(DXP1,7)",     2,     2048}
 {dxpXMAP:,   mca9,  "asynMCA",   "@asyn(DXP1,8)",     2,     2048}
-{dxpXMAP:,   mca10, "asynMCA",   "@asyn(DXP1,9)",     2,     2048}
-{dxpXMAP:,   mca11, "asynMCA",   "@asyn(DXP1,10)",    2,     2048}
-{dxpXMAP:,   mca12, "asynMCA",   "@asyn(DXP1,11)",    2,     2048}
-{dxpXMAP:,  mcaAll, "asynMCA",   "@asyn(DXP1,12)",    2,     2048}
+{dxpXMAP:,  mca10,  "asynMCA",   "@asyn(DXP1,9)",     2,     2048}
+{dxpXMAP:,  mca11,  "asynMCA",  "@asyn(DXP1,10)",     2,     2048}
+{dxpXMAP:,  mca12,  "asynMCA",  "@asyn(DXP1,11)",     2,     2048}
+{dxpXMAP:, mcaAll,  "asynMCA",  "@asyn(DXP1,16)",     2,     2048}
 }
 
-# DXP records
-file "$(DXP)/dxpApp/Db/dxp.template"
-{
-pattern
-{      P,        R,    PINI,  PORT,   ADDR,    TIMEOUT}
-{dxpXMAP:,    dxp1:,    YES,  DXP1,      0,         1}
-{dxpXMAP:,    dxp2:,    YES,  DXP1,      1,         1}
-{dxpXMAP:,    dxp3:,    YES,  DXP1,      2,         1}
-{dxpXMAP:,    dxp4:,    YES,  DXP1,      3,         1}
-{dxpXMAP:,    dxp5:,    YES,  DXP1,      4,         1}
-{dxpXMAP:,    dxp6:,    YES,  DXP1,      5,         1}
-{dxpXMAP:,    dxp7:,    YES,  DXP1,      6,         1}
-{dxpXMAP:,    dxp8:,    YES,  DXP1,      7,         1}
-{dxpXMAP:,    dxp9:,    YES,  DXP1,      8,         1}
-{dxpXMAP:,   dxp10:,    YES,  DXP1,      9,         1}
-{dxpXMAP:,   dxp11:,    YES,  DXP1,     10,         1}
-{dxpXMAP:,   dxp12:,    YES,  DXP1,     11,         1}
-#{dxpXMAP:  dxpAll:,     NO,  DXP1,     12,         1}
-}
