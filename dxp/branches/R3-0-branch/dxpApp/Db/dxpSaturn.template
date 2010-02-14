@@ -16,30 +16,37 @@ record(mbbi, "$(P)$(R)TraceMode_RBV") {
     field(SXST, "")
 }
 
-record(bo, "$(P)SaveSystem") {
-    field(PINI, "NO")
-    field(DESC, "save system information")
-    field(SCAN, "Passive")
+# Redefine the PresetMode choices, eliminating all but the first 3  
+# dxpHighLevel.template is for the xMAP.  Must load this file after that one.
+record(mbbo, "$(P)$(R)PresetMode") {
+    field(DESC, "set preset type")
     field(DTYP, "asynInt32")
-    field(OUT,  "$(IO)DxpSaveSystem")
-    field(ZNAM, "Done")
-    field(ONAM, "Save")
+    field(OUT,  "$(IO)DxpPresetMode")
+    field(ZRVL, "0")
+    field(ZRST, "No preset")
+    field(ONVL, "1")
+    field(ONST, "Real time")
+    field(TWVL, "2")
+    field(TWST, "Live time")
+    field(THVL, "")
+    field(THST, "")
+    field(FRVL, "")
+    field(FRST, "")
 }
 
-record(bi, "$(P)SaveSystem_RBV") {
+record(mbbi, "$(P)$(R)PresetMode_RBV") {
+    field(DESC, "set preset type for preset counts")
     field(DTYP, "asynInt32")
-    field(INP, "$(IO)DxpSaveSystem")
-    field(ZNAM, "Done")
-    field(ONAM, "Save")
+    field(INP,  "$(IO)DxpPresetMode")
+    field(ZRVL, "0")
+    field(ZRST, "No preset")
+    field(ONVL, "1")
+    field(ONST, "Real time")
+    field(TWVL, "2")
+    field(TWST, "Live time")
+    field(THVL, "")
+    field(THST, "")
+    field(FRVL, "")
+    field(FRST, "")
     field(SCAN, "I/O Intr")
 }
-
-record(waveform, "$(P)SaveSystemFile")
-{
-    field(PINI, "YES")
-    field(DTYP, "asynOctetWrite")
-    field(INP,  "$(IO)DxpSaveSystemFile")
-    field(FTVL, "UCHAR")
-    field(NELM, "256")
-}
-
