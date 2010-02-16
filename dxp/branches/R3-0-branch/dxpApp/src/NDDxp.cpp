@@ -37,6 +37,7 @@
 #define XMAP_MCA_BIN_RES         256
 #define DXP_MAX_SCAS              16
 #define LEN_SCA_NAME              10
+#define XMAP_CLOCK_PERIOD     320e-9
 
 /* It is much easier to define a maximum fixed number of low-level DXP parameters.
  * The actual maximum is current 209 for the xMAP, so this is safe for now, and is
@@ -375,12 +376,13 @@ private:
     /* These values are needed temporarily until Handel adds "module_statistics" for Saturn and DXP2X */
     moduleStatistics moduleStats[XMAP_NCHANS_MODULE];
     double clockSpeed;
-    unsigned short numLLParams;
-    unsigned short LLParamValues[DXP_MAX_LL_PARAMS];
-    char *LLParamNames[DXP_MAX_LL_PARAMS];
     int triggerOffsets[2], eventOffsets[2];
     int realTimeOffsets[3], triggerLiveTimeOffsets[3];
     int overFlowOffsets[2], underFlowOffsets[2];
+
+    unsigned short numLLParams;
+    char *LLParamNames[DXP_MAX_LL_PARAMS];
+    unsigned short LLParamValues[DXP_MAX_LL_PARAMS];
 
     char polling;
 
@@ -425,7 +427,6 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     char tmpStr[MAXSYMBOL_LEN + 10];
     int xiastatus = 0;
     unsigned short runTasks;
-    asynUser *pasynUser = this->pasynUserSelf;
     const char *functionName = "NDDxp";
 
     this->nChannels = nChannels;
@@ -601,9 +602,6 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
 
     /* allocate a memory pointer for each of the channels */
     this->pMcaRaw = (epicsUInt32**) calloc(this->nChannels, sizeof(epicsUInt32*));
-    /* allocate a memory area for each spectrum */
-    for (ch=0; ch<this->nChannels; ch++)
-        this->pMcaRaw[ch] = (epicsUInt32*)calloc(XMAP_MAX_MCA_BINS, sizeof(epicsUInt32));
     if (this->deviceType == NDDxpModelXMAP)
     {
         int spectSize = XMAP_MAX_MCA_BINS * sizeof(epicsUInt32);
@@ -616,6 +614,10 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
             this->pXmapMcaRaw[i] = (epicsUInt32 *)(buff + i*xmapSize);
         for (i=0; i<this->nChannels; i++)
             this->pMcaRaw[i] = (epicsUInt32 *)(buff + i*spectSize);
+    } else {
+        /* allocate a memory area for each spectrum */
+        for (ch=0; ch<this->nChannels; ch++)
+            this->pMcaRaw[ch] = (epicsUInt32*)calloc(XMAP_MAX_MCA_BINS, sizeof(epicsUInt32));
     }
 
     this->tmpStats = (epicsFloat64*)calloc(28, sizeof(epicsFloat64));
@@ -667,7 +669,9 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
 
     /* If this is an xMAP read the current mapping mode, temporarily switch to MCA mapping to
      * force mapping firmware to download, and then switch back to previous mode.  
-     * This allows getDxpParams() to read the Handel values for mapping parameters */
+     * This allows getDxpParams() to read the Handel values for mapping parameters.
+     * We only read the values for the first module, since we force them to be the same for all
+     * modules. */
     if (this->deviceType == NDDxpModelXMAP) {
         double mappingMode, prevMappingMode;
         xiastatus = xiaGetAcquisitionValues(0, "mapping_mode", &prevMappingMode);
@@ -677,7 +681,7 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
         status = this->xia_checkError(pasynUserSelf, xiastatus, "set mapping_mode");
         xiastatus = xiaBoardOperation(0, "apply", &mappingMode);
         status = this->xia_checkError(pasynUserSelf, xiastatus, "apply");
-        this->getDxpParams(this->pasynUserSelf, DXP_ALL);
+        this->getDxpParams(this->pasynUserSelf, 0);
         xiastatus = xiaSetAcquisitionValues(0, "mapping_mode", &prevMappingMode);
         status = this->xia_checkError(pasynUserSelf, xiastatus, "set mapping_mode");
         xiastatus = xiaBoardOperation(0, "apply", &mappingMode);
@@ -690,7 +694,6 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
         setDoubleParam(i, NDDxpTraceTime, 0.1);
     }
 
-    for (ch=0; ch<this->nChannels; ch++) CALLHANDEL( xiaStopRun(ch), "xiaStopRun" )
     /* Read the MCA and DXP parameters once */
     this->getDxpParams(this->pasynUserSelf, DXP_ALL);
     this->getAcquisitionStatus(this->pasynUserSelf, DXP_ALL);
@@ -951,12 +954,10 @@ asynStatus NDDxp::readInt32Array(asynUser *pasynUser, epicsInt32 *value, size_t 
                 this->getMcaData(pasynUser, addr);
             } else if ((mode == NDDxpModeSpectraMapping) || (mode == NDDxpModeSCAMapping))
             {
-                /* TODO: need a function call here to parse the latest received
-                 * data and post the result here... */
+                /*  Nothing needed here, the last data read from the mapping buffer has already been
+                 *  copied to the buffer pointed to by pMcaRaw. */
             }
         }
-
-        /* Not sure if we should do this when in mapping mode but we need it in MCA mode... */
         memcpy(value, pMcaRaw[addr], nBins * sizeof(epicsUInt32));
     } 
     else {
@@ -2084,10 +2085,13 @@ asynStatus NDDxp::getMappingData()
     int xiastatus;
     int arrayCallbacks;
     NDDataType_t dataType;
-    int buf = 0, channel, i;
+    int buf = 0, channel, i, k;
     NDArray *pArray=NULL;
     epicsUInt32 *pIn=NULL;
+    epicsUInt32 *pStats;
     epicsUInt16 *pOut=NULL;
+    int mappingMode, pixelOffset, dataOffset, events, triggers, nChans;
+    double realTime, liveTime, icr, ocr;
     int dims[2], pixelCounter, bufferCounter, arraySize;
     epicsTimeStamp now, after;
     double mBytesRead;
@@ -2129,6 +2133,43 @@ asynStatus NDDxp::getMappingData()
             "%s::%s Got data! size=%.3fMB (%d) dt=%.3fs speed=%.3fMB/s\n",
             driverName, functionName, MBbufSize, arraySize, readoutTime, readoutBurstSpeed);
     
+        /* If this is MCA mapping mode then copy the spectral data for the first pixel
+         * in this buffer to the mcaRaw buffers.
+         * This provides an update of the spectra and statistics while mapping is in progress
+         * if the user sets the MCA spectra to periodically read. */
+        mappingMode = pMapRaw[3];
+        if (mappingMode == NDDxpModeSpectraMapping) {
+            pixelOffset = 256;
+            dataOffset = pixelOffset + 256;
+            for (i=0; i<XMAP_NCHANS_MODULE; i++) {
+                k = channel*XMAP_NCHANS_MODULE + i;
+                nChans = pMapRaw[pixelOffset + 8 + i];
+                memcpy(pMcaRaw[k], &pMapRaw[dataOffset], nChans*sizeof(epicsUInt32));
+                dataOffset += nChans;
+                pStats = &pMapRaw[pixelOffset + 32 + i*8];
+                realTime = (pStats[0] + (pStats[1]<<16)) * XMAP_CLOCK_PERIOD;
+                liveTime = (pStats[2] + (pStats[3]<<16)) * XMAP_CLOCK_PERIOD;
+                triggers =  pStats[4] + (pStats[5]<<16);
+                events   =  pStats[6] + (pStats[7]<<16);
+                /* This is not quite right, it assumes trigger live time = real time */
+                if (realTime > 0.) {
+                    icr = triggers / realTime;
+                    ocr = events / realTime;
+                }
+                else {
+                    icr = 0.;
+                    ocr = 0.;
+                }
+                setDoubleParam(k, mcaElapsedRealTime, realTime);
+                setDoubleParam(k, mcaElapsedLiveTime, liveTime);
+                setIntegerParam(k,NDDxpEvents, events);
+                setIntegerParam(k, NDDxpTriggers, triggers);
+                setDoubleParam(k, NDDxpInputCountRate, icr);
+                setDoubleParam(k, NDDxpOutputCountRate, ocr);
+                callParamCallbacks(k, k);
+            }
+        }
+            
         if (arrayCallbacks)
         {
             /* Now rearrange the data and do the callbacks */
@@ -2139,8 +2180,8 @@ asynStatus NDDxp::getMappingData()
                dims[1] = this->nCards;
                pArray = this->pNDArrayPool->alloc(2, dims, dataType, 0, NULL );
                pOut = (epicsUInt16 *)pArray->pData;
-           }
-
+            }
+            
             /* First get rid of the empty parts of the 32 bit words. The Handel library
              * provides a 4MB 32 bit/word wide buffer, but the only data is in the low-order
              * 16 bits of each word. So we strip off the empty top 16 bits of each 32 bit
