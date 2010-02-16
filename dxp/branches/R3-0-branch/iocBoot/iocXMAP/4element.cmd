@@ -52,5 +52,6 @@ saveData_Init("saveData.req", "P=dxpXMAP:")
 epicsThreadSleep(10.)
 dbpf("dxpXMAP:AutoApply", "1")
 dbpf("dxpXMAP:Apply", "1")
-dbtr("dxpXMAP:PixelsPerRun");
+# Seems to be necessary to write mapping mode parameters, otherwise initial values are wrong?
+dbpf("dxpXMAP:PixelsPerRun.PROC", "1");
 
