@@ -5,9 +5,9 @@ file {
 }
 display {
 	object {
-		x=44
-		y=70
-		width=930
+		x=579
+		y=232
+		width=940
 		height=530
 	}
 	clr=14
@@ -26,7 +26,7 @@ display {
 		c8c8c8,
 		bbbbbb,
 		aeaeae,
-		9e9e9e,t
+		9e9e9e,
 		919191,
 		858585,
 		787878,
@@ -89,9 +89,9 @@ display {
 }
 rectangle {
 	object {
-		x=205
-		y=9
-		width=520
+		x=220
+		y=10
+		width=500
 		height=25
 	}
 	"basic attribute" {
@@ -100,9 +100,9 @@ rectangle {
 }
 text {
 	object {
-		x=219
+		x=290
 		y=10
-		width=492
+		width=360
 		height=25
 	}
 	"basic attribute" {
@@ -657,302 +657,7 @@ composite {
 }
 composite {
 	object {
-		x=50
-		y=49
-		width=70
-		height=473
-	}
-	"composite name"=""
-	children {
-		text {
-			object {
-				x=58
-				y=49
-				width=54
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-				fill="outline"
-			}
-			textix="Elapsed"
-			align="horiz. centered"
-		}
-		text {
-			object {
-				x=69
-				y=71
-				width=31
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-				fill="outline"
-			}
-			textix="Real"
-			align="horiz. centered"
-		}
-		"text update" {
-			object {
-				x=50
-				y=97
-				width=70
-				height=20
-			}
-			monitor {
-				chan="$(P)$(M)1.ERTM"
-				clr=54
-				bclr=1
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=50
-				y=124
-				width=70
-				height=20
-			}
-			monitor {
-				chan="$(P)$(M)2.ERTM"
-				clr=54
-				bclr=1
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=50
-				y=151
-				width=70
-				height=20
-			}
-			monitor {
-				chan="$(P)$(M)3.ERTM"
-				clr=54
-				bclr=1
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=50
-				y=178
-				width=70
-				height=20
-			}
-			monitor {
-				chan="$(P)$(M)4.ERTM"
-				clr=54
-				bclr=1
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=50
-				y=205
-				width=70
-				height=20
-			}
-			monitor {
-				chan="$(P)$(M)5.ERTM"
-				clr=54
-				bclr=1
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=50
-				y=232
-				width=70
-				height=20
-			}
-			monitor {
-				chan="$(P)$(M)6.ERTM"
-				clr=54
-				bclr=1
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=50
-				y=259
-				width=70
-				height=20
-			}
-			monitor {
-				chan="$(P)$(M)7.ERTM"
-				clr=54
-				bclr=1
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=50
-				y=286
-				width=70
-				height=20
-			}
-			monitor {
-				chan="$(P)$(M)8.ERTM"
-				clr=54
-				bclr=1
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=50
-				y=313
-				width=70
-				height=20
-			}
-			monitor {
-				chan="$(P)$(M)9.ERTM"
-				clr=54
-				bclr=1
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=50
-				y=340
-				width=70
-				height=20
-			}
-			monitor {
-				chan="$(P)$(M)10.ERTM"
-				clr=54
-				bclr=1
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=50
-				y=367
-				width=70
-				height=20
-			}
-			monitor {
-				chan="$(P)$(M)11.ERTM"
-				clr=54
-				bclr=1
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=50
-				y=394
-				width=70
-				height=20
-			}
-			monitor {
-				chan="$(P)$(M)12.ERTM"
-				clr=54
-				bclr=1
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=50
-				y=421
-				width=70
-				height=20
-			}
-			monitor {
-				chan="$(P)$(M)13.ERTM"
-				clr=54
-				bclr=1
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=50
-				y=448
-				width=70
-				height=20
-			}
-			monitor {
-				chan="$(P)$(M)14.ERTM"
-				clr=54
-				bclr=1
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=50
-				y=475
-				width=70
-				height=20
-			}
-			monitor {
-				chan="$(P)$(M)15.ERTM"
-				clr=54
-				bclr=1
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=50
-				y=502
-				width=70
-				height=20
-			}
-			monitor {
-				chan="$(P)$(M)16.ERTM"
-				clr=54
-				bclr=1
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-	}
-}
-composite {
-	object {
-		x=270
+		x=275
 		y=49
 		width=651
 		height=473
@@ -961,7 +666,7 @@ composite {
 	children {
 		composite {
 			object {
-				x=650
+				x=655
 				y=49
 				width=271
 				height=473
@@ -970,7 +675,7 @@ composite {
 			children {
 				composite {
 					object {
-						x=650
+						x=655
 						y=49
 						width=90
 						height=473
@@ -979,7 +684,7 @@ composite {
 					children {
 						text {
 							object {
-								x=660
+								x=665
 								y=49
 								width=70
 								height=20
@@ -993,7 +698,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=650
+								x=655
 								y=97
 								width=90
 								height=20
@@ -1009,7 +714,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=650
+								x=655
 								y=124
 								width=90
 								height=20
@@ -1025,7 +730,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=650
+								x=655
 								y=151
 								width=90
 								height=20
@@ -1041,7 +746,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=650
+								x=655
 								y=178
 								width=90
 								height=20
@@ -1057,7 +762,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=650
+								x=655
 								y=205
 								width=90
 								height=20
@@ -1073,7 +778,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=650
+								x=655
 								y=232
 								width=90
 								height=20
@@ -1089,7 +794,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=650
+								x=655
 								y=259
 								width=90
 								height=20
@@ -1105,7 +810,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=650
+								x=655
 								y=286
 								width=90
 								height=20
@@ -1121,7 +826,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=650
+								x=655
 								y=313
 								width=90
 								height=20
@@ -1137,7 +842,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=650
+								x=655
 								y=340
 								width=90
 								height=20
@@ -1153,7 +858,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=650
+								x=655
 								y=367
 								width=90
 								height=20
@@ -1169,7 +874,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=650
+								x=655
 								y=394
 								width=90
 								height=20
@@ -1185,7 +890,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=650
+								x=655
 								y=421
 								width=90
 								height=20
@@ -1201,7 +906,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=650
+								x=655
 								y=448
 								width=90
 								height=20
@@ -1217,7 +922,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=650
+								x=655
 								y=475
 								width=90
 								height=20
@@ -1233,7 +938,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=650
+								x=655
 								y=502
 								width=90
 								height=20
@@ -1249,7 +954,7 @@ composite {
 						}
 						text {
 							object {
-								x=665
+								x=670
 								y=71
 								width=60
 								height=20
@@ -1265,7 +970,7 @@ composite {
 				}
 				composite {
 					object {
-						x=745
+						x=750
 						y=71
 						width=176
 						height=451
@@ -1274,7 +979,7 @@ composite {
 					children {
 						text {
 							object {
-								x=793
+								x=798
 								y=71
 								width=90
 								height=20
@@ -1288,7 +993,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=745
+								x=750
 								y=97
 								width=90
 								height=20
@@ -1304,7 +1009,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=745
+								x=750
 								y=124
 								width=90
 								height=20
@@ -1320,7 +1025,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=745
+								x=750
 								y=151
 								width=90
 								height=20
@@ -1336,7 +1041,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=745
+								x=750
 								y=178
 								width=90
 								height=20
@@ -1352,7 +1057,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=745
+								x=750
 								y=205
 								width=90
 								height=20
@@ -1368,7 +1073,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=745
+								x=750
 								y=232
 								width=90
 								height=20
@@ -1384,7 +1089,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=745
+								x=750
 								y=259
 								width=90
 								height=20
@@ -1400,7 +1105,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=745
+								x=750
 								y=286
 								width=90
 								height=20
@@ -1416,7 +1121,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=745
+								x=750
 								y=313
 								width=90
 								height=20
@@ -1432,7 +1137,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=745
+								x=750
 								y=340
 								width=90
 								height=20
@@ -1448,7 +1153,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=745
+								x=750
 								y=367
 								width=90
 								height=20
@@ -1464,7 +1169,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=745
+								x=750
 								y=394
 								width=90
 								height=20
@@ -1480,7 +1185,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=745
+								x=750
 								y=421
 								width=90
 								height=20
@@ -1496,7 +1201,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=745
+								x=750
 								y=448
 								width=90
 								height=20
@@ -1512,7 +1217,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=745
+								x=750
 								y=475
 								width=90
 								height=20
@@ -1528,7 +1233,7 @@ composite {
 						}
 						"text update" {
 							object {
-								x=745
+								x=750
 								y=502
 								width=90
 								height=20
@@ -1544,7 +1249,7 @@ composite {
 						}
 						bar {
 							object {
-								x=841
+								x=846
 								y=97
 								width=80
 								height=20
@@ -1560,7 +1265,7 @@ composite {
 						}
 						bar {
 							object {
-								x=841
+								x=846
 								y=124
 								width=80
 								height=20
@@ -1576,7 +1281,7 @@ composite {
 						}
 						bar {
 							object {
-								x=841
+								x=846
 								y=151
 								width=80
 								height=20
@@ -1592,7 +1297,7 @@ composite {
 						}
 						bar {
 							object {
-								x=841
+								x=846
 								y=178
 								width=80
 								height=20
@@ -1608,7 +1313,7 @@ composite {
 						}
 						bar {
 							object {
-								x=841
+								x=846
 								y=205
 								width=80
 								height=20
@@ -1624,7 +1329,7 @@ composite {
 						}
 						bar {
 							object {
-								x=841
+								x=846
 								y=232
 								width=80
 								height=20
@@ -1640,7 +1345,7 @@ composite {
 						}
 						bar {
 							object {
-								x=841
+								x=846
 								y=259
 								width=80
 								height=20
@@ -1656,7 +1361,7 @@ composite {
 						}
 						bar {
 							object {
-								x=841
+								x=846
 								y=286
 								width=80
 								height=20
@@ -1672,7 +1377,7 @@ composite {
 						}
 						bar {
 							object {
-								x=841
+								x=846
 								y=313
 								width=80
 								height=20
@@ -1688,7 +1393,7 @@ composite {
 						}
 						bar {
 							object {
-								x=841
+								x=846
 								y=340
 								width=80
 								height=20
@@ -1704,7 +1409,7 @@ composite {
 						}
 						bar {
 							object {
-								x=841
+								x=846
 								y=367
 								width=80
 								height=20
@@ -1720,7 +1425,7 @@ composite {
 						}
 						bar {
 							object {
-								x=841
+								x=846
 								y=394
 								width=80
 								height=20
@@ -1736,7 +1441,7 @@ composite {
 						}
 						bar {
 							object {
-								x=841
+								x=846
 								y=421
 								width=80
 								height=20
@@ -1752,7 +1457,7 @@ composite {
 						}
 						bar {
 							object {
-								x=841
+								x=846
 								y=448
 								width=80
 								height=20
@@ -1768,7 +1473,7 @@ composite {
 						}
 						bar {
 							object {
-								x=841
+								x=846
 								y=475
 								width=80
 								height=20
@@ -1784,7 +1489,7 @@ composite {
 						}
 						bar {
 							object {
-								x=841
+								x=846
 								y=502
 								width=80
 								height=20
@@ -1804,7 +1509,7 @@ composite {
 		}
 		composite {
 			object {
-				x=365
+				x=370
 				y=49
 				width=90
 				height=473
@@ -1813,7 +1518,7 @@ composite {
 			children {
 				text {
 					object {
-						x=375
+						x=380
 						y=49
 						width=69
 						height=20
@@ -1827,7 +1532,7 @@ composite {
 				}
 				text {
 					object {
-						x=389
+						x=394
 						y=71
 						width=40
 						height=20
@@ -1841,7 +1546,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=365
+						x=370
 						y=97
 						width=90
 						height=20
@@ -1857,7 +1562,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=365
+						x=370
 						y=124
 						width=90
 						height=20
@@ -1873,7 +1578,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=365
+						x=370
 						y=151
 						width=90
 						height=20
@@ -1889,7 +1594,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=365
+						x=370
 						y=178
 						width=90
 						height=20
@@ -1905,7 +1610,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=365
+						x=370
 						y=205
 						width=90
 						height=20
@@ -1921,7 +1626,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=365
+						x=370
 						y=232
 						width=90
 						height=20
@@ -1937,7 +1642,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=365
+						x=370
 						y=259
 						width=90
 						height=20
@@ -1953,7 +1658,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=365
+						x=370
 						y=286
 						width=90
 						height=20
@@ -1969,7 +1674,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=365
+						x=370
 						y=313
 						width=90
 						height=20
@@ -1985,7 +1690,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=365
+						x=370
 						y=340
 						width=90
 						height=20
@@ -2001,7 +1706,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=365
+						x=370
 						y=367
 						width=90
 						height=20
@@ -2017,7 +1722,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=365
+						x=370
 						y=394
 						width=90
 						height=20
@@ -2033,7 +1738,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=365
+						x=370
 						y=421
 						width=90
 						height=20
@@ -2049,7 +1754,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=365
+						x=370
 						y=448
 						width=90
 						height=20
@@ -2065,7 +1770,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=365
+						x=370
 						y=475
 						width=90
 						height=20
@@ -2081,7 +1786,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=365
+						x=370
 						y=502
 						width=90
 						height=20
@@ -2099,7 +1804,7 @@ composite {
 		}
 		composite {
 			object {
-				x=270
+				x=275
 				y=49
 				width=90
 				height=473
@@ -2108,7 +1813,7 @@ composite {
 			children {
 				text {
 					object {
-						x=280
+						x=285
 						y=49
 						width=69
 						height=20
@@ -2122,7 +1827,7 @@ composite {
 				}
 				text {
 					object {
-						x=294
+						x=299
 						y=71
 						width=40
 						height=20
@@ -2136,7 +1841,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=270
+						x=275
 						y=97
 						width=90
 						height=20
@@ -2152,7 +1857,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=270
+						x=275
 						y=124
 						width=90
 						height=20
@@ -2168,7 +1873,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=270
+						x=275
 						y=151
 						width=90
 						height=20
@@ -2184,7 +1889,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=270
+						x=275
 						y=178
 						width=90
 						height=20
@@ -2200,7 +1905,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=270
+						x=275
 						y=205
 						width=90
 						height=20
@@ -2216,7 +1921,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=270
+						x=275
 						y=232
 						width=90
 						height=20
@@ -2232,7 +1937,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=270
+						x=275
 						y=259
 						width=90
 						height=20
@@ -2248,7 +1953,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=270
+						x=275
 						y=286
 						width=90
 						height=20
@@ -2264,7 +1969,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=270
+						x=275
 						y=313
 						width=90
 						height=20
@@ -2280,7 +1985,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=270
+						x=275
 						y=340
 						width=90
 						height=20
@@ -2296,7 +2001,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=270
+						x=275
 						y=367
 						width=90
 						height=20
@@ -2312,7 +2017,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=270
+						x=275
 						y=394
 						width=90
 						height=20
@@ -2328,7 +2033,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=270
+						x=275
 						y=421
 						width=90
 						height=20
@@ -2344,7 +2049,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=270
+						x=275
 						y=448
 						width=90
 						height=20
@@ -2360,7 +2065,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=270
+						x=275
 						y=475
 						width=90
 						height=20
@@ -2376,7 +2081,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=270
+						x=275
 						y=502
 						width=90
 						height=20
@@ -2394,7 +2099,7 @@ composite {
 		}
 		composite {
 			object {
-				x=460
+				x=465
 				y=49
 				width=90
 				height=473
@@ -2403,7 +2108,7 @@ composite {
 			children {
 				text {
 					object {
-						x=470
+						x=475
 						y=49
 						width=69
 						height=20
@@ -2417,7 +2122,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=460
+						x=465
 						y=97
 						width=90
 						height=20
@@ -2433,7 +2138,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=460
+						x=465
 						y=124
 						width=90
 						height=20
@@ -2449,7 +2154,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=460
+						x=465
 						y=151
 						width=90
 						height=20
@@ -2465,7 +2170,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=460
+						x=465
 						y=178
 						width=90
 						height=20
@@ -2481,7 +2186,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=460
+						x=465
 						y=205
 						width=90
 						height=20
@@ -2497,7 +2202,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=460
+						x=465
 						y=232
 						width=90
 						height=20
@@ -2513,7 +2218,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=460
+						x=465
 						y=259
 						width=90
 						height=20
@@ -2529,7 +2234,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=460
+						x=465
 						y=286
 						width=90
 						height=20
@@ -2545,7 +2250,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=460
+						x=465
 						y=313
 						width=90
 						height=20
@@ -2561,7 +2266,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=460
+						x=465
 						y=340
 						width=90
 						height=20
@@ -2577,7 +2282,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=460
+						x=465
 						y=367
 						width=90
 						height=20
@@ -2593,7 +2298,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=460
+						x=465
 						y=394
 						width=90
 						height=20
@@ -2609,7 +2314,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=460
+						x=465
 						y=421
 						width=90
 						height=20
@@ -2625,7 +2330,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=460
+						x=465
 						y=448
 						width=90
 						height=20
@@ -2641,7 +2346,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=460
+						x=465
 						y=475
 						width=90
 						height=20
@@ -2657,7 +2362,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=460
+						x=465
 						y=502
 						width=90
 						height=20
@@ -2675,7 +2380,7 @@ composite {
 		}
 		composite {
 			object {
-				x=555
+				x=560
 				y=49
 				width=90
 				height=473
@@ -2684,7 +2389,7 @@ composite {
 			children {
 				text {
 					object {
-						x=565
+						x=570
 						y=49
 						width=69
 						height=20
@@ -2698,7 +2403,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=555
+						x=560
 						y=97
 						width=90
 						height=20
@@ -2714,7 +2419,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=555
+						x=560
 						y=124
 						width=90
 						height=20
@@ -2730,7 +2435,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=555
+						x=560
 						y=151
 						width=90
 						height=20
@@ -2746,7 +2451,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=555
+						x=560
 						y=178
 						width=90
 						height=20
@@ -2762,7 +2467,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=555
+						x=560
 						y=205
 						width=90
 						height=20
@@ -2778,7 +2483,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=555
+						x=560
 						y=232
 						width=90
 						height=20
@@ -2794,7 +2499,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=555
+						x=560
 						y=259
 						width=90
 						height=20
@@ -2810,7 +2515,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=555
+						x=560
 						y=286
 						width=90
 						height=20
@@ -2826,7 +2531,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=555
+						x=560
 						y=313
 						width=90
 						height=20
@@ -2842,7 +2547,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=555
+						x=560
 						y=340
 						width=90
 						height=20
@@ -2858,7 +2563,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=555
+						x=560
 						y=367
 						width=90
 						height=20
@@ -2874,7 +2579,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=555
+						x=560
 						y=394
 						width=90
 						height=20
@@ -2890,7 +2595,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=555
+						x=560
 						y=421
 						width=90
 						height=20
@@ -2906,7 +2611,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=555
+						x=560
 						y=448
 						width=90
 						height=20
@@ -2922,7 +2627,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=555
+						x=560
 						y=475
 						width=90
 						height=20
@@ -2938,7 +2643,7 @@ composite {
 				}
 				"text update" {
 					object {
-						x=555
+						x=560
 						y=502
 						width=90
 						height=20
@@ -3242,6 +2947,301 @@ composite {
 			}
 			monitor {
 				chan="$(P)$(D)16:ElapsedTriggerLiveTime"
+				clr=54
+				bclr=1
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+	}
+}
+composite {
+	object {
+		x=50
+		y=49
+		width=70
+		height=473
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=58
+				y=49
+				width=54
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+				fill="outline"
+			}
+			textix="Elapsed"
+			align="horiz. centered"
+		}
+		text {
+			object {
+				x=69
+				y=71
+				width=31
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+				fill="outline"
+			}
+			textix="Real"
+			align="horiz. centered"
+		}
+		"text update" {
+			object {
+				x=50
+				y=97
+				width=70
+				height=20
+			}
+			monitor {
+				chan="$(P)$(M)1.ERTM"
+				clr=54
+				bclr=1
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=50
+				y=124
+				width=70
+				height=20
+			}
+			monitor {
+				chan="$(P)$(M)2.ERTM"
+				clr=54
+				bclr=1
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=50
+				y=151
+				width=70
+				height=20
+			}
+			monitor {
+				chan="$(P)$(M)3.ERTM"
+				clr=54
+				bclr=1
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=50
+				y=178
+				width=70
+				height=20
+			}
+			monitor {
+				chan="$(P)$(M)4.ERTM"
+				clr=54
+				bclr=1
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=50
+				y=205
+				width=70
+				height=20
+			}
+			monitor {
+				chan="$(P)$(M)5.ERTM"
+				clr=54
+				bclr=1
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=50
+				y=232
+				width=70
+				height=20
+			}
+			monitor {
+				chan="$(P)$(M)6.ERTM"
+				clr=54
+				bclr=1
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=50
+				y=259
+				width=70
+				height=20
+			}
+			monitor {
+				chan="$(P)$(M)7.ERTM"
+				clr=54
+				bclr=1
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=50
+				y=286
+				width=70
+				height=20
+			}
+			monitor {
+				chan="$(P)$(M)8.ERTM"
+				clr=54
+				bclr=1
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=50
+				y=313
+				width=70
+				height=20
+			}
+			monitor {
+				chan="$(P)$(M)9.ERTM"
+				clr=54
+				bclr=1
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=50
+				y=340
+				width=70
+				height=20
+			}
+			monitor {
+				chan="$(P)$(M)10.ERTM"
+				clr=54
+				bclr=1
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=50
+				y=367
+				width=70
+				height=20
+			}
+			monitor {
+				chan="$(P)$(M)11.ERTM"
+				clr=54
+				bclr=1
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=50
+				y=394
+				width=70
+				height=20
+			}
+			monitor {
+				chan="$(P)$(M)12.ERTM"
+				clr=54
+				bclr=1
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=50
+				y=421
+				width=70
+				height=20
+			}
+			monitor {
+				chan="$(P)$(M)13.ERTM"
+				clr=54
+				bclr=1
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=50
+				y=448
+				width=70
+				height=20
+			}
+			monitor {
+				chan="$(P)$(M)14.ERTM"
+				clr=54
+				bclr=1
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=50
+				y=475
+				width=70
+				height=20
+			}
+			monitor {
+				chan="$(P)$(M)15.ERTM"
+				clr=54
+				bclr=1
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=50
+				y=502
+				width=70
+				height=20
+			}
+			monitor {
+				chan="$(P)$(M)16.ERTM"
 				clr=54
 				bclr=1
 			}
