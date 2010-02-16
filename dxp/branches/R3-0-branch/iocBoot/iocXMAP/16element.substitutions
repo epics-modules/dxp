@@ -3,7 +3,7 @@ file "$(DXP)/dxpApp/Db/dxpSystem.template" {
 }
 
 file "$(DXP)/dxpApp/Db/dxpMED.template" {
-{P=dxpXMAP:, mcaAll=MCAALL, DET0="@asyn(DXP1,0,1)", DETALL"@asyn(DXP1,16,1)"} 
+{P=dxpXMAP:, MCAALL=mcaAll, DET0="@asyn(DXP1,0,1)", DETALL="@asyn(DXP1,16,1)"} 
 }
 
 file "$(DXP)/dxpApp/Db/dxpXMAP.template" {
