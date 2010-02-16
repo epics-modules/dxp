@@ -990,7 +990,7 @@ text {
 	}
 	display[0] {
 		label="Statistics"
-		name="16element_dxp_statistics.adl"
+		name="16element_dxp_presets.adl"
 		args="P=$(P),M=$(M),D=$(D)"
 	}
 	clr=14
