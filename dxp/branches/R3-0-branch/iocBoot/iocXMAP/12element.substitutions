@@ -3,7 +3,7 @@ file "$(DXP)/dxpApp/Db/dxpSystem.template" {
 }
 
 file "$(DXP)/dxpApp/Db/dxpMED.template" {
-{P=dxpXMAP:, mcaAll=MCAALL, DET0="@asyn(DXP1,0,1)", DETALL"@asyn(DXP1,12,1)"} 
+{P=dxpXMAP:, MCAALL=mcaAll, DET0="@asyn(DXP1,0,1)", DETALL="@asyn(DXP1,12,1)"} 
 }
 
 file "$(DXP)/dxpApp/Db/dxpXMAP.template" {
@@ -84,6 +84,6 @@ pattern
 {dxpXMAP:,  mca10,  "asynMCA",   "@asyn(DXP1,9)",     2,     2048}
 {dxpXMAP:,  mca11,  "asynMCA",  "@asyn(DXP1,10)",     2,     2048}
 {dxpXMAP:,  mca12,  "asynMCA",  "@asyn(DXP1,11)",     2,     2048}
-{dxpXMAP:, mcaAll,  "asynMCA",  "@asyn(DXP1,16)",     2,     2048}
+{dxpXMAP:, mcaAll,  "asynMCA",  "@asyn(DXP1,12)",     2,     2048}
 }
 
