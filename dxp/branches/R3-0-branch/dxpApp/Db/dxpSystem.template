@@ -2,14 +2,14 @@ record(bo, "$(P)SaveSystem") {
     field(DESC, "save system information")
     field(SCAN, "Passive")
     field(DTYP, "asynInt32")
-    field(OUT,  "$(DET0)DxpSaveSystem")
+    field(OUT,  "$(IO)DxpSaveSystem")
     field(ZNAM, "Done")
     field(ONAM, "Save")
 }
 
 record(bi, "$(P)SaveSystem_RBV") {
     field(DTYP, "asynInt32")
-    field(INP, "$(DET0)DxpSaveSystem")
+    field(INP, "$(IO)DxpSaveSystem")
     field(ZNAM, "Done")
     field(ONAM, "Save")
     field(SCAN, "I/O Intr")
@@ -19,7 +19,7 @@ record(waveform, "$(P)SaveSystemFile")
 {
     field(PINI, "YES")
     field(DTYP, "asynOctetWrite")
-    field(INP,  "$(DET0)DxpSaveSystemFile")
+    field(INP,  "$(IO)DxpSaveSystemFile")
     field(FTVL, "UCHAR")
     field(NELM, "256")
 }
