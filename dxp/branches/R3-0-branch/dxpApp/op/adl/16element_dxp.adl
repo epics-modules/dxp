@@ -250,7 +250,7 @@ text {
 }
 composite {
 	object {
-		x=108
+		x=20
 		y=108
 		width=156
 		height=21
@@ -259,7 +259,7 @@ composite {
 	children {
 		text {
 			object {
-				x=204
+				x=116
 				y=109
 				width=60
 				height=20
@@ -271,7 +271,7 @@ composite {
 		}
 		text {
 			object {
-				x=158
+				x=70
 				y=108
 				width=40
 				height=20
@@ -288,7 +288,7 @@ composite {
 		}
 		text {
 			object {
-				x=108
+				x=20
 				y=108
 				width=90
 				height=20
@@ -306,7 +306,7 @@ composite {
 }
 text {
 	object {
-		x=25
+		x=17
 		y=160
 		width=70
 		height=20
@@ -318,7 +318,7 @@ text {
 }
 text {
 	object {
-		x=129
+		x=116
 		y=132
 		width=60
 		height=20
@@ -340,24 +340,11 @@ text {
 	}
 	textix="Mode"
 }
-menu {
-	object {
-		x=119
-		y=157
-		width=80
-		height=20
-	}
-	control {
-		chan="$(P)PresetMode"
-		clr=14
-		bclr=51
-	}
-}
 "text update" {
 	object {
-		x=61
+		x=100
 		y=290
-		width=80
+		width=95
 		height=20
 	}
 	monitor {
@@ -372,7 +359,7 @@ menu {
 }
 text {
 	object {
-		x=148
+		x=204
 		y=291
 		width=110
 		height=20
@@ -556,7 +543,7 @@ menu {
 	object {
 		x=12
 		y=210
-		width=100
+		width=70
 		height=20
 	}
 	monitor {
@@ -565,21 +552,6 @@ menu {
 		bclr=4
 	}
 	align="horiz. right"
-	limits {
-	}
-}
-"text entry" {
-	object {
-		x=119
-		y=209
-		width=80
-		height=22
-	}
-	control {
-		chan="$(P)PresetLive"
-		clr=14
-		bclr=51
-	}
 	limits {
 	}
 }
@@ -599,7 +571,7 @@ text {
 	object {
 		x=12
 		y=183
-		width=100
+		width=70
 		height=20
 	}
 	monitor {
@@ -608,21 +580,6 @@ text {
 		bclr=4
 	}
 	align="horiz. right"
-	limits {
-	}
-}
-"text entry" {
-	object {
-		x=119
-		y=183
-		width=80
-		height=22
-	}
-	control {
-		chan="$(P)PresetReal"
-		clr=14
-		bclr=51
-	}
 	limits {
 	}
 }
@@ -638,21 +595,6 @@ text {
 	}
 	textix="Real time"
 }
-"text entry" {
-	object {
-		x=119
-		y=235
-		width=80
-		height=22
-	}
-	control {
-		chan="$(P)PresetEvents"
-		clr=14
-		bclr=51
-	}
-	limits {
-	}
-}
 text {
 	object {
 		x=204
@@ -664,21 +606,6 @@ text {
 		clr=14
 	}
 	textix="Events"
-}
-"text entry" {
-	object {
-		x=119
-		y=261
-		width=80
-		height=22
-	}
-	control {
-		chan="$(P)PresetTriggers"
-		clr=14
-		bclr=51
-	}
-	limits {
-	}
 }
 text {
 	object {
@@ -1034,4 +961,88 @@ text {
 		clr=14
 	}
 	textix="Statistics"
+}
+composite {
+	object {
+		x=100
+		y=157
+		width=95
+		height=126
+	}
+	"composite name"=""
+	children {
+		menu {
+			object {
+				x=100
+				y=157
+				width=95
+				height=20
+			}
+			control {
+				chan="$(P)PresetMode"
+				clr=14
+				bclr=51
+			}
+		}
+		"text entry" {
+			object {
+				x=100
+				y=209
+				width=95
+				height=22
+			}
+			control {
+				chan="$(P)PresetLive"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=100
+				y=183
+				width=95
+				height=22
+			}
+			control {
+				chan="$(P)PresetReal"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=100
+				y=235
+				width=95
+				height=22
+			}
+			control {
+				chan="$(P)PresetEvents"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=100
+				y=261
+				width=95
+				height=22
+			}
+			control {
+				chan="$(P)PresetTriggers"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+	}
 }
