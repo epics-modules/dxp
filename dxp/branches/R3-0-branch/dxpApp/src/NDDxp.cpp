@@ -2142,7 +2142,7 @@ asynStatus NDDxp::getMappingData()
             pixelOffset = 256;
             dataOffset = pixelOffset + 256;
             for (i=0; i<XMAP_NCHANS_MODULE; i++) {
-                k = channel*XMAP_NCHANS_MODULE + i;
+                k = channel + i;
                 nChans = pMapRaw[pixelOffset + 8 + i];
                 memcpy(pMcaRaw[k], &pMapRaw[dataOffset], nChans*sizeof(epicsUInt32));
                 dataOffset += nChans;
