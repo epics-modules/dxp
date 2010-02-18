@@ -147,7 +147,7 @@ typedef struct moduleStatistics {
 #define NDDxpBaselineHistogramString        "DxpBaselineHistogram"
 
 /* Runtime statistics */
-#define NDDxpElapsedTriggerLiveTimeString   "DxpElapsedTriggerLiveTime"
+#define NDDxpTriggerLiveTimeString          "DxpTriggerLiveTime"
 #define NDDxpTriggersString                 "DxpTriggers"
 #define NDDxpEventsString                   "DxpEvents"
 #define NDDxpInputCountRateString           "DxpInputCountRate"
@@ -276,7 +276,7 @@ protected:
     int NDDxpBaselineHistogram;    /** < The baseline histogram array data (read) */
 
     /* Runtime statistics */
-    int NDDxpElapsedTriggerLiveTime;    /** < live time in seconds (double) */
+    int NDDxpTriggerLiveTime;           /** < live time in seconds (double) */
     int NDDxpTriggers;                  /** < number of triggers received (double) */
     int NDDxpEvents;                    /** < total number of events registered (double) */
     int NDDxpInputCountRate;            /** < input count rate in Hz (double) */
@@ -464,7 +464,7 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     createParam(NDDxpBaselineHistogramString,      asynParamInt32Array, &NDDxpBaselineHistogram);
 
     /* Runtime statistics */
-    createParam(NDDxpElapsedTriggerLiveTimeString, asynParamFloat64, &NDDxpElapsedTriggerLiveTime);
+    createParam(NDDxpTriggerLiveTimeString,        asynParamFloat64, &NDDxpTriggerLiveTime);
     createParam(NDDxpTriggersString,               asynParamInt32,   &NDDxpTriggers);
     createParam(NDDxpEventsString,                 asynParamInt32,   &NDDxpEvents);
     createParam(NDDxpInputCountRateString,         asynParamFloat64, &NDDxpInputCountRate);
@@ -1527,7 +1527,7 @@ asynStatus NDDxp::configureCollectMode()
             {
                 setIntegerParam(firstCh+i, NDDxpTriggers, 0);
                 setDoubleParam(firstCh+i, mcaElapsedRealTime, 0);
-                setDoubleParam(firstCh+i, NDDxpElapsedTriggerLiveTime, 0);
+                setDoubleParam(firstCh+i, NDDxpTriggerLiveTime, 0);
                 setDoubleParam(firstCh+i, mcaElapsedLiveTime, 0);
                 callParamCallbacks(firstCh+i, firstCh+i);
             }
@@ -1710,7 +1710,7 @@ asynStatus NDDxp::getAcquisitionStatistics(asynUser *pasynUser, int addr)
             this->getAcquisitionStatistics(pasynUser, i);
             getDoubleParam(i, mcaElapsedLiveTime, &dvalue);
             energyLiveTime = MAX(energyLiveTime, dvalue);
-            getDoubleParam(i, NDDxpElapsedTriggerLiveTime, &dvalue);
+            getDoubleParam(i, NDDxpTriggerLiveTime, &dvalue);
             triggerLiveTime = MAX(triggerLiveTime, dvalue);
             getDoubleParam(i, mcaElapsedRealTime, &realTime);
             realTime = MAX(realTime, dvalue);
@@ -1724,7 +1724,7 @@ asynStatus NDDxp::getAcquisitionStatistics(asynUser *pasynUser, int addr)
             ocr = MAX(ocr, dvalue);
         }
         setDoubleParam(addr, mcaElapsedLiveTime, energyLiveTime);
-        setDoubleParam(addr, NDDxpElapsedTriggerLiveTime, triggerLiveTime);
+        setDoubleParam(addr, NDDxpTriggerLiveTime, triggerLiveTime);
         setDoubleParam(addr, mcaElapsedRealTime, realTime);
         setIntegerParam(addr,NDDxpEvents, events);
         setIntegerParam(addr, NDDxpTriggers, triggers);
@@ -1745,7 +1745,7 @@ asynStatus NDDxp::getAcquisitionStatistics(asynUser *pasynUser, int addr)
             setDoubleParam(addr, NDDxpInputCountRate, 0);
             setDoubleParam(addr, NDDxpOutputCountRate, 0);
             setIntegerParam(addr, NDDxpTriggers, 0);
-            setDoubleParam(addr, NDDxpElapsedTriggerLiveTime, 0);
+            setDoubleParam(addr, NDDxpTriggerLiveTime, 0);
         } else {
             if (this->deviceType == NDDxpModelXMAP) {
                 /* We only read the module statistics data if this is the first channel in a module.
@@ -1760,7 +1760,7 @@ asynStatus NDDxp::getAcquisitionStatistics(asynUser *pasynUser, int addr)
             setIntegerParam(addr, NDDxpEvents, (int)stats->events);
             setDoubleParam(addr, mcaElapsedRealTime, stats->realTime);
             setDoubleParam(addr, mcaElapsedLiveTime, stats->energyLiveTime);
-            setDoubleParam(addr, NDDxpElapsedTriggerLiveTime, stats->triggerLiveTime);
+            setDoubleParam(addr, NDDxpTriggerLiveTime, stats->triggerLiveTime);
             setDoubleParam(addr, NDDxpInputCountRate, stats->icr);
             setDoubleParam(addr, NDDxpOutputCountRate, stats->ocr);
 
@@ -2091,7 +2091,7 @@ asynStatus NDDxp::getMappingData()
     epicsUInt32 *pStats;
     epicsUInt16 *pOut=NULL;
     int mappingMode, pixelOffset, dataOffset, events, triggers, nChans;
-    double realTime, liveTime, icr, ocr;
+    double realTime, triggerLiveTime, energyLiveTime, icr, ocr;
     int dims[2], pixelCounter, bufferCounter, arraySize;
     epicsTimeStamp now, after;
     double mBytesRead;
@@ -2147,21 +2147,25 @@ asynStatus NDDxp::getMappingData()
                 memcpy(pMcaRaw[k], &pMapRaw[dataOffset], nChans*sizeof(epicsUInt32));
                 dataOffset += nChans;
                 pStats = &pMapRaw[pixelOffset + 32 + i*8];
-                realTime = (pStats[0] + (pStats[1]<<16)) * XMAP_CLOCK_PERIOD;
-                liveTime = (pStats[2] + (pStats[3]<<16)) * XMAP_CLOCK_PERIOD;
-                triggers =  pStats[4] + (pStats[5]<<16);
-                events   =  pStats[6] + (pStats[7]<<16);
-                /* This is not quite right, it assumes trigger live time = real time */
-                if (realTime > 0.) {
-                    icr = triggers / realTime;
-                    ocr = events / realTime;
-                }
-                else {
+                realTime        = (pStats[0] + (pStats[1]<<16)) * XMAP_CLOCK_PERIOD;
+                triggerLiveTime = (pStats[2] + (pStats[3]<<16)) * XMAP_CLOCK_PERIOD;
+                triggers        =  pStats[4] + (pStats[5]<<16);
+                events          =  pStats[6] + (pStats[7]<<16);
+                if (triggers > 0.) 
+                    energyLiveTime = (triggerLiveTime * events) / triggers;
+                else
+                    energyLiveTime = triggerLiveTime;
+                if (triggerLiveTime > 0.)
+                    icr = triggers / triggerLiveTime;
+                else
                     icr = 0.;
+                if (realTime > 0.)
+                    ocr = events / realTime;
+                else
                     ocr = 0.;
-                }
                 setDoubleParam(k, mcaElapsedRealTime, realTime);
-                setDoubleParam(k, mcaElapsedLiveTime, liveTime);
+                setDoubleParam(k, mcaElapsedLiveTime, energyLiveTime);
+                setDoubleParam(k, NDDxpTriggerLiveTime, triggerLiveTime);
                 setIntegerParam(k,NDDxpEvents, events);
                 setIntegerParam(k, NDDxpTriggers, triggers);
                 setDoubleParam(k, NDDxpInputCountRate, icr);
@@ -2390,9 +2394,6 @@ void NDDxp::acquisitionTask()
         }
 
         /* Do callbacks for all channels for everything except mcaAcquiring*/
-        //asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-        //    "%s::%s Doing callbacks\n",
-        //    driverName, functionName);
         for (i=0; i<=this->nChannels; i++) callParamCallbacks(i, i);
         /* Copy internal acquiring flag to mcaAcquiring */
         for (i=0; i<=this->nChannels; i++) {
