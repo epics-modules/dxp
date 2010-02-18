@@ -483,8 +483,9 @@ record(ai, "$(P)$(R)ElapsedRealTime") {
 
 record(ai, "$(P)$(R)ElapsedTriggerLiveTime") {
     field(DTYP, "asynFloat64")
-    field(INP, "$(IO)DxpElapsedTriggerLiveTime")
+    field(INP, "$(IO)DxpTriggerLiveTime")
     field(DESC, "trigger live time")
+    field(PREC, "3")
     field(SCAN, "I/O Intr")
 }
 
