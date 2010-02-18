@@ -122,7 +122,7 @@ text {
 	"basic attribute" {
 		clr=14
 	}
-	textix="netCDF file plugin"
+	textix="File saving plugins"
 }
 text {
 	object {
@@ -365,6 +365,16 @@ menu {
 		label="netCDF file plugin"
 		name="NDFileNetCDF.adl"
 		args="P=$(P), R=netCDF1:"
+	}
+	display[1] {
+		label="TIFF file plugin"
+		name="NDFileTIFF.adl"
+		args="P=$(P), R=TIFF1:"
+	}
+	display[2] {
+		label="NeXus file plugin"
+		name="NDFileNexus.adl"
+		args="P=$(P), R=Nexus1:"
 	}
 	clr=14
 	bclr=51
