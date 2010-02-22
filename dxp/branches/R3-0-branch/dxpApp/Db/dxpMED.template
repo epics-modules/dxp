@@ -141,24 +141,6 @@ record(bo, "$(P)ReadLLParams") {
     field(ONAM, "Read")
 }
 
-# Status polling rate (and data readout speed in normal/mca mode)
-record(ao, "$(P)PollTime") {
-    field(PINI, "YES")
-    field(DTYP, "asynFloat64")
-    field(OUT, "$(DET0)DxpPollTime")
-    field(VAL, "0.01")
-    field(PREC, "3")
-    field(EGU, "s")
-}
-
-record(ai, "$(P)PollTime_RBV") {
-    field(DTYP, "asynFloat64")
-    field(INP, "$(DET0)DxpPollTime")
-    field(PREC, "3")
-    field(EGU, "s")
-    field(SCAN, "I/O Intr")
-}
-
 record(bo,"$(P)ReadBaselineHistograms") {
     field(SCAN,"Passive")
     field(VAL, "1")
