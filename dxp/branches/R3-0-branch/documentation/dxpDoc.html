@@ -10,7 +10,9 @@
     <h1>
       DXP - EPICS software for XIA Digital Signal Processing Systems</h1>
     <h2>
-      July 17, 2009</h2>
+      Release 3-0</h2>
+    <h2>
+      February 20, 2010</h2>
     <h2>
       Mark Rivers</h2>
     <h2>
@@ -21,6 +23,18 @@
     Contents</h2>
   <ul>
     <li><a href="#Overview">Overview</a></li>
+    <li><a href="#Architecture">Architecture</a></li>
+    <li><a href="#EPICS_Records">EPICS Records and Databases</a>
+      <ul>
+        <li><a href="#dxpHighLevel">dxpHighLevel.template</a></li>
+        <li><a href="#dxpSCA_16">dxpSCA_16.template</a></li>
+        <li><a href="#dxpLowLevel">dxpLowLevel.template</a></li>
+        <li><a href="#dxpSystem">dxpSystem.template</a></li>
+        <li><a href="#dxpMED">dxpMED.template</a></li>
+        <li><a href="#dxpSaturn">dxpSaturn.template</a></li>
+        <li><a href="#dxpXMAP">dxpXMAP.template</a></li>
+      </ul>
+    </li>
     <li><a href="#Installing_EPICS_for_the_Saturn">Installing EPICS for the Saturn</a>
       <ul>
         <li><a href="#Installing_the_Saturn_on_Windows">Installing the Saturn on Windows</a></li>
@@ -49,6 +63,8 @@
   <p>
     The EPICS DXP module provides support for the digital signal processor based multichannel
     analyzers from <a href="http://www.xia.com">X-ray Instrumentation Associates (XIA)</a>.
+    These devices all contain the functional equivalent of the shaping amplifier, ADC,
+    and MCA of a conventional pulse-height analysis system.
   </p>
   <p>
     DXP currently supports the following hardware</p>
@@ -56,10 +72,8 @@
     <li>The xMAP, which is a 4-channel PXI card. The PXI crate is typically connected
       to a Windows PC with a PCI/PXI fiber-optic interface.</li>
     <li>The Saturn, which is a standalone desktop unit that communicates over the PC Enhanced
-      Parallel Port (EPP) or USB port. It contains the equivalent electronics of the shaping
-      amplifier, ADC and MCA of a conventional pulse-height analysis system. The Vortex
-      detector from SII (formerley Radiant) is an OEM version of the Saturn, and it also
-      works with this software.</li>
+      Parallel Port (EPP) or USB port. The Vortex detector from SII (formerley Radiant)
+      is an OEM version of the Saturn, and it also works with this software.</li>
     <li>The DXP2X, which is a single-width CAMAC module. Each module contains 2 or 4 channels
       with similar pulse-processing electronics to the Saturn.</li>
   </ul>
@@ -82,41 +96,1423 @@
     The features of the EPICS software, compared with software available from XIA are:</p>
   <ul>
     <li>Control and data acquisition are available over the network, from any application
-      or language that supports the EPICS channel access protocol (based on TCP/IP). This
-      means that EPICS clients written in languages like IDL, LabView, Visual Basic, etc.
-      can control the DXP modules and read the data. These applications can be running
-      on any computer on the Internet, they do not need to run on the computer that is
-      attached to the XIA hardware. This client/server model is very desirable in complex
-      data acquisition environments, such as synchrotron beamlines, because it allows
-      the DXP control and data acquisition to be integrated with other hardware and software.
-      For example, a control software program can move a motor, command the DXP to acquire
-      data, and write the data to disk.</li>
+      or language that supports the EPICS Channel Access protocol (based on TCP/IP). This
+      means that EPICS clients written in languages like Python, IDL, LabView, Visual
+      Basic, etc. can control the DXP modules and read the data. These applications can
+      be running on any computer on the Internet, they do not need to run on the computer
+      that is attached to the XIA hardware. This client/server model is very desirable
+      in complex data acquisition environments, such as synchrotron beamlines, because
+      it allows the DXP control and data acquisition to be integrated with other hardware
+      and software. For example, a control software program can move a motor, command
+      the DXP to acquire data, and write the data to disk.</li>
     <li>A single software package supports the xMAP, Saturn, and the DXP2X.</li>
     <li>The Saturn can be run from Windows and Linux, while the XIA Saturn control programs
-      only runs on Windows.</li>
+      only run on Windows.</li>
     <li>The DXP2X support uses the new XIA Handel library, while the XIA MESA package
       uses an old LabView interface</li>
   </ul>
+  <h2 id="Architecture">
+    Architecture</h2>
   <p>
     The software consists of the following components:</p>
   <ul>
-    <li>An <a href="http://www.aps.anl.gov/epics/modules/soft/asyn/">asyn server</a> that
-      provides support for the <a href="http://cars.uchicago.edu/software/epics/mcaRecord.html">
-        EPICS MCA record</a> via the asyn MCA device support. This permits each channel
+    <li>An <a href="http://www.aps.anl.gov/epics/modules/soft/asyn/">asyn port driver</a>.
+      This driver is derived from the <a href="http://cars.uchicago.edu/software/epics/areaDetectorDoc.html#asynNDArrayDriver">
+        asynNDArrayDriver</a> and <a href="http://www.aps.anl.gov/epics/modules/soft/asyn">
+          asynPortDriver</a> base C++ classes. It provides support for the <a href="http://cars.uchicago.edu/software/epics/mcaRecord.html">
+            EPICS MCA record</a> via the asyn MCA device support. This permits each channel
       of the DXP to be connected to an MCA record identically with other supported MCA
       hardware, such as the Canberra AIM. The MCA record is used to control data acquisition
-      and to acquire spectra or regions of interest.</li>
-    <li>A <a href="dxpRecord.html">EPICS DXP record</a> that is used to set all of the
-      many software selectable parameters for the DXP, including peaking times, pileup
-      rejection criteria, etc. The DXP record is also used to acquire diagnostic data,
-      such as the baseline histogram and ADC trace.</li>
+      and to acquire spectra or define regions of interest. The driver communicates with
+      the hardware using the <a href="Handel_API_012902_branch2.pdf">XIA Handel library</a>,
+      which in turn communicates with the <a href="http://www.xia.com/Manuals/XIA_Host_Software_Manual.pdf">
+        XIA Xerxes library</a>. </li>
+    <li>A set of standard EPICS records (ai, ao, bi, bo, waveform, etc.) that are used
+      to set all of the many software selectable parameters for the DXP, including peaking
+      times, pileup rejection criteria, etc. These are also used to acquire diagnostic
+      data, such as the baseline histogram and ADC trace.</li>
+    <li>Support for the file-saving plugins from the <a href="http://cars.uchicago.edu/software/epics/areaDetector.html">
+      areaDetector</a> package. These plugins are used to stream data to disk in the mappping
+      modes on the xMAP.</li>
     <li>Databases for single-element and multi-element detector systems.</li>
     <li>medm display screens for single-element and multi-element detector systems.</li>
     <li>A State Notation Language program for synchronizing acquisition and DXP parameters
       in multi-element detector systems.</li>
-    <li>Example IOC boot directories for the Saturn on Windows and Linux, and for a 16
-      element detector with the xMAP on Windows and the DXP2X on vxWorks.</li>
+    <li>Example IOC boot directories for the Saturn on Windows and Linux, and for multi-element
+      detectors with the xMAP on Windows and the DXP2X on vxWorks.</li>
   </ul>
+  <h2 id="EPICS_Records">
+    EPICS Records</h2>
+  <p>
+    This document does not attempt to explain the meaning or use of all of the DXP parameters.
+    The best documentation of the operation of the DXP modules is provided by XIA in
+    the <a href="XMAP_User_Manual.pdf">xMAP User's Manual</a> and the <a href="Kepler_Saturn_Manual_4.0.3.pdf">
+      Saturn User's Manual</a>. The latter manual also describes the Kepler software,
+    which does not apply to EPICS users, but both provide an excellent description of
+    the theory of digital pulse processing as implemented in the DXP models from XIA.</p>
+  <h3 id="dxpHighLevel">
+    dxpHighLevel.template</h3>
+  <p>
+    The following records are defined in the database dxpHighLevel.template. They control
+    the high-level DXP parameters such as peaking time, etc. One instance of this database
+    is loaded for each detector channel in the system. All of the record names in the
+    template file are preceeded by the macro parameters $(P)$(R), where $(P) is the
+    prefix for this detector system, and $(R) is the name of this specific channel.
+    $(P) should be unique for all EPICS IOCs on the subnet, and $(R) is typically dxp1:,
+    dxp2:, etc.</p>
+  <table border="1" cellpadding="5">
+    <tbody>
+      <tr>
+        <td align="center" colspan="3">
+          <b>Records in dxpHighLevel.template</b></td>
+      </tr>
+      <tr>
+        <th>
+          Record Name</th>
+        <th>
+          Record Type</th>
+        <th>
+          Description</th>
+      </tr>
+      <tr>
+        <td align="center" colspan="3">
+          <b>Trigger Filter Records</b></td>
+      </tr>
+      <tr valign="top">
+        <td>
+          TriggerPeakingTime<br />
+          TriggerPeakingTime_RBV</td>
+        <td>
+          ao<br />
+          ai</td>
+        <td>
+          The peaking time in microseconds for the trigger (fast) filter. The trigger filter
+          is used to detect input pulses.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          TriggerGapTime<br />
+          TriggerGapTime_RBV</td>
+        <td>
+          ao<br />
+          ai</td>
+        <td>
+          The gap time in microseconds for the fast filter. This gap time is generally set
+          to 0.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          TriggerThreshold<br />
+          TriggerThreshold_RBV</td>
+        <td>
+          ao<br />
+          ai</td>
+        <td>
+          The threshold in keV for the trigger filter.</td>
+      </tr>
+      <tr>
+        <td align="center" colspan="3">
+          <b>Energy Filter Records</b></td>
+      </tr>
+      <tr valign="top">
+        <td>
+          PeakingTime<br />
+          PeakingTime_RBV</td>
+        <td>
+          ao<br />
+          ai</td>
+        <td>
+          The peaking time in microseconds for the energy (slow) filter. The energy filter
+          is used to measure the energy of the input pulses. Increasing this time will generally
+          improve the energy resolution at the expense of decreased output count rate (OCR).</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          GapTime<br />
+          GapTime_RBV</td>
+        <td>
+          ao<br />
+          ai</td>
+        <td>
+          The gap time in microseconds for the energy filter. The gap time is set to reflect
+          the rise time of the input signal.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          EnergyThreshold<br />
+          EnergyThreshold_RBV</td>
+        <td>
+          ao<br />
+          ai</td>
+        <td>
+          The threshold in keV for the energy filter. This should generally be set to 0. except
+          for soft x-ray spectroscopy.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          MaxWidth<br />
+          MaxWidth_RBV</td>
+        <td>
+          ao<br />
+          ai</td>
+        <td>
+          Maximum peak width in microseconds for pileup inspection.
+        </td>
+      </tr>
+      <tr>
+        <td align="center" colspan="3">
+          <b>Baseline Records</b></td>
+      </tr>
+      <tr valign="top">
+        <td>
+          BaselineFilterLength<br />
+          BaselineFilterLength_RBV</td>
+        <td>
+          mbbo<br />
+          longin</td>
+        <td>
+          The length of the baseline filter in samples. Menu values are powers of 2 from 8
+          to 2048.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          BaselineThreshold<br />
+          BaselineThreshold_RBV</td>
+        <td>
+          ao<br />
+          ai</td>
+        <td>
+          The threshold in keV for the baseline filter.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          BaselineCutPercent<br />
+          BaselineCutPercent_RBV</td>
+        <td>
+          ao<br />
+          ai</td>
+        <td>
+          The baseline cut value, in percent units of the baseline histogram. Baseline values
+          outside the cut range will not be used in computing the baseline average, but they
+          will still be included in the baseline histogram. <b>This parameter only applies to
+            the Saturn and DXP2X, it is not used on the xMAP.</b></td>
+      </tr>
+      <tr valign="top">
+        <td>
+          BaselineCutEnable<br />
+          BaselineCutEnable_RBV</td>
+        <td>
+          bo<br />
+          bi</td>
+        <td>
+          A flag to enable or disable the baseline cut. <b>This parameter only applies to the
+            Saturn and DXP2X, it is not used on the xMAP.</b></td>
+      </tr>
+      <tr>
+        <td align="center" colspan="3">
+          <b>Pre-amp and Energy Range Records</b></td>
+      </tr>
+      <tr valign="top">
+        <td>
+          PreampGain<br />
+          PreampGain_RBV</td>
+        <td>
+          ao<br />
+          ai</td>
+        <td>
+          The gain of the detector pre-amp in mV/keV. Setting this value accurately is important,
+          because it allows the DXP software to be correctly internally calibrated. PreampGain
+          should be adjusted so that the requested MaxEnergy value agrees with the actual
+          energy of the last MCA channel.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          DetectorPolarity<br />
+          DetectorPolarity_RBV</td>
+        <td>
+          bo<br />
+          bi</td>
+        <td>
+          Pre-amp polarity (not high-voltage polarity). =Negative, 1=Positive. Positive polarity
+          means an x-ray pulse causes an increase in the pre-amp voltage output. This is normally
+          defined in the .ini file, but is accessible to EPICS to allow quick determination
+          of the correct polarity.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          ResetDelay<br />
+          ResetDelay_RBV</td>
+        <td>
+          ao<br />
+          ai</td>
+        <td>
+          For reset pre-amps the time in microseconds to recover after a pre-amp reset.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          MaxEnergy<br />
+          MaxEnergy_RBV</td>
+        <td>
+          ao<br />
+          ai</td>
+        <td>
+          The energy of the last channel in the spectrum in keV. If the actual energy of the
+          last channel, determined by re-doing the MCA energy calibration, is not equal to
+          this value, then one should modify the value of PrempGain.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          MCABinWidth_RBV</td>
+        <td>
+          ai</td>
+        <td>
+          The width of each bin in the MCA spectrum in keV. This is computed from PreampGain
+          and MaxEnergy.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          ADCPercentRule<br />
+          ADCPercentRule_RBV</td>
+        <td>
+          ao<br />
+          ai</td>
+        <td>
+          The percent of the range of the input ADC that should be used for pulses whose energy
+          is at the energy of the CalibrationEnergy, which the driver automatically sets to
+          be MaxEnergy/2, i.e. the middle channel of the spectrum. The normal range is 3-10%
+          for reset pre-amplifiers and 30-50% for RC pre-amplifiers. The goal is to digitize
+          the baseline noise into a few ADC bits (look at the ADC trace), but not have the
+          value so large that the input signal drifts out of the ADC range too often (look
+          at the number of drift ups and drift downs, NUMDRUPS0 and NUMDRDOS0).</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          CalibrationEnergy_RBV</td>
+        <td>
+          ai</td>
+        <td>
+          The energy at which the ADCPercentRule applies. The EPICS driver automatically sets
+          this to MaxEnergy/2.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          DynamicRange_RBV</td>
+        <td>
+          ai</td>
+        <td>
+          The dynamic range of the ADC. This is computed from PreampGain, MaxEnergy, ADCPercentRule.</td>
+      </tr>
+      <tr>
+        <td align="center" colspan="3">
+          <b>Preset Counting Records</b></td>
+      </tr>
+      <tr valign="top">
+        <td>
+          PresetMode<br />
+          PresetMode_RBV</td>
+        <td>
+          mbbo<br />
+          mbbi</td>
+        <td>
+          The preset counting mode. On the xMAP the choices are:
+          <ul>
+            <li>"No preset" Count until acquisition is stopped manually.</li>
+            <li>"Real time" Count for a preset real time. The real time is set by the PRTM field
+              of the corresponding MCA record.</li>
+            <li>"Live time" Count for a preset live time. The live time is set by the PLTM field
+              of the corresponding MCA record.</li>
+            <li>"Events" The output of the digital baseline filter. The preset number of events
+              is set by the PresetEvents record.</li>
+            <li>"Triggers" The preset number of triggers is set by the PresetTriggers record.</li>
+          </ul>
+          On the Saturn and the DXP2X only the first 3 choices are available, "Events" and
+          "Triggers" are not supported.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          PresetEvents<br />
+          PresetEvents_RBV</td>
+        <td>
+          longout<br />
+          longin</td>
+        <td>
+          The number of events to count for. Events are x-rays that were processed by the
+          energy filter, and includes underflow and overflow events that may not actually
+          be present in the spectrum.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          PresetTriggers<br />
+          PresetTriggers_RBV</td>
+        <td>
+          longout<br />
+          longin</td>
+        <td>
+          The number of triggers to count for. Triggers are x-rays that were processed by
+          the trigger filter, and includes pileups and other events that may not actually
+          be present in the spectrum.</td>
+      </tr>
+      <tr>
+        <td align="center" colspan="3">
+          <b>Counting Statistics Records</b></td>
+      </tr>
+      <tr valign="top">
+        <td>
+          ElapsedRealTime</td>
+        <td>
+          ai</td>
+        <td>
+          The elapsed real time. This is the same information as in the .ERTM field of the
+          corresponding MCA record.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          ElapsedLiveTime</td>
+        <td>
+          ai</td>
+        <td>
+          The elapsed live time. This is the same information as in the .ELTM field of the
+          corresponding MCA record.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          ElapsedTriggerLiveTime</td>
+        <td>
+          ai</td>
+        <td>
+          The elapsed live time for the trigger filter.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          Triggers</td>
+        <td>
+          longin</td>
+        <td>
+          The number of trigger filter events.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          Events</td>
+        <td>
+          longin</td>
+        <td>
+          The number of energy filter events.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          InputCountRate</td>
+        <td>
+          ai</td>
+        <td>
+          The input count rate (ICR), which is the same as Triggers/ElapsedTriggerLivetime.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          OutputCountRate</td>
+        <td>
+          ai</td>
+        <td>
+          The output count rate (OCR), which is the same as Events/ElapsedRealtime.</td>
+      </tr>
+      <tr>
+        <td align="center" colspan="3">
+          <b>SCA Records</b></td>
+      </tr>
+      <tr valign="top">
+        <td>
+          NumSCAs<br />
+          NumSCAs_RBV</td>
+        <td>
+          longout<br />
+          longin</td>
+        <td>
+          The number of SCAs (ROIs) to use. The maximum is 16, and this record is typically
+          set to 16. The records for each SCA are defined in the database dxpSCA_16.template.</td>
+      </tr>
+      <tr>
+        <td align="center" colspan="3">
+          <b>xMAP Mapping Records</b></td>
+      </tr>
+      <tr valign="top">
+        <td>
+          CurrentPixel</td>
+        <td>
+          longin</td>
+        <td>
+          The current pixel in the mapping run.</td>
+      </tr>
+      <tr>
+        <td align="center" colspan="3">
+          <b>Diagnostic Trace Records</b></td>
+      </tr>
+      <tr valign="top">
+        <td>
+          BaselineHistogram</td>
+        <td>
+          waveform</td>
+        <td>
+          The baseline histogram array. The array is read from the hardware when this record
+          is processed. The baseline histogram provides a valuable diagnostic of the electronic
+          noise in the system. It should ideally be a perfect Gaussian, with a FWHM equal
+          to the electronic noise in the baseline. <i>Note: this record should not be processed
+            while normal data acquisition is in progress or it will slow things down.</i></td>
+      </tr>
+      <tr valign="top">
+        <td>
+          TraceMode<br />
+          TraceMode_RBV</td>
+        <td>
+          mbbo<br />
+          mbbi</td>
+        <td>
+          The type of diagnostic trace information to return in the TraceData record. On the
+          xMAP the choices are:
+          <ul>
+            <li>"ADC" The equivalent of a digital scope trace of the pre-amp input to the module.</li>
+            <li>"Baseline history" A history of the baseline samples.</li>
+            <li>"Trigger filter" The output of the digital trigger filter.</li>
+            <li>"Baseline filter" The output of the digital baseline filter.</li>
+            <li>"Energy filter" The output of the digital energy filter.</li>
+            <li>"Baseline samples" The recent baseline samples.</li>
+            <li>"Energy samples" The recent energy samples.</li>
+          </ul>
+          On the Saturn and the DXP2X only the first 2 choices are available, "ADC" and "Baseline
+          history".</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          TraceData</td>
+        <td>
+          waveform</td>
+        <td>
+          The diagnostic trace data. The array is read from the hardware when this record
+          is processed. The type of diagnostic trace data to read is selected with TraceMode,
+          and the time per sample is selected with TraceTime. <i>Note: this record should not
+            be processed while normal data acquisition is in progress or it will slow things
+            down.</i></td>
+      </tr>
+      <tr valign="top">
+        <td>
+          TraceTime<br />
+          TraceTime_RBV</td>
+        <td>
+          ao<br />
+          ai</td>
+        <td>
+          The time per sample in microseconds for the TraceData array. The minimum time depends
+          on the hardware type; it is 0.1 microseconds for the Saturn and DXP2X and 0.02 microseconds
+          for the xMAP.</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="dxpSCA_16">
+    dxpSCA_16.template</h3>
+  <p>
+    The following records are defined in the database dxpSCA_16.template. They control
+    the 16 single-channel-analyzers (SCAs) for each chanel. Each SCA is defined by a
+    low channel and high channel. In normal MCA Spectra mode the counts in each SCA
+    are computed by the DXP firmware when acquisition completes. This is essentially
+    the same information as in the MCA record ROIs. However, the SCAs are also used
+    in the fast SCA Mapping mode on the xMAP. In this mode only the total counts in
+    each SCA are stored at each point in the map. This mode is faster than full spectrum
+    mapping, and also uses much less disk space. The SCA definitions are also used on
+    the Saturn when it is equipped with the optional SCA mapping hardware and firmware.
+    The Saturn puts out a pulse on one of 16 TTL output lines when an x-ray falls within
+    the channel range of that SCA. This allows very fast mapping with the Saturn, since
+    there is no need to read the spectrum at each point in the scan. <i>Note: in MCA mapping
+      mode SCAs are permitted to overlap in channels. However in xMAP mapping mode and
+      Saturn ROI pulse output mode, the SCA definitions must not overlap. This is done
+      because for performance reasons each spectrum channel must be assigned to at most
+      one SCA.</i></p>
+  <p>
+    One instance of this database is loaded for each detector channel in the system.
+    All of the record names in the template file are preceeded by the macro parameters
+    $(P)$(R), where $(P) is the prefix for this detector system, and $(R) is the name
+    of this specific channel.</p>
+  <table border="1" cellpadding="5">
+    <tbody>
+      <tr>
+        <td align="center" colspan="3">
+          <b>Records in dxpSCA_16.template</b></td>
+      </tr>
+      <tr>
+        <th>
+          Record Name</th>
+        <th>
+          Record Type</th>
+        <th>
+          Description</th>
+      </tr>
+      <tr valign="top">
+        <td>
+          SCA$(N)NLow<br />
+          SCA$(N)Low_RBV</td>
+        <td>
+          longout<br />
+          longin</td>
+        <td>
+          The low channel for SCA $(N), $(N)=0-15. Actual record names are SCA0Low, SCA1Low,
+          etc.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          SCA$(N)High<br />
+          SCA$(N)High_RBV</td>
+        <td>
+          longout<br />
+          longin</td>
+        <td>
+          The high channel for SCA $(N), $(N)=0-15. Actual record names are SCA0High, SCA1High,
+          etc.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          SCA$(N)Counts</td>
+        <td>
+          longin</td>
+        <td>
+          The total counts for SCA $(N), $(N)=0-15. Actual record names are SCA0Counts, SCA1Counts,
+          etc.</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="dxpLowLevel">
+    dxpLowLevel.template</h3>
+  <p>
+    The DXP firmware is actually controlled by a large number of low-level parameters.
+    Each of these parameters is a 16-bit integer. Typically the user will only interact
+    with the high-level parameters described above. But it can sometimes be useful to
+    read or even modify one of these low-level parameters. The EPICS software provides
+    a completely generic interface to these low-level parameters. When the driver initializes
+    it queries the names of all of the low-level parameters, and makes these names available
+    in stringin records. There is a longin record which provides the current value of
+    each parameter, and a longout record which allows the parameter to be modified.
+    Note that all parameters have a corresponding longout record, but some parameters
+    are inherently read-only, so the longout record actually does nothing. The driver
+    currently hardcodes a maximum of 220 low-level parameters, which is more than the
+    number used by any of the existing firmware (209 is the current maximum, for the
+    xMAP reset firmware). If a future firmware version has more parameters than this,
+    then a single constant in the driver will need to be increased, and more records
+    will need to be added to dxpLowLevel.template.</p>
+  <p>
+    One instance of this database is loaded for each detector channel in the system.
+    All of the record names in the template file are preceeded by the macro parameters
+    $(P)$(R), where $(P) is the prefix for this detector system, and $(R) is the name
+    of this specific channel.</p>
+  <table border="1" cellpadding="5">
+    <tbody>
+      <tr>
+        <td align="center" colspan="3">
+          <b>Records in dxpLowLevel.template</b></td>
+      </tr>
+      <tr>
+        <th>
+          Record Name</th>
+        <th>
+          Record Type</th>
+        <th>
+          Description</th>
+      </tr>
+      <tr valign="top">
+        <td>
+          NumLLParams</td>
+        <td>
+          longin</td>
+        <td>
+          The actual number of low-level parameters.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          ReadLLParams</td>
+        <td>
+          bo</td>
+        <td>
+          Writing 1 to this record will read all of the low-level parameters for this channel.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          LL$(N)Name</td>
+        <td>
+          stringin</td>
+        <td>
+          The firmware name for low-level parameter $(N), N=0-219. Actual record names are
+          LL0Name, LL1Name, etc.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          LL$(N)Val_RBV</td>
+        <td>
+          longin</td>
+        <td>
+          The readback value for low-level parameter $(N), N=0-219. Actual record names are
+          LL0Val_RBV, LL1Val_RBV, etc.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          LL$(N)Val</td>
+        <td>
+          longout</td>
+        <td>
+          The output value for low-level parameter $(N), N=0-219. Actual record names are
+          LL0Val, LL1Val, etc.</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="dxpSystem">
+    dxpSystem.template</h3>
+  <p>
+    The following records are defined in the database dxpSystem.template. One instance
+    of this database is loaded for each DXP system, since they control system-wide parameters.
+    This database is loaded for both single-element (e.g. Saturn) and multi-element
+    (e.g. DXP2X and xMAP) systems. All of the record names in the template file are
+    preceeded by the macro parameter $(P), the prefix for this detector system.</p>
+  <table border="1" cellpadding="5">
+    <tbody>
+      <tr>
+        <td align="center" colspan="3">
+          <b>Records in dxpSystem.template</b></td>
+      </tr>
+      <tr>
+        <th>
+          Record Name</th>
+        <th>
+          Record Type</th>
+        <th>
+          Description</th>
+      </tr>
+      <tr valign="top">
+        <td>
+          PollTime<br />
+          PollTime_RBV</td>
+        <td>
+          bo<br />
+          ao</td>
+        <td>
+          The EPICS driver rapidly polls the hardware when acquisition is active to detect
+          when acquisition is complete. This record controls the poll time, which is typically
+          .001 to .01 seconds. Decreasing the time decreases latency at the expense of more
+          CPU time, and there is a minimum time required to poll the hardware.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          SaveSystemFile</td>
+        <td>
+          waveform</td>
+        <td>
+          The name of a file in which to save the system information. This file is created
+          by the XIA Handel software, and is the ".ini" file format used in the call to xiaInit()
+          in the startup script. One can save the system information in this file, rather
+          than using the EPICS save/restore system if desired. This is a waveform record with
+          type DBF_UCHAR and length 256, rather than a stringout record, so that file paths/names
+          longer than 40 characters can be used. Client applications must convert the file
+          name to an unsigned char array when writing to this field.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          SaveSystem<br />
+          SaveSystem_RBV</td>
+        <td>
+          bo<br />
+          bi</td>
+        <td>
+          Writing 1 to this record causes the system information to be written to the file
+          specified by SaveSystemFile.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          EnableClientWait</td>
+        <td>
+          bo</td>
+        <td>
+          This record enables waiting for a client when acquisition completes. It can be used
+          to wait for a client application to save data to disk, etc.
+        </td>
+      </tr>
+      <tr valign="top">
+        <td>
+          SetClientWait</td>
+        <td>
+          bo</td>
+        <td>
+          This record sets the ClientWait record to Busy if EnableClientWait is set to Enable.
+          This record is processed by EraseStart and StartAll in the dxpMED.template database.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          ClientWait</td>
+        <td>
+          busy</td>
+        <td>
+          This record forces processing to wait until a client clears it after acquisition
+          starts when EnableClientWait is set to Enable.</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="dxpMED">
+    dxpMED.template</h3>
+  <p>
+    The following records are defined in the database dxpMED.template (MED stands for
+    Multi-Element Detector). One instance of this database is loaded for each multi-element
+    (i.e. DXP2X and xMAP) DXP system, since they control system-wide parameters. Only
+    the records in this database that are intended for use by EPICS clients are documented
+    here. Records that are not intended to be accessed from clients are not documented,
+    since they may be changed in the future. Records in this database are implemented
+    in several ways. Some are connected to an MCA record that is configured with a special
+    address that signifies that it controls all detector channels. That record communicates
+    directly with the driver. Other records are implemented in a State Notation Language
+    program which monitors the system-wide records like PresetMode, and copies them
+    to the individual detector records.</p>
+  <p>
+    All of the record names in the template file are preceeded by the macro parameter
+    $(P), the prefix for this detector system.</p>
+  <table border="1" cellpadding="5">
+    <tbody>
+      <tr>
+        <td align="center" colspan="3">
+          <b>Records in dxpMED.template</b></td>
+      </tr>
+      <tr>
+        <th>
+          Record Name</th>
+        <th>
+          Record Type</th>
+        <th>
+          Description</th>
+      </tr>
+      <tr>
+        <td align="center" colspan="3">
+          <b>Acquisition Control Records</b></td>
+      </tr>
+      <tr valign="top">
+        <td>
+          EraseAll</td>
+        <td>
+          bo</td>
+        <td>
+          Erases all of the MCA records in this system.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          EraseStart</td>
+        <td>
+          bo</td>
+        <td>
+          Erases and starts acquisition all of the MCA records in this system. In the xMAP
+          mapping modes it starts a new mapping run.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          StartAll</td>
+        <td>
+          bo</td>
+        <td>
+          Starts acquisition all of the MCA records in this system without first erasing any
+          existing spectra.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          StopAll</td>
+        <td>
+          bo</td>
+        <td>
+          Stops acquisition in MCA and mapping modes.</td>
+      </tr>
+      <tr>
+        <td align="center" colspan="3">
+          <b>Preset Control Records</b></td>
+      </tr>
+      <tr valign="top">
+        <td>
+          PresetMode</td>
+        <td>
+          mbbo</td>
+        <td>
+          The preset counting mode. On the xMAP the choices are:
+          <ul>
+            <li>"No preset" Count until acquisition is stopped manually.</li>
+            <li>"Real time" Count for a preset real time. The real time is set by the PRTM field
+              of the corresponding MCA record.</li>
+            <li>"Live time" Count for a preset live time. The live time is set by the PLTM field
+              of the corresponding MCA record.</li>
+            <li>"Events" The output of the digital baseline filter. The preset number of events
+              is set by the PresetEvents record.</li>
+            <li>"Triggers" The preset number of triggers is set by the PresetTriggers record.</li>
+          </ul>
+          On the DXP2X only the first 3 choices are available, "Events" and "Triggers" are
+          not supported.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          PresetReal</td>
+        <td>
+          ao</td>
+        <td>
+          The preset real time.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          PresetLive</td>
+        <td>
+          ao</td>
+        <td>
+          The preset live time.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          PresetEvents</td>
+        <td>
+          longout</td>
+        <td>
+          The number of events to count for. Note that on the xMAP counting on a module stops
+          whenever the first channel on that card reaches this value.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          PresetTriggers</td>
+        <td>
+          longout</td>
+        <td>
+          The number of triggers to count for. Note that on the xMAP counting on a module
+          stops whenever the first channel on that card reaches this value.</td>
+      </tr>
+      <tr>
+        <td align="center" colspan="3">
+          <b>Status/Statistics Records</b></td>
+      </tr>
+      <tr valign="top">
+        <td>
+          StatusAll</td>
+        <td>
+          ai</td>
+        <td>
+          Processing this record causes the status information (Acquiring, ElapsedReal, etc.)
+          to be read. For maximum performance with short count times this record should be
+          with .SCAN=Passive. Even when this record is Passive the status information will
+          be read once when acquisition completes in normal MCA mode.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          ReadAll</td>
+        <td>
+          ai</td>
+        <td>
+          Processing this record causes the MCA spectra to be read. For maximum performance
+          with short count times this record should be with .SCAN=Passive. Even if this record
+          is Passive the MCA spectra will be read once when acquisition completes in normal
+          MCA mode. However, in order to see the MCA spectra update in the xMAP mapping modes
+          this record must be set to periodically process (e.g. "2 second").</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          ReadAll</td>
+        <td>
+          ai</td>
+        <td>
+          Processing this record causes the MCA spectra to be read. For maximum performance
+          with short count times this record should be with .SCAN=Passive. Even if this record
+          is Passive the MCA spectra will be read once when acquisition completes in normal
+          MCA mode. However, in order to see the MCA spectra update in the xMAP mapping modes
+          this record must be set to periodically process (e.g. "2 second").</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          Acquiring</td>
+        <td>
+          bi</td>
+        <td>
+          Acquisition status, 0=Done, 1=Acquiring. Acquiring will be 1 if any channel is acquiring.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          ElapsedReal</td>
+        <td>
+          ai</td>
+        <td>
+          The elapsed real time. This value is the minimum of the elapsed real time of all
+          system channels.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          ElapsedLive</td>
+        <td>
+          ai</td>
+        <td>
+          The elapsed live time. This value is the minimum of the elapsed live time of all
+          system channels.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          DeadTime</td>
+        <td>
+          ai</td>
+        <td>
+          The dead time. This value is the maximum of the dead time of all system channels.</td>
+      </tr>
+      <tr>
+        <td align="center" colspan="3">
+          <b>High-Level Parameter Records</b></td>
+      </tr>
+      <tr valign="top">
+        <td>
+          CopyTriggerPeakingTime</td>
+        <td>
+          bo</td>
+        <td>
+          Writing 1 to this record copies the TriggerPeakingTime for channel 1 to all channels.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          CopyTriggerGapTime</td>
+        <td>
+          bo</td>
+        <td>
+          Writing 1 to this record copies the TriggerGapTime for channel 1 to all channels.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          CopyTriggerThreshold</td>
+        <td>
+          bo</td>
+        <td>
+          Writing 1 to this record copies the TriggerThreshold for channel 1 to all channels.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          CopyPeakingTime</td>
+        <td>
+          bo</td>
+        <td>
+          Writing 1 to this record copies the PeakingTime for channel 1 to all channels.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          CopyGapTime</td>
+        <td>
+          bo</td>
+        <td>
+          Writing 1 to this record copies the GapTime for channel 1 to all channels.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          CopyEnergyThreshold</td>
+        <td>
+          bo</td>
+        <td>
+          Writing 1 to this record copies the EnergyThreshold for channel 1 to all channels.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          CopyMaxWidth</td>
+        <td>
+          bo</td>
+        <td>
+          Writing 1 to this record copies the MaxWidth for channel 1 to all channels.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          CopyBaselineCutPercent</td>
+        <td>
+          bo</td>
+        <td>
+          Writing 1 to this record copies the BaselineCutPercent for channel 1 to all channels.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          CopyBaselineCutEnable</td>
+        <td>
+          bo</td>
+        <td>
+          Writing 1 to this record copies the BaselineCutEnable for channel 1 to all channels.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          CopyBaselineThreshold</td>
+        <td>
+          bo</td>
+        <td>
+          Writing 1 to this record copies the BaselineThreshold for channel 1 to all channels.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          CopyBaselineFilterLength</td>
+        <td>
+          bo</td>
+        <td>
+          Writing 1 to this record copies the BaselineFilterLength for channel 1 to all channels.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          CopyPreampGain</td>
+        <td>
+          bo</td>
+        <td>
+          Writing 1 to this record copies the PreampGain for channel 1 to all channels.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          CopyBaseMaxEnergy</td>
+        <td>
+          bo</td>
+        <td>
+          Writing 1 to this record copies the MaxEnergy for channel 1 to all channels.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          CopyADCPercentRule</td>
+        <td>
+          bo</td>
+        <td>
+          Writing 1 to this record copies the ADCPercentRule for channel 1 to all channels.</td>
+      </tr>
+      <tr>
+        <td align="center" colspan="3">
+          <b>Low-Level Parameter Records</b></td>
+      </tr>
+      <tr valign="top">
+        <td>
+          ReadLLParams</td>
+        <td>
+          bo</td>
+        <td>
+          Writing 1 to this record reads the low-level parameters for all channels. This record
+          should be set to Passive during normal data acquisition, or it will slow things
+          down.</td>
+      </tr>
+      <tr>
+        <td align="center" colspan="3">
+          <b>Trace and Diagnostic Records</b></td>
+      </tr>
+      <tr valign="top">
+        <td>
+          ReadBaselineHistograms</td>
+        <td>
+          bo</td>
+        <td>
+          Writing 1 to this record reads the BaselineHistogram for all channels. This record
+          should be set to Passive during normal data acquisition, or it will slow things
+          down.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          TraceModes</td>
+        <td>
+          mbbo</td>
+        <td>
+          This record sets the TraceMode for each channel. On the xMAP the choices are:
+          <ul>
+            <li>"ADC" The equivalent of a digital scope trace of the pre-amp input to the module.</li>
+            <li>"Baseline history" A history of the baseline samples.</li>
+            <li>"Trigger filter" The output of the digital trigger filter.</li>
+            <li>"Baseline filter" The output of the digital baseline filter.</li>
+            <li>"Energy filter" The output of the digital energy filter.</li>
+            <li>"Baseline samples" The recent baseline samples.</li>
+            <li>"Energy samples" The recent energy samples.</li>
+          </ul>
+          On the DXP2X only the first 2 choices are available, "ADC" and "Baseline history".</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          TraceTimes</td>
+        <td>
+          ai</td>
+        <td>
+          The time per sample in microseconds for the TraceData arrays.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          ReadTraces</td>
+        <td>
+          bo</td>
+        <td>
+          Writing 1 to this record reads the TraceData for all channels. This record should
+          be set to Passive during normal data acquisition, or it will slow things down.</td>
+      </tr>
+      <tr>
+        <td align="center" colspan="3">
+          <b>ROI and SCA Records</b></td>
+      </tr>
+      <tr valign="top">
+        <td>
+          CopyROIChannel</td>
+        <td>
+          bo</td>
+        <td>
+          Writing 1 to this record copies the ROIs from channel 1 to all channels on a channel-by-channel
+          basis.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          CopyROIEnergy</td>
+        <td>
+          bo</td>
+        <td>
+          Writing 1 to this record copies the ROIs from channel 1 to all channels on an energy-by-energy
+          basis, i.e. using the energy calibration information for each MCA.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          CopyROI_SCA</td>
+        <td>
+          bo</td>
+        <td>
+          Writing 1 to this record copies all ROIs from each channel to the corresponding
+          SCA.</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="dxpXMAP">
+    dxpXMAP.template</h3>
+  <p>
+    The following records are defined in the database dxpXMAP.template. One instance
+    of this database is loaded for an xMAP system, since they control system-wide parameters.</p>
+  <p>
+    This document does not attempt to explain the mapping mode features of the xMAP
+    that these records control. The user should read the chapter on Mapping Mode in
+    the <a href="XMAP_User_Manual.pdf">xMAP User's Manual</a> to understand the mapping
+    features of the xMAP. The short document on using the Handel library for mapping
+    mode on the xMAP <a href="Handel-Quick-Start-xMAP.pdf">Handel Quick Start Manual for
+      the xMAP</a> can also be useful. Though the material discussed there was mostly
+    useful for writing the EPICS driver, it can also help to understand how the system
+    works.</p>
+  <p>
+    All of the record names in the template file are preceeded by the macro parameter
+    $(P), the prefix for this detector system.</p>
+  <table border="1" cellpadding="5">
+    <tbody>
+      <tr>
+        <td align="center" colspan="3">
+          <b>Records in dxpXMAP.template</b></td>
+      </tr>
+      <tr>
+        <th>
+          Record Name</th>
+        <th>
+          Record Type</th>
+        <th>
+          Description</th>
+      </tr>
+      <tr>
+        <td align="center" colspan="3">
+          <b>Mapping Mode Control Records</b></td>
+      </tr>
+      <tr valign="top">
+        <td>
+          CollectMode<br />
+          CollectMode_RBV</td>
+        <td>
+          mbbo<br />
+          mbbi</td>
+        <td>
+          Selects the collection mode for the xMAP system. The choices are:
+          <ul>
+            <li>"MCA" Normal MCA spectrum mode where individual spectra are collected with the
+              MCA record.</li>
+            <li>"MCA mapping" MCA mapping mode where MCA spectra are collected into the double-buffered
+              memory.</li>
+            <li>"SCA mapping" SCA mapping mode where total counts in up to 16 SCAs are collected
+              into the double-buffered memory.</li>
+          </ul>
+        </td>
+      </tr>
+      <tr valign="top">
+        <td>
+          PixelAdvanceMode<br />
+          PixelAdvanceMode_RBV</td>
+        <td>
+          mbbo<br />
+          mbbi</td>
+        <td>
+          Selects the pixel advance mode for xMAP system. The choices are:
+          <ul>
+            <li>"Gate" Transitions on the Gate hardware input signal is used to drive the pixel
+              advance. One (and only one) xMAP module in the system must have "gate_master" set
+              to 1 in the system initialization (.ini) file to use this mode.</li>
+            <li>"Sync" Transitions on the Sync hardware input signal is used to drive the pixel
+              advance. One (and only one) xMAP module in the system must have "sync_master" set
+              to 1 in the system initialization (.ini) file to use this mode.</li>
+          </ul>
+          For systems with more than 1 xMAP module, opne module can be gate_master and the
+          other module can be sync_master, and PixelAdvanceMode can be changed between Gate
+          and Sync. <i>Note: there is a bug in the current xMAP firmware, so that a module defined
+            to be a sync_master will always use its pulse input for pixel_advance, even if another
+            module is defined to be gate_master, and PixelAdvanceMode is defined to be Gate.
+            This should be fixed in a future release, but for now if a sync_master is defined
+            in the system then only use Sync for PixelAdvanceMode.</i></td>
+      </tr>
+      <tr valign="top">
+        <td>
+          NextPixel</td>
+        <td>
+          bo</td>
+        <td>
+          Writing 1 to this record causes the system to advance to the next pixel in MCA or
+          SCA mapping modes. This is a "software" pixel advance, and can be issued any time
+          mapping mode acquisition is in progress, regardless of the setting of PixelAdvanceMode.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          PixelsPerRun<br />
+          PixelsPerRun_RBV</td>
+        <td>
+          longout<br />
+          longin</td>
+        <td>
+          The total number of pixels to acquire in one "run" when acquisition starts. If this
+          value is -1 then there is no preset number of pixels, and acquisition will continue
+          forever until it is stopped manually with StopAll.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          PixelsPerBuffer<br />
+          PixelsPerBuffer_RBV</td>
+        <td>
+          longout<br />
+          longin</td>
+        <td>
+          The number of pixels per buffer. If AutoPixelsPerBuffer=Manual, then this value
+          is used, rather than using the maximum possible value computed whenAutoPixelsPerBuffer=Auto.
+          The main reason to set this value manually is that the updates to statistics and
+          MCA display in mapping mode happen only when a buffer is read out. If the time per
+          pixel is relatively long then decreasing PixelsPerBuffer will result in a more frequent
+          update of the MCA and statistics displays. Setting this value too low when doing
+          rapid mapping can result in buffer overflow. PixelsPerBuffer_RBV always contains
+          the actual number of pixels per buffer.
+        </td>
+      </tr>
+      <tr valign="top">
+        <td>
+          AutoPixelsPerBuffer<br />
+          AutoPixelsPerBuffer_RBV</td>
+        <td>
+          mbbo<br />
+          mbbi</td>
+        <td>
+          Flag controlling how the number of pixels per buffer is determined. Choices are
+          0=Manual and 1=Auto. If Manual is selected then the number of pixels per buffer
+          is controlled by the PixelsPerBuffer record. If Auto is selected then the maximum
+          number of pixels that the 2MB xMAP buffer can hold is automatically computed.
+        </td>
+      </tr>
+      <tr valign="top">
+        <td>
+          BufferSize_RBV</td>
+        <td>
+          longin</td>
+        <td>
+          The size of the buffer being used in units of 16-bit words. This will be the first
+          dimension of the array passed to the plugins when a buffer is read out. The maximum
+          value is 1M=1048576, but it can be less than this depending on the value of PixelsPerBuffer_RBV.
+        </td>
+      </tr>
+      <tr valign="top">
+        <td>
+          IgnoreGate<br />
+          IgnoreGate_RBV</td>
+        <td>
+          mbbo<br />
+          mbbi</td>
+        <td>
+          Flag controlling whether the Gate input signal is used to inhibit counting. Choices
+          are 0=No and 1=Yes. If IgnoreGate=Yes then the Gate input can be used as a pixel
+          advance signal, but its high or low state will not influence whether counting is
+          enable, i.e. only the transitions are significant. If IgnoreGate=No then counting
+          will be inhibited when the Gate input is low (InputLogicPolarity=Normal) or high
+          (InputLogicPolarity=Inverted).
+        </td>
+      </tr>
+      <tr valign="top">
+        <td>
+          InputLogicPolarity<br />
+          InputLogicPolarity_RBV</td>
+        <td>
+          mbbo<br />
+          mbbi</td>
+        <td>
+          Flag controlling the polarity of the Gate input signal. Choices are 0=Normal, 1=Inverted.
+          In Normal mode a low level on the Gate input inhibits counting (if IgnoreGate=No)
+          and a high-to-low transition performs a pixel advance (if PixelAdvanceMode=Gate).
+          In Inverted mode these levels are the opposite, i.e. high level inhibits counting
+          and a low-to-high transition performs a pixel advance.
+        </td>
+      </tr>
+      <tr valign="top">
+        <td>
+          SyncCount<br />
+          SyncCount_RBV</td>
+        <td>
+          longout<br />
+          longin</td>
+        <td>
+          The divisor used on the Sync input for pixel advance if PixelAdvanceMode=Sync. Allowed
+          values are 1 to 65,535. This value can be used to divide the Sync clock. For example,
+          if the Sync input were connected to the pulse output of a stepper motor controller,
+          then setting SyncCount=10 would perform a pixel advance on every 10'th stepper motor
+          pulse. SyncCount=1 results in no clock division, i.e. every Sync input pulse results
+          in a pixel advance.
+        </td>
+      </tr>
+      <tr>
+        <td align="center" colspan="3">
+          <b>Parameter Download Control Records</b></td>
+      </tr>
+      <tr valign="top">
+        <td>
+          AutoApply<br />
+          AutoApply_RBV</td>
+        <td>
+          mbbo<br />
+          mbbi</td>
+        <td>
+          Flag controlling whether xMAP parameters are automatically downloaded to the hardware
+          ("apply" operation) each time a parameter is changed, or whether they are only downloaded
+          when the Apply record is set to 1. Choices are 0=No, 1=Yes. This flag can dramatically
+          affect performance, because the process of downloading parameters to the xMAP is
+          very slow, it requires about 0.3 seconds. If many xMAP parameters need to be changed
+          it is much faster to do the following:
+          <ol>
+            <li>Set AutoApply=No</li>
+            <li>Change a bunch of parameters</li>
+            <li>Write 1 to the Apply record</li>
+            <li>Set AutoApply back to Yes</li>
+          </ol>
+          The EPICS driver sets AutoApply=No when the driver is initialized. This means that
+          all of the parameter setting that occurs during driver initialization and during
+          iocInit when the records are initialized by EPICS is very fast because the values
+          are not actually downloaded to the hardware. At the end of the EPICS startup script
+          there are "dbpf" commands to write 1 to the Apply record (forcing a download), and
+          to set AutoApply=Yes. Most operations that the users will do involve setting a only
+          a few parameters such, as PeakingTime, etc. These are fast even with AutoApply=Yes,
+          so it is normally left in this state. That way the user does not have to worry about
+          a manual apply operation with the Apply record. The one operation that does involve
+          setting a very large number of parameters is processing the CopyROI_SCA record,
+          which redefines all 16 of the SCAs for each detector. This is handled by the SNL
+          program, which now does the following:
+          <ol>
+            <li>Saves the current state of AutoApply</li>
+            <li>Set AutoApply=No</li>
+            <li>Sopies all of the new SCA parameters for each detector from the MCA records</li>
+            <li>Writes 1 to the Apply record</li>
+            <li>Set AutoApply back to previous value</li>
+          </ol>
+          This performance optimization was added in R3-0, and reduces the time to copy ROIS
+          from XXX minutes in previous releases to XX seconds in R3-0 for a 16-channel xMAP
+          system.
+        </td>
+      </tr>
+      <tr valign="top">
+        <td>
+          Apply</td>
+        <td>
+          longout</td>
+        <td>
+          Writing 1 to this record forces an "apply" operation, downloading the parameters
+          for all channels to the xMAP hardware. This is not needed if AutoApply=Yes, but
+          it can greatly improve performance to set AutoApply=No and write to this record
+          after modifying a large number of parameters.
+        </td>
+      </tr>
+    </tbody>
+  </table>
   <h2 id="Installing_EPICS_for_the_Saturn">
     Installing EPICS for the Saturn</h2>
   <p>
