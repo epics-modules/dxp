@@ -26,6 +26,12 @@
   - Test gate and sync modes together - HAS PROBLEMS, WAIT FOR REPLY FROM PETER
   - Test saving TIFF and NeXus files
  
+- Alphabetize the low-level parameters with a sort array.  Use this array to
+  map between asynPortDriver parameter numbers and indices in the Handel array.
+
+- Make the low-level parameter strings be PINI=YES, not I/O Intr, since they
+  only need to process once at iocInit.
+
 - Make sure all parameters have corresponding PVs, and eliminate any unneeded parameters
 
 - Need to copy data to NDArray for callbacks to work in MCA mode.  Do we care
