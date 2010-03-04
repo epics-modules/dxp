@@ -2,7 +2,7 @@
 record(ao, "$(P)PollTime") {
     field(PINI, "YES")
     field(DTYP, "asynFloat64")
-    field(OUT, "$(DET0)DxpPollTime")
+    field(OUT, "$(IO)DxpPollTime")
     field(VAL, "0.01")
     field(PREC, "3")
     field(EGU, "s")
@@ -10,7 +10,7 @@ record(ao, "$(P)PollTime") {
 
 record(ai, "$(P)PollTime_RBV") {
     field(DTYP, "asynFloat64")
-    field(INP, "$(DET0)DxpPollTime")
+    field(INP, "$(IO)DxpPollTime")
     field(PREC, "3")
     field(EGU, "s")
     field(SCAN, "I/O Intr")
