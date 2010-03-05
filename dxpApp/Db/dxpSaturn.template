@@ -1,0 +1,52 @@
+# Redefine the TraceMode choices, eliminating all but the first 2  
+# dxpHighLevel.template is for the xMAP.  Must load this file after that one.
+record(mbbo, "$(P)$(R)TraceMode") {
+    field(TWST, "")
+    field(THST, "")
+    field(FRST, "")
+    field(FVST, "")
+    field(SXST, "")
+}
+
+record(mbbi, "$(P)$(R)TraceMode_RBV") {
+    field(TWST, "")
+    field(THST, "")
+    field(FRST, "")
+    field(FVST, "")
+    field(SXST, "")
+}
+
+# Redefine the PresetMode choices, eliminating all but the first 3  
+# dxpHighLevel.template is for the xMAP.  Must load this file after that one.
+record(mbbo, "$(P)$(R)PresetMode") {
+    field(DESC, "set preset type")
+    field(DTYP, "asynInt32")
+    field(OUT,  "$(IO)DxpPresetMode")
+    field(ZRVL, "0")
+    field(ZRST, "No preset")
+    field(ONVL, "1")
+    field(ONST, "Real time")
+    field(TWVL, "2")
+    field(TWST, "Live time")
+    field(THVL, "")
+    field(THST, "")
+    field(FRVL, "")
+    field(FRST, "")
+}
+
+record(mbbi, "$(P)$(R)PresetMode_RBV") {
+    field(DESC, "set preset type for preset counts")
+    field(DTYP, "asynInt32")
+    field(INP,  "$(IO)DxpPresetMode")
+    field(ZRVL, "0")
+    field(ZRST, "No preset")
+    field(ONVL, "1")
+    field(ONST, "Real time")
+    field(TWVL, "2")
+    field(TWST, "Live time")
+    field(THVL, "")
+    field(THST, "")
+    field(FRVL, "")
+    field(FRST, "")
+    field(SCAN, "I/O Intr")
+}

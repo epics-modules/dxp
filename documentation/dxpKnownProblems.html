@@ -9,30 +9,6 @@
 
 <hr>
 <center>
-<h2>Release 2-10</h2>
-</center>
-
-There is a problem with the file dxpMED.db which causes acquisition on multi-element systems (xMAP and DXP-2X) to not
-work properly if the StatusAll and ReadAll records are both set to Passive.  This problem is fixed by making the
-following change to dxpMED.db, e.g. change the drvInfo string for INP field to MCA_ACQUIRING from ACQUIRING for 
-the ReadCallback record.
-<pre>
-Index: dxpMED.db
-===================================================================
---- dxpMED.db   (revision 13094)
-+++ dxpMED.db   (revision 13214)
-@@ -91,7 +91,7 @@
- grecord(ai,"$(P)ReadCallback") {
-         field(SCAN,"I/O Intr")
-         field(DTYP, "asynInt32")
--        field(INP, "$(INP)ACQUIRING")
-+        field(INP, "$(INP)MCA_ACQUIRING")
-         field(FLNK, "$(P)ReadAllOnce PP MS")
- }
-</pre>
-
-<hr>
-<center>
 <h2>Release 2-6</h2>
 </center>
 

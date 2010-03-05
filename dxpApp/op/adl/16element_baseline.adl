@@ -128,14 +128,8 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)1.BASE_X"
-		ydata="$(P)$(D)1.BASE"
+		ydata="$(P)$(D)1:BaselineHistogram"
 		data_clr=27
-	}
-	trace[1] {
-		xdata="$(P)$(D)1.BASE_X"
-		ydata="$(P)$(D)1.BASE_CUT"
-		data_clr=20
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -165,14 +159,8 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)2.BASE_X"
-		ydata="$(P)$(D)2.BASE"
+		ydata="$(P)$(D)2:BaselineHistogram"
 		data_clr=27
-	}
-	trace[1] {
-		xdata="$(P)$(D)2.BASE_X"
-		ydata="$(P)$(D)2.BASE_CUT"
-		data_clr=20
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -202,14 +190,8 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)4.BASE_X"
-		ydata="$(P)$(D)4.BASE"
+		ydata="$(P)$(D)4:BaselineHistogram"
 		data_clr=27
-	}
-	trace[1] {
-		xdata="$(P)$(D)4.BASE_X"
-		ydata="$(P)$(D)4.BASE_CUT"
-		data_clr=20
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -239,14 +221,8 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)3.BASE_X"
-		ydata="$(P)$(D)3.BASE"
+		ydata="$(P)$(D)3:BaselineHistogram"
 		data_clr=27
-	}
-	trace[1] {
-		xdata="$(P)$(D)3.BASE_X"
-		ydata="$(P)$(D)3.BASE_CUT"
-		data_clr=20
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -324,14 +300,8 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)5.BASE_X"
-		ydata="$(P)$(D)5.BASE"
+		ydata="$(P)$(D)5:BaselineHistogram"
 		data_clr=27
-	}
-	trace[1] {
-		xdata="$(P)$(D)5.BASE_X"
-		ydata="$(P)$(D)5.BASE_CUT"
-		data_clr=20
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -361,14 +331,8 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)7.BASE_X"
-		ydata="$(P)$(D)7.BASE"
+		ydata="$(P)$(D)7:BaselineHistogram"
 		data_clr=27
-	}
-	trace[1] {
-		xdata="$(P)$(D)7.BASE_X"
-		ydata="$(P)$(D)7.BASE_CUT"
-		data_clr=20
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -398,14 +362,8 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)8.BASE_X"
-		ydata="$(P)$(D)8.BASE"
+		ydata="$(P)$(D)8:BaselineHistogram"
 		data_clr=27
-	}
-	trace[1] {
-		xdata="$(P)$(D)8.BASE_X"
-		ydata="$(P)$(D)8.BASE_CUT"
-		data_clr=20
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -435,14 +393,8 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)6.BASE_X"
-		ydata="$(P)$(D)6.BASE"
+		ydata="$(P)$(D)6:BaselineHistogram"
 		data_clr=27
-	}
-	trace[1] {
-		xdata="$(P)$(D)6.BASE_X"
-		ydata="$(P)$(D)6.BASE_CUT"
-		data_clr=20
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -472,14 +424,8 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)9.BASE_X"
-		ydata="$(P)$(D)9.BASE"
+		ydata="$(P)$(D)9:BaselineHistogram"
 		data_clr=27
-	}
-	trace[1] {
-		xdata="$(P)$(D)9.BASE_X"
-		ydata="$(P)$(D)9.BASE_CUT"
-		data_clr=20
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -569,14 +515,8 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)16.BASE_X"
-		ydata="$(P)$(D)16.BASE"
+		ydata="$(P)$(D)16:BaselineHistogram"
 		data_clr=27
-	}
-	trace[1] {
-		xdata="$(P)$(D)16.BASE_X"
-		ydata="$(P)$(D)16.BASE_CUT"
-		data_clr=20
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -618,14 +558,8 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)15.BASE_X"
-		ydata="$(P)$(D)15.BASE"
+		ydata="$(P)$(D)15:BaselineHistogram"
 		data_clr=27
-	}
-	trace[1] {
-		xdata="$(P)$(D)15.BASE_X"
-		ydata="$(P)$(D)15.BASE_CUT"
-		data_clr=20
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -667,14 +601,8 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)14.BASE_X"
-		ydata="$(P)$(D)14.BASE"
+		ydata="$(P)$(D)14:BaselineHistogram"
 		data_clr=27
-	}
-	trace[1] {
-		xdata="$(P)$(D)14.BASE_X"
-		ydata="$(P)$(D)14.BASE_CUT"
-		data_clr=20
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -716,14 +644,8 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)12.BASE_X"
-		ydata="$(P)$(D)12.BASE"
+		ydata="$(P)$(D)12:BaselineHistogram"
 		data_clr=27
-	}
-	trace[1] {
-		xdata="$(P)$(D)12.BASE_X"
-		ydata="$(P)$(D)12.BASE_CUT"
-		data_clr=20
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -753,14 +675,8 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)13.BASE_X"
-		ydata="$(P)$(D)13.BASE"
+		ydata="$(P)$(D)13:BaselineHistogram"
 		data_clr=27
-	}
-	trace[1] {
-		xdata="$(P)$(D)13.BASE_X"
-		ydata="$(P)$(D)13.BASE_CUT"
-		data_clr=20
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -790,14 +706,8 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)10.BASE_X"
-		ydata="$(P)$(D)10.BASE"
+		ydata="$(P)$(D)10:BaselineHistogram"
 		data_clr=27
-	}
-	trace[1] {
-		xdata="$(P)$(D)10.BASE_X"
-		ydata="$(P)$(D)10.BASE_CUT"
-		data_clr=20
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -863,14 +773,8 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)11.BASE_X"
-		ydata="$(P)$(D)11.BASE"
+		ydata="$(P)$(D)11:BaselineHistogram"
 		data_clr=27
-	}
-	trace[1] {
-		xdata="$(P)$(D)11.BASE_X"
-		ydata="$(P)$(D)11.BASE_CUT"
-		data_clr=20
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -903,7 +807,7 @@ text {
 		height=20
 	}
 	control {
-		chan="$(P)ReadDXPBaselines.PROC"
+		chan="$(P)ReadBaselineHistograms.PROC"
 		clr=14
 		bclr=51
 	}
@@ -930,7 +834,7 @@ menu {
 		height=18
 	}
 	control {
-		chan="$(P)ReadDXPBaselines.SCAN"
+		chan="$(P)ReadBaselineHistograms.SCAN"
 		clr=14
 		bclr=51
 	}

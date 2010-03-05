@@ -1,12 +1,12 @@
 
 file {
-	name="/home/epics/synApps5-1beta2/dxp/dxpApp/op/adl/16element_trace.adl"
-	version=030000
+	name="/home/epics/devel/dxp/3-0/dxpApp/op/adl/16element_trace.adl"
+	version=030102
 }
 display {
 	object {
-		x=44
-		y=86
+		x=492
+		y=51
 		width=1935
 		height=945
 	}
@@ -115,8 +115,7 @@ rectangle {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)1.TRACE_X"
-		ydata="$(P)$(D)1.TRACE"
+		ydata="$(P)$(D)1:TraceData"
 		data_clr=27
 	}
 	x_axis {
@@ -146,8 +145,7 @@ rectangle {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)2.TRACE_X"
-		ydata="$(P)$(D)2.TRACE"
+		ydata="$(P)$(D)2:TraceData"
 		data_clr=27
 	}
 	x_axis {
@@ -177,8 +175,7 @@ rectangle {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)4.TRACE_X"
-		ydata="$(P)$(D)4.TRACE"
+		ydata="$(P)$(D)4:TraceData"
 		data_clr=27
 	}
 	x_axis {
@@ -208,8 +205,7 @@ rectangle {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)3.TRACE_X"
-		ydata="$(P)$(D)3.TRACE"
+		ydata="$(P)$(D)3:TraceData"
 		data_clr=27
 	}
 	x_axis {
@@ -287,8 +283,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)5.TRACE_X"
-		ydata="$(P)$(D)5.TRACE"
+		ydata="$(P)$(D)5:TraceData"
 		data_clr=27
 	}
 	x_axis {
@@ -318,8 +313,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)7.TRACE_X"
-		ydata="$(P)$(D)7.TRACE"
+		ydata="$(P)$(D)7:TraceData"
 		data_clr=27
 	}
 	x_axis {
@@ -349,8 +343,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)8.TRACE_X"
-		ydata="$(P)$(D)8.TRACE"
+		ydata="$(P)$(D)8:TraceData"
 		data_clr=27
 	}
 	x_axis {
@@ -380,8 +373,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)6.TRACE_X"
-		ydata="$(P)$(D)6.TRACE"
+		ydata="$(P)$(D)6:TraceData"
 		data_clr=27
 	}
 	x_axis {
@@ -411,8 +403,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)9.TRACE_X"
-		ydata="$(P)$(D)9.TRACE"
+		ydata="$(P)$(D)9:TraceData"
 		data_clr=27
 	}
 	x_axis {
@@ -502,8 +493,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)16.TRACE_X"
-		ydata="$(P)$(D)16.TRACE"
+		ydata="$(P)$(D)16:TraceData"
 		data_clr=27
 	}
 	x_axis {
@@ -545,8 +535,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)15.TRACE_X"
-		ydata="$(P)$(D)15.TRACE"
+		ydata="$(P)$(D)15:TraceData"
 		data_clr=27
 	}
 	x_axis {
@@ -588,8 +577,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)14.TRACE_X"
-		ydata="$(P)$(D)14.TRACE"
+		ydata="$(P)$(D)14:TraceData"
 		data_clr=27
 	}
 	x_axis {
@@ -631,8 +619,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)12.TRACE_X"
-		ydata="$(P)$(D)12.TRACE"
+		ydata="$(P)$(D)12:TraceData"
 		data_clr=27
 	}
 	x_axis {
@@ -662,8 +649,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)13.TRACE_X"
-		ydata="$(P)$(D)13.TRACE"
+		ydata="$(P)$(D)13:TraceData"
 		data_clr=27
 	}
 	x_axis {
@@ -693,8 +679,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)10.TRACE_X"
-		ydata="$(P)$(D)10.TRACE"
+		ydata="$(P)$(D)10:TraceData"
 		data_clr=27
 	}
 	x_axis {
@@ -760,8 +745,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)11.TRACE_X"
-		ydata="$(P)$(D)11.TRACE"
+		ydata="$(P)$(D)11:TraceData"
 		data_clr=27
 	}
 	x_axis {
@@ -794,7 +778,7 @@ text {
 		height=20
 	}
 	control {
-		chan="$(P)ReadDXPTraces.PROC"
+		chan="$(P)ReadTraces.PROC"
 		clr=14
 		bclr=51
 	}
@@ -821,7 +805,7 @@ menu {
 		height=18
 	}
 	control {
-		chan="$(P)ReadDXPTraces.SCAN"
+		chan="$(P)ReadTraces.SCAN"
 		clr=14
 		bclr=51
 	}
@@ -846,7 +830,7 @@ text {
 		height=20
 	}
 	control {
-		chan="$(P)TraceWaits"
+		chan="$(P)TraceTimes"
 		clr=14
 		bclr=51
 	}
@@ -865,4 +849,29 @@ text {
 	}
 	textix="16 Element ADC Trace"
 	align="horiz. centered"
+}
+text {
+	object {
+		x=43
+		y=672
+		width=100
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Trace mode"
+}
+menu {
+	object {
+		x=151
+		y=673
+		width=120
+		height=18
+	}
+	control {
+		chan="$(P)TraceModes"
+		clr=14
+		bclr=51
+	}
 }
