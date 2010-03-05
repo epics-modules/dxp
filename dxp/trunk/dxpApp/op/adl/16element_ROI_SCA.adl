@@ -1,14 +1,14 @@
 
 file {
-	name="/home/epics/devel/dxp/2-5beta/dxpApp/op/adl/16element_ROI_SCA.adl"
-	version=030000
+	name="/home/epics/devel/dxp-3-0/dxpApp/op/adl/16element_ROI_SCA.adl"
+	version=030102
 }
 display {
 	object {
-		x=25
-		y=123
+		x=121
+		y=60
 		width=950
-		height=540
+		height=620
 	}
 	clr=14
 	bclr=4
@@ -424,7 +424,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)1.SCA$(R)_LO"
+				chan="$(P)$(D)1:SCA$(R)Low"
 				clr=14
 				bclr=51
 			}
@@ -439,7 +439,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)1.SCA$(R)_HI"
+				chan="$(P)$(D)1:SCA$(R)High"
 				clr=14
 				bclr=51
 			}
@@ -454,7 +454,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)1.SCA$(R)_CTS"
+				chan="$(P)$(D)1:SCA$(R)Counts"
 				clr=54
 				bclr=1
 			}
@@ -470,7 +470,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)1.SCA$(R)_LO_RBV"
+				chan="$(P)$(D)1:SCA$(R)Low_RBV"
 				clr=54
 				bclr=1
 			}
@@ -486,7 +486,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)1.SCA$(R)_HI_RBV"
+				chan="$(P)$(D)1:SCA$(R)High_RBV"
 				clr=54
 				bclr=1
 			}
@@ -620,7 +620,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)2.SCA$(R)_LO"
+				chan="$(P)$(D)2:SCA$(R)Low"
 				clr=14
 				bclr=51
 			}
@@ -635,7 +635,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)2.SCA$(R)_HI"
+				chan="$(P)$(D)2:SCA$(R)High"
 				clr=14
 				bclr=51
 			}
@@ -650,7 +650,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)2.SCA$(R)_CTS"
+				chan="$(P)$(D)2:SCA$(R)Counts"
 				clr=54
 				bclr=1
 			}
@@ -666,7 +666,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)2.SCA$(R)_LO_RBV"
+				chan="$(P)$(D)2:SCA$(R)Low_RBV"
 				clr=54
 				bclr=1
 			}
@@ -682,7 +682,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)2.SCA$(R)_HI_RBV"
+				chan="$(P)$(D)2:SCA$(R)High_RBV"
 				clr=54
 				bclr=1
 			}
@@ -816,7 +816,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)3.SCA$(R)_LO"
+				chan="$(P)$(D)3:SCA$(R)Low"
 				clr=14
 				bclr=51
 			}
@@ -831,7 +831,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)3.SCA$(R)_HI"
+				chan="$(P)$(D)3:SCA$(R)High"
 				clr=14
 				bclr=51
 			}
@@ -846,7 +846,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)3.SCA$(R)_CTS"
+				chan="$(P)$(D)3:SCA$(R)Counts"
 				clr=54
 				bclr=1
 			}
@@ -862,7 +862,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)3.SCA$(R)_LO_RBV"
+				chan="$(P)$(D)3:SCA$(R)Low_RBV"
 				clr=54
 				bclr=1
 			}
@@ -878,7 +878,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)3.SCA$(R)_HI_RBV"
+				chan="$(P)$(D)3:SCA$(R)High_RBV"
 				clr=54
 				bclr=1
 			}
@@ -1012,7 +1012,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)4.SCA$(R)_LO"
+				chan="$(P)$(D)4:SCA$(R)Low"
 				clr=14
 				bclr=51
 			}
@@ -1027,7 +1027,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)4.SCA$(R)_HI"
+				chan="$(P)$(D)4:SCA$(R)High"
 				clr=14
 				bclr=51
 			}
@@ -1042,7 +1042,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)4.SCA$(R)_CTS"
+				chan="$(P)$(D)4:SCA$(R)Counts"
 				clr=54
 				bclr=1
 			}
@@ -1058,7 +1058,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)4.SCA$(R)_LO_RBV"
+				chan="$(P)$(D)4:SCA$(R)Low_RBV"
 				clr=54
 				bclr=1
 			}
@@ -1074,7 +1074,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)4.SCA$(R)_HI_RBV"
+				chan="$(P)$(D)4:SCA$(R)High_RBV"
 				clr=54
 				bclr=1
 			}
@@ -1208,7 +1208,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)5.SCA$(R)_LO"
+				chan="$(P)$(D)5:SCA$(R)Low"
 				clr=14
 				bclr=51
 			}
@@ -1223,7 +1223,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)5.SCA$(R)_HI"
+				chan="$(P)$(D)5:SCA$(R)High"
 				clr=14
 				bclr=51
 			}
@@ -1238,7 +1238,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)5.SCA$(R)_CTS"
+				chan="$(P)$(D)5:SCA$(R)Counts"
 				clr=54
 				bclr=1
 			}
@@ -1254,7 +1254,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)5.SCA$(R)_LO_RBV"
+				chan="$(P)$(D)5:SCA$(R)Low_RBV"
 				clr=54
 				bclr=1
 			}
@@ -1270,7 +1270,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)5.SCA$(R)_HI_RBV"
+				chan="$(P)$(D)5:SCA$(R)High_RBV"
 				clr=54
 				bclr=1
 			}
@@ -1404,7 +1404,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)6.SCA$(R)_LO"
+				chan="$(P)$(D)6:SCA$(R)Low"
 				clr=14
 				bclr=51
 			}
@@ -1419,7 +1419,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)6.SCA$(R)_HI"
+				chan="$(P)$(D)6:SCA$(R)High"
 				clr=14
 				bclr=51
 			}
@@ -1434,7 +1434,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)6.SCA$(R)_CTS"
+				chan="$(P)$(D)6:SCA$(R)Counts"
 				clr=54
 				bclr=1
 			}
@@ -1450,7 +1450,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)6.SCA$(R)_LO_RBV"
+				chan="$(P)$(D)6:SCA$(R)Low_RBV"
 				clr=54
 				bclr=1
 			}
@@ -1466,7 +1466,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)6.SCA$(R)_HI_RBV"
+				chan="$(P)$(D)6:SCA$(R)High_RBV"
 				clr=54
 				bclr=1
 			}
@@ -1600,7 +1600,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)7.SCA$(R)_LO"
+				chan="$(P)$(D)7:SCA$(R)Low"
 				clr=14
 				bclr=51
 			}
@@ -1615,7 +1615,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)7.SCA$(R)_HI"
+				chan="$(P)$(D)7:SCA$(R)High"
 				clr=14
 				bclr=51
 			}
@@ -1630,7 +1630,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)7.SCA$(R)_CTS"
+				chan="$(P)$(D)7:SCA$(R)Counts"
 				clr=54
 				bclr=1
 			}
@@ -1646,7 +1646,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)7.SCA$(R)_LO_RBV"
+				chan="$(P)$(D)7:SCA$(R)Low_RBV"
 				clr=54
 				bclr=1
 			}
@@ -1662,7 +1662,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)7.SCA$(R)_HI_RBV"
+				chan="$(P)$(D)7:SCA$(R)High_RBV"
 				clr=54
 				bclr=1
 			}
@@ -1796,7 +1796,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)8.SCA$(R)_LO"
+				chan="$(P)$(D)8:SCA$(R)Low"
 				clr=14
 				bclr=51
 			}
@@ -1811,7 +1811,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)8.SCA$(R)_HI"
+				chan="$(P)$(D)8:SCA$(R)High"
 				clr=14
 				bclr=51
 			}
@@ -1826,7 +1826,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)8.SCA$(R)_CTS"
+				chan="$(P)$(D)8:SCA$(R)Counts"
 				clr=54
 				bclr=1
 			}
@@ -1842,7 +1842,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)8.SCA$(R)_LO_RBV"
+				chan="$(P)$(D)8:SCA$(R)Low_RBV"
 				clr=54
 				bclr=1
 			}
@@ -1858,7 +1858,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)8.SCA$(R)_HI_RBV"
+				chan="$(P)$(D)8:SCA$(R)High_RBV"
 				clr=54
 				bclr=1
 			}
@@ -1992,7 +1992,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)9.SCA$(R)_LO"
+				chan="$(P)$(D)9:SCA$(R)Low"
 				clr=14
 				bclr=51
 			}
@@ -2007,7 +2007,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)9.SCA$(R)_HI"
+				chan="$(P)$(D)9:SCA$(R)High"
 				clr=14
 				bclr=51
 			}
@@ -2022,7 +2022,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)9.SCA$(R)_CTS"
+				chan="$(P)$(D)9:SCA$(R)Counts"
 				clr=54
 				bclr=1
 			}
@@ -2038,7 +2038,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)9.SCA$(R)_LO_RBV"
+				chan="$(P)$(D)9:SCA$(R)Low_RBV"
 				clr=54
 				bclr=1
 			}
@@ -2054,7 +2054,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)9.SCA$(R)_HI_RBV"
+				chan="$(P)$(D)9:SCA$(R)High_RBV"
 				clr=54
 				bclr=1
 			}
@@ -2188,7 +2188,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)10.SCA$(R)_LO"
+				chan="$(P)$(D)10:SCA$(R)Low"
 				clr=14
 				bclr=51
 			}
@@ -2203,7 +2203,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)10.SCA$(R)_HI"
+				chan="$(P)$(D)10:SCA$(R)High"
 				clr=14
 				bclr=51
 			}
@@ -2218,7 +2218,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)10.SCA$(R)_CTS"
+				chan="$(P)$(D)10:SCA$(R)Counts"
 				clr=54
 				bclr=1
 			}
@@ -2234,7 +2234,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)10.SCA$(R)_LO_RBV"
+				chan="$(P)$(D)10:SCA$(R)Low_RBV"
 				clr=54
 				bclr=1
 			}
@@ -2250,7 +2250,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)10.SCA$(R)_HI_RBV"
+				chan="$(P)$(D)10:SCA$(R)High_RBV"
 				clr=54
 				bclr=1
 			}
@@ -2384,7 +2384,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)11.SCA$(R)_LO"
+				chan="$(P)$(D)11:SCA$(R)Low"
 				clr=14
 				bclr=51
 			}
@@ -2399,7 +2399,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)11.SCA$(R)_HI"
+				chan="$(P)$(D)11:SCA$(R)High"
 				clr=14
 				bclr=51
 			}
@@ -2414,7 +2414,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)11.SCA$(R)_CTS"
+				chan="$(P)$(D)11:SCA$(R)Counts"
 				clr=54
 				bclr=1
 			}
@@ -2430,7 +2430,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)11.SCA$(R)_LO_RBV"
+				chan="$(P)$(D)11:SCA$(R)Low_RBV"
 				clr=54
 				bclr=1
 			}
@@ -2446,7 +2446,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)11.SCA$(R)_HI_RBV"
+				chan="$(P)$(D)11:SCA$(R)High_RBV"
 				clr=54
 				bclr=1
 			}
@@ -2580,7 +2580,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)12.SCA$(R)_LO"
+				chan="$(P)$(D)12:SCA$(R)Low"
 				clr=14
 				bclr=51
 			}
@@ -2595,7 +2595,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)12.SCA$(R)_HI"
+				chan="$(P)$(D)12:SCA$(R)High"
 				clr=14
 				bclr=51
 			}
@@ -2610,7 +2610,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)12.SCA$(R)_CTS"
+				chan="$(P)$(D)12:SCA$(R)Counts"
 				clr=54
 				bclr=1
 			}
@@ -2626,7 +2626,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)12.SCA$(R)_LO_RBV"
+				chan="$(P)$(D)12:SCA$(R)Low_RBV"
 				clr=54
 				bclr=1
 			}
@@ -2642,7 +2642,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)12.SCA$(R)_HI_RBV"
+				chan="$(P)$(D)12:SCA$(R)High_RBV"
 				clr=54
 				bclr=1
 			}
@@ -2776,7 +2776,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)13.SCA$(R)_LO"
+				chan="$(P)$(D)13:SCA$(R)Low"
 				clr=14
 				bclr=51
 			}
@@ -2791,7 +2791,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)13.SCA$(R)_HI"
+				chan="$(P)$(D)13:SCA$(R)High"
 				clr=14
 				bclr=51
 			}
@@ -2806,7 +2806,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)13.SCA$(R)_CTS"
+				chan="$(P)$(D)13:SCA$(R)Counts"
 				clr=54
 				bclr=1
 			}
@@ -2822,7 +2822,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)13.SCA$(R)_LO_RBV"
+				chan="$(P)$(D)13:SCA$(R)Low_RBV"
 				clr=54
 				bclr=1
 			}
@@ -2838,7 +2838,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)13.SCA$(R)_HI_RBV"
+				chan="$(P)$(D)13:SCA$(R)High_RBV"
 				clr=54
 				bclr=1
 			}
@@ -2972,7 +2972,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)14.SCA$(R)_LO"
+				chan="$(P)$(D)14:SCA$(R)Low"
 				clr=14
 				bclr=51
 			}
@@ -2987,7 +2987,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)14.SCA$(R)_HI"
+				chan="$(P)$(D)14:SCA$(R)High"
 				clr=14
 				bclr=51
 			}
@@ -3002,7 +3002,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)14.SCA$(R)_CTS"
+				chan="$(P)$(D)14:SCA$(R)Counts"
 				clr=54
 				bclr=1
 			}
@@ -3018,7 +3018,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)14.SCA$(R)_LO_RBV"
+				chan="$(P)$(D)14:SCA$(R)Low_RBV"
 				clr=54
 				bclr=1
 			}
@@ -3034,7 +3034,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)14.SCA$(R)_HI_RBV"
+				chan="$(P)$(D)14:SCA$(R)High_RBV"
 				clr=54
 				bclr=1
 			}
@@ -3168,7 +3168,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)15.SCA$(R)_LO"
+				chan="$(P)$(D)15:SCA$(R)Low"
 				clr=14
 				bclr=51
 			}
@@ -3183,7 +3183,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)15.SCA$(R)_HI"
+				chan="$(P)$(D)15:SCA$(R)High"
 				clr=14
 				bclr=51
 			}
@@ -3198,7 +3198,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)15.SCA$(R)_CTS"
+				chan="$(P)$(D)15:SCA$(R)Counts"
 				clr=54
 				bclr=1
 			}
@@ -3214,7 +3214,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)15.SCA$(R)_LO_RBV"
+				chan="$(P)$(D)15:SCA$(R)Low_RBV"
 				clr=54
 				bclr=1
 			}
@@ -3230,7 +3230,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)15.SCA$(R)_HI_RBV"
+				chan="$(P)$(D)15:SCA$(R)High_RBV"
 				clr=54
 				bclr=1
 			}
@@ -3364,7 +3364,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)16.SCA$(R)_LO"
+				chan="$(P)$(D)16:SCA$(R)Low"
 				clr=14
 				bclr=51
 			}
@@ -3379,7 +3379,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)16.SCA$(R)_HI"
+				chan="$(P)$(D)16:SCA$(R)High"
 				clr=14
 				bclr=51
 			}
@@ -3394,7 +3394,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)16.SCA$(R)_CTS"
+				chan="$(P)$(D)16:SCA$(R)Counts"
 				clr=54
 				bclr=1
 			}
@@ -3410,7 +3410,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)16.SCA$(R)_LO_RBV"
+				chan="$(P)$(D)16:SCA$(R)Low_RBV"
 				clr=54
 				bclr=1
 			}
@@ -3426,7 +3426,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)16.SCA$(R)_HI_RBV"
+				chan="$(P)$(D)16:SCA$(R)High_RBV"
 				clr=54
 				bclr=1
 			}
@@ -3435,4 +3435,91 @@ composite {
 			}
 		}
 	}
+}
+text {
+	object {
+		x=174
+		y=542
+		width=520
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="Copy all detector 1 ROIs to all detectors by channel"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=174
+		y=567
+		width=510
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="Copy all detector 1 ROIs to all detectors by energy"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=174
+		y=592
+		width=390
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="Copy all ROIs to SCAs for all detectors"
+	align="horiz. centered"
+}
+"message button" {
+	object {
+		x=47
+		y=543
+		width=120
+		height=18
+	}
+	control {
+		chan="$(P)CopyROIChannel"
+		clr=14
+		bclr=51
+	}
+	label="Copy 1->All"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=47
+		y=568
+		width=120
+		height=18
+	}
+	control {
+		chan="$(P)CopyROIEnergy"
+		clr=14
+		bclr=51
+	}
+	label="Copy 1->All"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=47
+		y=593
+		width=120
+		height=18
+	}
+	control {
+		chan="$(P)CopyROI_SCA"
+		clr=14
+		bclr=51
+	}
+	label="Copy ROIs to SCAs"
+	press_msg="1"
 }

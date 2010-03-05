@@ -14,12 +14,45 @@
     See <a href="dxpKnownProblems.html">known problems</a> for information on problems
     each release.</p>
   <h2 style="text-align: center">
-    Release 2-11 (xxx-Nove-2009?)
+    Release 3-0 (xxx-Mar-2010)
   </h2>
+  <p>This is a major new release.  It adds many new features, the most important being mapping mode support
+    for the xMAP. It eliminates the DXP record, so it is not backwards compatible with medm screens, 
+    database files, or startup scripts from previous releases.</p>
   <ul>
-    <li>Increase maximum number of detectors in dxpMED.st from 32 to 100.</li>
+    <li>Added support for the mapping modes on the xMAP, in addition to the normal MCA mode.  
+      These mapping modes are:
+      <ul>
+        <li>MCA spectra mapping.  In this mode spectra are collected into the double-buffered on-board memory
+          and streamed to disk continuously.  Over 4,000 spectra/second can be collected continuously, which
+          is over 1000 pixels/second for a 4-detector system.</li>
+        <li>ROI (SCA) mapping.  In this mode the total counts in up to 16 ROIs (SCAS) for each channel are
+          collected into the double-buffered on-board memory and streamed to disk continuously.  
+          The dwell time per point can be as short as 100 microseconds,
+          which is over 2.5 million ROIs per second for a 16-detector system with 16 ROIs per detector.</li>
+      </ul></li>
+    <li>Added support for the ROI firmware on the Saturn.  For Saturns equipped with the optional 16 ROI
+      hardware outputs, this allows very fast mapping with the Saturn by putting out a TTL pulse
+      whenever an x-ray falls within that ROI.  These pulses can be collected, for example, in an
+      SIS 38xx multi-channel scaler, to do very fast on-the-fly scanning.</li>
+    <li>Implemented correct live-time reporting for the Saturn.  In previous releases counting for a preset
+      live time worked correctly, but the elapsed live time reported was for the fast (trigger) filter, not
+      for the slow (energy) filter.</li>
+    <li>Greatly reduced the time to initialize the xMAP system in iocInit, from XXX minutes to XXX seconds
+      for a 16-channel system.</li>
+    <li>Greatly reduced the time to copy the MCA record ROIs to the xMAP SCAs, from XXX minutes to XXX seconds
+      for a 16-channel system with 16 ROIs per channel.</li>
+    <li>Added the ability to copy the ROIs from detector 1 to all detectors, either by channel or by
+      energy, in case the energy calibrations are different.</li>
+    <li>Added additional diagnostic trace types for the xMAP.</li>
+    <li>Added generic read/write access to all low-level parameters on the xMAP, Saturn, and DXP2X.</li>
+    <li>Eliminated the DXP record, which was previously to control the DSP parameters.  This was
+      replaced by a collection of standard EPICS records (ao, ai, bo, bi, waveform, etc.).  There is now 
+      a single driver that is used for both DSP parameter control and for MCA data acquisition.  This
+      driver is derived from the asynNDArray class in areaDetector, and asynPortDriver class in asyn.</li>
+    <li>Increased maximum number of detectors in dxpMED.st from 32 to 100.</li>
     <li>Minor changes for 64-bit compatibility.</li>
-    <li>Changes to dxpMED.db be compatible with drvUser strings in mca R6-12.</li>
+    <li>Changes to be compatible with drvUser strings in mca R6-12.</li>
     <li>Call epicsExit in dxpMain.cpp, problem with previous releases.</li>
   </ul>
   <h2 style="text-align: center">

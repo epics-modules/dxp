@@ -1,12 +1,12 @@
 
 file {
-	name="/home/epics/devel/dxp/2-8beta/dxpApp/op/adl/dxpTop.adl"
-	version=030000
+	name="/home/epics/devel/dxp-3-0/dxpApp/op/adl/dxpTop.adl"
+	version=030102
 }
 display {
 	object {
-		x=77
-		y=43
+		x=82
+		y=41
 		width=159
 		height=41
 	}
@@ -108,42 +108,27 @@ text {
 	}
 	display[0] {
 		label="Single Saturn"
-		name="single_dxp_top.adl"
-		args="P=dxpSaturn:, M=mca1, D=dxp1"
+		name="dxpSaturn.adl"
+		args="P=dxpSaturn:, M=mca1, D=dxp1:"
 	}
 	display[1] {
-		label="Saturn 1-element MED"
-		name="1element_dxp.adl"
-		args="P=dxpSaturn:, M=mca1, D=dxp1"
-	}
-	display[2] {
-		label="DXP2X 16-element MED"
-		name="16element_dxp.adl"
-		args="P=dxp2X:, M=mca, D=dxp"
-	}
-	display[3] {
-		label="Single XMAP"
-		name="single_dxp_top.adl"
-		args="P=dxpXMAP:, M=mca1, D=dxp1"
-	}
-	display[4] {
-		label="xMAP 16-element MED"
-		name="16element_dxp.adl"
-		args="P=dxpXMAP:, M=mca, D=dxp"
-	}
-	display[5] {
 		label="xMAP 4-element MED"
 		name="4element_dxp.adl"
 		args="P=dxpXMAP:, M=mca, D=dxp"
 	}
-	display[6] {
-		label="xMAP1 16-element MED"
+	display[2] {
+		label="xMAP 16-element MED"
 		name="16element_dxp.adl"
-		args="P=dxpXMAP1:, M=mca, D=dxp"
+		args="P=dxpXMAP:, M=mca, D=dxp"
 	}
-	display[7] {
+	display[3] {
 		label="DXP2X 4-element MED"
 		name="4element_dxp.adl"
+		args="P=dxp2X:, M=mca, D=dxp"
+	}
+	display[4] {
+		label="DXP2X 16-element MED"
+		name="16element_dxp.adl"
 		args="P=dxp2X:, M=mca, D=dxp"
 	}
 	clr=14

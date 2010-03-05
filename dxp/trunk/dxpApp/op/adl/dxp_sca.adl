@@ -1,7 +1,7 @@
 
 file {
-	name="C:\epics\adl\dxp_sca.adl"
-	version=020306
+	name="/home/epics/devel/dxp/3-0/dxpApp/op/adl/dxp_sca.adl"
+	version=030102
 }
 display {
 	object {
@@ -177,43 +177,32 @@ composite {
 		}
 	}
 }
-composite {
+text {
 	object {
 		x=38
 		y=44
-		width=228
+		width=140
 		height=20
 	}
-	"composite name"=""
-	children {
-		text {
-			object {
-				x=38
-				y=44
-				width=140
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Number of SCAs"
-			align="horiz. centered"
-		}
-		"text entry" {
-			object {
-				x=183
-				y=44
-				width=83
-				height=20
-			}
-			control {
-				chan="$(P)$(R).NUM_SCAS"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Number of SCAs"
+	align="horiz. centered"
+}
+"text entry" {
+	object {
+		x=183
+		y=44
+		width=83
+		height=20
+	}
+	control {
+		chan="$(P)$(R)NumSCAs"
+		clr=14
+		bclr=51
+	}
+	limits {
 	}
 }
 text {
@@ -434,7 +423,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA13_LO"
+		chan="$(P)$(R)SCA13Low"
 		clr=14
 		bclr=51
 	}
@@ -449,7 +438,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA12_LO"
+		chan="$(P)$(R)SCA12Low"
 		clr=14
 		bclr=51
 	}
@@ -464,7 +453,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA11_LO"
+		chan="$(P)$(R)SCA11Low"
 		clr=14
 		bclr=51
 	}
@@ -479,7 +468,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA10_LO"
+		chan="$(P)$(R)SCA10Low"
 		clr=14
 		bclr=51
 	}
@@ -494,7 +483,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA9_LO"
+		chan="$(P)$(R)SCA9Low"
 		clr=14
 		bclr=51
 	}
@@ -509,7 +498,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA8_LO"
+		chan="$(P)$(R)SCA8Low"
 		clr=14
 		bclr=51
 	}
@@ -524,7 +513,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA7_LO"
+		chan="$(P)$(R)SCA7Low"
 		clr=14
 		bclr=51
 	}
@@ -539,7 +528,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA6_LO"
+		chan="$(P)$(R)SCA6Low"
 		clr=14
 		bclr=51
 	}
@@ -554,7 +543,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA5_LO"
+		chan="$(P)$(R)SCA5Low"
 		clr=14
 		bclr=51
 	}
@@ -569,7 +558,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA4_LO"
+		chan="$(P)$(R)SCA4Low"
 		clr=14
 		bclr=51
 	}
@@ -584,7 +573,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA3_LO"
+		chan="$(P)$(R)SCA3Low"
 		clr=14
 		bclr=51
 	}
@@ -599,7 +588,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA2_LO"
+		chan="$(P)$(R)SCA2Low"
 		clr=14
 		bclr=51
 	}
@@ -614,7 +603,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA1_LO"
+		chan="$(P)$(R)SCA1Low"
 		clr=14
 		bclr=51
 	}
@@ -629,7 +618,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA14_LO"
+		chan="$(P)$(R)SCA14Low"
 		clr=14
 		bclr=51
 	}
@@ -644,7 +633,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA15_LO"
+		chan="$(P)$(R)SCA15Low"
 		clr=14
 		bclr=51
 	}
@@ -659,7 +648,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA13_HI"
+		chan="$(P)$(R)SCA13High"
 		clr=14
 		bclr=51
 	}
@@ -674,7 +663,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA12_HI"
+		chan="$(P)$(R)SCA12High"
 		clr=14
 		bclr=51
 	}
@@ -689,7 +678,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA11_HI"
+		chan="$(P)$(R)SCA11High"
 		clr=14
 		bclr=51
 	}
@@ -704,7 +693,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA10_HI"
+		chan="$(P)$(R)SCA10High"
 		clr=14
 		bclr=51
 	}
@@ -719,7 +708,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA9_HI"
+		chan="$(P)$(R)SCA9High"
 		clr=14
 		bclr=51
 	}
@@ -734,7 +723,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA8_HI"
+		chan="$(P)$(R)SCA8High"
 		clr=14
 		bclr=51
 	}
@@ -749,7 +738,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA7_HI"
+		chan="$(P)$(R)SCA7High"
 		clr=14
 		bclr=51
 	}
@@ -764,7 +753,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA6_HI"
+		chan="$(P)$(R)SCA6High"
 		clr=14
 		bclr=51
 	}
@@ -779,7 +768,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA5_HI"
+		chan="$(P)$(R)SCA5High"
 		clr=14
 		bclr=51
 	}
@@ -794,7 +783,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA4_HI"
+		chan="$(P)$(R)SCA4High"
 		clr=14
 		bclr=51
 	}
@@ -809,7 +798,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA3_HI"
+		chan="$(P)$(R)SCA3High"
 		clr=14
 		bclr=51
 	}
@@ -824,7 +813,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA2_HI"
+		chan="$(P)$(R)SCA2High"
 		clr=14
 		bclr=51
 	}
@@ -839,7 +828,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA1_HI"
+		chan="$(P)$(R)SCA1High"
 		clr=14
 		bclr=51
 	}
@@ -854,7 +843,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA14_HI"
+		chan="$(P)$(R)SCA14High"
 		clr=14
 		bclr=51
 	}
@@ -869,7 +858,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA15_HI"
+		chan="$(P)$(R)SCA15High"
 		clr=14
 		bclr=51
 	}
@@ -884,7 +873,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R).SCA13_CTS"
+		chan="$(P)$(R)SCA13Counts"
 		clr=54
 		bclr=3
 	}
@@ -900,7 +889,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R).SCA12_CTS"
+		chan="$(P)$(R)SCA12Counts"
 		clr=54
 		bclr=3
 	}
@@ -916,7 +905,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R).SCA11_CTS"
+		chan="$(P)$(R)SCA11Counts"
 		clr=54
 		bclr=3
 	}
@@ -932,7 +921,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R).SCA10_CTS"
+		chan="$(P)$(R)SCA10Counts"
 		clr=54
 		bclr=3
 	}
@@ -948,7 +937,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R).SCA9_CTS"
+		chan="$(P)$(R)SCA9Counts"
 		clr=54
 		bclr=3
 	}
@@ -964,7 +953,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R).SCA8_CTS"
+		chan="$(P)$(R)SCA8Counts"
 		clr=54
 		bclr=3
 	}
@@ -980,7 +969,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R).SCA7_CTS"
+		chan="$(P)$(R)SCA7Counts"
 		clr=54
 		bclr=3
 	}
@@ -996,7 +985,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R).SCA6_CTS"
+		chan="$(P)$(R)SCA6Counts"
 		clr=54
 		bclr=3
 	}
@@ -1012,7 +1001,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R).SCA5_CTS"
+		chan="$(P)$(R)SCA5Counts"
 		clr=54
 		bclr=3
 	}
@@ -1028,7 +1017,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R).SCA4_CTS"
+		chan="$(P)$(R)SCA4Counts"
 		clr=54
 		bclr=3
 	}
@@ -1044,7 +1033,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R).SCA3_CTS"
+		chan="$(P)$(R)SCA3Counts"
 		clr=54
 		bclr=3
 	}
@@ -1060,7 +1049,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R).SCA2_CTS"
+		chan="$(P)$(R)SCA2Counts"
 		clr=54
 		bclr=3
 	}
@@ -1076,7 +1065,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R).SCA1_CTS"
+		chan="$(P)$(R)SCA1Counts"
 		clr=54
 		bclr=3
 	}
@@ -1092,7 +1081,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R).SCA14_CTS"
+		chan="$(P)$(R)SCA14Counts"
 		clr=54
 		bclr=3
 	}
@@ -1108,7 +1097,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R).SCA15_CTS"
+		chan="$(P)$(R)SCA15Counts"
 		clr=54
 		bclr=3
 	}
@@ -1138,7 +1127,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA0_LO"
+		chan="$(P)$(R)SCA0Low"
 		clr=14
 		bclr=51
 	}
@@ -1153,7 +1142,7 @@ text {
 		height=22
 	}
 	control {
-		chan="$(P)$(R).SCA0_HI"
+		chan="$(P)$(R)SCA0High"
 		clr=14
 		bclr=51
 	}
@@ -1168,7 +1157,7 @@ text {
 		height=20
 	}
 	monitor {
-		chan="$(P)$(R).SCA0_CTS"
+		chan="$(P)$(R)SCA0Counts"
 		clr=54
 		bclr=3
 	}
