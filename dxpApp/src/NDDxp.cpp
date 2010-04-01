@@ -105,6 +105,13 @@ static char *NDDxpBufferString[2]     = {"buffer_a", "buffer_b"};
 static char SCA_NameLow[DXP_MAX_SCAS][LEN_SCA_NAME];
 static char SCA_NameHigh[DXP_MAX_SCAS][LEN_SCA_NAME];
 
+/* These values are static because we need to access them in the qsort callback, 
+ * no class reference available */
+static unsigned short numLLParams;
+static char *LLParamNames[DXP_MAX_LL_PARAMS];
+static unsigned short LLParamValues[DXP_MAX_LL_PARAMS];
+static int LLParamSort[DXP_MAX_LL_PARAMS];
+
 typedef struct moduleStatistics {
     double realTime;
     double triggerLiveTime;
@@ -380,10 +387,6 @@ private:
     int realTimeOffsets[3], triggerLiveTimeOffsets[3];
     int overFlowOffsets[2], underFlowOffsets[2];
 
-    unsigned short numLLParams;
-    char *LLParamNames[DXP_MAX_LL_PARAMS];
-    unsigned short LLParamValues[DXP_MAX_LL_PARAMS];
-
     char polling;
 
 };
@@ -404,6 +407,22 @@ static void acquisitionTaskC(void *drvPvt)
 {
     NDDxp *pNDDxp = (NDDxp *)drvPvt;
     pNDDxp->acquisitionTask();
+}
+
+static int paramCompare(const void *p1, const void *p2)
+{
+    int ip1 = *(int *)p1;
+    int ip2 = *(int *)p2;
+    
+    return(strcmp(LLParamNames[ip1], LLParamNames[ip2]));
+}
+
+static int indexCompare(const void *p1, const void *p2)
+{
+    int ip1 = *(int *)p1;
+    int ip2 = *(int *)p2;
+    
+    return(LLParamSort[ip2] - LLParamSort[ip1]);
 }
 
 extern "C" int NDDxp_config(const char *portName, int nChannels,
@@ -547,13 +566,17 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
         printf("Error: actual number of DXP params=%d, more than allowed maximum of %d\n", 
                 numLLParams, DXP_MAX_LL_PARAMS);
     }
+    for (i=0; i < numLLParams; i++) {
+        LLParamNames[i] = (char *) malloc(MAXSYMBOL_LEN * sizeof(char *));
+        status = xiaGetParamName(0, i, LLParamNames[i]);
+        LLParamSort[i] = i;
+    }
+    /* Sort the parameters in alphabetical order, much nicer to display */
+    qsort(LLParamSort, numLLParams, sizeof(int), paramCompare);  
+
     createParam(NDDxpNumLLParamsString,            asynParamInt32,   &NDDxpNumLLParams);
     createParam(NDDxpReadLLParamsString,           asynParamInt32,   &NDDxpReadLLParams);
     for (i=0; i<DXP_MAX_LL_PARAMS; i++) {
-        if (i < numLLParams) {
-            this->LLParamNames[i] = (char *) malloc(MAXSYMBOL_LEN * sizeof(char *));
-            status = xiaGetParamName(0, i, this->LLParamNames[i]);
-        } 
         sprintf(tmpStr, "DxpLL%dName", i);
         createParam(tmpStr,                        asynParamOctet,   &NDDxpLLParamNames[i]);
         sprintf(tmpStr, "DxpLL%dVal", i);
@@ -563,7 +586,7 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     for (ch=0; ch<this->nChannels; ch++) {
         setIntegerParam(ch, NDDxpNumLLParams, numLLParams);
         for (i=0; i<numLLParams; i++) {
-            setStringParam(ch, NDDxpLLParamNames[i], this->LLParamNames[i]);
+            setStringParam(ch, NDDxpLLParamNames[i], LLParamNames[LLParamSort[i]]);
         }
         for (i=numLLParams; i<DXP_MAX_LL_PARAMS; i++) {
             setStringParam(ch, NDDxpLLParamNames[i], "Unused");
@@ -821,7 +844,7 @@ asynStatus NDDxp::writeInt32( asynUser *pasynUser, epicsInt32 value)
         this->setSCAs(pasynUser, addr);
     }
     else if ((function >= NDDxpLLParamVals[0]) &&
-             (function <= NDDxpLLParamVals[this->numLLParams-1])) 
+             (function <= NDDxpLLParamVals[numLLParams-1])) 
     {
         this->setLLDxpParam(pasynUser, addr, value);
     }
@@ -1974,7 +1997,7 @@ asynStatus NDDxp::getLLDxpParams(asynUser *pasynUser, int addr)
     } else {
         status = xiaGetParamData(addr, "values", LLParamValues);
         for (param=0; param<numParams; param++) {
-            setIntegerParam(addr, NDDxpLLParamVals[param], LLParamValues[param]);
+            setIntegerParam(addr, NDDxpLLParamVals[param], LLParamValues[LLParamSort[param]]);
         }
         /* Read the high-level parameters too */
         getDxpParams(pasynUser, addr);
