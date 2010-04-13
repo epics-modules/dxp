@@ -31,6 +31,8 @@ dxp_SRCS += dxpMED.st
 dxp_LIBS += handel
 dxp_LIBS += asyn
 dxp_LIBS += ADBase NDPlugin netCDF
+dxp_LIBS_Linux += PvAPI
+dxp_LIBS_WIN32 += PvAPI
 dxp_LIBS += mca 
 dxp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
@@ -56,6 +58,8 @@ dxpApp_LIBS += dxp handel
 dxpApp_LIBS += mca
 dxpApp_LIBS += asyn
 dxpApp_LIBS += ADBase NDPlugin netCDF
+dxpApp_LIBS_Linux += PvAPI
+dxpApp_LIBS_WIN32 += PvAPI
 dxpApp_LIBS += calc sscan autosave
 dxpApp_LIBS += busy
 dxpApp_LIBS_vxWorks += camac
