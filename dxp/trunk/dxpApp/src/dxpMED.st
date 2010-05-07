@@ -1170,11 +1170,13 @@ ss dxp_control {
             for (i=0; i<nDetectors; i++) {
                 for (j=0; j<nSCAs; j++) {
                     k = i*MAX_SCAS + j;
+                    pvGet(mcaROILow[k]);
                     chan = mcaROILow[k];
                     if (chan < 0) chan = 0;
                     if (chan > mcaNumChans[i]-1) chan = mcaNumChans[i]-1;
                     dxpSCALow[k] = chan;
                     pvPut(dxpSCALow[k], SYNC);
+                    pvGet(mcaROIHigh[k]);
                     chan = mcaROIHigh[k];
                     if (chan < 0) chan = 0;
                     if (chan > mcaNumChans[i]-1) chan = mcaNumChans[i]-1;
