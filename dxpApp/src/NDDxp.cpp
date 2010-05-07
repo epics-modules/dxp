@@ -616,6 +616,9 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
 
     /* Set the parameters in param lib */
     status |= setIntegerParam(NDDxpCollectMode, 0);
+    /* Clear the acquiring flag, must do this or things don't work right because acquisitionTask does not set till 
+     * acquire first starts */
+    for (i=0; i<=this->nChannels; i++) setIntegerParam(i, mcaAcquiring, 0);
 
     /* Create the start and stop events that will be used to signal our
      * acquisitionTask when to start/stop polling the HW     */
@@ -1470,12 +1473,17 @@ asynStatus NDDxp::configureCollectMode()
     getIntegerParam(NDDxpCollectMode, (int *)&collectMode);
 
     asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-        "%s::%s Changing collectMode to %d\n",
-        driverName, functionName, collectMode);
+        "%s::%s Changing collectMode to %d, device type=%d\n",
+        driverName, functionName, collectMode, deviceType);
 
     if (collectMode < NDDxpModeMCA || collectMode > NDDxpModeSCAMapping) return asynError;
     getIntegerParam(mcaAcquiring, &acquiring);
-    if (acquiring) return asynError;
+    if (acquiring) {
+	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, 
+            "%s:%s: cannot change collect mode while acquiring\n",
+            driverName, functionName);
+        return asynError;
+    }
 
     dTmp = (double)collectMode;
     xiastatus = xiaSetAcquisitionValues(DXP_ALL, "mapping_mode", &dTmp);
@@ -1560,6 +1568,9 @@ asynStatus NDDxp::configureCollectMode()
         break;
     }
 
+    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
+        "%s:%s: returning status=%d\n",
+        driverName, functionName);
     return status;
 }
 
