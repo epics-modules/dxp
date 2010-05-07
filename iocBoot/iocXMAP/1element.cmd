@@ -5,6 +5,13 @@
 dbLoadDatabase("$(DXP)/dbd/dxp.dbd")
 dxp_registerRecordDeviceDriver(pdbbase)
 
+
+# The default callback queue in EPICS base is only 2000 bytes. 
+# The dxp detector system needs this to be larger to avoid the error message: 
+# "callbackRequest: cbLow ring buffer full" 
+# right after the epicsThreadSleep at the end of this script
+callbackSetQueueSize(4000)
+
 # Setup for save_restore
 < ../save_restore.cmd
 save_restoreSet_status_prefix("dxpXMAP:")

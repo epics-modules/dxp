@@ -7,7 +7,7 @@ dbLoadDatabase("$(DXP)/dbd/dxp.dbd")
 dxp_registerRecordDeviceDriver(pdbbase)
 
 # The default callback queue in EPICS base is only 2000 bytes. 
-# The 16 element detector system needs this to be larger to avoid the error message: 
+# The dxp detector system needs this to be larger to avoid the error message: 
 # "callbackRequest: cbLow ring buffer full" 
 # right after the epicsThreadSleep at the end of this script
 callbackSetQueueSize(4000)
