@@ -417,14 +417,6 @@ static int paramCompare(const void *p1, const void *p2)
     return(strcmp(LLParamNames[ip1], LLParamNames[ip2]));
 }
 
-static int indexCompare(const void *p1, const void *p2)
-{
-    int ip1 = *(int *)p1;
-    int ip2 = *(int *)p2;
-    
-    return(LLParamSort[ip2] - LLParamSort[ip1]);
-}
-
 extern "C" int NDDxp_config(const char *portName, int nChannels,
                             int maxBuffers, size_t maxMemory)
 {
@@ -717,7 +709,19 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     /* Set default values for parameters that cannot be read from Handel */
     for (i=0; i<this->nChannels; i++) {
         setIntegerParam(i, NDDxpTraceMode, NDDxpTraceADC);
-        setDoubleParam(i, NDDxpTraceTime, 0.1);
+        setDoubleParam (i, NDDxpTraceTime, 0.1);
+        setIntegerParam(i, NDDxpPresetMode, NDDxpPresetModeNone);
+        setIntegerParam(i, NDDxpPresetEvents, 0);
+        setIntegerParam(i, NDDxpPresetTriggers, 0);
+        setIntegerParam(i, NDDxpForceRead, 0);
+        setIntegerParam(i, mcaPresetCounts, 0);
+        setDoubleParam (i, mcaPresetRealTime, 0.0);
+        setDoubleParam (i, mcaPresetRealTime, 0.0);
+        /* This parameter is a little special.  It can be read from Handel, but only for xMAP systems
+         * and the dxpHighLevel.template file current has a record for this parameter on all systems,
+         * because that is the only file that gets loaded for each detector element, and this record
+         * is needed per element. */
+        setIntegerParam(i, NDDxpCurrentPixel, 0);
     }
 
     /* Read the MCA and DXP parameters once */
