@@ -6,6 +6,7 @@
 # dxpSaturn.template
 
 record(mbbo, "$(P)$(R)PresetMode") {
+    field(PINI, "YES")
     field(DESC, "set preset type")
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpPresetMode")
