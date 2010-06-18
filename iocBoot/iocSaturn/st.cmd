@@ -25,6 +25,7 @@ NDDxpConfig("DXP1", 1, 10, 42000000)
 asynSetTraceIOMask("DXP1", 0, 2)
 #asynSetTraceMask("DXP1", 0, 255)
 
+dbLoadRecords("$(DXP)/dxpApp/Db/dxpSystem.template",   "P=dxpSaturn:, R=dxp1:,IO=@asyn(DXP1 0 1)")
 dbLoadRecords("$(DXP)/dxpApp/Db/dxpHighLevel.template","P=dxpSaturn:, R=dxp1:,IO=@asyn(DXP1 0 1)")
 dbLoadRecords("$(DXP)/dxpApp/Db/dxpSaturn.template",   "P=dxpSaturn:, R=dxp1:,IO=@asyn(DXP1 0 1)")
 dbLoadRecords("$(DXP)/dxpApp/Db/dxpLowLevel.template", "P=dxpSaturn:, R=dxp1:,IO=@asyn(DXP1 0 1)")
