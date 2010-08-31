@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xerxesdef.h,v 1.3 2009-07-06 18:24:31 rivers Exp $
+ * $Id: xerxesdef.h 13820 2009-11-19 19:00:43Z patrick $
  *
  *    Following are prototypes for dxp driver routines
  */
@@ -61,7 +61,7 @@
 
 #ifdef XERXES_USE_DLL		/* Linking to a DLL libraries */
 
-#ifdef WIN32			/* If we are on a Windoze platform */
+#ifdef _WIN32		
 
 #ifdef XERXES_MAKE_DLL
 #define XERXES_EXPORT __declspec(dllexport)
@@ -85,7 +85,7 @@
 
 #endif					/* Endif for XERXES_MAKE_DLL */
 
-#else					/* Not on a Windoze platform */
+#else				
 
 #ifdef XERXES_MAKE_DLL
 #define XERXES_EXPORT 
@@ -97,11 +97,11 @@
 #define XERXES_API
 #endif					/* Endif for XERXES_MAKE_DLL */
 
-#endif					/* Endif for WIN32 */
+#endif					/* Endif for _WIN32 */
 
 #else					/* We are using static libraries */
 
-#ifdef WIN32			/* If we are on a Windoze platform */
+#ifdef _WIN32		
 
 #ifdef XERXES_MAKE_DLL
 #define XERXES_EXPORT __declspec(dllexport)
@@ -113,7 +113,7 @@
 #define XERXES_API    
 #endif					/* Endif for XERXES_MAKE_DLL */
 
-#else					/* Not on a Windoze platform */
+#else				
 
 #ifdef XERXES_MAKE_DLL
 #define XERXES_EXPORT 
@@ -125,7 +125,7 @@
 #define XERXES_API
 #endif					/* Endif for XERXES_MAKE_DLL */
 
-#endif					/* Endif for WIN32 */
+#endif					/* Endif for _WIN32 */
 
 #endif					/* Endif for XERXES_USE_DLL */
 
