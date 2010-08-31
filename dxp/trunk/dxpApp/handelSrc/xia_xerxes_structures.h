@@ -2,7 +2,7 @@
  *  xia_xerxes_structures.h
  *
  * Copyright (c) 2004, X-ray Instrumentation Associates
- *               2005, XIA LLC
+ *               2005-2010, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -35,13 +35,13 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xia_xerxes_structures.h,v 1.4 2009-07-06 18:24:32 rivers Exp $
+ * $Id: xia_xerxes_structures.h 14864 2010-03-06 00:30:51Z patrick $
  *
  */
 
 
-#ifndef XIA_XERXES_STRUCTURES_H
-#define XIA_XERXES_STRUCTURES_H
+#ifndef __XIA_XERXES_STRUCTURES_H__
+#define __XIA_XERXES_STRUCTURES_H__
 
 #include "xerxesdef.h"
 #include "xia_common.h"
@@ -278,9 +278,9 @@ typedef int (*DXP_INIT_DRIVER)(Interface *);
 typedef int (*DXP_INIT_UTILS)(Utils *);
 typedef int (*DXP_GET_DSPCONFIG)(Dsp_Info *);
 typedef int (*DXP_GET_DSPINFO)(Dsp_Info *);
-typedef int (*DXP_GET_FIPINFO)(void *);
+typedef int (*DXP_GET_FIPINFO)(void *fip);
 typedef int (*DXP_GET_DEFAULTSINFO)(Dsp_Defaults *);
-typedef int (*DXP_GET_FPGACONFIG)(void *);
+typedef int (*DXP_GET_FPGACONFIG)(void *fpga);
 typedef int (*DXP_DOWNLOAD_FPGACONFIG)(int *ioChan, int *modChan, char *name, Board *board);
 typedef int (*DXP_DOWNLOAD_FPGA_DONE)(int *modChan, char *name, Board *board);
 typedef int (*DXP_GET_DSPDEFAULTS)(Dsp_Defaults *);
@@ -464,4 +464,4 @@ struct System_Info {
 };
 typedef struct System_Info System_Info;
 
-#endif						/* Endif for XIA_XERXES_STRUCTURES_H */
+#endif /* __XIA_XERXES_STRUCTURES_H__ */
