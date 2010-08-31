@@ -1,10 +1,5 @@
-/**
- * @file xia_usb2.h
- * @brief Public interface to the XIA USB2.0 library.
- */
-
 /*
- * Copyright (c) 2006, XIA LLC
+ * Copyright (c) 2006-2010, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -38,19 +33,16 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_usb2.h,v 1.6 2009-07-16 16:59:54 rivers Exp $
+ * $Id: xia_usb2.h 14795 2010-03-02 23:28:20Z patrick $
+ *
  */
 
 #ifndef __XIA_USB2_H__
 #define __XIA_USB2_H__
 
-#ifdef WIN32
-#include "windows.h"
-#endif
-
-#ifdef LINUX
-#include "xia_linux.h"
-#endif
+#ifdef _WIN32
+#include <windows.h>
+#endif /* _WIN32 */
 
 #include "Dlldefs.h"
 
