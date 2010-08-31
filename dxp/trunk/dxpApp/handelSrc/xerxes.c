@@ -1,34 +1,6 @@
 /*
- * xerxes.c
- *
- *   Created        25-Sep-1996  by Ed Oltman
- *   Extensive mods 19-Dec-1996  EO
- *   Modified:      03-Feb-1997  EO: Added "static" qualifier to variable defs
- *        Initialize some variables that may be undefined, add getenv to fopen
- *        for unix compatibility, replace '#include <dxp_area/...>' with
- *        '#include <...>' (unix compatability) -->compiler now requires
- *        path for include files; fixed bugs in dxp_initialize_ASC,
- *        dxp_assign_channel,dxp_det_to_elec(); replaced constants used in 
- *        dxp_initialize_ASC with parameters defined in dxp.h
- *    Modified      05-Feb-1997 EO: introduce FNAME replacement for VAX
- *        compatability (getenv crashes if logical not defined)
- *    Modified      17-Feb-1997 EO: fix bug in dxp_det_to_elec
- *    Modified      17-Jul-1997 EO: fix bug in dxp_initialize_ASC
- *    Modified      04-Oct-1997 EO: Make function declarations compatable
- *        compatable w/traditional C; Replace LITTLE_ENDIAN parameter with call
- *        to dxp_little_endian, fix bug in dxp_write_spectrua,Changed file 
- *        system:new file dxp_filename: Now get all file names from single list 
- *        of file names pointed to by "dxpfile_cfg"
- *    09-May-2000 JEW: Complete rework of library to allow use of both a
- *        DXP4C and DXP4C2X simultaneously.
- *
- *
- *   This file contains mid-level DXP control routines for handling a multi-
- *   channel array.  Most of these routines can be used as is or can serve as 
- *   examples for how the primitive routines are used. 
- *
- * Copyright (c) 2002,2003,2004, X-ray Instrumentation Associates
- *               2005, XIA LLC
+ * Copyright (c) 2002-2004, X-ray Instrumentation Associates
+ *               2005-2009, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -60,6 +32,8 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE. 
+ *
+ * $Id: xerxes.c 15339 2010-04-13 19:02:10Z ann $
  *
  */
 
@@ -306,7 +280,7 @@ XERXES_EXPORT int XERXES_API dxp_install_utils(const char *utilname)
   char lstr[133];
 
   if (utilname != NULL) {
-	strncpy(lstr, utilname, LINE_LEN);
+	strncpy(lstr, utilname, XIA_LINE_LEN);
 	lstr[strlen(utilname)] = '\0';
   } else {
 	strcpy(lstr, "NULL");
@@ -318,7 +292,6 @@ XERXES_EXPORT int XERXES_API dxp_install_utils(const char *utilname)
   /* Now build up some information...slowly */
   xerxes_md_alloc          = util_funcs.dxp_md_alloc;
   xerxes_md_free           = util_funcs.dxp_md_free;
-  xerxes_md_error_control  = util_funcs.dxp_md_error_control;
   xerxes_md_error          = util_funcs.dxp_md_error;
   xerxes_md_warning        = util_funcs.dxp_md_warning;
   xerxes_md_info           = util_funcs.dxp_md_info;
@@ -335,7 +308,8 @@ XERXES_EXPORT int XERXES_API dxp_install_utils(const char *utilname)
   xerxes_md_tmp_path       = util_funcs.dxp_md_tmp_path;
   xerxes_md_clear_tmp      = util_funcs.dxp_md_clear_tmp;
   xerxes_md_path_separator = util_funcs.dxp_md_path_separator;
-
+  xerxes_md_process_msgs   = util_funcs.dxp_md_process_msgs;
+  
   /* Now for the Utils structure */
   if (utils!=NULL) {
 
@@ -360,7 +334,6 @@ XERXES_EXPORT int XERXES_API dxp_install_utils(const char *utilname)
   utils->funcs->dxp_md_free			  	= free;
 #endif /* XIA_SPECIAL_MEM */
 
-  utils->funcs->dxp_md_error_control 	= xerxes_md_error_control;
   utils->funcs->dxp_md_error         	= xerxes_md_error;
   utils->funcs->dxp_md_warning       	= xerxes_md_warning;
   utils->funcs->dxp_md_info          	= xerxes_md_info;
@@ -376,7 +349,8 @@ XERXES_EXPORT int XERXES_API dxp_install_utils(const char *utilname)
   utils->funcs->dxp_md_tmp_path       = xerxes_md_tmp_path;
   utils->funcs->dxp_md_clear_tmp      = xerxes_md_clear_tmp;
   utils->funcs->dxp_md_path_separator = xerxes_md_path_separator;
-
+  utils->funcs->dxp_md_process_msgs   = xerxes_md_process_msgs;
+  
   return DXP_SUCCESS;
 }
 
@@ -647,7 +621,7 @@ int XERXES_API dxp_read_config(char *cname)
 {
   int status=DXP_SUCCESS;
   char info_string[INFO_LEN];
-  char line[LINE_LEN],*token;
+  char line[XIA_LINE_LEN],*token;
   int len, start, finish;
   unsigned int i;
 
@@ -689,7 +663,7 @@ int XERXES_API dxp_read_config(char *cname)
    */ 
   for(i=0;;i++){ 
 	do {
-	  cstatus = xerxes_md_fgets(line,LINE_LEN,fp); 
+	  cstatus = xerxes_md_fgets(line,XIA_LINE_LEN,fp); 
 	} while (((line[0]=='*')||(line[0]=='\r')||(line[0]=='\n'))&&(cstatus!=NULL)); 
 	if(cstatus==NULL) break;
 	/* What kind of entry do we have?
@@ -703,11 +677,19 @@ int XERXES_API dxp_read_config(char *cname)
 	/* Unfort, need to allow spaces in the filenames.
 	 * so count forward in the line till out of spaces, this is the start of the 
 	 * file name */
-	for(start=strlen(token)+1;start<len;start++) 
-	  if(isspace(line[start])==0) break;				/* find first character in path */ 
+	for (start = strlen(token) + 1; start < len; start++) {
+        if (isspace((int)line[start]) == 0) {
+            break;
+        }
+    }
+
 	/* Now count backwards from the end of the line till you hit a non-space */
-	for(finish=len;finish>start;finish--) 
-	  if(isgraph(line[finish])!=0) break;				/* find last character in name  */ 
+	for (finish = len; finish > start; finish--) {
+        if (isgraph((int)line[finish]) !=0 ) {
+            break;
+        }
+    }
+
 	/* Allocate memory for the 2nd token */
 	len = finish-start+1;
 	/* Now copy the value associated with this item */
@@ -751,9 +733,8 @@ int XERXES_API dxp_add_system_item(char *ltoken, char **values)
   len = strlen(values[0]);
 
   /* Convert the token to lower case for comparison */
-  for (j=0;j<strlen(strTmp);j++) {
-		
-	strTmp[j] = (char) tolower(strTmp[j]);
+  for (j = 0; j < strlen(strTmp); j++) {
+      strTmp[j] = (char)tolower((int)strTmp[j]);
   }
 
   if ((strncmp(strTmp, "dxp",3)==0) || 
@@ -1653,7 +1634,9 @@ int XERXES_API dxp_locate_system_files(unsigned int *maxlen, char **files)
 	strcpy(tmpname,"NULL");
   } else {
 	len = strlen(info->modules)<4 ? strlen(info->modules)+1 : 5;
-	for (i=0;i<len;i++) tmpname[i] = (char) toupper(info->modules[i]);
+	for (i = 0; i < len; i++) {
+        tmpname[i] = (char)toupper((int)(info->modules[i]));
+    }
   }
   /* Try to find the modules configuration file	*/
   if((fp=dxp_find_file(info->modules,"r",newFile))!=NULL){ 
@@ -1682,7 +1665,9 @@ int XERXES_API dxp_locate_system_files(unsigned int *maxlen, char **files)
 	strcpy(tmpname,"NULL");
   } else {
 	len = strlen(info->preamp)<4 ? strlen(info->preamp)+1 : 5;
-	for (i=0;i<len;i++) tmpname[i] = (char) toupper(info->preamp[i]);
+	for (i = 0; i < len; i++) {
+        tmpname[i] = (char)toupper((int)(info->preamp[i]));
+    }
   }
   /* Try to find the preamp configuration file	*/
   if ((fp=dxp_find_file(info->preamp,"r",newFile))!=NULL){ 
@@ -1791,7 +1776,10 @@ int XERXES_API dxp_locate_channel_files(int *detChan, unsigned int *maxlen, char
   if (chosen->defaults[modChan]->filename==NULL) {
 	strcpy(tmpname,"NULL");
   } else {
-	for (i=0;i<5;i++) tmpname[i] = (char) toupper(chosen->defaults[modChan]->filename[i]);
+      for (i = 0; i < 5; i++) {
+          tmpname[i] = 
+              (char)toupper((int)(chosen->defaults[modChan]->filename[i]));
+      }
   }
   /* Try to find the defaults file	*/
   if((fp=dxp_find_file(chosen->defaults[modChan]->filename,"r",newFile))!=NULL){ 
@@ -1828,7 +1816,7 @@ static int XERXES_API dxp_read_modules(FILE* fp)
   int status;
 
   char info_string[INFO_LEN];
-  char line[LINE_LEN];
+  char line[XIA_LINE_LEN];
 
   char *entry_type = NULL;
   char *cstatus = " ";
@@ -1838,9 +1826,9 @@ static int XERXES_API dxp_read_modules(FILE* fp)
   unsigned int m;
   unsigned int nchan;
 
-  char strtemp[LINE_LEN];
-  char temp_line[LINE_LEN];
-  char ioname[LINE_LEN] = "";
+  char strtemp[XIA_LINE_LEN];
+  char temp_line[XIA_LINE_LEN];
+  char ioname[XIA_LINE_LEN] = "";
 
   char *values[10];
 
@@ -1869,7 +1857,7 @@ static int XERXES_API dxp_read_modules(FILE* fp)
 
 	/* Skip ahead in the file until we encounter some real data. */
 	do {
-	  cstatus = xerxes_md_fgets(line,LINE_LEN,fp);
+	  cstatus = xerxes_md_fgets(line,XIA_LINE_LEN,fp);
 
 	  if (line[0] == '*') {
 		is_comment = TRUE_;
@@ -2201,7 +2189,9 @@ int XERXES_API dxp_assign_channel(VOID)
 	strcpy(strtmp,"NULL");
   } else {
 	len = strlen(info->modules)<4 ? strlen(info->modules)+1 : 5;
-	for (i=0;i<len;i++) strtmp[i] = (char) toupper(info->modules[i]);
+	for (i = 0; i < len; i++) {
+        strtmp[i] = (char)toupper((int)(info->modules[i]));
+    }
   }
 
   if (!STREQ(strtmp,"NULL")) {
@@ -2419,8 +2409,8 @@ static int XERXES_API dxp_free_fippi(Fippi_Info *fippi)
 
   if (fippi->filename!=NULL) xerxes_md_free(fippi->filename);
  
-  if (fippi->proglen > 0) {
-    if (fippi->data != NULL) xerxes_md_free(fippi->data);
+  if ((fippi->proglen > 0) && fippi->data != NULL) {
+    xerxes_md_free(fippi->data);
   }
 
   /* Free the Fippi_Info structure */
@@ -3038,9 +3028,9 @@ static int XERXES_API dxp_add_btype_library(Board_Info* current)
 	  dxp_init_dxp4c2x(current->funcs);
 	} else 
 #endif
-#ifndef EXCLUDE_DXPX10P
+#ifndef EXCLUDE_SATURN
 	  if (STREQ(current->name,"dxpx10p")) {
-		dxp_init_dxpx10p(current->funcs);
+		dxp_init_saturn(current->funcs);
 	  } else
 #endif
 #ifndef EXCLUDE_UDXPS
@@ -3126,8 +3116,8 @@ XERXES_STATIC int dxp_add_dsp(char* filename, Board_Info* board,
   new_dsp = (Dsp_Info *)xerxes_md_alloc(sizeof(Dsp_Info));
 
   if (!new_dsp) {
-	sprintf(info_string, "Error allocating %ld bytes for 'new_dsp'",
-			(long)sizeof(Dsp_Info));
+	sprintf(info_string, "Error allocating %d bytes for 'new_dsp'",
+			sizeof(Dsp_Info));
 	dxp_log_error("dxp_add_dsp", info_string, DXP_NOMEM);
 	return DXP_NOMEM;
   }
@@ -3137,8 +3127,8 @@ XERXES_STATIC int dxp_add_dsp(char* filename, Board_Info* board,
   if (!new_dsp->params) {
 	dxp_free_dsp(new_dsp);
 
-	sprintf(info_string, "Error allocating %ld bytes for 'new_dsp->params'",
-			(long)sizeof(Dsp_Params));
+	sprintf(info_string, "Error allocating %d bytes for 'new_dsp->params'",
+			sizeof(Dsp_Params));
 	dxp_log_error("dxp_add_dsp", info_string, DXP_NOMEM);
 	return DXP_NOMEM;
   }
@@ -3148,8 +3138,8 @@ XERXES_STATIC int dxp_add_dsp(char* filename, Board_Info* board,
   if (!new_dsp->filename) {
 	dxp_free_dsp(new_dsp);
 
-	sprintf(info_string, "Error allocating %ld bytes for 'new_dsp->filename'",
-			(long)strlen(filename) + 1);
+	sprintf(info_string, "Error allocating %d bytes for 'new_dsp->filename'",
+			strlen(filename) + 1);
 	dxp_log_error("dxp_add_dsp", info_string, DXP_NOMEM);
 	return DXP_NOMEM;
   }
@@ -3174,8 +3164,8 @@ XERXES_STATIC int dxp_add_dsp(char* filename, Board_Info* board,
     if (!new_dsp->data) {
   	dxp_free_dsp(new_dsp);
 
-  	sprintf(info_string, "Error allocating %ld bytes for 'new_dsp->data'",
-  			(long)(new_dsp->maxproglen * sizeof(unsigned short)));
+  	sprintf(info_string, "Error allocating %d bytes for 'new_dsp->data'",
+  			new_dsp->maxproglen * sizeof(unsigned short));
   	dxp_log_error("dxp_add_dsp", info_string, DXP_NOMEM);
   	return DXP_NOMEM;
     }
@@ -3188,8 +3178,8 @@ XERXES_STATIC int dxp_add_dsp(char* filename, Board_Info* board,
   if (!new_dsp->params->parameters) {
 	dxp_free_dsp(new_dsp);
 
-	sprintf(info_string, "Error allocating %ld bytes for 'new_dsp->params->"
-			"parameter'", (long)(new_dsp->params->maxsym * sizeof(Parameter)));
+	sprintf(info_string, "Error allocating %d bytes for 'new_dsp->params->"
+			"parameter'", new_dsp->params->maxsym * sizeof(Parameter));
 	dxp_log_error("dxp_add_dsp", info_string, DXP_NOMEM);
 	return DXP_NOMEM;
   }
@@ -3201,8 +3191,8 @@ XERXES_STATIC int dxp_add_dsp(char* filename, Board_Info* board,
   if (!new_dsp->params->per_chan_parameters) {
 	dxp_free_dsp(new_dsp);
 
-	sprintf(info_string, "Error allocating %ld bytes for 'new_dsp->params->"
-			"per_chan_parameters'", (long)(new_dsp->params->maxsym * sizeof(Parameter)));
+	sprintf(info_string, "Error allocating %d bytes for 'new_dsp->params->"
+			"per_chan_parameters'", new_dsp->params->maxsym * sizeof(Parameter));
 	dxp_log_error("dxp_add_dsp", info_string, DXP_NOMEM);
 	return DXP_NOMEM;
   }
@@ -3324,6 +3314,7 @@ static int XERXES_API dxp_add_fippi(char* filename, Board_Info* board, Fippi_Inf
   /* Now allocate memory and fill the program information 
    * with the driver routine */
   temp_fippi = (Fippi_Info *) xerxes_md_alloc(sizeof(Fippi_Info));
+  
   temp_fippi->filename = (char *) xerxes_md_alloc((strlen(filename)+1)*sizeof(char));
   strcpy(temp_fippi->filename, filename);
 
@@ -3346,14 +3337,15 @@ static int XERXES_API dxp_add_fippi(char* filename, Board_Info* board, Fippi_Inf
 
   /* Finish allocating memory */
   if (temp_fippi->maxproglen > 0) {
-    /* don't allocate zero length buffer */
-
+  
+    /* need to keep proglen up to date if data is allocated here */
+    temp_fippi->proglen = temp_fippi->maxproglen;
     temp_fippi->data = (unsigned short *) 
   	xerxes_md_alloc((temp_fippi->maxproglen) * sizeof(unsigned short));
 
     if (!temp_fippi->data) {
-  	sprintf(info_string, "Error allocating %ld bytes of memory for "
-  			"temp_fippi->data", (long)(temp_fippi->maxproglen * sizeof(unsigned short)));
+  	sprintf(info_string, "Error allocating %u bytes of memory for "
+  			"temp_fippi->data", temp_fippi->maxproglen * sizeof(unsigned short));
   	dxp_log_error("dxp_add_fippi", info_string, DXP_NOMEM);
 
   	dxp_free_fippi(temp_fippi);
@@ -3449,8 +3441,8 @@ XERXES_STATIC int dxp_add_system_fippi(char *filename, Board_Info *b,
   *fippi = xerxes_md_alloc(sizeof(System_FiPPI_Info));
 
   if (*fippi == NULL) {
-    sprintf(info_string, "Error allocating %ld bytes for '*fippi'",
-            (long)sizeof(System_FiPPI_Info));
+    sprintf(info_string, "Error allocating %d bytes for '*fippi'",
+            sizeof(System_FiPPI_Info));
     dxp_log_error("dxp_add_system_fippi", info_string, DXP_NOMEM);
     return DXP_NOMEM;
   }
@@ -3460,8 +3452,8 @@ XERXES_STATIC int dxp_add_system_fippi(char *filename, Board_Info *b,
   (*fippi)->filename = xerxes_md_alloc(strlen(filename) + 1);
   
   if ((*fippi)->filename == NULL) {
-    sprintf(info_string, "Error allocating %ld bytes for '*fippi->filename'",
-            (long)strlen(filename) + 1);
+    sprintf(info_string, "Error allocating %d bytes for '*fippi->filename'",
+            strlen(filename) + 1);
     dxp_log_error("dxp_add_system_fippi", info_string, DXP_NOMEM);
     return DXP_NOMEM;
   }
@@ -3472,8 +3464,8 @@ XERXES_STATIC int dxp_add_system_fippi(char *filename, Board_Info *b,
 
   if ((*fippi)->params == NULL) {
     dxp_free_system_fippi(*fippi);
-    sprintf(info_string, "Error allocating %ld bytes for '*fippi->params'",
-            (long)sizeof((*fippi)->params));
+    sprintf(info_string, "Error allocating %d bytes for '*fippi->params'",
+            sizeof(Dsp_Params));
     dxp_log_error("dxp_add_system_fippi", info_string, DXP_NOMEM);
     return DXP_NOMEM;
   }
@@ -3494,7 +3486,7 @@ XERXES_STATIC int dxp_add_system_fippi(char *filename, Board_Info *b,
 
   if ((*fippi)->data == NULL) {
     dxp_free_system_fippi(*fippi);
-    sprintf(info_string, "Error allocating %ld bytes for '*fippi->data'",
+    sprintf(info_string, "Error allocating %lu bytes for '*fippi->data'",
             (*fippi)->max_data_len);
     dxp_log_error("dxp_add_system_fippi", info_string, DXP_NOMEM);
     return DXP_NOMEM;
@@ -3505,8 +3497,8 @@ XERXES_STATIC int dxp_add_system_fippi(char *filename, Board_Info *b,
 
   if ((*fippi)->params->parameters == NULL) {
     dxp_free_system_fippi(*fippi);
-    sprintf(info_string, "Error allocating %ld bytes for "
-            "'*fippi->params->parameters'", (long)(*fippi)->params->maxsym *
+    sprintf(info_string, "Error allocating %d bytes for "
+            "'*fippi->params->parameters'", (*fippi)->params->maxsym *
             sizeof(Parameter));
     dxp_log_error("dxp_add_system_fippi", info_string, DXP_NOMEM);
     return DXP_NOMEM;
@@ -3631,7 +3623,9 @@ static int dxp_add_defaults(char* filename, Board_Info* board,
     strcpy(strtmp, "NULL");
   } else {
     len = strlen(filename)<4 ? strlen(filename)+1 : 5;
-    for (i=0;i<len;i++) strtmp[i] = (char) toupper(filename[i]);
+    for (i = 0; i < len; i++) {
+        strtmp[i] = (char)toupper((int)(filename[i]));
+    }
   }
   if (!STREQ(strtmp,"NULL")) {
     /* If not a NULL entry, then call the primitive function */
@@ -3784,11 +3778,17 @@ static int XERXES_API dxp_pick_filename(unsigned int start, char* lline, char* f
   /* Unfort, need to allow spaces in the filenames.
    * so count forward in the line till out of spaces, this is the start of the 
    * file name */
-  for(;start<len;start++) 
-	if(isspace(lline[start])==0) break;				/* find first character in path */ 
+  for ( ; start < len; start++) { 
+      if (isspace((int)lline[start]) == 0) {
+          break;
+      }
+  }
   /* Now count backwards from the end of the line till you hit a non-space */
-  for(finish=len;finish>start;finish--) 
-	if(isgraph(lline[finish])!=0) break;				/* find last character in name  */ 
+  for (finish = len; finish > start; finish--) {
+      if (isgraph((int)lline[finish]) != 0) {
+          break;
+      }
+  }
   /* Determine Length so i can NULL terminate the string */
   len = finish-start+1;
   /* Copy the filename into the structure.  End the string with 
@@ -5755,7 +5755,7 @@ int XERXES_API dxp_set_dspsymbol(char* name, unsigned short* value)
  * integer containing the number of symbols.  If dynamic allocation 
  * is desired, then a call to dxp_num_symbols() should be made and 
  * the memory allocated accordingly.  All symbols have a maximum size
- * of MAXSYMBOL_LEN characters.
+ * of MAX_DSP_PARAM_NAME_LEN characters.
  *
  ******************************************************************************/
 int XERXES_API dxp_symbolname_list(int* detChan, char** list)
@@ -5798,7 +5798,7 @@ int XERXES_API dxp_symbolname_list(int* detChan, char** list)
 
 /** @brief Returns the DSP parameter name located at the specified index.
  *
- * @a name needs to be at least MAXSYMBOL_LEN characters long.
+ * @a name needs to be at least MAX_DSP_PARAM_NAME_LEN characters long.
  *
  */
 int XERXES_API dxp_symbolname_by_index(int* detChan, unsigned short *lindex,
@@ -6268,7 +6268,7 @@ int XERXES_API dxp_save_dspparams(int* detChan, int* lun)
    * Now write out the list
    */
   /* Allocate memory for the symbolname */
-  symbolname = (char *) xerxes_md_alloc(MAXSYMBOL_LEN*sizeof(char));
+  symbolname = (char *) xerxes_md_alloc(MAX_DSP_PARAM_NAME_LEN*sizeof(char));
 
   nsymb = chosen->dsp[modChan]->params->nsymbol;
   for (i=0; i < nsymb; i++) {
@@ -6316,12 +6316,12 @@ int XERXES_API dxp_save_config(int* lun)
   int status;
   unsigned short i, nsymb;
   unsigned short nsymbols;
-  char symbol[MAXSYMBOL_LEN];
+  char symbol[MAX_DSP_PARAM_NAME_LEN];
   FILE *fout;
 
   Board_Info *current_btype = NULL;
-  char current_ifacename[LINE_LEN];
-  char current_dllname[LINE_LEN];
+  char current_ifacename[XIA_LINE_LEN];
+  char current_dllname[XIA_LINE_LEN];
   Fippi_Info *current_fippi = NULL;
   Dsp_Info *current_dsp = NULL;
 
@@ -6465,9 +6465,9 @@ int XERXES_API dxp_restore_config(int* lun)
 {
    
   char info_string[INFO_LEN];
-  char line[LINE_LEN];
-  char temp_line[LINE_LEN];
-  char strtmp[LINE_LEN];
+  char line[XIA_LINE_LEN];
+  char temp_line[XIA_LINE_LEN];
+  char strtmp[XIA_LINE_LEN];
 
   char *token   = NULL;
   char *cstatus = NULL;
@@ -6509,7 +6509,7 @@ int XERXES_API dxp_restore_config(int* lun)
    */        
   do {  
     /* skip comments and blank lines */
-    cstatus = xerxes_md_fgets(line, LINE_LEN, fp);
+    cstatus = xerxes_md_fgets(line, XIA_LINE_LEN, fp);
   
   } while((line[0] == '*') ||
 		  (line[0] == '\r')||
@@ -6521,7 +6521,7 @@ int XERXES_API dxp_restore_config(int* lun)
   token = strtok(line, delim);  
   
   for (i = 0; i < strlen(token); i++) { 
-	token[i] = (char) tolower(token[i]);
+      token[i] = (char)tolower((int)token[i]);
   }
 
   if (!STREQ(token, "preamp")) {
@@ -6587,7 +6587,7 @@ int XERXES_API dxp_restore_config(int* lun)
 	 */
   
 	/* Get the Detector number */
-	xerxes_md_fgets(line, LINE_LEN, fp);
+	xerxes_md_fgets(line, XIA_LINE_LEN, fp);
   
 	token = strtok(line, delim);
 
@@ -6637,7 +6637,7 @@ int XERXES_API dxp_restore_config(int* lun)
 	  return status;
 	}
 
-	xerxes_md_fgets(line, LINE_LEN, fp);
+	xerxes_md_fgets(line, XIA_LINE_LEN, fp);
   
 	token = strtok(line, localDelim);  
 	token = strtok(NULL, localDelim);  
@@ -6662,12 +6662,12 @@ int XERXES_API dxp_restore_config(int* lun)
 	memset(params, 0, sizeof(params));
 	nparam = 0;
 
-	while(xerxes_md_fgets(line, LINE_LEN, fp) != NULL) {  
+	while(xerxes_md_fgets(line, XIA_LINE_LEN, fp) != NULL) {  
 	  token = strtok(line, localDelim);  
 	  token = strtok(NULL, localDelim);
   
 	  while(token != NULL) {
-		if(isalnum(token[0]) != 0){  
+          if(isalnum((int)token[0]) != 0){  
 		  status = chosen->btype->funcs->dxp_loc(token, chosen->dsp[modChan], &addr[nparam]);
 		  
 		  if (status != DXP_SUCCESS) {
@@ -6695,12 +6695,12 @@ int XERXES_API dxp_restore_config(int* lun)
 	 * Load the parameter values
 	 */
 	nparam = 0;
-	while(xerxes_md_fgets(line, LINE_LEN, fp) != NULL) {  
+	while(xerxes_md_fgets(line, XIA_LINE_LEN, fp) != NULL) {  
 	  token = strtok(line, localDelim);
 	  token = strtok(NULL, localDelim);
   
 	  while(token != NULL) {
-		if(isxdigit(token[0]) != 0) {
+          if(isxdigit((int)token[0]) != 0) {
 		  /* Store the new value and increment number of entries. */
 		  sscanf(token, "%hX", &par);
 		  params[nparam] = par;
@@ -7077,78 +7077,6 @@ int XERXES_API dxp_check_decimation(unsigned short* decimation, unsigned short* 
   return DXP_SUCCESS;
 }
 
-/******************************************************************************
- *
- *  Determine the run statistics.  Livetime, ICR, OCR.
- *
- ******************************************************************************/
-int XERXES_API dxp_get_statistics(int* detChan, double* livetime, double* icr, 
-								  double* ocr, unsigned long* nevents)
-	 /* int *detChan;					Input: Detector Channel number			*/
-	 /* double *livetime;				Output: livetime for last run (sec)		*/
-	 /* double *icr;						Output: input count rate (Kcounts/sec)	*/
-	 /* double *ocr;						Output: output count rate (Kcounts/sec)	*/
-	 /* unsigned long *nevents;			Output: number of events in last run	*/
-{
-  int status;
-  char info_string[INFO_LEN];
-
-  unsigned long evts, under, over, fast, base;
-
-  int ioChan, modChan;
-  /* Pointer to Chosen Board */
-  Board *chosen=NULL;
-
-  /* Get the IO channel number and module channel number that matches the detChan */
-
-  if ((status=dxp_det_to_elec(detChan, &chosen, &modChan))!=DXP_SUCCESS) {
-	sprintf(info_string, "Unknown detector element: %d", *detChan);
-	dxp_log_error("dxp_get_statistics", info_string, status);
-	return status;
-  }
-  ioChan = chosen->ioChan;
-
-  /* Allow driver to do neede ops to prepare channel for readout */
-
-  if((status=chosen->btype->funcs->dxp_prep_for_readout(&(chosen->ioChan), &modChan))!=DXP_SUCCESS){
-	dxp_log_error("dxp_get_statistics","Error Preparing board for readout",status);
-	return status;
-  }
-
-  /* Read out the parameter memory of the specified detector */
-
-  if ((status=chosen->btype->funcs->dxp_read_dspparams(&ioChan, &modChan, 
-													   chosen, chosen->params[modChan]))!=DXP_SUCCESS) {
-	sprintf(info_string, "Unable to read parameters from detector element: %d", 
-			*detChan);
-	dxp_log_error("dxp_get_statistics", info_string, status);
-	return status;
-  }
-
-  /* Get the statistics data from the parameter array */
-
-  if((status=chosen->btype->funcs->dxp_get_runstats(&ioChan, &modChan, chosen,
-													&evts, &under, &over, &fast, 
-													&base, livetime, icr, ocr))!=DXP_SUCCESS){
-	dxp_log_error("dxp_get_statistics","Error parsing statistics",status);
-	return status;
-  }
-
-  /* Note: this can overflow! These values need to be checked a little
-   * more carefully.
-   */
-  *nevents = evts + under + over;
-
-  /* Allow driver to return board to previous state */
-
-  if((status=chosen->btype->funcs->dxp_done_with_readout(&(chosen->ioChan), 
-														 &modChan, chosen))!=DXP_SUCCESS){
-	dxp_log_error("dxp_get_statistics","Error restarting board for data taking",status);
-	return status;
-  }
-
-  return DXP_SUCCESS;
-}
 
 /******************************************************************************
  *
@@ -7354,39 +7282,12 @@ int XERXES_API dxp_elec_to_det(int* ioChan, int* dxpChan, int* detChan)
  ******************************************************************************/
 int XERXES_API dxp_lock_resource(int *detChan, short *lock)
 {
-  int status = DXP_SUCCESS;
-  char info_string[INFO_LEN];
-  int modChan;
-  /* Pointer to the Chosen Channel */
-  Board *chosen=NULL;
+  UNUSED(detChan);
+  UNUSED(lock);
 
-  /* Translate the detector channel number to IO and channel numbers for writing. */
+  FAIL();
 
-  if ((status = dxp_det_to_elec(detChan, &chosen, &modChan))!=DXP_SUCCESS) {
-	sprintf(info_string, "Failed to locate detector channel %d", *detChan);
-	dxp_log_error("dxp_lock_resource", info_string, status);
-	return status;
-  }
-
-  /* Set the state of this resource to be locked iff *lock != 0 */
-
-  chosen->state[3] = (short) ((*lock != 0) ? 1 : 0);
-	
-  /* Check to see if the lock function is implemented at the MD layer */
-  if (chosen->iface->funcs->dxp_md_lock_resource != NULL) {
-	if ((status = chosen->iface->funcs->dxp_md_lock_resource(&(chosen->ioChan), 
-															 &modChan, lock))!=DXP_SUCCESS) {
-	  sprintf(info_string, "Failed to lock resource for detector %d", *detChan);
-	  dxp_log_error("dxp_lock_resource", info_string, status);
-	  return status;
-	}
-  } else {
-	status = DXP_MDLOCK;
-	sprintf(info_string, "No Resource Locking function implemented for detector %d", *detChan);
-	dxp_log_error("dxp_loc_resource", info_string, status);
-  }
-
-  return status;
+  return DXP_SUCCESS;
 }
 
 
@@ -7775,7 +7676,7 @@ XERXES_STATIC int XERXES_API dxp_parse_memory_str(char *name, char *type, unsign
   full_name = (char *)xerxes_md_alloc(name_len);
   
   if (full_name == NULL) {
-	sprintf(info_string, "Error allocating %ld bytes for 'full_name'", (long)name_len);
+	sprintf(info_string, "Error allocating %d bytes for 'full_name'", name_len);
 	dxp_log_error("dxp_parse_memory_str", info_string, DXP_NOMEM);
 	return DXP_NOMEM;
   }
