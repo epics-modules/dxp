@@ -1,8 +1,6 @@
 /*
- *  xia_assert.h
- *
  * Copyright (c) 2004, X-ray Instrumentation Associates
- *               2005, XIA LLC
+ *               2005-2009, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -36,7 +34,7 @@
  * SUCH DAMAGE.
  *  
  *
- * $Id: xia_assert.h,v 1.3 2009-07-06 18:24:31 rivers Exp $
+ * $Id: xia_assert.h 12433 2009-07-15 21:30:36Z patrick $
  *
  * This contains a modified implementation of the ASSERT() macro
  * discusssed in "Writing Solid Code", by Steve Maguire, pp 17-18
