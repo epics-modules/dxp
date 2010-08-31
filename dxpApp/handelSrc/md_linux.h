@@ -1,11 +1,10 @@
 /*
- *  md_linux.h
- *
- * Created 08/12/03 -- PJF
- *
  * Copyright (c) 2004, X-ray Instrumentation Associates
- *               2005, XIA LLC
+ *               2005-2009, XIA LLC
  * All rights reserved.
+ *
+ * Contains significant contributions from Mark Rivers, University of
+ * Chicago
  *
  * Redistribution and use in source and binary forms, 
  * with or without modification, are permitted provided 
@@ -37,18 +36,19 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
+ *
+ * $Id: md_linux.h 14864 2010-03-06 00:30:51Z patrick $
+ *
  */
 
 
-#ifndef DXP_MD_H
-#define DXP_MD_H
+#ifndef __MD_LINUX_H__
+#define __MD_LINUX_H__
 
 
 #include "xia_mddef.h"
 #include "xia_common.h"
 
-/* Some constants */
-#define MAXMOD 100
 
 #define MD_IO_READ  0
 #define MD_IO_WRITE 1
@@ -116,16 +116,6 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_serial_io(int *camChan,
 XIA_MD_STATIC int XIA_MD_API dxp_md_serial_close(int *camChan);
 #endif /* EXCLUDE_SERIAL */
 
-#ifndef EXCLUDE_ARCNET
-XIA_MD_STATIC int XIA_MD_API dxp_md_arcnet_initialize(unsigned int *maxMod, char *dllName);
-XIA_MD_STATIC int XIA_MD_API dxp_md_arcnet_open(char *ioname, int *camChan);
-XIA_MD_STATIC int XIA_MD_API dxp_md_arcnet_io(int *camChan,
-											  unsigned int *function, 
-											  unsigned long *address,
-											  void *data,
-											  unsigned int *length);
-XIA_MD_STATIC int XIA_MD_API dxp_md_arcnet_close(int *camChan);
-#endif /* EXCLUDE_ARCNET */
 
 #ifndef EXCLUDE_PLX
   XIA_MD_STATIC int dxp_md_plx_initialize(unsigned int *maxMod, char *dllName);
@@ -137,9 +127,7 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_arcnet_close(int *camChan);
 
 #endif /* EXCLUDE_PLX */
 
-XIA_MD_STATIC int XIA_MD_API dxp_md_lock_resource(int *ioChan, int *modChan, short *lock);
 XIA_MD_STATIC int XIA_MD_API dxp_md_wait(float *);
-XIA_MD_STATIC void XIA_MD_API dxp_md_error_control(char *,int *);
 XIA_MD_STATIC int XIA_MD_API dxp_md_get_maxblk(void);
 XIA_MD_STATIC int XIA_MD_API dxp_md_set_maxblk(unsigned int *);
 XIA_MD_STATIC int XIA_MD_API dxp_md_puts(char *);
@@ -148,7 +136,7 @@ XIA_MD_STATIC char * dxp_md_fgets(char *s, int length, FILE *stream);
 XIA_MD_STATIC char * dxp_md_tmp_path(void);
 XIA_MD_STATIC void dxp_md_clear_tmp(void);
 XIA_MD_STATIC char * dxp_md_path_separator(void);
-
+XIA_MD_STATIC int XIA_MD_API dxp_md_process_msgs(void);
 
 
   /* Protocol-specific Imports go here */
@@ -202,14 +190,6 @@ XIA_MD_IMPORT int XIA_MD_API NumBytesAtSerialPort(unsigned short port, unsigned 
   XIA_MD_IMPORT int XIA_MD_API SetTimeoutInMS(unsigned short port, double ms);
 #endif /* EXCLUDE_UDXP */
 
-#ifndef EXCLUDE_ARCNET
-XIA_MD_IMPORT int XIA_MD_API dxpInitializeArcnet(unsigned char nodeID);
-XIA_MD_IMPORT int XIA_MD_API dxpSetAddressArcnet(unsigned char nodeID, unsigned short address);
-XIA_MD_IMPORT int XIA_MD_API dxpReadArcnet(unsigned char nodeID, unsigned short address, unsigned short *data, unsigned int len);
-XIA_MD_IMPORT int XIA_MD_API dxpWriteArcnet(unsigned char nodeID, unsigned short address, unsigned short *data, unsigned int len);
-#endif /* EXCLUDE_ARCNET */
-
-
 
 #else									/* old style prototypes */
 
@@ -242,13 +222,6 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_serial_io();
 XIA_MD_STATIC int XIA_MD_API dxp_md_serial_close();
 #endif /* EXCLUDE_SERIAL */
 
-#ifndef EXCLUDE_ARCNET
-XIA_MD_STATIC int XIA_MD_API dxp_md_arcnet_initialize();
-XIA_MD_STATIC int XIA_MD_API dxp_md_arcnet_open();
-XIA_MD_STATIC int XIA_MD_API dxp_md_arcnet_io();
-XIA_MD_STATIC int XIA_MD_API dxp_md_arcnet_close();
-#endif /* EXCLUDE_ARCNET */
-
 #ifndef EXCLUDE_PLX
   XIA_MD_STATIC int dxp_md_plx_initialize();
   XIA_MD_STATIC int dxp_md_plx_open();
@@ -264,9 +237,7 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_arcnet_close();
 #endif /* EXCLUDE_USB2 */
 
 
-XIA_MD_STATIC int XIA_MD_API dxp_md_lock_resource();
 XIA_MD_STATIC int XIA_MD_API dxp_md_wait();
-XIA_MD_STATIC void XIA_MD_API dxp_md_error_control();
 XIA_MD_STATIC int XIA_MD_API dxp_md_get_maxblk();
 XIA_MD_STATIC int XIA_MD_API dxp_md_set_maxblk();
 XIA_MD_STATIC void XIA_MD_API *dxp_md_alloc();
@@ -311,18 +282,10 @@ XIA_MD_IMPORT int XIA_MD_API WriteSerialPort();
 XIA_MD_IMPORT int XIA_MD_API GetErrors();
 #endif /* EXCLUDE_SERIAL */
 
-
-#ifndef EXCLUDE_ARCNET
-XIA_MD_IMPORT int XIA_MD_API dxpInitializeArcnet();
-XIA_MD_IMPORT int XIA_MD_API dxpSetAddressArcnet();
-XIA_MD_IMPORT int XIA_MD_API dxpReadArcnet();
-XIA_MD_IMPORT int XIA_MD_API dxpWriteArcnet();
-#endif /* EXCLUDE_ARCNET */
-
 #endif
 #ifdef __cplusplus
 }
 #endif
 
 
-#endif					/* End if for DXP_MD_H */
+#endif					/* End if for __MD_LINUX_H__ */
