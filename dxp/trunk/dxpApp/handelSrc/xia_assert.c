@@ -1,11 +1,6 @@
-/*****************************************************************************
- *
- *  assert.c
- *
- *  Created 10/01/03 -- PJF
- *
- * Copyright (c) 2003,2004, X-ray Instrumentation Associates
- *               2005, XIA LLC
+/*
+ * Copyright (c) 2003-2004, X-ray Instrumentation Associates
+ *               2005-2008, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
