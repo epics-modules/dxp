@@ -37,7 +37,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: handel_generic.h,v 1.10 2009-07-16 17:55:06 rivers Exp $
+ * $Id: handel_generic.h 12389 2009-07-08 21:20:19Z patrick $
  *
  */
 
@@ -64,8 +64,6 @@
  */
 #define XIA_GAIN_MIN		0.0
 #define XIA_GAIN_MAX		99.99
-
-#define XIA_NULL_STRING_LEN  (strlen(XIA_NULL_STRING) + 1)
 
 /* XiaDaqEntry states */
 #define AV_STATE_UNKNOWN  0x01
