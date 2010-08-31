@@ -36,7 +36,7 @@
  * SUCH DAMAGE. 
  *
  *
- * $Id: handeldef.h,v 1.7 2009-07-06 18:24:30 rivers Exp $
+ * $Id: handeldef.h 13820 2009-11-19 19:00:43Z patrick $
  *
  */
 
@@ -65,7 +65,7 @@
 
 #ifdef HANDEL_USE_DLL		/* Linking to a DLL libraries */
 
-#ifdef WIN32			/* If we are on a Windoze platform */
+#ifdef _WIN32			/* If we are on a Windoze platform */
 
 #ifdef HANDEL_MAKE_DLL
 #define HANDEL_EXPORT __declspec(dllexport)
@@ -101,11 +101,11 @@
 #define HANDEL_API
 #endif					/* Endif for HANDEL_MAKE_DLL */
 
-#endif					/* Endif for WIN32 */
+#endif					/* Endif for _WIN32 */
 
 #else					/* We are using static libraries */
 
-#ifdef WIN32			/* If we are on a Windoze platform */
+#ifdef _WIN32			/* If we are on a Windoze platform */
 
 #ifdef HANDEL_MAKE_DLL
 #define HANDEL_EXPORT __declspec(dllexport)
@@ -129,7 +129,7 @@
 #define HANDEL_API
 #endif					/* Endif for HANDEL_MAKE_DLL */
 
-#endif					/* Endif for WIN32 */
+#endif					/* Endif for _WIN32 */
 
 #endif					/* Endif for HANDEL_USE_DLL */
 
