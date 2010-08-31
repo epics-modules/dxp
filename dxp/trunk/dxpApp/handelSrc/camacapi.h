@@ -38,7 +38,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: camacapi.h,v 1.1 2009-07-06 18:24:28 rivers Exp $
+ * $Id: camacapi.h 1135 2005-01-04 20:11:41Z SYSTEM $
  *
  */
 
