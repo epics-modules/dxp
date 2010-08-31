@@ -435,7 +435,7 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     int status = asynSuccess;
     int i, ch;
     int sca;
-    char tmpStr[MAXSYMBOL_LEN + 10];
+    char tmpStr[MAX_DSP_PARAM_NAME_LEN + 10];
     int xiastatus = 0;
     unsigned short runTasks;
     const char *functionName = "NDDxp";
@@ -559,7 +559,7 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
                 numLLParams, DXP_MAX_LL_PARAMS);
     }
     for (i=0; i < numLLParams; i++) {
-        LLParamNames[i] = (char *) malloc(MAXSYMBOL_LEN * sizeof(char *));
+        LLParamNames[i] = (char *) malloc(MAX_DSP_PARAM_NAME_LEN * sizeof(char *));
         status = xiaGetParamName(0, i, LLParamNames[i]);
         LLParamSort[i] = i;
     }
@@ -2028,7 +2028,7 @@ asynStatus NDDxp::setLLDxpParam(asynUser *pasynUser, int addr, int value)
     int function = pasynUser->reason;
     asynStatus status = asynSuccess;
     int xiastatus;
-    char paramName[MAXSYMBOL_LEN];
+    char paramName[MAX_DSP_PARAM_NAME_LEN];
     int channel = ((addr < this->nChannels) ? addr : DXP_ALL);
     //static const char* functionName = "setLLDxpParam";
 
