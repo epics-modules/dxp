@@ -1,11 +1,5 @@
-/**
- * @file xia_usb2_private.h
- * @brief Private data for the XIA USB2.0 driver. Nothing in this file should
- * be required for users of the driver.
- */
-
 /*
- * Copyright (c) 2006, XIA LLC
+ * Copyright (c) 2006-2009, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -39,15 +33,16 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_usb2_private.h,v 1.5 2009-07-16 16:59:23 rivers Exp $
+ * $Id: xia_usb2_private.h 13325 2009-10-08 18:40:48Z patrick $
+ *
  */
 
 #ifndef __XIA_USB2_API_PRIVATE_H__
 #define __XIA_USB2_API_PRIVATE_H__
 
 #ifdef _WIN32
-#include "windows.h"
-#endif
+#include <windows.h>
+#endif /* _WIN32 */
 
 #include "xia_common.h"
 
@@ -57,10 +52,11 @@
 /* Custom messages */
 #define WM_CLOSE_DEVICE  (WM_USER + 1)
 
+/* Timeout value in miliseconds for USB transfer */
+#define XIA_USB2_TIMEOUT 5000
 
 /* Transfer types */
 #define XIA_USB2_READ     0x0
-
 
 /* Endpoints */
 #define XIA_USB2_SETUP_EP   0x1
