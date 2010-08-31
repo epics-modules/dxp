@@ -23,9 +23,9 @@
  *
  *  @group Revision History
  *  @comm
- *  $Revision: 1.1 $
+ *  $Revision: 250 $
  *  <nl>
- *  $Log: not supported by cvs2svn $
+ *  $Log$
  *  Revision 1.1  2003/06/25 01:03:53  Patrick
  *  Initial import of external module headers.
  *
