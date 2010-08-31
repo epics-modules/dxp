@@ -1,10 +1,5 @@
-/**
- * @file xia_usb2.c
- * @brief XIA USB2.0 driver, based on cyusb.sys.
- */
-
 /*
- * Copyright (c) 2006, XIA LLC
+ * Copyright (c) 2006-2009, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -37,18 +32,32 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
+ * $Id: xia_usb2.c 13792 2009-11-13 18:28:17Z patrick $
  *
- * $Id: xia_usb2.c,v 1.5 2009-07-16 17:00:51 rivers Exp $
  */
 
+
 #include "windows.h"
+#include "setupapi.h"
+
+#ifdef CYGWIN32
+#undef _WIN32
+#endif /* CYGWIN32 */
 
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "setupapi.h"
+#ifdef _WIN32
+#pragma warning(disable : 4214)
+#pragma warning(disable : 4201)
+#endif /* _WIN32 */
 
 #include "cyioctl.h"
+
+#ifdef _WIN32
+#pragma warning(default : 4214)
+#pragma warning(default : 4201)
+#endif /* _WIN32 */
 
 #include "xia_assert.h"
 
@@ -64,6 +73,7 @@ static int xia_usb2__xfer(HANDLE h, byte_t ep, DWORD n_bytes, byte_t *buf);
 static int xia_usb2__small_read_xfer(HANDLE h, DWORD n_bytes, byte_t *buf);
 static int xia_usb2__set_max_packet_size(HANDLE h);
 
+#ifdef XIA_USB2_DUMP_HELPERS
 /* Currently we aren't using these routines for anything, but since they
  * were a pain to write (lots of boring details), I thought we should keep
  * them around in case we need to debug any of these data structures in the
@@ -72,11 +82,12 @@ static int xia_usb2__set_max_packet_size(HANDLE h);
 static void xia_usb2__dump_config_desc(xia_usb2_configuration_descriptor_t *d);
 static void xia_usb2__dump_interf_desc(xia_usb2_interface_descriptor_t *d);
 static void xia_usb2__dump_ep_desc(xia_usb2_endpoint_descriptor_t *d);
+#endif /* XIA_USB2_DUMP_HELPERS */
 
 
 /* This is the Cypress GUID. We may need to generate our own. */
-static GUID CYPRESS_GUID = {0xae18aa60, 0x7f6a, 0x11d4, {0x97, 0xdd, 0x0, 0x1,
-                            0x2, 0x29, 0xb9, 0x59}};
+static GUID CYPRESS_GUID = {0xae18aa60, 0x7f6a, 0x11d4,
+                            {0x97, 0xdd, 0x0, 0x1, 0x2, 0x29, 0xb9, 0x59}};
 
 /* It is more efficient to transfer a complete buffer of whatever the
  * max packet size, even if the amount of bytes requested is less then that.
@@ -171,7 +182,7 @@ XIA_EXPORT int XIA_API xia_usb2_open(int dev, HANDLE *h)
 
   *h = CreateFile(intfc_detail_data->DevicePath, GENERIC_WRITE | GENERIC_READ,
                   FILE_SHARE_WRITE | FILE_SHARE_READ, NULL,
-                  OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+                  OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
 
   free(intfc_detail_data);
   SetupDiDestroyDeviceInfoList(dev_info);
@@ -206,7 +217,7 @@ XIA_EXPORT int XIA_API xia_usb2_close(HANDLE h)
 
   if (!status) {
     err = GetLastError();
-    printf("Close Error = %lu\n", err);
+    printf("Close Error = %#lx\n", err);
     return XIA_USB2_CLOSE_HANDLE;
   }
 
@@ -277,7 +288,7 @@ XIA_EXPORT int XIA_API xia_usb2_write(HANDLE h, unsigned long addr,
   int status;
 
 
-  if (h == NULL) {
+  if (h == INVALID_HANDLE_VALUE) {
     return XIA_USB2_NULL_HANDLE;
   }
 
@@ -341,39 +352,83 @@ static int xia_usb2__send_setup_packet(HANDLE h, unsigned long addr,
  * the configuration of the SINGLE_TRANSFER structure as required by the
  * Cypress driver.
  *
- * Currently there is no support for a timeout since DeviceIoControl will
- * block on non-overlapped I/O, but it would be easy to add that as an
- * argument to this routine. It would also be easy to use overlapped I/O: 
- * add the appropriate flag to CreateFile() in xia_usb2_open() and pass
- * an OVERLAPPED structure into DeviceIoControl() below.
+ * The timeout is implemented through setting a FILE_FLAG_OVERLAPPED flag
+ * when calling CreateFile, passing the OVERLAPPED structure to DeviceIoControl,
+ * Then calling WaitForSingleObject with a specified timeout value.
+ *
  */
 static int xia_usb2__xfer(HANDLE h, byte_t ep, DWORD n_bytes, byte_t *buf)
 {
-  SINGLE_TRANSFER st;
 
+  SINGLE_TRANSFER st;
+  OVERLAPPED overlapped;
+  
   DWORD bytes_ret;
   DWORD err;
-
+  DWORD wait = WAIT_TIMEOUT;
+  
   BOOL success;
-
 
   ASSERT(n_bytes != 0);
   ASSERT(buf != NULL);
 
-
   memset(&st, 0, sizeof(st));
   st.ucEndpointAddress = ep;
   
+  memset(&overlapped, 0, sizeof(overlapped));
 
-  success = DeviceIoControl(h, IOCTL_ADAPT_SEND_NON_EP0_DIRECT,
-                            &st, sizeof(st), buf, n_bytes, &bytes_ret, NULL);
-  
-  if (!success) {
+  overlapped.hEvent = CreateEvent(NULL, TRUE_, FALSE_, NULL);
+
+  if (overlapped.hEvent == INVALID_HANDLE_VALUE) {
     err = GetLastError();
-    printf("Xfer Error = %lu\n", err);
-    return XIA_USB2_XFER;
+    printf("Create overlapped event Error = %#lx\n", err);
+    return XIA_USB2_XFER;    
   }
 
+  success = DeviceIoControl(h, IOCTL_ADAPT_SEND_NON_EP0_DIRECT,
+                            &st, sizeof(st), buf, n_bytes, &bytes_ret,
+                            &overlapped);
+  
+  /* In the unlikely event that the transfer completes immediately 
+   * there is no need to wait, otherwise we have to poll WaitForSingleObject
+   */
+  if (success) {
+    CloseHandle(overlapped.hEvent);
+    return XIA_USB2_SUCCESS;
+  }
+                            
+  err = GetLastError();
+
+  if (err != ERROR_IO_PENDING) {
+    printf("DeviceIoControl Error = %#lx\n", err);
+    CloseHandle(overlapped.hEvent);
+    return XIA_USB2_XFER;
+  }
+    
+  wait = WaitForSingleObject(overlapped.hEvent, XIA_USB2_TIMEOUT);
+  
+  switch (wait) {
+    case WAIT_OBJECT_0: /* Success */
+      break; 
+    case WAIT_TIMEOUT:  /* Timed out, need to cancel IO */
+      printf("Timed out waiting for transfer\n");
+    default:
+      err = GetLastError();    
+      printf("Wait for transfer failed Error = %#lx\n", err);
+      return XIA_USB2_XFER;
+  }
+
+  success = GetOverlappedResult(h, &overlapped, &bytes_ret, FALSE_);        
+
+  if (!success) {
+    err = GetLastError();
+    printf("Get overlapped result = %#lx\n", err);
+    CloseHandle(overlapped.hEvent);
+    return XIA_USB2_XFER;    
+  }
+
+  CloseHandle(overlapped.hEvent);
+  
   return XIA_USB2_SUCCESS;
 }
 
@@ -388,15 +443,9 @@ static int xia_usb2__xfer(HANDLE h, byte_t ep, DWORD n_bytes, byte_t *buf)
  */
 static int xia_usb2__small_read_xfer(HANDLE h, DWORD n_bytes, byte_t *buf)
 {
-  BOOL success;
+  int status;
 
   byte_t *big_packet = NULL;  
-
-  SINGLE_TRANSFER st;
-
-  DWORD bytes_ret;
-  DWORD err;
-
 
   ASSERT(XIA_USB2_SMALL_READ_PACKET_SIZE == 512 ||
          XIA_USB2_SMALL_READ_PACKET_SIZE == 64);
@@ -407,26 +456,18 @@ static int xia_usb2__small_read_xfer(HANDLE h, DWORD n_bytes, byte_t *buf)
   big_packet = malloc(XIA_USB2_SMALL_READ_PACKET_SIZE);
 
   if (!big_packet) {
-      return XIA_USB2_NO_MEM;
+    return XIA_USB2_NO_MEM;
   }
-
-  memset(&st, 0, sizeof(st));
-  st.ucEndpointAddress = XIA_USB2_READ_EP;
-
-
-  success = DeviceIoControl(h, IOCTL_ADAPT_SEND_NON_EP0_DIRECT,
-                            &st, sizeof(st), big_packet,
-                            XIA_USB2_SMALL_READ_PACKET_SIZE, &bytes_ret, NULL);
-
-  if (!success) {
-      free(big_packet);
-      err = GetLastError();
-      printf("Xfer Error = %lu\n", err);
-      return XIA_USB2_XFER;
-  }
-
-  memcpy(buf, big_packet, n_bytes);
   
+  status = xia_usb2__xfer(h, XIA_USB2_READ_EP, 
+                          XIA_USB2_SMALL_READ_PACKET_SIZE, big_packet);
+
+  if (status != XIA_USB2_SUCCESS) {
+    free(big_packet);
+    return status;
+  }
+  
+  memcpy(buf, big_packet, n_bytes);
   free(big_packet);
 
   return XIA_USB2_SUCCESS;
@@ -492,7 +533,7 @@ static int xia_usb2__set_max_packet_size(HANDLE h)
     if (!success) {
         free(transfer);
         err = GetLastError();
-        printf("Xfer Error = %lu\n", err);
+        printf("Xfer Error = %#lx\n", err);
         return XIA_USB2_XFER;
     }
     
@@ -516,25 +557,30 @@ static int xia_usb2__set_max_packet_size(HANDLE h)
     free(transfer);
     
     /* It is impossible for an XIA device to not have the read EP. */
-    ASSERT(FALSE_);
+    FAIL();
+
+    /* Won't get here, but keeps the compiler happy. */
     return XIA_USB2_SUCCESS;
 }
 
 
+#ifdef XIA_USB2_DUMP_HELPERS
 /**
  * Debug dump of a configuration descriptor.
  */
 static void xia_usb2__dump_config_desc(xia_usb2_configuration_descriptor_t *d)
 {
     printf("\nConfiguration Descriptor\n");
-    printf("bLength             = %u\n",    d->bLength);
-    printf("bDescriptorType     = %#x\n",   d->bDescriptorType);
-    printf("wTotalLength        = %u\n",    d->wTotalLength);
-    printf("bNumInterfaces      = %u\n",    d->bNumInterfaces);
-    printf("bConfigurationValue = %u\n",    d->bConfigurationValue);
-    printf("iConfiguration      = %u\n",    d->iConfiguration);
-    printf("bmAttributes        = %#x\n",   d->bmAttributes);
-    printf("bMaxPower           = %u mA\n", d->bMaxPower * 2);
+    printf("bLength             = %hu\n", (unsigned short)d->bLength);
+    printf("bDescriptorType     = %#hx\n", (unsigned short)d->bDescriptorType);
+    printf("wTotalLength        = %hu\n", d->wTotalLength);
+    printf("bNumInterfaces      = %hu\n", (unsigned short)d->bNumInterfaces);
+    printf("bConfigurationValue = %hu\n",
+           (unsigned short)d->bConfigurationValue);
+    printf("iConfiguration      = %hu\n", (unsigned short)d->iConfiguration);
+    printf("bmAttributes        = %#hx\n", (unsigned short)d->bmAttributes);
+    printf("bMaxPower           = %hu mA\n",
+           (unsigned short)(d->bMaxPower * 2));
     printf("\n");
 }
 
@@ -545,15 +591,17 @@ static void xia_usb2__dump_config_desc(xia_usb2_configuration_descriptor_t *d)
 static void xia_usb2__dump_interf_desc(xia_usb2_interface_descriptor_t *d)
 {
     printf("\nInterface Descriptor\n");
-    printf("bLength            = %u\n",  d->bLength);
-    printf("bDescriptorType    = %#x\n", d->bDescriptorType);
-    printf("bInterfaceNumber   = %u\n",  d->bInterfaceNumber);
-    printf("bAlternateSetting  = %u\n",  d->bAlternateSetting);
-    printf("bNumEndpoints      = %u\n",  d->bNumEndpoints);
-    printf("bInterfaceClass    = %#x\n", d->bInterfaceClass);
-    printf("bInterfaceSubClass = %#x\n", d->bInterfaceSubClass);
-    printf("bInterfaceProtocol = %#x\n", d->bInterfaceProtocol);
-    printf("iInterface         = %u\n",  d->iInterface);
+    printf("bLength            = %hu\n", (unsigned short)d->bLength);
+    printf("bDescriptorType    = %#hx\n", (unsigned short)d->bDescriptorType);
+    printf("bInterfaceNumber   = %hu\n", (unsigned short)d->bInterfaceNumber);
+    printf("bAlternateSetting  = %hu\n", (unsigned short)d->bAlternateSetting);
+    printf("bNumEndpoints      = %hu\n", (unsigned short)d->bNumEndpoints);
+    printf("bInterfaceClass    = %#hx\n", (unsigned short)d->bInterfaceClass);
+    printf("bInterfaceSubClass = %#hx\n",
+           (unsigned short)d->bInterfaceSubClass);
+    printf("bInterfaceProtocol = %#hx\n",
+           (unsigned short)d->bInterfaceProtocol);
+    printf("iInterface         = %hu\n", (unsigned short)d->iInterface);
     printf("\n");
 }
 
@@ -564,10 +612,11 @@ static void xia_usb2__dump_interf_desc(xia_usb2_interface_descriptor_t *d)
 static void xia_usb2__dump_ep_desc(xia_usb2_endpoint_descriptor_t *d)
 {
     printf("\nEndpoint Descriptor\n");
-    printf("bLength          = %u\n",  d->bLength);
-    printf("bDescriptorType  = %#x\n", d->bDescriptorType);
-    printf("bEndpointAddress = %#x\n", d->bEndpointAddress);
-    printf("wMaxPacketSize   = %u\n",  d->wMaxPacketSize);
-    printf("bInterval        = %u\n",  d->bInterval);
+    printf("bLength          = %hu\n", (unsigned short)d->bLength);
+    printf("bDescriptorType  = %#hx\n", (unsigned short)d->bDescriptorType);
+    printf("bEndpointAddress = %#hx\n", (unsigned short)d->bEndpointAddress);
+    printf("wMaxPacketSize   = %u\n", d->wMaxPacketSize);
+    printf("bInterval        = %hu\n", (unsigned short)d->bInterval);
     printf("\n");
 }
+#endif /* XIA_USB2_DUMP_HELPERS */
