@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xerxes.h,v 1.4 2009-07-06 18:24:31 rivers Exp $
+ * $Id: xerxes.h 15329 2010-04-12 19:20:08Z patrick $
  *
  *    Following are prototypes for dxp driver routines
  */
@@ -156,7 +156,6 @@ XERXES_IMPORT int XERXES_API dxp_modify_gains(float *);
 XERXES_IMPORT int XERXES_API dxp_modify_one_gains(int *, float *);
 XERXES_IMPORT int XERXES_API dxp_initialize_ASC(float *,float *);
 XERXES_IMPORT int XERXES_API dxp_mem_dump(int *);
-XERXES_IMPORT int XERXES_API dxp_get_statistics(int *, double *, double *, double *, unsigned long *);
 XERXES_IMPORT int XERXES_API dxp_replace_filesymbol(char *, char *);
 XERXES_IMPORT int XERXES_API dxp_read_filesymbol(char *, char *);
 XERXES_IMPORT int XERXES_API dxp_locate_system_files(unsigned int *, char **);
@@ -278,7 +277,6 @@ XERXES_IMPORT int XERXES_API dxp_modify_gains();
 XERXES_IMPORT int XERXES_API dxp_modify_one_gains();
 XERXES_IMPORT int XERXES_API dxp_initialize_ASC();
 XERXES_IMPORT int XERXES_API dxp_mem_dump();
-XERXES_IMPORT int XERXES_API dxp_get_statistics();
 XERXES_IMPORT int XERXES_API dxp_replace_filesymbol();
 XERXES_IMPORT int XERXES_API dxp_read_filesymbol();
 XERXES_IMPORT int XERXES_API dxp_locate_system_files();
