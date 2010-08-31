@@ -32,7 +32,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: camac_errors.h,v 1.1 2009-07-06 18:24:28 rivers Exp $
+ * $Id: camac_errors.h 1135 2005-01-04 20:11:41Z SYSTEM $
  *
  */
 
