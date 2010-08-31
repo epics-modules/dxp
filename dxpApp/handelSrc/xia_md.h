@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_md.h,v 1.3 2009-07-06 18:24:31 rivers Exp $
+ * $Id: xia_md.h 1530 2005-04-28 19:22:51Z patrick $
  *
  * Prototypes for MD layer
  *
