@@ -1,15 +1,6 @@
 /*
- * handel_dbg.c
- *
- * Created 10/09/01 -- PJF
- *
- * Provides some nice debugging routines which
- * I hope will "disappear" in the production
- * version. They only have to disappear since
- * they are exported to the DLL!
- *
- * Copyright (c) 2002,2003,2004, X-ray Instrumentation Associates
- *               2005, XIA LLC
+ * Copyright (c) 2002-2004, X-ray Instrumentation Associates
+ *               2005-2009, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -42,10 +33,9 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
+ * $Id: handel_dbg.c 13367 2009-10-12 18:53:21Z patrick $
+ *
  */
-
-
-#ifdef _DEBUG
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -267,11 +257,6 @@ HANDEL_EXPORT void HANDEL_API xiaDumpModuleStruct(char *fileName)
 
 	for (i = 0; i < module->number_of_channels; i++) {
 
-	  fprintf(file, "gain[%u] = %.3f\n", i, module->gain[i]);
-	}
-
-	for (i = 0; i < module->number_of_channels; i++) {
-
 	  fprintf(file, "firmware[%u] = %s\n", i, module->firmware[i]);
 	}
 
@@ -327,8 +312,5 @@ HANDEL_EXPORT void HANDEL_API xiaDumpDefaultsStruct(char *fileName)
   }
 
 }
-		
-
-#endif /* _DEBUG */		
 
 
