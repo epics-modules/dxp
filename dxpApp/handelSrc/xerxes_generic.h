@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xerxes_generic.h,v 1.3 2009-07-06 18:24:31 rivers Exp $
+ * $Id: xerxes_generic.h 15339 2010-04-13 19:02:10Z ann $
  *
  *    Generic constant definitions
  */
@@ -50,13 +50,9 @@
 
 #define MAXDET				500
 #define MAXSYM              500
-#define MAXSYMBOL_LEN        15
 #define MAXFILENAME_LEN     200
 #define MAXDXP				100		/* Maximum number of DXP modules in system */
 #define MAXBOARDNAME_LEN	 20
-/* MAXSYMBOL_LEN is kept around for compatibility purposes,
- * but it should be converted to MAX_DSP_PARAM_NAME_LEN
- */
 #define MAX_DSP_PARAM_NAME_LEN 30
 
 /* Definitions for DXP4C configurations */
@@ -96,23 +92,23 @@
 #define CT_DXP2X_RESET             299
 
 /* 
- * Definitions for DXPX10P configurations 
+ * Definitions for SATURN configurations 
  */
-#define CT_DXPX10P_SET_ASCDAC        300
-#define CT_DXPX10P_TRKDAC            302
-#define CT_DXPX10P_SLOPE_CALIB       303
-#define CT_DXPX10P_SLEEP_DSP         306
-#define CT_DXPX10P_PROGRAM_FIPPI     311
-#define CT_DXPX10P_SET_POLARITY      312
-#define CT_DXPX10P_CLOSE_INPUT_RELAY 313
-#define CT_DXPX10P_OPEN_INPUT_RELAY  314
-#define CT_DXPX10P_RC_BASELINE       315
-#define CT_DXPX10P_RC_EVENT          316
-#define CT_DXPX10P_ADC               317
-#define CT_DXPX10P_BASELINE_HIST     318	/* Special run for Baseline History		*/
-#define CT_DXPX10P_READ_MEMORY       321
-#define CT_DXPX10P_WRITE_MEMORY      323
-#define CT_DXPX10P_RESET             399
+#define CT_SATURN_SET_ASCDAC        300
+#define CT_SATURN_TRKDAC            302
+#define CT_SATURN_SLOPE_CALIB       303
+#define CT_SATURN_SLEEP_DSP         306
+#define CT_SATURN_PROGRAM_FIPPI     311
+#define CT_SATURN_SET_POLARITY      312
+#define CT_SATURN_CLOSE_INPUT_RELAY 313
+#define CT_SATURN_OPEN_INPUT_RELAY  314
+#define CT_SATURN_RC_BASELINE       315
+#define CT_SATURN_RC_EVENT          316
+#define CT_SATURN_ADC               317
+#define CT_SATURN_BASELINE_HIST     318	/* Special run for Baseline History		*/
+#define CT_SATURN_READ_MEMORY       321
+#define CT_SATURN_WRITE_MEMORY      323
+#define CT_SATURN_RESET             399
 
 /* 
  * Definitions for DGFG200 configurations 
