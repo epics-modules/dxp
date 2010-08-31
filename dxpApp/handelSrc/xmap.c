@@ -1,10 +1,6 @@
 /*
- * xmap.c
- *
- * Created 09/27/04 -- PJF
- *
- * Copyright (c) 2004, X-ray Instrumentation Associates
- *               2005, XIA LLC
+ * Copyright (c) 2004 X-ray Instrumentation Associates
+ *               2005-2010 XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -36,6 +32,8 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
+ *
+ * $Id: xmap.c 15339 2010-04-13 19:02:10Z ann $
  *
  */
 
@@ -83,7 +81,6 @@ static DXP_MD_FGETS xmap_md_fgets;
 
 static char info_string[INFO_LEN];
 
-static void dxp_debug_dump_dsp_params(char *filename, Dsp_Params *params);
 static int dxp_is_symbol_global(char *name, Dsp_Info *dsp, boolean_t *is_global);
 static int dxp_get_global_addr(char *name, Dsp_Info *dsp, unsigned long *addr);
 static int dxp_get_channel_addr(char *name, int modChan, Dsp_Info *dsp,
@@ -109,7 +106,6 @@ static int dxp__process_trace_wait(int ioChan, int modChan, unsigned int len,
 static double dxp__unsigned64_to_double(unsigned long *u64);
 static double dxp__get_clock_tick(void);
 static int dxp__do_trace(int ioChan, int modChan, parameter_t type, Board *board);
-/* static unsigned long dxp__get_global_base(Dsp_Params *p); */
 static int dxp__get_sca_addr(int ioChan, int modChan, Board *b,
 							 unsigned long *addr);
 static int dxp__put_dsp_to_sleep(int ioChan, int modChan, Board *b);
@@ -188,12 +184,6 @@ static memory_accessor_t MEMORY_WRITERS[] = {
   {"data", dxp__write_data_memory},
 };
 
-
-/*
-static memory_accessor_t MEMORY_READERS[] = {
-  {"data", dxp__read_data_memory},
-};
-*/
 
 /* These are registers that are publicly exported for use in Handel and other
  * callers. Not every register needs to be included here.
@@ -426,7 +416,7 @@ static int dxp_download_fpgaconfig(int* ioChan, int* modChan, char *name,
  * written to the board as lo0, hi0, lo1, hi1, etc.
  *
  */
-static int dxp_get_fpgaconfig(Fippi_Info *fippi)
+static int dxp_get_fpgaconfig(void *fip)
 {
   int n_chars_in_line = 0;
   int i;
@@ -434,13 +424,16 @@ static int dxp_get_fpgaconfig(Fippi_Info *fippi)
 
   FILE *fp = NULL;
 
+  Fippi_Info *fippi = NULL;
   
-  char line[LINE_LEN];
+  char line[XIA_LINE_LEN];
 
   
-  ASSERT(fippi       != NULL);
+  ASSERT(fip != NULL);
+
+  fippi = (Fippi_Info *)fip;
+
   ASSERT(fippi->data != NULL);
-
 
   sprintf(info_string, "Preparing to parse the FPGA configuration '%s'",
 		  fippi->filename);
@@ -458,7 +451,7 @@ static int dxp_get_fpgaconfig(Fippi_Info *fippi)
   n_data = 0;
 
   /* This is the main loop to parse in the FPGA configuration file */
-  while (xmap_md_fgets(line, LINE_LEN, fp) != NULL) {
+  while (xmap_md_fgets(line, XIA_LINE_LEN, fp) != NULL) {
 
 	/* Ignore comments */
 	if (line[0] == '*') {
@@ -544,7 +537,7 @@ static int dxp_download_dspconfig(int* ioChan, int* modChan, Board *board)
   status = dxp_write_global_register(*ioChan, XMAP_REG_TAR, XMAP_PROGRAM_MEMORY);
 
   if (status != DXP_SUCCESS) {
-	sprintf(info_string, "Error setting Transfer Address to %#x prior to "
+	sprintf(info_string, "Error setting Transfer Address to %#lx prior to "
 			"downloading DSP code", XMAP_PROGRAM_MEMORY);
 	dxp_log_error("dxp_download_dspconfig", info_string, status);
 	return status;
@@ -580,8 +573,8 @@ static int dxp_download_dspconfig(int* ioChan, int* modChan, Board *board)
 		status = dxp_write_global_register(*ioChan, XMAP_REG_TDR, data);
 
 		if (status != DXP_SUCCESS) {
-		  sprintf(info_string, "Error writing %#lx to address %#lx in DSP Program "
-				  "Memory", data, (unsigned long)(i / 2));
+		  sprintf(info_string, "Error writing %#lx to address %#lx in DSP "
+                  "Program Memory", data, (unsigned long)(i / 2));
 		  dxp_log_error("dxp_download_dspconfig", info_string, status);
 		  return status;
 		}
@@ -599,7 +592,7 @@ static int dxp_download_dspconfig(int* ioChan, int* modChan, Board *board)
 
   if (j ==  MAX_NUM_DSP_RETRY) {
 	sprintf(info_string, "Unable to completely download the DSP code in "
-			"%u tries (TCR = %lu) for ioChan = %d", MAX_NUM_DSP_RETRY,
+			"%d tries (TCR = %lu) for ioChan = %d", MAX_NUM_DSP_RETRY,
 			transfer_ct, *ioChan);
 	dxp_log_error("dxp_download_dspconfig", info_string, DXP_DSP_RETRY);
 	return DXP_DSP_RETRY;
@@ -640,11 +633,11 @@ static int dxp_download_dsp_done(int* ioChan, int* modChan, int* mod,
 /** @brief Sets the maximum FiPPI size.
  *
  */
-static int dxp_get_fipinfo(Fippi_Info* fippi)
+static int dxp_get_fipinfo(void* fippi)
 {
-  fippi->maxproglen = MAXFIP_LEN;
+    ((Fippi_Info *)fippi)->maxproglen = MAXFIP_LEN;
 
-  return DXP_SUCCESS;
+    return DXP_SUCCESS;
 }
 
 
@@ -654,7 +647,7 @@ static int dxp_get_fipinfo(Fippi_Info* fippi)
 static int dxp_get_defaultsinfo(Dsp_Defaults* defaults)
 {
   defaults->params->maxsym     = MAXSYM;
-  defaults->params->maxsymlen  = MAXSYMBOL_LEN;
+  defaults->params->maxsymlen  = MAX_DSP_PARAM_NAME_LEN;
 
 
   return DXP_SUCCESS;
@@ -667,7 +660,7 @@ static int dxp_get_defaultsinfo(Dsp_Defaults* defaults)
 static int dxp_get_dspinfo(Dsp_Info* dsp)
 {
   dsp->params->maxsym    = MAXSYM;
-  dsp->params->maxsymlen = MAXSYMBOL_LEN;
+  dsp->params->maxsymlen = MAX_DSP_PARAM_NAME_LEN;
   dsp->maxproglen        = MAXDSP_LEN;
 
   return DXP_SUCCESS;
@@ -693,7 +686,7 @@ XERXES_STATIC int dxp_get_dspconfig(Dsp_Info* dsp)
 
 
   dsp->params->maxsym    = MAXSYM;
-  dsp->params->maxsymlen = MAXSYMBOL_LEN;
+  dsp->params->maxsymlen = MAX_DSP_PARAM_NAME_LEN;
   dsp->maxproglen        = MAXDSP_LEN;
   dsp->params->nsymbol   = 0;
   dsp->proglen           = 0;
@@ -766,7 +759,7 @@ XERXES_STATIC int dxp_load_dsp_code_from_file(char *file, Dsp_Info *dsp)
 
         n_chars = strlen(line);
 
-        for (i = 0; (i < n_chars) && isxdigit(line[i]); i += 8) {
+        for (i = 0; (i < n_chars) && isxdigit((int)line[i]); i += 8) {
           sscanf(&line[i], "%4hx%4hx", &hi, &lo);
 
           dsp->data[n_data_words++] = lo;
@@ -811,7 +804,7 @@ XERXES_STATIC int dxp_load_symbols_from_file(char *file, Dsp_Params *params)
   unsigned long offset        = 0;
 
   char line[82];
-  
+
   FILE *fp = NULL;
 
 
@@ -847,7 +840,7 @@ XERXES_STATIC int dxp_load_symbols_from_file(char *file, Dsp_Params *params)
 	  params->nsymbol            = n_globals;
 	  params->n_per_chan_symbols = n_per_chan;
 
-	  sprintf(info_string, "n_globals = %u, n_per_chan = %u", n_globals,
+	  sprintf(info_string, "n_globals = %hu, n_per_chan = %hu", n_globals,
 			  n_per_chan);
 	  dxp_log_debug("dxp_load_symbols_from_file", info_string);
 	
@@ -873,9 +866,11 @@ XERXES_STATIC int dxp_load_symbols_from_file(char *file, Dsp_Params *params)
 	  dxp_log_debug("dxp_load_symbols_from_file", info_string);
 
 	  for (i = 0; i < 4; i++) {
-		sscanf(xmap_md_fgets(line, sizeof(line), fp), "%lx", &(params->chan_offsets[i]));
+		sscanf(xmap_md_fgets(line, sizeof(line), fp), "%lx",
+               &(params->chan_offsets[i]));
 		
-		sprintf(info_string, "chan%d_offset = %#lx", i, params->chan_offsets[i]);
+		sprintf(info_string, "chan%d_offset = %#lx", i,
+                params->chan_offsets[i]);
 		dxp_log_debug("dxp_load_symbols_from_file", info_string);
 	  }
 	
@@ -1167,7 +1162,7 @@ static int dxp_read_dspsymbol(int *ioChan, int *modChan, char *name,
 
   if (status != DXP_SUCCESS) {
 	sprintf(info_string, "Error setting Transfer Address Register to Data "
-			"Memory (%#x)", XMAP_DATA_MEMORY);
+			"Memory (%#lx)", XMAP_DATA_MEMORY);
 	dxp_log_error("dxp_read_dspsymbol", info_string, status);
 	return status;
   }
@@ -1680,11 +1675,11 @@ static int dxp_begin_run(int* ioChan, int* modChan, unsigned short* gate,
 
   UNUSED(gate);
   UNUSED(resume);
+  UNUSED(board);
+  UNUSED(modChan);
 
   
   ASSERT(ioChan != NULL);
-  ASSERT(modChan != NULL);
-  ASSERT(board != NULL);
 
   
   if (*resume == RESUME_RUN) {
@@ -1712,14 +1707,6 @@ static int dxp_begin_run(int* ioChan, int* modChan, unsigned short* gate,
 	dxp_log_error("dxp_begin_run", info_string, status);
 	return status;
   }
-
-/*   status = dxp_wait_for_busy(*ioChan, *modChan, 6, 10.0, board); */
-
-/*   if (status != DXP_SUCCESS) { */
-/*     sprintf(info_string, "Error waiting for run to start on ioChan = %d", *ioChan); */
-/*     dxp_log_error("dxp_begin_run", info_string, status); */
-/*     return status; */
-/*   } */
 
   *id = gid++;
 
@@ -1836,8 +1823,8 @@ XERXES_STATIC int dxp_begin_control_task(int* ioChan, int* modChan, short *type,
 	  status = CONTROL_TASKS[i].fn(*ioChan, *modChan, board);
 
 	  if (status != DXP_SUCCESS) {
-		sprintf(info_string, "Error doing control task type %u for ioChan = %d",
-				*type, *ioChan);
+		sprintf(info_string, "Error doing control task type %hd for ioChan = "
+                "%d", *type, *ioChan);
 		dxp_log_error("dxp_begin_control_task", info_string, status);
 		return status;
 	  }
@@ -1846,7 +1833,7 @@ XERXES_STATIC int dxp_begin_control_task(int* ioChan, int* modChan, short *type,
 	}
   }
 
-  sprintf(info_string, "Unknown control type %u for ioChan = %d",
+  sprintf(info_string, "Unknown control type %hd for ioChan = %d",
 		  *type, *ioChan);
   dxp_log_error("dxp_begin_control_task", info_string, DXP_UNKNOWN_CT);
   
@@ -1880,7 +1867,7 @@ static int dxp_end_control_task(int* ioChan, int* modChan, Board *board)
   status  = dxp_modify_dspsymbol(ioChan, modChan, "RUNTYPE", &RUNTYPE, board);
 
   if (status != DXP_SUCCESS) {
-	sprintf(info_string, "Error setting RUNTYPE back to normal (%u) for "
+	sprintf(info_string, "Error setting RUNTYPE back to normal (%#hx) for "
 			"ioChan = %d", RUNTYPE, *ioChan);
 	dxp_log_error("dxp_end_control_task", info_string, status);
 	return status;
@@ -1922,7 +1909,7 @@ static int dxp_control_task_data(int* ioChan, int* modChan, short *type,
 										(unsigned long *)data, board);
 
 	  if (status != DXP_SUCCESS) {
-		sprintf(info_string, "Error getting data for control task %d for "
+		sprintf(info_string, "Error getting data for control task %hd for "
 				"ioChan = %d", *type, *ioChan);
 		dxp_log_error("dxp_control_task_data", info_string, status);
 		return status;
@@ -1932,7 +1919,7 @@ static int dxp_control_task_data(int* ioChan, int* modChan, short *type,
 	}
   }
 
-  sprintf(info_string, "Unknown control task data type: %d", *type);
+  sprintf(info_string, "Unknown control task data type: %hd", *type);
   dxp_log_error("dxp_control_task_data", info_string, DXP_UNKNOWN_CT);
   return DXP_UNKNOWN_CT;
 }
@@ -2396,17 +2383,10 @@ XERXES_STATIC int XERXES_API dxp_unhook(Board *board)
 
 
   sprintf(info_string, "Attempting to unhook ioChan = %d, unhooked = %u",
-		  board->ioChan, unhooked);
+		  board->ioChan, (unsigned int)unhooked);
   dxp_log_debug("dxp_unhook", info_string);
 
   status = board->iface->funcs->dxp_md_close(&(board->ioChan));
-
-/*   if (!unhooked) { */
-/* 	status = board->iface->funcs->dxp_md_close(&(board->ioChan)); */
-/* 	unhooked = TRUE_; */
-/*   } */
-
-  /* Need to ignore status? */
     
   return DXP_SUCCESS;
 }
@@ -2678,7 +2658,7 @@ XERXES_STATIC int dxp_download_fpga(int ioChan, unsigned long target,
 	if (target & (1 << j)) {
 	  if (! (cfg_status & XMAP_CFG_STATUS[j][XMAP_INIT])) {
 		sprintf(info_string, "INIT* line never asserted for Target %lu after "
-				"waiting %f seconds", j, init_timeout);
+				"waiting %f seconds", j, (double)init_timeout);
 		dxp_log_error("dxp_download_fpga", info_string, DXP_FPGA_TIMEOUT);
 		return DXP_FPGA_TIMEOUT;
 	  }
@@ -2731,7 +2711,7 @@ XERXES_STATIC int dxp_download_fpga(int ioChan, unsigned long target,
 	if (target & (1 << j)) {
 	  if (! (cfg_status & XMAP_CFG_STATUS[j][XMAP_XDONE])) {
 		sprintf(info_string, "XDONE line never asserted for Target %lu after "
-				"waiting %f seconds", j, xdone_timeout);
+				"waiting %f seconds", j, (double)xdone_timeout);
 		dxp_log_error("dxp_download_fpga", info_string, DXP_FPGA_TIMEOUT);
 		return DXP_FPGA_TIMEOUT;
 	  }
@@ -2865,7 +2845,7 @@ XERXES_STATIC int dxp_reset_dsp(int ioChan)
   status = dxp_set_csr_bit(ioChan, XMAP_DSP_RESET_BIT);
 
   if (status != DXP_SUCCESS) {
-	sprintf(info_string, "Error setting bit %u in the CSR to reset the DSP",
+	sprintf(info_string, "Error setting bit %d in the CSR to reset the DSP",
 			XMAP_DSP_RESET_BIT);
 	dxp_log_error("dxp_reset_dsp", info_string, status);
 	return status;
@@ -2898,7 +2878,7 @@ XERXES_STATIC int dxp_boot_dsp(int ioChan, int modChan, Board *b)
   status = dxp_set_csr_bit(ioChan, XMAP_DSP_BOOT_BIT);
 
   if (status != DXP_SUCCESS) {
-	sprintf(info_string, "Error setting bit %u in the CSR to boot the DSP",
+	sprintf(info_string, "Error setting bit %d in the CSR to boot the DSP",
 			XMAP_DSP_BOOT_BIT);
 	dxp_log_error("dxp_boot_dsp", info_string, status);
 	return status;
@@ -2931,7 +2911,7 @@ XERXES_STATIC int dxp_set_csr_bit(int ioChan, byte_t bit)
 
   if (bit > 31) {
 	sprintf(info_string, "Specified bit '%u' is larger then the maximum bit "
-			"'31' in the CSR", bit);
+			"'31' in the CSR", (unsigned int)bit);
 	dxp_log_error("dxp_set_csr_bit", info_string, DXP_BAD_BIT);
 	return DXP_BAD_BIT;
   }
@@ -2976,7 +2956,7 @@ XERXES_STATIC int dxp_clear_csr_bit(int ioChan, byte_t bit)
 
   if (bit > 31) {
 	sprintf(info_string, "Specified bit '%u' is larger then the maximum bit "
-			"'31' in the CSR", bit);
+			"'31' in the CSR", (unsigned int)bit);
 	dxp_log_error("dxp_clear_csr_bit", info_string, DXP_BAD_BIT);
 	return DXP_BAD_BIT;
   }
@@ -3063,7 +3043,8 @@ static int dxp_wait_for_busy(int ioChan, int modChan, parameter_t desired,
 
 	if (status != DXP_SUCCESS) {
 	  sprintf(info_string, "Error reading BUSY during poll iteration %d while "
-			  "waiting for BUSY to go to %u on ioChan = %d", i, desired, ioChan);
+			  "waiting for BUSY to go to %hu on ioChan = %d", i, desired,
+              ioChan);
 	  dxp_log_error("dxp_wait_for_busy", info_string, status);
 	  return status;
 	}
@@ -3075,8 +3056,8 @@ static int dxp_wait_for_busy(int ioChan, int modChan, parameter_t desired,
 	xmap_md_wait(&wait);
   }
 
-  sprintf(info_string, "Timeout waiting for BUSY to go to %u (current = %0.0f) "
-		  "on ioChan = %d", desired, BUSY, ioChan);
+  sprintf(info_string, "Timeout waiting for BUSY to go to %hu (current = "
+          "%0.0f) on ioChan = %d", desired, BUSY, ioChan);
   dxp_log_error("dxp_wait_for_busy", info_string, DXP_TIMEOUT);
   return DXP_TIMEOUT;
 }
@@ -3224,8 +3205,8 @@ static int dxp_do_apply(int ioChan, int modChan, Board *board)
   status = dxp_read_dspsymbol(&ioChan, &modChan, "APPLYSTAT", board, &applystat);
   ASSERT(status == DXP_SUCCESS);
 
-  sprintf(info_string, "Right before begin run: RUNTYPE = %#x, "
-          "SPECIALRUN = %#x, APPLYSTAT = %#x", (parameter_t)runtype,
+  sprintf(info_string, "Right before begin run: RUNTYPE = %#hx, "
+          "SPECIALRUN = %#hx, APPLYSTAT = %#hx", (parameter_t)runtype,
           (parameter_t)specialrun, (parameter_t)applystat);
   dxp_log_debug("dxp_do_apply", info_string);
 
@@ -3246,7 +3227,7 @@ static int dxp_do_apply(int ioChan, int modChan, Board *board)
   n_polls = (int)ROUND(timeout / (double)poll_interval);
 
   sprintf(info_string, "n_polls = %d, timeout = %0.1f, poll_interval = %0.1f",
-          n_polls, timeout, poll_interval);
+          n_polls, (double)timeout, (double)poll_interval);
   dxp_log_debug("dxp_do_apply", info_string);
 
   for (i = 0; i < n_polls; i++) {
@@ -3269,7 +3250,7 @@ static int dxp_do_apply(int ioChan, int modChan, Board *board)
   if (i == n_polls) {
     status = dxp_end_run(&ioChan, &modChan, board);
     sprintf(info_string, "Timeout waiting %0.1f second(s) for the apply run "
-            "to complete on ioChan = %d", timeout, ioChan);
+            "to complete on ioChan = %d", (double)timeout, ioChan);
     dxp_log_error("dxp_do_apply", info_string, DXP_TIMEOUT);
     return DXP_TIMEOUT;
   }
@@ -3283,7 +3264,7 @@ static int dxp_do_apply(int ioChan, int modChan, Board *board)
     return status;
   }
 
-  sprintf(info_string, "ERRINFO after apply = %#x", (parameter_t)errinfo);
+  sprintf(info_string, "ERRINFO after apply = %#hx", (parameter_t)errinfo);
   dxp_log_debug("dxp_do_apply", info_string);
 
   status = dxp_read_dspsymbol(&ioChan, &modChan, "APPLYSTAT", board, &applystat);
@@ -3296,7 +3277,7 @@ static int dxp_do_apply(int ioChan, int modChan, Board *board)
   }
 
   if ((unsigned short)applystat != 0) {
-	sprintf(info_string, "Apply operation (status = %#x) did not complete for "
+	sprintf(info_string, "Apply operation (status = %#hx) did not complete for "
 			"ioChan = %d", (unsigned short)applystat, ioChan);
 	dxp_log_error("dxp_do_apply", info_string, DXP_APPLY_STATUS);
 	return DXP_APPLY_STATUS;
@@ -3393,7 +3374,7 @@ static int dxp__burst_read_block(int ioChan, int modChan, unsigned long addr,
 
   if (addr > XMAP_MEMORY_32_MAX_ADDR) {
 	sprintf(info_string, "Specified external memory address (%#lx) is greater "
-			"then the maximum allowed address (%#x) for ioChan = %d", addr,
+			"then the maximum allowed address (%#lx) for ioChan = %d", addr,
 			XMAP_MEMORY_32_MAX_ADDR, ioChan);
 	dxp_log_error("dxp__burst_read_block", info_string, DXP_MEMORY_LENGTH);
 	return DXP_MEMORY_LENGTH;
@@ -3440,7 +3421,7 @@ static int dxp__burst_read_block(int ioChan, int modChan, unsigned long addr,
  *
  * [global params][chan0 params][chan1 params][chan2 params][chan3 params]
  *
- * Assumes that @a name is of size MAXSYMBOL_LEN.
+ * Assumes that @a name is of size MAX_DSP_PARAM_NAME_LEN.
  * 
  */
 static int dxp_get_symbol_by_index(int modChan, unsigned short index, Board *b,
@@ -3456,12 +3437,12 @@ static int dxp_get_symbol_by_index(int modChan, unsigned short index, Board *b,
 
   /* Determine if the index represents a global or per-channel parameter. */
   if (index < PARAMS(b)->nsymbol) {
-	strncpy(name, PARAMS(b)->parameters[index].pname, MAXSYMBOL_LEN);
+	strncpy(name, PARAMS(b)->parameters[index].pname, MAX_DSP_PARAM_NAME_LEN);
   
   } else {
 	strncpy(name,
 			PARAMS(b)->per_chan_parameters[index - PARAMS(b)->nsymbol].pname,
-			MAXSYMBOL_LEN);
+			MAX_DSP_PARAM_NAME_LEN);
   }
 
   return DXP_SUCCESS;
@@ -3599,8 +3580,8 @@ static int dxp__get_base_history(int ioChan, int modChan, unsigned long *data,
 						   data);
   
   if (status != DXP_SUCCESS) {
-	sprintf(info_string, "Error reading baseline history from %#lx for ioChan = %d",
-			buffer_addr, ioChan);
+	sprintf(info_string, "Error reading baseline history from %#lx for "
+            "ioChan = %d", buffer_addr, ioChan);
 	dxp_log_error("dxp__get_base_history", info_string, status);
 	return status;
   }
@@ -3699,7 +3680,7 @@ static int dxp__do_trace(int ioChan, int modChan, parameter_t type, Board *board
 								board);
   
   if (status != DXP_SUCCESS) {
-	sprintf(info_string, "Error setting TRACECHAN to %u for ioChan = %d",
+	sprintf(info_string, "Error setting TRACECHAN to %hu for ioChan = %d",
 			TRACECHAN, ioChan);
 	dxp_log_error("dxp__do_trace", info_string, status);
 	return status;
@@ -3708,7 +3689,7 @@ static int dxp__do_trace(int ioChan, int modChan, parameter_t type, Board *board
   status = dxp_modify_dspsymbol(&ioChan, &modChan, "RUNTYPE", &RUNTYPE, board);
   
   if (status != DXP_SUCCESS) {
-	sprintf(info_string, "Error setting RUNTYPE to %u for ioChan = %d",
+	sprintf(info_string, "Error setting RUNTYPE to %hu for ioChan = %d",
 			RUNTYPE, ioChan);
 	dxp_log_error("dxp__do_trace", info_string, status);
 	return status;
@@ -3718,7 +3699,7 @@ static int dxp__do_trace(int ioChan, int modChan, parameter_t type, Board *board
 								board);
   
   if (status != DXP_SUCCESS) {
-	sprintf(info_string, "Error setting TRACETYPE to %u for ioChan = %d",
+	sprintf(info_string, "Error setting TRACETYPE to %hu for ioChan = %d",
 			TRACETYPE, ioChan);
 	dxp_log_error("dxp__do_trace", info_string, status);
 	return status;
@@ -3728,7 +3709,7 @@ static int dxp__do_trace(int ioChan, int modChan, parameter_t type, Board *board
 								board);
   
   if (status != DXP_SUCCESS) {
-	sprintf(info_string, "Error setting SPECIALRUN to %u for ioChan = %d",
+	sprintf(info_string, "Error setting SPECIALRUN to %hu for ioChan = %d",
 			SPECIALRUN, ioChan);
 	dxp_log_error("dxp__do_trace", info_string, status);
 	return status;
@@ -3989,8 +3970,8 @@ static int dxp__read_data_memory(int ioChan, unsigned long base,
     status = dxp_read_global_register(ioChan, XMAP_REG_TDR, &val);
 
     if (status != DXP_SUCCESS) {
-      sprintf(info_string, "Error reading data memory word (%ld) for ioChan = %d",
-              i, ioChan);
+      sprintf(info_string, "Error reading data memory word (%#lx) for "
+              "ioChan = %d", i, ioChan);
       dxp_log_error("dxp__read_data_memory", info_string, status);
       return status;
     }
@@ -4062,7 +4043,7 @@ static int dxp__write_data_memory(int ioChan, unsigned long base,
 
     if (status != DXP_SUCCESS) {
       sprintf(info_string, "Error setting Transfer Address Register to the base "
-              "memory address (%#x) for ioChan = %d", addr, ioChan);
+              "memory address (%#lx) for ioChan = %d", addr, ioChan);
       dxp_log_error("dxp__write_data_memory", info_string, status);
       return status;
     }    
@@ -4086,7 +4067,7 @@ static int dxp__write_data_memory(int ioChan, unsigned long base,
     }
 
     /* If it didn't match, then rewrite it. */
-    sprintf(info_string, "Rewriting %u words to %#x (i = %d) for ioChan = %d",
+    sprintf(info_string, "Rewriting %lu words to %#lx (i = %d) for ioChan = %d",
             offset, addr, j, ioChan);
     dxp_log_debug("dxp__write_data_memory", info_string);
 
@@ -4094,7 +4075,7 @@ static int dxp__write_data_memory(int ioChan, unsigned long base,
 
     if (status != DXP_SUCCESS) {
       sprintf(info_string, "Error setting Transfer Address Register to the base "
-              "memory address (%#x) for ioChan = %d", addr, ioChan);
+              "memory address (%#lx) for ioChan = %d", addr, ioChan);
       dxp_log_error("dxp__write_data_memory", info_string, status);
       return status;
     }
@@ -4113,7 +4094,7 @@ static int dxp__write_data_memory(int ioChan, unsigned long base,
   }
 
   if (j == MAX_NUM_REWRITES) {
-    sprintf(info_string, "Error writing %u words to %#x for ioChan = %d",
+    sprintf(info_string, "Error writing %lu words to %#lx for ioChan = %d",
             offset, base, ioChan);
     dxp_log_error("dxp__write_data_memory", info_string, DXP_REWRITE_FAILURE);
     return DXP_REWRITE_FAILURE;
@@ -4247,8 +4228,8 @@ static int dxp__wake_dsp_up(int ioChan, int modChan, Board *b)
   if (status != DXP_SUCCESS) {
 	ignored_status = dxp_read_dspsymbol(&ioChan, &modChan, "RUNERROR", b,
 										&RUNERROR);
-	sprintf(info_string, "Error waiting for DSP to wake up (RUNERROR = %#x) for "
-			"ioChan = %d", (parameter_t)RUNERROR, ioChan);
+	sprintf(info_string, "Error waiting for DSP to wake up (RUNERROR = %#hx) "
+            "for ioChan = %d", (parameter_t)RUNERROR, ioChan);
 	dxp_log_error("dxp__wake_dsp_up", info_string, status);
 	return status;
   }
@@ -4358,15 +4339,6 @@ static int dxp__burst_read_buffer(int ioChan, int modChan, unsigned long addr,
 	return status;
   }
 
-/*   status = dxp_write_global_register(ioChan, XMAP_REG_ARB,  XMAP_CLEAR_ARB); */
-
-/*   if (status != DXP_SUCCESS) { */
-/* 	sprintf(info_string, "Error clearing external memory bit from arbitration " */
-/* 			"register after 'burst' reading ioChan = %d", ioChan); */
-/* 	dxp_log_error("dxp__burst_read_buffer", info_string, status); */
-/* 	return status; */
-/*   } */
-
   return DXP_SUCCESS;
 }
 
@@ -4386,6 +4358,19 @@ static int dxp_download_system_fpga(int ioChan, int modChan, Board *b)
   ASSERT(b->system_fpga != NULL);
 
 
+  /* Setting RUNERROR to -1 tells the DSP to leave the exisiting parameters
+   * alone. If we didn't do this, it would set all of the parameters to the
+   * default values upon boot.
+   */
+  status = dxp_modify_dspsymbol(&ioChan, &modChan, "RUNERROR", &RUNERROR, b);
+
+  if (status != DXP_SUCCESS) {
+    sprintf(info_string, "Error disabling parameter update for ioChan = %d",
+            ioChan);
+    dxp_log_error("dxp_download_system_fpga", info_string, status);
+    return status;
+  }
+
   status = dxp_reset_dsp(ioChan);
 
   if (status != DXP_SUCCESS) {
@@ -4397,7 +4382,17 @@ static int dxp_download_system_fpga(int ioChan, int modChan, Board *b)
   status = dxp_download_fpga(ioChan, XMAP_CONTROL_SYS_FPGA, b->system_fpga);
 
   if (status != DXP_SUCCESS) {
-    sprintf(info_string, "Error downloading System FPGA for ioChan = %d", ioChan);
+    sprintf(info_string, "Error downloading System FPGA for ioChan = %d",
+            ioChan);
+    dxp_log_error("dxp_download_system_fpga", info_string, status);
+    return status;
+  }
+
+  status = dxp_modify_dspsymbol(&ioChan, &modChan, "RUNERROR", &RUNERROR, b);
+
+  if (status != DXP_SUCCESS) {
+    sprintf(info_string, "Error disabling parameter update for ioChan = %d",
+            ioChan);
     dxp_log_error("dxp_download_system_fpga", info_string, status);
     return status;
   }
@@ -4413,19 +4408,6 @@ static int dxp_download_system_fpga(int ioChan, int modChan, Board *b)
     return status;
   }
 
-  /* Setting RUNERROR to -1 tells the DSP to leave the exisiting parameters
-   * alone. If we didn't do this, it would set all of the parameters to the
-   * default values upon boot.
-   */
-  status = dxp_modify_dspsymbol(&ioChan, &modChan, "RUNERROR", &RUNERROR, b);
-
-  if (status != DXP_SUCCESS) {
-    sprintf(info_string, "Error disabling parameter update for ioChan = %d",
-            ioChan);
-    dxp_log_error("dxp_download_system_fpga", info_string, status);
-    return status;
-  }
-
   status = dxp_modify_dspsymbol(&ioChan, &modChan, "BUSY", &BUSY, b);
 
   if (status != DXP_SUCCESS) {
@@ -4434,7 +4416,6 @@ static int dxp_download_system_fpga(int ioChan, int modChan, Board *b)
     dxp_log_error("dxp_download_system_fpga", info_string, status);
     return status;
   }
- 
 
   status = dxp_boot_dsp(ioChan, modChan, b);
 
@@ -4533,55 +4514,4 @@ static int dxp_download_fippis_dsp_no_wake(int ioChan, int modChan, Board *b)
   }
 
   return DXP_SUCCESS;
-}
-
-
-static void dxp_debug_dump_dsp_params(char *filename, Dsp_Params *params)
-{
-  FILE *fp;
-
-  unsigned short i;
-
-  Parameter *p;
-
-
-  ASSERT(filename != NULL);
-  ASSERT(params != NULL);
-
-
-  fp = fopen(filename, "w");
-  
-  if (fp == NULL) {
-    sprintf(info_string, "Unable to open '%s' for dumping the DSP params",
-            filename);
-    dxp_log_warning("dxp_debug_dump_dsp_params", info_string);
-    return;
-  }
-
-  fprintf(fp, "nsymbol            = %u\n", params->nsymbol);
-  fprintf(fp, "n_per_chan_symbols = %u\n", params->n_per_chan_symbols);
-  fprintf(fp, "maxsym             = %u\n", params->maxsym);
-  fprintf(fp, "maxsymlen          = %u\n", params->maxsymlen);
-
-  fprintf(fp, "\n");
-  fprintf(fp, "Global Parameters\n");
-  fprintf(fp, "-----------------\n\n");
-
-  for (i = 0; i < params->nsymbol; i++) {
-    p = &(params->parameters[i]);
-    fprintf(fp, "%s (%#x) %u, %u, %u\n", p->pname, p->address, p->access,
-            p->lbound, p->ubound);
-  }
-
-  fprintf(fp, "\n");
-  fprintf(fp, "Channel Parameters\n");
-  fprintf(fp, "------------------\n\n");
-
-  for (i = 0; i < params->n_per_chan_symbols; i++) {
-    p = &(params->per_chan_parameters[i]);
-    fprintf(fp, "%s (%#x) %u, %u, %u\n", p->pname, p->address, p->access,
-            p->lbound, p->ubound);
-  }
-
-  fclose(fp);
 }
