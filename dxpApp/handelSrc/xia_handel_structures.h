@@ -35,7 +35,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xia_handel_structures.h,v 1.4 2009-07-06 18:24:31 rivers Exp $
+ * $Id: xia_handel_structures.h 15951 2010-06-09 23:22:16Z patrick $
  *
  */
 
@@ -302,78 +302,78 @@ typedef struct _MultiChannelState {
  * Define a struct of linked-lists for the module information
  */
 struct Module {
-    /* Give this set a name as a reference */
+    /* Logical, human-readable, name for this module. Referenced/Set in
+     * the .ini file.
+     */
     char *alias;
 
-    /* The type of this module, e.g. DXP-4C, DGF-4C, etc...
-     * These names need to match the XerXes/HanDeL standard
-     */
+    /* Hardware type for this module. */
     char *type;
 
     /* The communication interface */
     struct HDLInterface *interface_info;
 
-    /* The number of channels for the specified module type. 
-     * This may be removed...
+    /* Number of channels for this module, determined by the hardware
+     * type. Also used to distinguish between hardware types that only
+     * differ by the number of channels they have.
      */
     unsigned int number_of_channels;
 
-  /* Eventually, these "channels" will hold most of the 
-   * information that is currently in the structure.
-   */
-  Channel_t *ch;
+    /* Eventually, these "channels" will hold most of the information
+     * that is currently in the structure.
+     */
+    Channel_t *ch;
 
-    /* The detector channel # for a given channel. If neg, then the
-     * channel is disabled.
+    /* Array of detChan values for this module. The indices of this
+     * array map the logical module channel to its detChan. Set an
+     * element to -1 to disable the channel.
      */
     int *channels;
 
-    /* The alias of the detector to be associated with this module.
-     * The specific detector channel associated w/ an element is 
-     * to be appended to the end of the name as follows:
-     * channel{n}_detector:m
+    /* An array of strings mapping logical module channels to detector
+     * alias + physical detector channel. The format is defined as
+     * {detector alias}:{detector channel}.
      */
     char **detector;
 
-    /* The physical channel on the detector (in multi-element detectors)
-     * that should be used with the detChan and alias specified at the
-     * given index. This is a little tricky and I'll try and draw a picture
-     * of it soon.
+    /* Mapping of physical detector channel to logical module channel.
      */
     int *detector_chan;
 
-    /* The static hardware gain for a given channel (as distinguished 
-     * from the gain set in the DSP and the preamp gain).
-     */
-    double *gain;
-
-    /* Individual firmware aliases that override the firmware_all for a given
-     * channel. If firmware_all is set then the whole array is set to the same 
-     * firmware. firmware_set_chan{n} calls will override the firmware_all 
-     * settings. HOWEVER, another call to firmware_all will override the
-     * firmware_set_chan{n} information.
+    /* Array of strings mapping logical module channels to firmware
+     * alias.
      */
     char **firmware;
 
-    /* Individual default aliases that override the default_all for a given
-     * channel. See comment for char **firmware for more details.
+    /* Array of strings mapping logical module channels to default
+     * (acquisition value) alias.
      */
     char **defaults;
 
-    /* An array of CurrentFirmware structures that hold the current
-     * firmware information.
+    /* An array of CurrentFirmware elements mapping logical module
+     * channels to their running firmware.
      */
     CurrentFirmware *currentFirmware;
 
-    /* Multi-channel modules could be validated more then once, which is a waste
-     * of resources. This flag is set once the module is validated and unset when 
-     * xiaStartSystem() is called.
+    /* Multi-channel modules could be validated more then once, which
+     * is a waste of resources. This flag is set once the module is
+     * validated and unset when xiaStartSystem() is called.
      */
     boolean_t isValidated;
 
+    /* Used to differentiate between single- and non-single-channel
+     * modules in Handel, which does not know enough about the
+     * different products to make the decision based on the number of
+     * channels.
+     */
     boolean_t isMultiChannel;
 
     MultiChannelState *state;
+
+    /* Indicates if the user setup operations have been applied to this 
+     * module or not.
+     */
+    boolean_t isSetup;
 
     struct Module *next;
 }; 
