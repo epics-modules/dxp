@@ -1,14 +1,6 @@
 /*
- * handel_run_params.c
- *
- * Created 11/09/01 -- PJF
- *
- * This file contains the routines relating to
- * control of the run parameters, such as
- * xiaSetAcquitionValues, xiaGainChange, etc...
- *
- * Copyright (c) 2002,2003,2004, X-ray Instrumentation Associates
- *               2005, XIA LLC
+ * Copyright (c) 2002-2004 X-ray Instrumentation Associates
+ *               2005-2010 XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -41,6 +33,8 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
+ * $Id: handel_run_params.c 16023 2010-06-16 21:04:42Z patrick $
+ *
  */
 
 
@@ -48,12 +42,13 @@
 
 #include "xia_common.h"
 #include "xia_assert.h"
-
-#include "handeldef.h"
 #include "xia_handel_structures.h"
 #include "xia_handel.h"
 #include "xia_system.h"
+
+#include "handeldef.h"
 #include "handel_errors.h"
+#include "handel_log.h"
 
 
 /** Static Prototypes **/
@@ -74,7 +69,6 @@ HANDEL_EXPORT int HANDEL_API xiaSetAcquisitionValues(int detChan, char *name, vo
   int elemType;
   int detector_chan;
 
-  double gainScale;
   double savedValue;
 
   unsigned int modChan;
@@ -164,8 +158,6 @@ HANDEL_EXPORT int HANDEL_API xiaSetAcquisitionValues(int detChan, char *name, vo
 	  detectorAlias 		= module->detector[modChan];
 	  detector_chan 		= module->detector_chan[modChan];
 	  detector      		= xiaFindDetector(detectorAlias);
-	  /*	  preampGain    		= detector->gain[detector_chan];*/
-	  gainScale             = module->gain[modChan];
 	  currentFirmware	    = &module->currentFirmware[modChan];
 	  
 	  switch (detector->type)
@@ -223,15 +215,15 @@ HANDEL_EXPORT int HANDEL_API xiaSetAcquisitionValues(int detChan, char *name, vo
 	  
 	  status = localFuncs.setAcquisitionValues(detChan, name, value, defaults,
 											   firmwareSet, currentFirmware,
-											   detectorType, gainScale, detector,
+											   detectorType, detector,
 											   detector_chan, module, modChan); 
 	  
-	  if (status != XIA_SUCCESS)
-		{
-		  sprintf(info_string, "Unable to set acquisition values for detChan %d", detChan);
+	  if (status != XIA_SUCCESS) {
+		  sprintf(info_string, "Unable to set '%s' to %0.3f for detChan %d.",
+                  name, *((double *)value), detChan);
 		  xiaLogError("xiaSetAcquisitionValues", info_string, status);
 		  return status;
-		}
+      }
 	  
 	  break;
 	  
@@ -477,8 +469,7 @@ HANDEL_EXPORT int HANDEL_API xiaRemoveAcquisitionValues(int detChan, char *name)
 
       status = localFuncs.userSetup(detChan, defaults, fs,
                                     &(m->currentFirmware[modChan]), detType,
-                                    m->gain[modChan], det,
-                                    m->detector_chan[modChan], m, modChan);
+                                    det, m->detector_chan[modChan], m, modChan);
 
       if (status != XIA_SUCCESS) {
         sprintf(info_string, "Error updating acquisition values after '%s' "
@@ -648,7 +639,6 @@ HANDEL_EXPORT int HANDEL_API xiaGainOperation(int detChan, char *name, void *val
   unsigned int modChan;
 
   double preampGain;
-  double gainScale;
 
   char boardType[MAXITEM_LEN];
   char detectorType[MAXITEM_LEN];
@@ -701,7 +691,6 @@ HANDEL_EXPORT int HANDEL_API xiaGainOperation(int detChan, char *name, void *val
 	  detector_chan 		= module->detector_chan[modChan];
 	  detector      		= xiaFindDetector(detectorAlias);
 	  preampGain    		= detector->gain[detector_chan];
-	  gainScale             = module->gain[modChan];
 	  currentFirmware 	    = &module->currentFirmware[modChan]; 
 
 	  switch (detector->type)
@@ -723,9 +712,9 @@ HANDEL_EXPORT int HANDEL_API xiaGainOperation(int detChan, char *name, void *val
 		  break;
 		}
 
-	  status = localFuncs.gainOperation(detChan, name, value, detector, detector_chan, 
-										defaults, gainScale, currentFirmware, detectorType,
-										module);
+	  status = localFuncs.gainOperation(detChan, name, value, detector,
+                                        detector_chan, defaults,
+                                        currentFirmware, detectorType, module);
 
 	  if (status != XIA_SUCCESS)
 		{
@@ -787,8 +776,6 @@ HANDEL_EXPORT int HANDEL_API xiaGainChange(int detChan, double deltaGain)
 
   unsigned int modChan;
 
-  double gainScale;
-
   char boardType[MAXITEM_LEN];
   char detectorType[MAXITEM_LEN];
 
@@ -839,8 +826,6 @@ HANDEL_EXPORT int HANDEL_API xiaGainChange(int detChan, double deltaGain)
 	  detectorAlias 		= module->detector[modChan];
 	  detector_chan 		= module->detector_chan[modChan];
 	  detector      		= xiaFindDetector(detectorAlias);
-	  /*	  preampGain    		= detector->gain[detector_chan];*/
-	  gainScale             = module->gain[modChan];
 	  currentFirmware 	    = &module->currentFirmware[modChan]; 
 
 	  switch (detector->type)
@@ -862,8 +847,8 @@ HANDEL_EXPORT int HANDEL_API xiaGainChange(int detChan, double deltaGain)
 		  break;
 		}
 
-	  status = localFuncs.gainChange(detChan, deltaGain, defaults, currentFirmware,
-									 detectorType, gainScale, detector,
+	  status = localFuncs.gainChange(detChan, deltaGain, defaults,
+                                     currentFirmware, detectorType, detector,
 									 detector_chan, module, modChan);
 
 	  if (status != XIA_SUCCESS)
@@ -925,8 +910,6 @@ HANDEL_EXPORT int HANDEL_API xiaGainCalibrate(int detChan, double deltaGain)
 
   unsigned int modChan;
 
-  double gainScale;
-
   char boardType[MAXITEM_LEN];
 
   char *detectorAlias;
@@ -973,10 +956,9 @@ HANDEL_EXPORT int HANDEL_API xiaGainCalibrate(int detChan, double deltaGain)
 	  modChan       = xiaGetModChan((unsigned int)detChan);
 	  detectorAlias = module->detector[modChan];
 	  detector      = xiaFindDetector(detectorAlias);
-	  gainScale     = module->gain[modChan];
 
 	  status = localFuncs.gainCalibrate(detChan, detector, modChan, module,
-										defaults, deltaGain, gainScale);
+										defaults, deltaGain);
 
 	  if (status != XIA_SUCCESS)
 		{
@@ -1271,8 +1253,8 @@ HANDEL_STATIC boolean_t HANDEL_API xiaIsUpperCase(char *string)
 
   for (i = 0; i < len; i++) {
 
-	if (!isupper(string[i]) &&
-		!isdigit(string[i])) {
+      if (!isupper((int)string[i]) &&
+          !isdigit((int)string[i])) {
 
 	  return FALSE_;
 	}
