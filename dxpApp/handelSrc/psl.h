@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  * 
  *
- * $Id: psl.h,v 1.4 2009-07-06 18:24:30 rivers Exp $
+ * $Id: psl.h 14659 2010-02-20 01:13:42Z patrick $
  *
  */
 
@@ -46,9 +46,9 @@
 
 #include "psldef.h"
 
-#ifndef EXCLUDE_DXPX10P
-PSL_IMPORT int PSL_API dxpx10p_PSLInit(PSLFuncs *funcs);
-#endif /* EXCLUDE_DXPX10P */
+#ifndef EXCLUDE_SATURN
+PSL_IMPORT int PSL_API saturn_PSLInit(PSLFuncs *funcs);
+#endif /* EXCLUDE_SATURN */
 #ifndef EXCLUDE_DXP4C2X
 PSL_IMPORT int PSL_API dxp4c2x_PSLInit(PSLFuncs *funcs);
 #endif /* EXCLUDE_DXP4C2X */
