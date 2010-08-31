@@ -35,7 +35,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: handel_errors.h,v 1.7 2009-07-06 18:24:29 rivers Exp $
+ * $Id: handel_errors.h 15938 2010-06-09 19:20:45Z patrick $
  * 
  *
  */
@@ -57,6 +57,7 @@
 #define XIA_FORMAT_ERROR		  4
 #define XIA_ILLEGAL_OPERATION		  5 /** Attempted to configure options in an illegal order */
 #define XIA_FILE_RA			  6 /** File random access unable to find name-value pair */
+#define XIA_SET_POS              7 /** Error getting file position. */ 
 
 /*  primitive level error codes (due to mdio failures) 101-200*/
 
@@ -228,6 +229,14 @@
                                     range. */
 #define XIA_PEAKMODE_OOR    668 /** The specified peak mode is out of range. */
 #define XIA_NOSUPPORTED_PREAMP_TYPE 669 /** The specified preamp type is not supported by current firmware. */
+#define XIA_ENERGYCOEF_OOR 670 /** The calculated energy coefficient values are out of range. */
+#define XIA_VETO_PULSE_STEP 671 /** The specified step value is too large for the Alpha pulser veto pulse. */
+#define XIA_TRIGOUTPUT_OOR  672 /** The specified trigger signal output is out of range. */
+#define XIA_LIVEOUTPUT_OOR  673 /** The specified livetime signal output is out of range. */
+#define XIA_UNKNOWN_MAPPING 674 /** Unknown mapping mode value specified. */
+#define XIA_UNKNOWN_LIST_MODE_VARIANT 675 /** Illegal list mode variant. */
+#define XIA_MALFORMED_LENGTH 676 /** List mode upper length word is malformed. */
+
 /* XUP errors 701-800 */
 #define XIA_XUP_VERSION     701 /** XUP version is not supported */
 #define XIA_CHKSUM          702 /** checksum mismatch in the XUP */
