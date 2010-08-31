@@ -21,7 +21,7 @@ USR_CFLAGS_Linux    += -DEXCLUDE_CAMAC -DEXCLUDE_DXP4C -DEXCLUDE_DXP4C2X -DEXCLU
 endif
 USR_CFLAGS_cygwin32 += -DEXCLUDE_CAMAC -DEXCLUDE_DXP4C -DEXCLUDE_DXP4C2X
 USR_CFLAGS_WIN32    += -DEXCLUDE_CAMAC -DEXCLUDE_DXP4C -DEXCLUDE_DXP4C2X
-USR_CFLAGS_vxWorks  += -DEXCLUDE_DXPX10P -DEXCLUDE_USB -DEXCLUDE_XMAP -DEXCLUDE_PLX
+USR_CFLAGS_vxWorks  += -DEXCLUDE_SATURN -DEXCLUDE_USB -DEXCLUDE_XMAP -DEXCLUDE_PLX
 USR_CFLAGS +=          -DEXCLUDE_UDXP -DEXCLUDE_UDXPS -DEXCLUDE_DGF200 -DEXCLUDE_POLARIS  -DEXCLUDE_MERCURY
 USR_CFLAGS +=          -DEXCLUDE_SERIAL -DEXCLUDE_ARCNET -DEXCLUDE_VEGA
 USR_CFLAGS_WIN32    += -DHANDEL_USE_DLL -DHANDEL_MAKE_DLL -DWIN32
@@ -33,12 +33,12 @@ endif
 handel_SRCS_vxWorks  += dxp4c2x.c dxp4c2x_psl.c md_vxWorks.c
 
 ifeq ($(LINUX_USB_INSTALLED), YES)
-handel_SRCS_Linux    += usblib_linux.c
+handel_SRCS_Linux    += xia_usb_linux.c
 endif
-handel_SRCS_Linux    += x10p.c x10p_psl.c md_linux.c epplib.c
+handel_SRCS_Linux    += saturn.c saturn_psl.c md_linux.c xia_epp_linux.c
 
-handel_SRCS_cygwin32 += x10p.c x10p_psl.c xmap.c xmap_psl.c md_win95.c xia_usb2.c epplib.c plxlib.c usblib.c
-handel_SRCS_WIN32    += x10p.c x10p_psl.c xmap.c xmap_psl.c md_win95.c xia_usb2.c epplib.c plxlib. usblib.c
+handel_SRCS_cygwin32 += saturn.c saturn_psl.c xmap.c xmap_psl.c md_win32.c xia_usb2.c xia_epp.c xia_plx.c xia_usb.c
+handel_SRCS_WIN32    += saturn.c saturn_psl.c xmap.c xmap_psl.c md_win32.c xia_usb2.c xia_epp.c xia_plx.c xia_usb.c
 handel_SRCS += xerxes.c
 handel_SRCS += xerxes_log.c
 handel_SRCS += md_log.c
