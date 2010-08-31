@@ -1,8 +1,6 @@
 /*
- * Dlldefs.h
- *
  * Copyright (c) 2004 X-ray Instrumentation Associates
- *               2005 XIA LLC
+ *               2005-2009 XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -36,7 +34,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: Dlldefs.h,v 1.6 2009-07-21 13:43:26 rivers Exp $
+ * $Id: Dlldefs.h 12497 2009-07-28 17:15:21Z patrick $
  */
 
 #ifndef __DLLDEFS_H__
@@ -46,17 +44,17 @@
 #define XIA_SHARED 
 
 #ifdef _WIN32
-  #ifdef XIA_STATIC_BUILD
-    #define XIA_EXPORT
-    #define XIA_IMPORT
-  #else /* __STATIC */
-    #define XIA_IMPORT __declspec( dllimport)
-    #define XIA_EXPORT  __declspec( dllexport)
-  #endif
+#ifdef XIA_STATIC_BUILD
+#define XIA_IMPORT
+#define XIA_EXPORT
+#else /* XIA_STATIC_BUILD */
+#define XIA_IMPORT __declspec( dllimport)
+#define XIA_EXPORT  __declspec( dllexport)
+#endif /* XIA_STATIC_BUILD */
 #else /* _WIN32 */
-  #define XIA_IMPORT 
-  #define XIA_EXPORT 
-#endif
+#define XIA_IMPORT 
+#define XIA_EXPORT 
+#endif /* _WIN32 */
 
 #ifdef WIN32_EPPLIB_VBA
 #define XIA_API _stdcall
