@@ -1,7 +1,5 @@
 /*
- * xia_mem.c
- *
- * Copyright (c) 2005, XIA LLC
+ * Copyright (c) 2005-2009, XIA LLC
  *
  * All rights reserved.
  *
@@ -36,7 +34,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_mem.c,v 1.6 2009-08-31 21:42:40 rivers Exp $
+ * $Id$
  */
 
 #include <stdlib.h>
@@ -208,7 +206,7 @@ XIA_EXPORT void xia_mem_checkpoint(mem_check_pt_t *chk_pt)
 	key = (char *)malloc(256);
 	ASSERT(key != NULL);
 
-	sprintf(key, "%s:%u:%p", b->file, b->line, b->addr);
+	sprintf(key, "%s:%d:%p", b->file, b->line, b->addr);
 	xia_mem_point_insert(p, key);
 	key = NULL;
   }
@@ -261,12 +259,12 @@ XIA_EXPORT void xia_mem_checkpoint_cmp(mem_check_pt_t *pt, char *out)
   fprintf(fp, "\n**********MEMORY LEAK START**********\n");
 
   for (b = BLK_HEAD; b != NULL; b = b->next) {
-	sprintf(key, "%s:%u:%p", b->file, b->line, b->addr);
+	sprintf(key, "%s:%d:%p", b->file, b->line, b->addr);
 	
 	if (!xia_mem_point_key_exists((mem_point_t *)*pt, key)) {
 	  fprintf(fp, "\n");
 	  fprintf(fp, "Allocation: %s:%d\n", b->file, b->line);
-	  fprintf(fp, "Size: %ld bytes\n", (long)b->n);
+	  fprintf(fp, "Size: %d bytes\n", b->n);
 	}
   }
   
