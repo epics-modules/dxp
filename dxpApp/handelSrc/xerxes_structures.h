@@ -1,8 +1,6 @@
 /*
- *  xerxes_structures.h
- *
  * Copyright (c) 2004, X-ray Instrumentation Associates
- *               2005, XIA LLC
+ *               2005-2009, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -35,15 +33,14 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xerxes_structures.h,v 1.3 2009-07-06 18:24:31 rivers Exp $
+ * $Id: xerxes_structures.h 13819 2009-11-19 18:56:26Z patrick $
  *
  */
 
 
-#ifndef XERXES_STRUCTURES_H
-#define XERXES_STRUCTURES_H
+#ifndef __XERXES_STRUCTURES_H__
+#define __XERXES_STRUCTURES_H__
 
-/* 'Cause there is a FILE * in one of the func pointers -- PJF */
 #include <stdio.h>
 
 #include "xerxesdef.h"
@@ -54,12 +51,11 @@
  *  Structure that points at the functions within the MD Interface
  */
 typedef int (*DXP_MD_IO)(int *, unsigned int *, unsigned long *, void *,
-						 unsigned int *);
+                         unsigned int *);
 typedef int (*DXP_MD_INITIALIZE)(unsigned int *, char *);
 typedef int (*DXP_MD_OPEN)(char *, int *);
 typedef int (*DXP_MD_GET_MAXBLK)(void);
 typedef int (*DXP_MD_SET_MAXBLK)(unsigned int *);
-typedef int (*DXP_MD_LOCK_RESOURCE)(int *, int*, short *);
 typedef int (*DXP_MD_CLOSE)(int *);
 
 struct Xia_Io_Functions {
@@ -68,8 +64,7 @@ struct Xia_Io_Functions {
 	DXP_MD_OPEN dxp_md_open;
 	DXP_MD_GET_MAXBLK dxp_md_get_maxblk;
 	DXP_MD_SET_MAXBLK dxp_md_set_maxblk;
-	DXP_MD_LOCK_RESOURCE dxp_md_lock_resource;
-    DXP_MD_CLOSE dxp_md_close;
+  DXP_MD_CLOSE dxp_md_close;
 };
 typedef struct Xia_Io_Functions Xia_Io_Functions;
 
@@ -99,9 +94,9 @@ typedef char * (*DXP_MD_FGETS)(char *s, int size, FILE *stream);
 typedef char * (*DXP_MD_TMP_PATH)(void);
 typedef void (*DXP_MD_CLEAR_TMP)(void);
 typedef char * (*DXP_MD_PATH_SEP)(void);
+typedef int (*DXP_MD_PROCESS_MSGS)(void);
 
 struct Xia_Util_Functions {
-  DXP_MD_ERROR_CONTROL dxp_md_error_control;
   DXP_MD_ERROR dxp_md_error;
   DXP_MD_WARNING dxp_md_warning;
   DXP_MD_INFO dxp_md_info;
@@ -120,7 +115,8 @@ struct Xia_Util_Functions {
   DXP_MD_TMP_PATH dxp_md_tmp_path;
   DXP_MD_CLEAR_TMP dxp_md_clear_tmp;
   DXP_MD_PATH_SEP dxp_md_path_separator;
+  DXP_MD_PROCESS_MSGS dxp_md_process_msgs;
 };
 typedef struct Xia_Util_Functions Xia_Util_Functions;
 
-#endif						/* Endif for XERXES_STRUCTURES_H */
+#endif /* __XERXES_STRUCTURES_H__ */
