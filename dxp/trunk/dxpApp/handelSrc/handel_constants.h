@@ -39,7 +39,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: handel_constants.h,v 1.8 2009-07-06 18:24:29 rivers Exp $
+ * $Id: handel_constants.h 15938 2010-06-09 19:20:45Z patrick $
  *
  */
 
@@ -66,6 +66,13 @@
 #define XIA_MAPPING_CTL_GATE 1.0
 #define XIA_MAPPING_CTL_SYNC 2.0
 
+/** Trigger and livetime signal output constants **/
+#define XIA_OUTPUT_DISABLED        0
+#define XIA_OUTPUT_FASTFILTER      1
+#define XIA_OUTPUT_BASELINEFILTER  2
+#define XIA_OUTPUT_ENERGYFILTER    3
+#define XIA_OUTPUT_ENERGYACTIVE    4
+
 /** Old Test Constants **/
 #define XIA_HANDEL_TEST_MASK             0x1
 #define XIA_HANDEL_DYN_MODULE_TEST_MASK  0x2
@@ -74,5 +81,10 @@
 #define XIA_HANDEL_RUN_CONTROL_TEST_MASK 0x10
 #define XIA_XERXES_TEST_MASK             0x20
 #define XIA_HANDEL_SYSTEM_TEST_MASK      0x40
+
+/** List mode variant **/
+#define XIA_LIST_MODE_SLOW_PIXEL 0.0
+#define XIA_LIST_MODE_FAST_PIXEL 1.0
+#define XIA_LIST_MODE_CLOCK      2.0
 
 #endif /* HANDEL_CONSTANTS_H */
