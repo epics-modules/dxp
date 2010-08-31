@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: handel_xerxes.h,v 1.4 2009-07-06 18:24:30 rivers Exp $
+ * $Id: handel_xerxes.h 14659 2010-02-20 01:13:42Z patrick $
  *
  */
 
@@ -69,9 +69,9 @@ static char *BOARD_LIST[] = {
   "dxp2x",
   "dxp4c2x",
 #endif /* EXCLUDE_DXP4C2X */
-#ifndef EXCLUDE_DXPX10P
+#ifndef EXCLUDE_SATURN
   "dxpx10p",
-#endif /* EXCLUDE_DXPX10P */
+#endif /* EXCLUDE_SATURN */
 #ifndef EXCLUDE_UDXPS
   "udxps",
 #endif /* EXCLUDE_UDXPS */
