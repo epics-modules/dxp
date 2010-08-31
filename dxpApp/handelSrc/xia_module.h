@@ -1,11 +1,6 @@
 /*
- * xia_module.h
- *
- * Contains information specific to the module dynamic
- * configuration code.
- *
  * Copyright (c) 2004, X-ray Instrumentation Associates
- *               2005, XIA LLC
+ *               2005-2009, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -38,14 +33,14 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xia_module.h,v 1.6 2009-07-16 17:01:47 rivers Exp $
+ * $Id: xia_module.h 12420 2009-07-14 01:06:58Z patrick $
  *
  *
  */
 
 
-#ifndef XIA_MODULE_H
-#define XIA_MODULE_H
+#ifndef __XIA_MODULE_H__
+#define __XIA_MODULE_H__
 
 #include "handeldef.h"
 #include "xia_handel.h"
@@ -58,6 +53,7 @@ typedef int (*ModItemFunc_t)(Module *, void *, char *);
 typedef int (*ModInitFunc_t)(Module *);
 typedef int (*AddChanTypeFunc_t)(Module *, int, void *);
 
+
 /** Structs **/
 typedef struct _ModItemFunc {
   char *name;
@@ -67,24 +63,12 @@ typedef struct _ModItemFunc {
 } ModItem_t;
 
 
-/* This structure represents a module_type
- * name and allows for multiple aliases to
- * the same name. This reduces the amount
- * of code that needs to be modified elsewhere
- * in Handel.
- */
-typedef struct _ModName {
-  char *alias;
-  char *actual;
-
-} ModName_t;
-
-
 typedef struct _AddChanType {
   char *name;
   AddChanTypeFunc_t f;
 
 } AddChanType_t;
+
 
 /* Interface */
 enum {
@@ -109,6 +93,7 @@ enum {
 #ifndef EXCLUDE_PLX
   PLX,
 #endif /* EXCLUDE_PLX */
+  SENTINEL
 };
 
 
@@ -125,8 +110,10 @@ enum {
 };
 
 
+#define N_KNOWN_MODS (sizeof(KNOWN_MODS) / sizeof(KNOWN_MODS[0]))
+
 /* Channel index offset in strings like channel{n}_alias, etc */
 #define CHANNEL_IDX_OFFSET  7
 
 
-#endif /* XIA_MODULE_H */
+#endif /* __XIA_MODULE_H__ */
