@@ -1,10 +1,6 @@
 /*
- * xmap.h
- *
- * Public interface for xMAP device driver.
- *
  * Copyright (c) 2004, X-ray Instrumentation Associates
- *               2005, XIA LLC
+ *               2005-2009, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -37,13 +33,13 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xmap.h,v 1.3 2009-07-06 18:24:32 rivers Exp $
+ * $Id: xmap.h 12424 2009-07-14 22:32:29Z patrick $
  *
  */
 
 
-#ifndef XMAP_H
-#define XMAP_H
+#ifndef __XMAP_H__
+#define __XMAP_H__
 
 /* This value is in words. The maximum length of the DSP in 24-bit program
  * memory values is 0x8000.
@@ -79,7 +75,7 @@ enum {
   /* Event samples scaled by 2^(-ESCALE) */
   XMAP_CT_EVENTS,
   /* Wake the DSP up */
-  XMAP_CT_WAKE_DSP,
+  XMAP_CT_WAKE_DSP
 };
 
-#endif /* XMAP_H */
+#endif /* __XMAP_H__ */
