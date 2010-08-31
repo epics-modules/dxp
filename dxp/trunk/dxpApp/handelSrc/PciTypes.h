@@ -139,12 +139,13 @@ extern "C" {
 #else
     typedef signed _int64         S64;
     typedef unsigned _int64       U64;
-#endif
+#endif /* __GNUC__ */
     typedef INT_PTR               PLX_INT_PTR;        // For 32/64-bit code compatability
     typedef UINT_PTR              PLX_UINT_PTR;
 
     typedef HANDLE                PLX_DRIVER_HANDLE;  // Windows-specific driver handle
 #endif
+
 
 
 /******************************************
