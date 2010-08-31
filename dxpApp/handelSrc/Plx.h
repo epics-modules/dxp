@@ -50,43 +50,42 @@ extern "C" {
 /**********************************************
 *               Definitions
 **********************************************/
-// SDK Version information
 #define PLX_SDK_VERSION_MAJOR            5
 #define PLX_SDK_VERSION_MINOR            2
 #define PLX_SDK_VERSION_REVISION         0
 #define PLX_SDK_VERSION_STRING           "5.20"
 
-#define MAX_PCI_BUS                      255            // Max PCI Buses
-#define MAX_PCI_DEV                      32             // Max PCI Slots
-#define MAX_PCI_FUNC                     8              // Max PCI Functions
-#define PCI_NUM_BARS_TYPE_00             6              // Total PCI BARs for Type 0 Header
-#define PCI_NUM_BARS_TYPE_01             2              // Total PCI BARs for Type 1 Header
+#define MAX_PCI_BUS                      255            
+#define MAX_PCI_DEV                      32             
+#define MAX_PCI_FUNC                     8              
+#define PCI_NUM_BARS_TYPE_00             6              
+#define PCI_NUM_BARS_TYPE_01             2              
 
-#define PLX_VENDOR_ID                    0x10B5         // PLX Vendor ID
+#define PLX_VENDOR_ID                    0x10B5         
 
-// Device object validity codes
-#define PLX_TAG_VALID                    0x5F504C58     // "_PLX" in Hex
-#define PLX_TAG_INVALID                  0x564F4944     // "VOID" in Hex
+/* Device object validity codes */
+#define PLX_TAG_VALID                    0x5F504C58     /* "_PLX" in Hex */
+#define PLX_TAG_INVALID                  0x564F4944     /* "VOID" in Hex */
 #define ObjectValidate(pObj)             ((pObj)->IsValidTag = PLX_TAG_VALID)
 #define ObjectInvalidate(pObj)           ((pObj)->IsValidTag = PLX_TAG_INVALID)
 #define IsObjectValid(pObj)              ((pObj)->IsValidTag == PLX_TAG_VALID)
 
-// Used for locating PCI devices
+/* Used for locating PCI devices */
 #define PCI_FIELD_IGNORE                 (-1)
 
-// Constants for CRC status
+/* Constants for CRC status */
 #define PLX_CRC_VALID                    TRUE
 #define PLX_CRC_INVALID                  FALSE
 
-// Used for VPD accesses
-#define VPD_COMMAND_MAX_RETRIES          5         // Max number VPD command re-issues
-#define VPD_STATUS_MAX_POLL              10        // Max number of times to read VPD status
-#define VPD_STATUS_POLL_DELAY            5         // Delay between polling VPD status (Milliseconds)
+/* Used for VPD accesses */
+#define VPD_COMMAND_MAX_RETRIES          5         
+#define VPD_STATUS_MAX_POLL              10        
+#define VPD_STATUS_POLL_DELAY            5         /* milliseconds */
 
-// Define a large value for a signal to the driver
+/* Define a large value for a signal to the driver */
 #define FIND_AMOUNT_MATCHED              80001
 
-// Used for EEPROM file read/write
+/* Used for EEPROM file read/write */
 #define EndianSwap32(value)              ( ((((value) >>  0) & 0xff) << 24) | \
                                            ((((value) >>  8) & 0xff) << 16) | \
                                            ((((value) >> 16) & 0xff) <<  8) | \
@@ -95,10 +94,10 @@ extern "C" {
 #define EndianSwap16(value)              ( ((((value) >>  0) & 0xffff) << 16) | \
                                            ((((value) >> 16) & 0xffff) <<  0) )
 
-// PLX 9000-series doorbell value to initiate a local CPU reset
+/* PLX 9000-series doorbell value to initiate a local CPU reset */
 #define PLX_RESET_EMBED_INT              ((unsigned long)1 << 31)
 
-// Device IDs of PLX reference boards
+/* Device IDs of PLX reference boards */
 #define PLX_9080RDK_960_DEVICE_ID        0x0960
 #define PLX_9080RDK_401B_DEVICE_ID       0x0401
 #define PLX_9080RDK_860_DEVICE_ID        0x0860
