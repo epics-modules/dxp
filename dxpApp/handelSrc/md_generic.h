@@ -1,8 +1,6 @@
 /*
- *  md_generic.h
- *
  * Copyright (c) 2004, X-ray Instrumentation Associates
- *               2005, XIA LLC
+ *               2005-2009, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -36,14 +34,17 @@
  * SUCH DAMAGE.
  *  
  *
- * $Id: md_generic.h,v 1.7 2009-07-06 18:24:30 rivers Exp $
+ * $Id: md_generic.h 12540 2009-07-31 01:17:48Z patrick $
  *
  *    Generic constant definitions related to the MD layer
  */
 
 
-#ifndef MD_GENERIC_H
-#define MD_GENERIC_H
+#ifndef __MD_GENERIC_H__
+#define __MD_GENERIC_H__
+
+#include <limits.h>
+
 
 #define MD_ERROR		1
 #define MD_WARNING		2
@@ -60,12 +61,22 @@
 #define IO_SNIFF_OFF 0x20
 #define IO_USB       0x40 /* Special flag to signal dxp_command for USB comm */
 
-#define MD_INVALID_ADDR -1
+/* An invalid address for the USB address cache. Due to the way we structure
+ * the USB2 address space, 0xFFFFFFFF should not be a valid target address.
+ */
+#define MD_INVALID_ADDR ULONG_MAX
 
 /* I/O Priority flags */
 enum {
   MD_IO_PRI_NORMAL = 0,
-  MD_IO_PRI_HIGH,
+  MD_IO_PRI_HIGH
 };
 
-#endif						/* Endif for MD_GENERIC_H */
+/* The maximum # of modules of any one type allowed in Handel. This constant
+ * is created from thin air and allows us to make constant arrays. Hopefully
+ * it is large enough for real systems in the field. If not, feel free to
+ * expand it.
+ */
+#define MAXMOD 100U
+
+#endif /* __MD_GENERIC_H__ */
