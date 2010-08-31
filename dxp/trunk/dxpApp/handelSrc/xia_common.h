@@ -1,8 +1,6 @@
 /*
- *  xia_common.h
- *
  * Copyright (c) 2004, X-ray Instrumentation Associates
- *               2005, XIA LLC
+ *               2005-2010, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -36,20 +34,13 @@
  * SUCH DAMAGE.
  *  
  *
- * $Id: xia_common.h,v 1.8 2009-07-16 17:03:28 rivers Exp $
- *
- *    All of the useful typedefs and macros
- *    go in here. Two conditions must be met
- *    in order to qualify as an "xia_common"
- *    typedef or macro:
- *    1) Must not be defined anywhere else and
- *    2) Must be able to be used in any library/module.
+ * $Id: xia_common.h 15965 2010-06-10 20:59:12Z patrick $
  *
  */
 
 
-#ifndef XIA_COMMON_H
-#define XIA_COMMON_H
+#ifndef __XIA_COMMON_H__
+#define __XIA_COMMON_H__
 
 #include <string.h>
 #include <math.h>
@@ -57,13 +48,22 @@
 /* Define the length of the error reporting string info_string */
 #define INFO_LEN 400
 /* Define the length of the line string used to read in files */
-#define LINE_LEN 132
+#define XIA_LINE_LEN 132
 
 /** Typedefs **/
 typedef unsigned char  byte_t;
 typedef unsigned char  boolean_t;
 typedef unsigned short parameter_t;
 typedef unsigned short flag_t;
+
+#ifdef LINUX
+typedef int             HANDLE;
+typedef unsigned char   UCHAR;
+typedef unsigned short  USHORT;
+typedef unsigned short* PUSHORT;
+typedef unsigned int    ULONG;
+typedef unsigned long*  PULONG;
+#endif /* LINUX */
 
 /** MACROS **/
 #define TRUE_  (1 == 1)
@@ -76,12 +76,21 @@ typedef unsigned short flag_t;
 #define PRINT_NON_NULL(x) ((x) == NULL ? "NULL" : (x))
 #define BYTE_TO_WORD(lo, hi) (unsigned short)(((unsigned short)(hi) << 8) | (lo))
 #define WORD_TO_LONG(lo, hi) (unsigned long)(((unsigned long)(hi) << 16) | (lo)) 
-#define LO_BYTE(word) ((word) & 0xFF)
-#define HI_BYTE(word) (((word) >> 8) & 0xFF)
+#define LO_BYTE(word) (byte_t)((word) & 0xFF)
+#define HI_BYTE(word) (byte_t)(((word) >> 8) & 0xFF)
 #define LO_WORD(dword) ((dword) & 0xFFFF)
 #define HI_WORD(dword) (((dword) >> 16) & 0xFFFF)
-#define MAKE_LOWER_CASE(s, i) for ((i) = 0; (i) < strlen((s)); (i)++) (s)[i] = (char)tolower((s)[i])
+#define MAKE_LOWER_CASE(s, i) for ((i) = 0; (i) < strlen((s)); (i)++) (s)[i] = (char)tolower((int)((s)[i]))
 #define N_ELEMS(x) (sizeof(x) / sizeof((x)[0]))
+
+/* There is a known issue with glibc on Cygwin where ctype routines
+ * that are passed an input > 0x7F return garbage.
+ */
+#ifdef CYGWIN32
+#define CTYPE_CHAR(c) ((unsigned char)(c))
+#else
+#define CTYPE_CHAR(c) (c)
+#endif /* CYGWIN32 */
 
 
 /* These macros already exist on Linux, so they need to be protected */
@@ -94,4 +103,4 @@ typedef unsigned short flag_t;
 #define MAX(x, y)  ((x) > (y) ? (x) : (y))
 #endif /* MAX */
 
-#endif						/* Endif for XIA_COMMON_H */
+#endif /* __XIA_COMMON_H__ */
