@@ -51,6 +51,7 @@
 #include "xia_assert.h"
 
 #include "handel_errors.h"
+#include "handel_log.h"
 
 
 /*****************************************************************************
@@ -450,14 +451,13 @@ HANDEL_EXPORT int HANDEL_API xiaDoSpecialRun(int detChan, char *name, void *info
 
     PSLFuncs localFuncs;
 
-    /* The following declarations are used to retrieve the preampGain and gainScale */
+    /* The following declarations are used to retrieve the preampGain. */
     Module *module = NULL;
     Detector *detector = NULL;
     char *boardAlias;
     char *detectorAlias;
     int detector_chan;
     unsigned int modChan;
-    double gainScale;
 
     elemType = xiaGetElemType((unsigned int)detChan);
 
@@ -492,9 +492,8 @@ HANDEL_EXPORT int HANDEL_API xiaDoSpecialRun(int detChan, char *name, void *info
 		detectorAlias = module->detector[modChan];
 		detector_chan = module->detector_chan[modChan];
 		detector      = xiaFindDetector(detectorAlias);
-		gainScale     = module->gain[modChan];
 		
-		status = localFuncs.doSpecialRun(detChan, name, gainScale, info, defaults, 
+		status = localFuncs.doSpecialRun(detChan, name, info, defaults, 
 										 detector, detector_chan);
 		
 		if (status != XIA_SUCCESS)
