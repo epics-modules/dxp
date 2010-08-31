@@ -35,7 +35,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xia_fdd_structures.h,v 1.3 2009-07-06 18:24:31 rivers Exp $
+ * $Id: xia_fdd_structures.h 1875 2005-08-16 20:05:39Z patrick $
  *
  *
  */
