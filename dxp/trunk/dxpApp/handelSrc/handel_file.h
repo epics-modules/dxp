@@ -38,7 +38,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: handel_file.h,v 1.2 2009-07-06 18:24:29 rivers Exp $
+ * $Id: handel_file.h 4057 2006-06-28 20:26:32Z patrick $
  *
  *
  */
