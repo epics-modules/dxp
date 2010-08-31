@@ -37,7 +37,7 @@
  * SUCH DAMAGE. 
  *
  *
- * $Id: handel_mem.c,v 1.2 2009-07-06 18:24:29 rivers Exp $
+ * $Id$
  */
 
 
@@ -50,6 +50,7 @@ static mem_check_pt_t CHECK_POINT;
 #include "handeldef.h"
 
 #include "handel_errors.h"
+#include "handel_log.h"
 
 #include "xia_handel.h"
 
