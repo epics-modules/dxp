@@ -1,7 +1,5 @@
 /*
- * xia_mem_private.h
- *
- * Copyright (c) 2005, XIA LLC
+ * Copyright (c) 2005-2009, XIA LLC
  *
  * All rights reserved.
  *
@@ -35,8 +33,8 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
+ * $Id$
  *
- * $Id: xia_mem_private.h,v 1.3 2009-07-06 18:24:32 rivers Exp $
  */
 
 #ifndef __XIA_MEM_PRIVATE_H__
