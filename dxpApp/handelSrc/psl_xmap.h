@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  * 
  *
- * $Id: psl_xmap.h,v 1.3 2009-07-06 18:24:30 rivers Exp $
+ * $Id: psl_xmap.h 15951 2010-06-09 23:22:16Z patrick $
  *
  */
 
@@ -172,6 +172,7 @@ typedef struct _BoardOperation {
 
 #define DEFAULT_CLOCK_SPEED 50.0e6
 
+
 /* These values are really low-level but required for the runtime readout
  * since Handel doesn't support it directly in dxp_get_statisitics().
  */
@@ -201,12 +202,25 @@ static unsigned long XMAP_STATS_CHAN_OFFSET[] = {
 #define XMAP_MFR_BUFFER_B_FULL  5
 #define XMAP_MFR_BUFFER_B_DONE  6
 #define XMAP_MFR_BUFFER_B_EMPTY 7
+#define XMAP_MFR_BUFFER_SWITCH  14
 #define XMAP_MFR_BUFFER_OVERRUN 15
 
 /* Acquisition value update flags */
 #define XMAP_UPDATE_NEVER   0x1
 #define XMAP_UPDATE_MAPPING 0x2
 #define XMAP_UPDATE_MCA     0x4
+
+/* Masks for psl__IsMapping(). */
+#define MAPPING_MCA  0x1
+#define MAPPING_SCA  0x2
+#define MAPPING_LIST 0x4
+#define MAPPING_ANY  (MAPPING_MCA | MAPPING_SCA | MAPPING_LIST)
+
+/* Actual MAPPINGMODE constants. */
+#define MAPPINGMODE_NIL  0
+#define MAPPINGMODE_MCA  1
+#define MAPPINGMODE_SCA  2
+#define MAPPINGMODE_LIST 3
 
 
 /** Memory Management **/
@@ -218,6 +232,13 @@ DXP_MD_FREE   xmap_psl_md_free;
 #define xmap_psl_md_alloc(n)  xia_mem_malloc((n), __FILE__, __LINE__)
 #define xmap_psl_md_free(ptr) xia_mem_free(ptr)
 #endif /* USE_XIA_MEM_MANAGER */
+
+enum master {
+    XMAP_GATE_MASTER,
+    XMAP_SYNC_MASTER,
+    XMAP_LBUS_MASTER,
+    XMAP_NO_MASTER,
+};
 
 #endif /* _PSL_XMAP_H_ */
 
