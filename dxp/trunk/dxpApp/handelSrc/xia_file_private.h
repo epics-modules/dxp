@@ -34,7 +34,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_file_private.h,v 1.3 2009-07-06 18:24:31 rivers Exp $
+ * $Id: xia_file_private.h 6606 2007-06-14 21:41:09Z ann $
  */
 
 #ifndef __XIA_FILE_PRIVATE_H__
