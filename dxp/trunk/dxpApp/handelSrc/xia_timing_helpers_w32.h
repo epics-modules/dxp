@@ -38,7 +38,7 @@
  * SUCH DAMAGE.
  *  
  *
- * $Id: xia_timing_helpers_w32.h,v 1.1 2009-07-06 18:24:32 rivers Exp $
+ * $Id: xia_timing_helpers_w32.h 5497 2007-02-21 23:30:46Z patrick $
  */
 
 
