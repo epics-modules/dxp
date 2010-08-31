@@ -1,11 +1,9 @@
-/**
- * plxlib.h
- *
+/*
  * The PLX API (and all code from the SDK) is
  * Copyright (c) 2003 PLX Technology Inc
  *
  * Copyright (c) 2004, X-ray Instrumentation Associates
- *               2005, XIA LLC
+ *               2005-2009, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -39,7 +37,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: plxlib.h,v 1.4 2009-07-06 18:24:30 rivers Exp $
+ * $Id: plxlib.h 12433 2009-07-15 21:30:36Z patrick $
  *
  * This driver serves as the interface between the MD layer and the PLX
  * chip on our PXI/cPCI hardware.
@@ -51,8 +49,16 @@
 #include "Dlldefs.h"
 #include "xia_common.h"
 
-/* Headers from PLX SDK */
+#ifdef _WIN32
+#pragma warning(disable : 4214)
+#endif /* _WIN32 */
+
 #include "PlxApi.h"
+
+#ifdef _WIN32
+#pragma warning(default : 4214)
+#endif /* _WIN32 */
+
 
 #ifdef __cplusplus
 extern "C" {
