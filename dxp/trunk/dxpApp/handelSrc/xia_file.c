@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, XIA LLC
+ * Copyright (c) 2006-2009, XIA LLC
  *
  * All rights reserved.
  *
@@ -34,7 +34,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_file.c,v 1.4 2009-07-16 17:02:28 rivers Exp $
+ * $Id: xia_file.c 12433 2009-07-15 21:30:36Z patrick $
  */
 
 #include <stdio.h>
@@ -206,5 +206,5 @@ static void xia__remove_handle(FILE *fp)
   }
 
   /* This means that we couldn't find the pointer in our list of handles. */
-  ASSERT(FALSE_);
+  FAIL();
 }
