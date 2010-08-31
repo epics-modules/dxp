@@ -43,7 +43,7 @@
 /* CAMAC driver wrapper built on the FNAL CAMAC driver sjyLX v2.2.
  *
  * This wrapper uses the same interface as camacdll.c so that as much code
- * as possible can be shared between md_win95.c and md_linux.c.
+ * as possible can be shared between md_win32.c and md_linux.c.
  */
 
 #include "ieee_fun_types.h"
