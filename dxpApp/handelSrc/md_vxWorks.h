@@ -1,9 +1,7 @@
 /*
- *  md_vxWorks.h
+ * Original author: Mark Rivers, University of Chicago
  *
- *
- * Copyright (c) 2004, X-ray Instrumentation Associates
- *               2005, XIA LLC
+ * Copyright (c) 2009, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -36,28 +34,21 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *  
- * Converted from md_win95.h by Mark Rivers, University of Chicago
+ * $Id$
+ *
  */
 
 
-#ifndef DXP_MD_H
-#define DXP_MD_H
+#ifndef __MD_VXWORKS_H__
+#define __MD_VXWORKS_H__
 
 
 #include "xia_mddef.h"
 #include "xia_common.h"
 
-
-/* Some constants */
-#define MAXMOD 100
-
-/* If this is compiled by a C++ compiler, make it clear that these are C routines */
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/* NOTE: md_vxWorks.c currently only supports the DXP4C2X on CAMAC.  
- * If other support is added then take the prototypes and starting code from md_win95.c
+/* NOTE: md_vxWorks.c currently only supports the DXP4C2X on CAMAC.
+ * If other support is added then take the prototypes and starting
+ * code from md_win32.c
  */
  
 #if !(defined(EXCLUDE_DXP4C2X))
@@ -72,7 +63,6 @@ XIA_MD_STATIC void dxp_md_vx_output(char *filename);
 
 XIA_MD_STATIC int XIA_MD_API dxp_md_lock_resource(int *ioChan, int *modChan, short *lock);
 XIA_MD_STATIC int XIA_MD_API dxp_md_wait(float *);
-XIA_MD_STATIC void XIA_MD_API dxp_md_error_control(char *,int *);
 XIA_MD_STATIC int XIA_MD_API dxp_md_get_maxblk(void);
 XIA_MD_STATIC int XIA_MD_API dxp_md_set_maxblk(unsigned int *);
 XIA_MD_STATIC int XIA_MD_API dxp_md_puts(char *);
@@ -81,12 +71,8 @@ XIA_MD_STATIC char * dxp_md_fgets(char *s, int length, FILE *stream);
 XIA_MD_STATIC char * dxp_md_tmp_path(void);
 XIA_MD_STATIC void dxp_md_clear_tmp(void);
 XIA_MD_STATIC char * dxp_md_path_separator(void);
+XIA_MD_STATIC int XIA_MD_API dxp_md_process_msgs();
 XIA_MD_IMPORT int XIA_MD_API xia_camxfr(short *camadr, short func, long nbytes, short mode, short *buf);
 XIA_MD_IMPORT int XIA_MD_API xia_caminit(short *buf);
 
-#ifdef __cplusplus
-}
-#endif
-
-
-#endif					/* End if for DXP_MD_H */
+#endif /* __MD_VXWORKS_H__ */
