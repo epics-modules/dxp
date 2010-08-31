@@ -46,25 +46,20 @@
 #include <stdio.h>
 #include <limits.h>
 
-#include "xia_handel.h"
-#include "xia_system.h"
-#include "xia_assert.h"
-
-#include "handel_errors.h"
-#include "xia_handel_structures.h"
-#include "handel_xerxes.h"
-#include "handel_generic.h"
 #include "xerxes.h"
 #include "xerxes_errors.h"
 
+#include "xia_handel.h"
+#include "xia_system.h"
+#include "xia_assert.h"
+#include "xia_handel_structures.h"
+
+#include "handel_errors.h"
+#include "handel_xerxes.h"
+#include "handel_generic.h"
+#include "handel_log.h"
+
 #include "fdd.h"
-
-
-
-
-
-
-
 
 
 HANDEL_STATIC int xia__GetSystemFPGAName(Module *module, char *detType,
@@ -322,178 +317,186 @@ HANDEL_SHARED int HANDEL_API xiaBuildXerxesConfig(void)
  *****************************************************************************/
 HANDEL_SHARED int HANDEL_API xiaUserSetup(void)
 {
-  int statusX;
-  int status;
-  int detector_chan;
+    int statusX;
+    int status;
+    int detector_chan;
 
-  unsigned int modChan;
+    unsigned int modChan;
 
-  unsigned short polarity;
-  unsigned short type;
+    unsigned short polarity;
+    unsigned short type;
 
-  double typeValue;
-  double gainScale;
+    double typeValue;
 
-  char boardType[MAXITEM_LEN];
-  char detectorType[MAXITEM_LEN];
+    char boardType[MAXITEM_LEN];
+    char detectorType[MAXITEM_LEN];
 
-  char *alias;
-  char *detAlias;
-  char *firmAlias;
+    char *alias;
+    char *detAlias;
+    char *firmAlias;
 
-  DetChanElement *current = NULL;
+    DetChanElement *current = NULL;
 
-  FirmwareSet *firmwareSet = NULL;
+    FirmwareSet *firmwareSet = NULL;
 
-  CurrentFirmware *currentFirmware = NULL;
+    CurrentFirmware *currentFirmware = NULL;
 
-  Module *module = NULL;
+    Module *module = NULL;
 
-  Detector *detector = NULL;
+    Detector *detector = NULL;
 
-  XiaDefaults *defaults = NULL;
+    XiaDefaults *defaults = NULL;
 
-  PSLFuncs localFuncs;
-
-  statusX = dxp_user_setup();
-
-  if (statusX != DXP_SUCCESS)
-	{
-	  status = XIA_XERXES;
-	  xiaLogError("xiaUserSetup", "Error downloading firmware", status);
-	  return status;
-	}
-
-  /* Add calls to xiaSetAcquisitionValues() here using values from the defaults
-   * list.
-   */
+    PSLFuncs localFuncs;
 
 
-  /* Set polarity and reset time from info in detector struct */
-  current = xiaGetDetChanHead();
+    statusX = dxp_user_setup();
+
+    if (statusX != DXP_SUCCESS) {
+        xiaLogError("xiaUserSetup", "Error downloading firmware via Xerxes.",
+                    XIA_XERXES);
+        return XIA_XERXES;
+    }
+
+    /* Clear the setup flag for all modules. */
+    module = xiaGetModuleHead();
+    ASSERT(module);
+
+    while (module != NULL) {
+        module->isSetup = FALSE_;
+        module = getListNext(module);
+    }
+    
+    module = NULL;
+
+
+    /* Set polarity and reset time from info in detector struct */
+    current = xiaGetDetChanHead();
  	
-  while (current != NULL)
-	{
-	  switch (xiaGetElemType(current->detChan))
-		{
+    while (current != NULL) {
+        switch (xiaGetElemType(current->detChan)) {
 		case SET:
-		  /* Skip SETs since all SETs are composed of SINGLES */
-		  break;
+            /* Skip SETs since all SETs are composed of SINGLES */
+            break;
 		  
 		case SINGLE:
-		  status = xiaGetBoardType(current->detChan, boardType);
+            status = xiaGetBoardType(current->detChan, boardType);
 
-		  if (status != XIA_SUCCESS)
-			{
-			  sprintf(info_string, "Unable to get boardType for detChan %u", current->detChan);
-			  xiaLogError("xiaUserSetup", info_string, status);
-			  return status;
+            if (status != XIA_SUCCESS) {
+                sprintf(info_string, "Unable to get board type for detChan %d.",
+                        current->detChan);
+                xiaLogError("xiaUserSetup", info_string, status);
+                return status;
 			}
 
-		  alias         		= xiaGetAliasFromDetChan(current->detChan);
-		  module        		= xiaFindModule(alias);
-		  modChan       		= xiaGetModChan((unsigned int)current->detChan);
-		  firmAlias     		= module->firmware[modChan];
-		  firmwareSet   		= xiaFindFirmware(firmAlias);
-		  detAlias      		= module->detector[modChan];
-		  detector_chan 		= module->detector_chan[modChan];
-		  detector      		= xiaFindDetector(detAlias);
-		  polarity      		= detector->polarity[detector_chan];
-		  type			  		= detector->type;
-		  typeValue     		= detector->typeValue[detector_chan];
-		  gainScale             = module->gain[modChan];
-		  currentFirmware	    = &module->currentFirmware[modChan];
-		  defaults      		= xiaGetDefaultFromDetChan((unsigned int)current->detChan);
+            alias         		= xiaGetAliasFromDetChan(current->detChan);
 
-		  switch (detector->type)
-			{
+            module = xiaFindModule(alias);
+            ASSERT(module);
+
+            modChan       		= xiaGetModChan((unsigned int)current->detChan);
+            firmAlias     		= module->firmware[modChan];
+            firmwareSet   		= xiaFindFirmware(firmAlias);
+            detAlias      		= module->detector[modChan];
+            detector_chan 		= module->detector_chan[modChan];
+            detector      		= xiaFindDetector(detAlias);
+            polarity      		= detector->polarity[detector_chan];
+            type			  	= detector->type;
+            typeValue     		= detector->typeValue[detector_chan];
+            currentFirmware	    = &module->currentFirmware[modChan];
+            defaults      		= xiaGetDefaultFromDetChan((unsigned int)current->detChan);
+
+            switch (detector->type) {
 			case XIA_DET_RESET:
-			  strcpy(detectorType, "RESET");
-			  break;
+                strcpy(detectorType, "RESET");
+                break;
 		
 			case XIA_DET_RCFEED:
-			  strcpy(detectorType, "RC");
-			  break;
+                strcpy(detectorType, "RC");
+                break;
 		
 			default:
 			case XIA_DET_UNKNOWN:
-			  status = XIA_MISSING_TYPE;
-			  sprintf(info_string, "No detector type specified for detChan %d", current->detChan);
-			  xiaLogError("xiaSetAcquisitionValues", info_string, status);
-			  return status;
-			  break;
+                sprintf(info_string, "No detector type specified for "
+                        "detChan %d.", current->detChan);
+                xiaLogError("xiaSetAcquisitionValues", info_string,
+                            XIA_MISSING_TYPE);
+                return XIA_MISSING_TYPE;
+                break;
 			}
 
-		  status = xiaLoadPSL(boardType, &localFuncs);
+            status = xiaLoadPSL(boardType, &localFuncs);
 
-		  if (status != XIA_SUCCESS)
-			{
-			  sprintf(info_string, "Unable to load PSL funcs for detChan %d", current->detChan);
-			  xiaLogError("xiaUserSetup", info_string, status);
-			  return status;
+            if (status != XIA_SUCCESS) {
+                sprintf(info_string, "Unable to load PSL funcs for "
+                        "detChan %d.", current->detChan);
+                xiaLogError("xiaUserSetup", info_string, status);
+                return status;
 			}
 
-		  status = localFuncs.setPolarity((int)current->detChan, detector,
-										  detector_chan, defaults, module);
+            status = localFuncs.setPolarity(current->detChan, detector,
+                                            detector_chan, defaults, module);
 
-		  if (status != XIA_SUCCESS)
-			{
-			  sprintf(info_string, "Unable to set polarity for detChan %d", current->detChan);
-			  xiaLogError("xiaUserSetup", info_string, status);
-			  return status;
+            if (status != XIA_SUCCESS) {
+                sprintf(info_string, "Unable to set polarity for detChan %d.",
+                        current->detChan);
+                xiaLogError("xiaUserSetup", info_string, status);
+                return status;
 			}
 
-		  status = localFuncs.setDetectorTypeValue((int)current->detChan, detector, detector_chan, defaults);
+            status = localFuncs.setDetectorTypeValue(current->detChan,
+                                                     detector, detector_chan,
+                                                     defaults);
 
-		  if (status != XIA_SUCCESS)
-			{
-			  sprintf(info_string, "Unable to set detector typeValue for detChan %d", current->detChan);
-			  xiaLogError("xiaUserSetup", info_string, status);
-			  return status;
+            if (status != XIA_SUCCESS) {
+                sprintf(info_string, "Unable to set detector type value ('%s' "
+                        "detector) for detChan %d.", detectorType,
+                        current->detChan);
+                xiaLogError("xiaUserSetup", info_string, status);
+                return status;
 			}
 
-		  /* Now we can do the defaults */
-		  status = localFuncs.userSetup((int)current->detChan, defaults, firmwareSet,
-										currentFirmware, detectorType, gainScale,
-										detector, detector_chan, module,
-										modChan);
+            status = localFuncs.userSetup(current->detChan, defaults,
+                                          firmwareSet, currentFirmware,
+                                          detectorType, detector, detector_chan,
+                                          module, modChan);
    
-		  if (status != XIA_SUCCESS)
-			{
-			  sprintf(info_string, "Unable to complete user setup for detChan %d",
-					  current->detChan);
-			  xiaLogError("xiaUserSetup", info_string, status);
-			  return status;
+            if (status != XIA_SUCCESS) {
+                sprintf(info_string, "Unable to complete user setup for "
+                        "detChan %d.", current->detChan);
+                xiaLogError("xiaUserSetup", info_string, status);
+                return status;
 			}
+            
+            module->isSetup = TRUE_;
 
-		  /* Do any DSP parameters that are in the list */
-		  status = xiaUpdateUserParams(current->detChan);
+            /* Do any DSP parameters that are in the list */
+            status = xiaUpdateUserParams(current->detChan);
 
-		  if (status != XIA_SUCCESS) {
+            if (status != XIA_SUCCESS) {
+                sprintf(info_string, "Unable to update user parameters for "
+                        "detChan %d.", current->detChan);
+                xiaLogError("xiaUserSetup", info_string, status);
+                return status;
+            }
 
-			sprintf(info_string, "Unable to update user parameters for detChan %d", current->detChan);
-			xiaLogError("xiaUserSetup", info_string, status);
-			return status;
-		  }
-
-		  break;
+            break;
 
 		case 999:
-		  status = XIA_INVALID_DETCHAN;
-		  xiaLogError("xiaUserSetup", "detChan number is not in the list of valid values ", status);
-		  return status;
-		  break;
+            sprintf(info_string, "detChan %d is not valid.", current->detChan);
+            xiaLogError("xiaUserSetup", info_string, XIA_INVALID_DETCHAN);
+            return XIA_INVALID_DETCHAN;
+            break;
+
 		default:
-		  status = XIA_UNKNOWN;
-		  xiaLogError("xiaUserSetup", "Should not be seeing this message", status);
-		  return status;
-		  break;
+            FAIL();
+            break;
 		}
 
-	  current = getListNext(current);
+        current = getListNext(current);
 	}
 
-  return XIA_SUCCESS;
+    return XIA_SUCCESS;
 }
 
 
@@ -829,17 +832,18 @@ HANDEL_STATIC int xia__AddSystemFPGA(Module *module, char *sysFPGAName,
 
   char *sysFPGAStr[1];
 
+  UNUSED(rawFilename);
+  UNUSED(module);
 
-  ASSERT(module != NULL);
+
   ASSERT(sysFPGAName != NULL);
-  ASSERT(rawFilename != NULL);
 
 
   sysFPGAStr[0] = (char *)handel_md_alloc(strlen(sysFPGAName) + 1);
 
   if (!sysFPGAStr[0]) {
-	sprintf(info_string, "Unable to allocate %ld bytes for 'sysFPGAStr[0]'",
-			(long)strlen(sysFPGAName) + 1);
+	sprintf(info_string, "Unable to allocate %d bytes for 'sysFPGAStr[0]'",
+			strlen(sysFPGAName) + 1);
 	xiaLogError("xia__AddSystemFPGA", info_string, XIA_NOMEM);
 	return XIA_NOMEM;
   }
@@ -1047,17 +1051,18 @@ HANDEL_STATIC int xia__AddSystemDSP(Module *module, char *sysDSPName,
 
   char *sysDSPStr[1];
 
+  UNUSED(rawFilename);
+  UNUSED(module);
 
-  ASSERT(module != NULL);
+
   ASSERT(sysDSPName != NULL);
-  ASSERT(rawFilename != NULL);
 
 
   sysDSPStr[0] = (char *)handel_md_alloc(strlen(sysDSPName) + 1);
 
   if (!sysDSPStr[0]) {
-	sprintf(info_string, "Unable to allocate %ld bytes for 'sysDSPStr[0]'",
-			(long)strlen(sysDSPName) + 1);
+	sprintf(info_string, "Unable to allocate %d bytes for 'sysDSPStr[0]'",
+			strlen(sysDSPName) + 1);
 	xiaLogError("xiaAddSystemDSP", info_string, XIA_NOMEM);
 	return XIA_NOMEM;
   }
@@ -1172,17 +1177,18 @@ HANDEL_STATIC int xia__AddFiPPIA(Module *module, char *sysFippiAName,
 
   char *sysFippiAStr[1];
 
+  UNUSED(rawFilename);
+  UNUSED(module);
 
-  ASSERT(module != NULL);
+
   ASSERT(sysFippiAName != NULL);
-  ASSERT(rawFilename != NULL);
 
 
   sysFippiAStr[0] = (char *)handel_md_alloc(strlen(sysFippiAName) + 1);
 
   if (!sysFippiAStr[0]) {
-	sprintf(info_string, "Unable to allocate %ld bytes for 'sysFippiAStr[0]'",
-			(long)strlen(sysFippiAName) + 1);
+	sprintf(info_string, "Unable to allocate %d bytes for 'sysFippiAStr[0]'",
+			strlen(sysFippiAName) + 1);
 	xiaLogError("xiaAddSystemFippiA", info_string, XIA_NOMEM);
 	return XIA_NOMEM;
   }
@@ -1256,7 +1262,7 @@ HANDEL_STATIC int xia__AddXerxesBoardType(Module *m)
   type = (char **)handel_md_alloc(sizeof(char *));
   
   if (!type) {
-	sprintf(info_string, "Error allocating %ld bytes for 'type'", (long)sizeof(char *));
+	sprintf(info_string, "Error allocating %d bytes for 'type'", sizeof(char *));
 	xiaLogError("xia__AddXerxesBoardType", info_string, XIA_NOMEM);
 	return XIA_NOMEM;
   }
@@ -1266,8 +1272,8 @@ HANDEL_STATIC int xia__AddXerxesBoardType(Module *m)
   if (!type[0]) {
 	handel_md_free(type);
 	
-	sprintf(info_string, "Error allocating %ld bytes for 'type[0]'",
-			(long)strlen(m->type) + 1);
+	sprintf(info_string, "Error allocating %d bytes for 'type[0]'",
+			strlen(m->type) + 1);
 	xiaLogError("xia__AddXerxesBoardType", info_string, XIA_NOMEM);
 	return XIA_NOMEM;
   }
@@ -1388,8 +1394,8 @@ HANDEL_STATIC int xia__AddXerxesModule(Module *m)
 									sizeof(char *));
 
   if (!modStr) {
-	sprintf(info_string, "Error allocating %ld bytes for 'modStr'",
-			(long)((m->number_of_channels + 2) * sizeof(char *)));
+	sprintf(info_string, "Error allocating %d bytes for 'modStr'",
+			(m->number_of_channels + 2) * sizeof(char *));
 	xiaLogError("xia__AddXerxesModule", info_string, XIA_NOMEM);
 	return XIA_NOMEM;
   }
@@ -1427,9 +1433,9 @@ HANDEL_STATIC int xia__AddXerxesModule(Module *m)
 
 	if (!modStr[i + 2]) {
 	  /* Need to unwind the previous allocations */
-	  for (j = i - 1; j >= 0; j--) {
-		handel_md_free(modStr[j + 2]);
-	  }
+        for (j = 0; j < i; j++) {
+            handel_md_free(modStr[j + 2]);
+        }
 	  
 	  handel_md_free(modStr);
 
@@ -1513,8 +1519,8 @@ HANDEL_STATIC int xia__DoMMUConfig(Module *m)
 	mmu = (char **)handel_md_alloc(sizeof(char **));
 
 	if (!mmu) {
-	  sprintf(info_string, "Error allocating %ld bytes for 'mmu'",
-			  (long)sizeof(char **));
+	  sprintf(info_string, "Error allocating %d bytes for 'mmu'",
+			  sizeof(char **));
 	  xiaLogError("xia__DoMMUConfig", info_string, XIA_NOMEM);
 	  return XIA_NOMEM;
 	}
@@ -1524,8 +1530,8 @@ HANDEL_STATIC int xia__DoMMUConfig(Module *m)
 	if (!mmu[0]) {
 	  handel_md_free(mmu);
 
-	  sprintf(info_string, "Error allocating %ld bytes for 'mmu[0]'",
-			  (long)strlen(name) + 1);
+	  sprintf(info_string, "Error allocating %d bytes for 'mmu[0]'",
+			  strlen(name) + 1);
 	  xiaLogError("xia__DoMMUConfig", info_string, XIA_NOMEM);
 	  return XIA_NOMEM;
 	}
@@ -2111,17 +2117,18 @@ HANDEL_STATIC int xia__AddSystemFiPPI(Module *m, char *sysFipName,
   /* Xerxes requires items as lists of strings. */
   char *sysFipStr[1];
 
+  UNUSED(rawFilename);
+  UNUSED(m);
 
-  ASSERT(m != NULL);
+
   ASSERT(sysFipName != NULL);
-  ASSERT(rawFilename != NULL);
 
 
   sysFipStr[0] = handel_md_alloc(strlen(sysFipName) + 1);
 
   if (sysFipStr[0] == NULL) {
-    sprintf(info_string, "Unable to allocated %ld bytes for 'sysFipStr[0]'",
-            (long)strlen(sysFipName) + 1);
+    sprintf(info_string, "Unable to allocated %d bytes for 'sysFipStr[0]'",
+            strlen(sysFipName) + 1);
     xiaLogError("xia__AddSystemFiPPI", info_string, XIA_NOMEM);
     return XIA_NOMEM;
   }
