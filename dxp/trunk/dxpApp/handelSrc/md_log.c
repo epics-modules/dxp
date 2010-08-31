@@ -1,13 +1,6 @@
 /*
- * md_log.c
- *
- * Routines used for controlling the logging functionality
- * in XerXes.
- *
- * Created 12/3/01 -- JEW
- *
- * Copyright (c) 2002,2003,2004, X-ray Instrumentation Associates
- *               2005, XIA LLC
+ * Copyright (c) 2002-2004, X-ray Instrumentation Associates
+ *               2005-2010, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -175,32 +168,13 @@ XIA_MD_SHARED void dxp_md_error(char* routine, char* message, int* error_code, c
 /* char *message;					Input: Message to report					*/
 /* int *error_code;					Input: Error code denoting type of error	*/
 {
-
-/* If the error_code is larger than DXP_DEBUG, then print the error only 
- * if debugging is requested */
-
-/* I'm going to disable this for now and see how things work out with the new
- * logging routines. We can re-enable it if we don't like the new method.
- * 8/21/01 -- PJF
- */
-
-/*    if(*error_code>=DXP_DEBUG){
-        if(print_debug!=0) printf("%s : %s\n",routine,message);
-        return;
-     } */
-
-/* Else print the error */
-
-/*    printf("%s:[%d] %s\n",routine,*error_code,message); */
-
 	time_t current = time(NULL);
 	struct tm *localTime = localtime(&current);
 	char logTimeFormat[50];
 
 	strftime(logTimeFormat, 50, "%c", localTime);
-
-/*	printf("%s [ERROR] [%d] %s: %s\n", logTimeFormat, *error_code, routine, message); */
-	fprintf(out_stream, "[ERROR] [%d] %s %s, line = %d, %s: %s\n", *error_code, logTimeFormat, file, line, routine, message);
+	fprintf(out_stream, "[ERROR] [%d] %s %s, line = %d, %s: %s\n", *error_code,
+            logTimeFormat, file, line, routine, message);
 	fflush(out_stream);
 }
 
@@ -256,60 +230,61 @@ XIA_MD_SHARED void dxp_md_debug(char *routine, char *message, char *file, int li
 	fflush(out_stream);
 }
 
-/*****************************************************************************
- *
- * Routine to set the logging output to whatever FILE * the user would like.
- * By default, the output stream is set to stdout.
- *
- *****************************************************************************/
+
+/** Redirects the log output to either a file or a special descriptor
+ * such as stdout or stderr. Allowed values for @a filename are: a
+ * path to a file, "stdout", "stderr", "" (redirects to stdout) or
+ * NULL (also redirects to stdout).
+ */
 XIA_MD_SHARED void dxp_md_output(char *filename)
-/* char *filename;		Input: Name of the stream or file to redirect error output */
 {
-	int status;
 	char *strtmp = NULL;
+
 	unsigned int i;
+
 	char info_string[INFO_LEN];
 
-/* First close the currently opened stream, iff it is a file */
-	if ((out_stream!=stdout) && (out_stream!=stderr)) {
-/* close the stream */
+
+	if (out_stream != stdout && out_stream != stderr) {
 		fclose(out_stream);
 	}
-/* change the input name to all lower case to check for predefined streams */
-	strtmp = (char *) dxp_md_alloc((strlen(filename)+1) * sizeof(char));
-	for (i=0;i<strlen(filename);i++) strtmp[i] = (char) tolower(filename[i]);
-	strtmp[strlen(filename)]='\0';
+    
+    if (filename == NULL || STREQ(filename, "")) {
+        out_stream = stdout;
+        return;
+    }
 
-/* if filename is stdin, then default to stdout */
-	if (STREQ(strtmp,"stdin")) {
-		dxp_md_log_warning("dxp_md_output", "Output filename can't be stdin; reset to stdout.");
-		out_stream = stdout;
-		dxp_md_free(strtmp);
-		return;
-	}
+	strtmp = dxp_md_alloc(strlen(filename) + 1);
+    
+    if (!strtmp) {
+        abort();
+    }
 
-/* Check if the filename is stdout, NULL or stderr */
-	if ((STREQ(strtmp,"stdout")) || (filename==NULL) || (STREQ(filename, ""))) {
+	for (i = 0; i < strlen(filename); i++) {
+        strtmp[i] = (char)tolower((int)filename[i]);
+    }
+	strtmp[strlen(filename)] = '\0';
+
+
+	if (STREQ(strtmp, "stdout")) {
 		out_stream = stdout;
-		dxp_md_free(strtmp);
-		return;
-	}
-	if (STREQ(strtmp,"stderr")) {
+
+	} else if (STREQ(strtmp, "stderr")) {
 		out_stream = stderr;
-		dxp_md_free(strtmp);
-		return;
-	}
-/* The filename must be for a "real" file */
-	out_stream = fopen(filename,"w");
 
-	if (out_stream==NULL) {
-		status = DXP_MDFILEIO;
-		sprintf(info_string,"Unable to open filename: %s, no action performed",filename);
-		dxp_md_log_error("dxp_md_output",info_string,status);
-		dxp_md_free(strtmp);
-		return;
-	}
+	} else {
+        out_stream = fopen(filename, "w");
+
+        if (!out_stream) {
+            /* Reset to stdout with the hope that it is redirected
+             * somewhere meaningful.
+             */
+            out_stream = stdout;
+            sprintf(info_string, "Unable to open filename '%s' for logging. "
+                    "Output redirected to stdout.", filename);
+            dxp_md_log_error("dxp_md_output", info_string, DXP_MDFILEIO);
+        }
+    }
+
 	dxp_md_free(strtmp);
-	return;
-
 }
