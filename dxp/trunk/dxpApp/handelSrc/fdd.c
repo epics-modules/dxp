@@ -61,7 +61,7 @@
 
 FDD_STATIC void fdd__StringChomp(char *str);
 
-static char info_string[INFO_LEN],line[LINE_LEN],*token,*delim=" ,=\t\r\n";
+static char info_string[INFO_LEN],line[XIA_LINE_LEN],*token,*delim=" ,=\t\r\n";
 
 static char *section = "$$$NEW SECTION$$$\n";
 
@@ -72,7 +72,7 @@ static char *section = "$$$NEW SECTION$$$\n";
  * put routines to the database.
  *
  ******************************************************************************/
-FDD_EXPORT int FDD_API xiaFddInitialize()
+FDD_EXPORT int FDD_API xiaFddInitialize(void)
 {
   int status=XIA_SUCCESS;
 
@@ -98,7 +98,7 @@ FDD_EXPORT int FDD_API xiaFddInitialize()
  * put routines to the database.
  *
  ******************************************************************************/
-FDD_EXPORT int FDD_API xiaFddInitLibrary()
+FDD_EXPORT int FDD_API xiaFddInitLibrary(void)
 {
   int status=XIA_SUCCESS;
 
@@ -283,21 +283,21 @@ FDD_EXPORT int FDD_API xiaFddGetFirmware(const char *filename, char *path,
   fdd_md_free(completePath);
 
   /* Need to skip past filter info */
-  cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+  cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
   numFilter = (unsigned short)strtol(line, NULL, 10);
 
   sprintf(info_string, "numFilter = %u", numFilter);
   xiaFddLogDebug("xiaFddGetFirmware", info_string);
 
   for (j = 0; j < numFilter; j++) {
-    cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+    cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
   }
 
 
-  cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+  cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
   while ((!STREQ(line, section)) && (cstatus!=NULL)) {
     fprintf(ofp, "%s", line);
-    cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+    cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
   }
 
   xia_file_close(ofp);
@@ -364,11 +364,11 @@ FDD_STATIC boolean_t xiaFddFindFirmware(const char *filename, const char *ftype,
 
   /* Skip past anything that doesn't equal the first section line. */
   do {
-    cstatus = fdd_md_fgets(line, LINE_LEN, *fp);
+    cstatus = fdd_md_fgets(line, XIA_LINE_LEN, *fp);
   } while (!STRNEQ(line, section));
 
   /* Skip over the original filename entry */
-  cstatus = fdd_md_fgets(rawFilename, LINE_LEN, *fp);
+  cstatus = fdd_md_fgets(rawFilename, XIA_LINE_LEN, *fp);
 
   fdd__StringChomp(rawFilename);
 
@@ -376,7 +376,7 @@ FDD_STATIC boolean_t xiaFddFindFirmware(const char *filename, const char *ftype,
   xiaFddLogDebug("xiaFddFindFirmware", info_string);
 
   /* Located the FDD file, now start the search */
-  cstatus = fdd_md_fgets(line, LINE_LEN, *fp);
+  cstatus = fdd_md_fgets(line, XIA_LINE_LEN, *fp);
 
   while ((!found)&&(cstatus!=NULL)) {
     /* Second line contains the firmware type, strip off delimiters */
@@ -387,14 +387,14 @@ FDD_STATIC boolean_t xiaFddFindFirmware(const char *filename, const char *ftype,
       xiaFddLogDebug("xiaFddFindFirmware", info_string);
 
       /* Read in the number of keywords */
-      cstatus = fdd_md_fgets(line, LINE_LEN, *fp);
+      cstatus = fdd_md_fgets(line, XIA_LINE_LEN, *fp);
       nkey = (unsigned short) strtol(line, NULL, 10);
 
       /* Reset the number of matches */
       nmatch = nother;
       for (i=0; i < nkey; i++) {
         /* Read in the keywords and check for matches */
-        cstatus = fdd_md_fgets(line, LINE_LEN, *fp);
+        cstatus = fdd_md_fgets(line, XIA_LINE_LEN, *fp);
         /* Strip off spaces and endline characters */
         token = strtok(line, delim);
         for (j = 0; j < nother; j++) {
@@ -416,11 +416,11 @@ FDD_STATIC boolean_t xiaFddFindFirmware(const char *filename, const char *ftype,
       }
     } else {
       /* Read in the number of keywords */
-      cstatus = fdd_md_fgets(line, LINE_LEN, *fp);
+      cstatus = fdd_md_fgets(line, XIA_LINE_LEN, *fp);
       nkey = (unsigned short) strtol(line, NULL, 10);
       /* Step past the other keywords line */
       for (i=0; i < nkey; i++) {
-        cstatus = fdd_md_fgets(line, LINE_LEN, *fp);
+        cstatus = fdd_md_fgets(line, XIA_LINE_LEN, *fp);
       }
     }
     /* If we found a keyword match, proceed to check the peaking times */
@@ -428,9 +428,9 @@ FDD_STATIC boolean_t xiaFddFindFirmware(const char *filename, const char *ftype,
       /* Reset found to false for the next comparison */
       found = FALSE_;
       /* Found the type, now match the peaking time, read min and max from fdd */
-      cstatus = fdd_md_fgets(line, LINE_LEN, *fp);
+      cstatus = fdd_md_fgets(line, XIA_LINE_LEN, *fp);
       fddmin = strtod(line, NULL);
-      cstatus = fdd_md_fgets(line, LINE_LEN, *fp);
+      cstatus = fdd_md_fgets(line, XIA_LINE_LEN, *fp);
       fddmax = strtod(line, NULL);
       if (ptmax < 0.0) {
         /* Case where we are locating a firmware file for download, only need to match the range */
@@ -452,16 +452,16 @@ FDD_STATIC boolean_t xiaFddFindFirmware(const char *filename, const char *ftype,
     }
     /* If no match, jump to the next section */
     while ((!found)&&(cstatus!=NULL)) {
-      cstatus = fdd_md_fgets(line, LINE_LEN, *fp);
+      cstatus = fdd_md_fgets(line, XIA_LINE_LEN, *fp);
       if (STREQ(line,section)) {
-        cstatus = fdd_md_fgets(rawFilename, LINE_LEN, *fp);
+        cstatus = fdd_md_fgets(rawFilename, XIA_LINE_LEN, *fp);
 
         fdd__StringChomp(rawFilename);
 
         sprintf(info_string, "rawFilename = %s", rawFilename);
         xiaFddLogDebug("xiaFddFindFirmware", info_string);
 
-        cstatus = fdd_md_fgets(line, LINE_LEN, *fp);
+        cstatus = fdd_md_fgets(line, XIA_LINE_LEN, *fp);
         break;
       }
     }
@@ -681,18 +681,18 @@ FDD_EXPORT int FDD_API xiaFddAddFirmware(const char *filename, const char *ftype
   }
 
   rewind(ofp);
-  cstatus = fdd_md_fgets(line, LINE_LEN, ofp);
+  cstatus = fdd_md_fgets(line, XIA_LINE_LEN, ofp);
   while (cstatus!=NULL) {
 
-    cstatus = fdd_md_fgets(line, LINE_LEN, ofp);
+    cstatus = fdd_md_fgets(line, XIA_LINE_LEN, ofp);
   }
 
   /* Now loop over the firmware file, copying */
   rewind(ofp);
-  cstatus = fdd_md_fgets(line, LINE_LEN, ofp);
+  cstatus = fdd_md_fgets(line, XIA_LINE_LEN, ofp);
   while (cstatus!=NULL) {
     fprintf(fp, "%s", line);
-    cstatus = fdd_md_fgets(line, LINE_LEN, ofp);
+    cstatus = fdd_md_fgets(line, XIA_LINE_LEN, ofp);
   }
 
   xia_file_close(ofp);
@@ -776,13 +776,13 @@ FDD_EXPORT int FDD_API xiaFddGetNumFilter(const char *filename,
    */
 
   /* 1) Read in $$$NEW SECTION$$$ line */
-  cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+  cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
 
   /* 2) Read in raw filename */
-  cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+  cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
 
   /* 3) Read in type */
-  cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+  cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
 
   /* If this file is not of type "fippi", then we can fo ahead and skip ahead to
    * the next $$$NEW SECTION$$$. Do this until we match the proper peaking time
@@ -796,7 +796,7 @@ FDD_EXPORT int FDD_API xiaFddGetNumFilter(const char *filename,
       sprintf(info_string, "token = %s", token);
       xiaFddLogDebug("xiaFddGetNumFilter", info_string);
 
-      cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+      cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
 
       numKeys = (unsigned short)strtol(line, NULL, 10);
 
@@ -805,7 +805,7 @@ FDD_EXPORT int FDD_API xiaFddGetNumFilter(const char *filename,
 
       numToMatch = nKey;
       for (i = 0; i < numKeys; i++) {
-        cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+        cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
 
         token = strtok(line, delim);
         for (j = 0; j < nKey; j++) {
@@ -836,20 +836,20 @@ FDD_EXPORT int FDD_API xiaFddGetNumFilter(const char *filename,
        * care about it. Remember that the line position (in this branch only)
        * is still sitting right after the type variable...
        */
-      cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+      cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
 
       numKeys = (unsigned short)strtol(line, NULL, 10);
       for (i = 0; i < numKeys; i++) {
-        cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+        cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
       }
     }
 
     if (isFound) {
       isFound = FALSE_;
 
-      cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+      cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
       ptMin = strtod(line, NULL);
-      cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+      cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
       ptMax = strtod(line, NULL);
 
       sprintf(info_string, "ptMin = %.3f, ptMax = %.3f", ptMin, ptMax);
@@ -859,7 +859,7 @@ FDD_EXPORT int FDD_API xiaFddGetNumFilter(const char *filename,
           (peakingTime <= ptMax)) {
         isFound = TRUE_;
 
-        cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+        cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
         *numFilter = (unsigned short)strtol(line, NULL, 10);
 
         sprintf(info_string, "numFilter = %u\n", *numFilter);
@@ -870,13 +870,13 @@ FDD_EXPORT int FDD_API xiaFddGetNumFilter(const char *filename,
 
     while ((!isFound) &&
            (cstatus != NULL)) {
-      cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+      cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
       if (STREQ(line, section)) {
         /* This should be the raw filename */
-        cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+        cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
 
         /* This should be the type...so start all over again */
-        cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+        cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
         break;
       }
     }
@@ -942,13 +942,13 @@ FDD_EXPORT int FDD_API xiaFddGetFilterInfo(const char *filename, double peakingT
    */
 
   /* 1) Read in $$$NEW SECTION$$$ line */
-  cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+  cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
 
   /* 2) Read in raw filename */
-  cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+  cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
 
   /* 3) Read in type */
-  cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+  cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
 
   /* If this file is not of type "fippi", then we can fo ahead and skip ahead to
    * the next $$$NEW SECTION$$$. Do this until we match the proper peaking time
@@ -962,7 +962,7 @@ FDD_EXPORT int FDD_API xiaFddGetFilterInfo(const char *filename, double peakingT
       sprintf(info_string, "token = %s", token);
       xiaFddLogDebug("xiaFddGetFilterInfo", info_string);
 
-      cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+      cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
 
       numKeys = (unsigned short)strtol(line, NULL, 10);
 
@@ -971,7 +971,7 @@ FDD_EXPORT int FDD_API xiaFddGetFilterInfo(const char *filename, double peakingT
 
       numToMatch = nKey;
       for (i = 0; i < numKeys; i++) {
-        cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+        cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
 
         token = strtok(line, delim);
         for (j = 0; j < nKey; j++) {
@@ -1002,20 +1002,20 @@ FDD_EXPORT int FDD_API xiaFddGetFilterInfo(const char *filename, double peakingT
        * care about it. Remember that the line position (in this branch only)
        * is still sitting right after the type variable...
        */
-      cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+      cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
 
       numKeys = (unsigned short)strtol(line, NULL, 10);
       for (i = 0; i < numKeys; i++) {
-        cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+        cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
       }
     }
 
     if (isFound) {
       isFound = FALSE_;
 
-      cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+      cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
       ptMin = strtod(line, NULL);
-      cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+      cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
       ptMax = strtod(line, NULL);
 
       sprintf(info_string, "ptMin = %.3f, ptMax = %.3f", ptMin, ptMax);
@@ -1025,7 +1025,7 @@ FDD_EXPORT int FDD_API xiaFddGetFilterInfo(const char *filename, double peakingT
           (peakingTime <= ptMax)) {
         isFound = TRUE_;
 
-        cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+        cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
         numFilter = (unsigned short)strtol(line, NULL, 10);
 
         sprintf(info_string, "numFilter = %u\n", numFilter);
@@ -1033,7 +1033,7 @@ FDD_EXPORT int FDD_API xiaFddGetFilterInfo(const char *filename, double peakingT
 
         for (k = 0; k < numFilter; k++) {
 
-          cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+          cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
           filterInfo[k] = (parameter_t)strtol(line, NULL, 10);
         }
 
@@ -1042,13 +1042,13 @@ FDD_EXPORT int FDD_API xiaFddGetFilterInfo(const char *filename, double peakingT
 
     while ((!isFound) &&
            (cstatus != NULL)) {
-      cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+      cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
       if (STREQ(line, section)) {
         /* This should be the raw filename */
-        cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+        cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
 
         /* This should be the type...so start all over again */
-        cstatus = fdd_md_fgets(line, LINE_LEN, fp);
+        cstatus = fdd_md_fgets(line, XIA_LINE_LEN, fp);
         break;
       }
     }
