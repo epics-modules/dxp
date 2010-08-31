@@ -1,9 +1,8 @@
 /*
- *  md_vxWorks.h
  *
+ * Original author: Mark Rivers, University of Chicago
  *
- * Copyright (c) 2004, X-ray Instrumentation Associates
- *               2005, XIA LLC
+ * Copyright (c) 2009-2010, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -36,17 +35,20 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *  
- * Converted from md_win95.c by Mark Rivers, University of Chicago
+ * $Id$
+ *
  */
 
 
-/* NOTE: md_vxWorks.c currently only supports the DXP4C2X on CAMAC.  
- * If other support is added then take the prototypes and starting code from md_win95.c
+/* NOTE: md_vxWorks.c currently only supports the DXP4C2X on CAMAC.
+ * If other support is added then take the prototypes and starting
+ * code from md_win32.c
  */
 
-/* Note: we replace dxp_md_log and dxp_md_output from md_log.c with versions specific to vxWorks
- * This is because on vxWorks stdout and stderr can change their values when the startup script ends,
- * and we must reassign them each time if they are being used. 
+/* Note: we replace dxp_md_log and dxp_md_output from md_log.c with
+ * versions specific to vxWorks This is because on vxWorks stdout and
+ * stderr can change their values when the startup script ends, and we
+ * must reassign them each time if they are being used.
  */
 
 /* System include files */
@@ -134,7 +136,6 @@ XIA_MD_EXPORT int XIA_MD_API dxp_md_init_util(Xia_Util_Functions* funcs, char* t
 	if (STREQ(type, "INIT_LIBRARY")) { numMod = 0; }
     }
 
-    funcs->dxp_md_error_control = dxp_md_error_control;
     funcs->dxp_md_alloc         = dxp_md_alloc;
     funcs->dxp_md_free          = dxp_md_free;
     funcs->dxp_md_puts          = dxp_md_puts;
@@ -154,7 +155,8 @@ XIA_MD_EXPORT int XIA_MD_API dxp_md_init_util(Xia_Util_Functions* funcs, char* t
     funcs->dxp_md_tmp_path      = dxp_md_tmp_path;
     funcs->dxp_md_clear_tmp     = dxp_md_clear_tmp;
     funcs->dxp_md_path_separator = dxp_md_path_separator;
-
+    funcs->dxp_md_process_msgs   = dxp_md_process_msgs;
+    
     if (out_stream == NULL)
     {
 	out_stream = stdout;
@@ -193,8 +195,6 @@ XIA_MD_EXPORT int XIA_MD_API dxp_md_init_io(Xia_Io_Functions* funcs, char* type)
 
     funcs->dxp_md_get_maxblk = dxp_md_get_maxblk;
     funcs->dxp_md_set_maxblk = dxp_md_set_maxblk;
-    funcs->dxp_md_lock_resource = dxp_md_lock_resource;
-
 
     return DXP_SUCCESS;
 }
@@ -390,30 +390,6 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_close(int *camChan)
 
 /*****************************************************************************
  * 
- * Routine to control the error reporting operation.  Currently the only 
- * keyword available is "print_debug".  Then whenever dxp_md_error() is called
- * with an error_code=DXP_DEBUG, the message is printed.  
- * 
- *****************************************************************************/
-XIA_MD_STATIC void XIA_MD_API dxp_md_error_control(char* keyword, int* value)
-/* char *keyword;						Input: keyword to set for future use by dxp_md_error()	*/
-/* int *value;							Input: value to set the keyword to					*/
-{
-
-    /* Enable debugging */
-
-    if (strstr(keyword,"print_debug")!=NULL){
-	print_debug=(*value);
-	return;
-    }
-
-    /* Else we have a problem */
-
-    dxp_md_puts("dxp_md_error_control: keyword %s not recognized..\n");
-}
-
-/*****************************************************************************
- * 
  * Routine to get the maximum number of words that can be block transfered at 
  * once.  This can change from system to system and from controller to 
  * controller.  A maxblk size of 0 means to write all data at once, regardless 
@@ -519,15 +495,6 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_puts(char* s)
 
     return printf("%s", s);
 
-}
-
-XIA_MD_STATIC int XIA_MD_API dxp_md_lock_resource(int *ioChan, int *modChan, short *lock)
-{
-  UNUSED(ioChan);
-  UNUSED(modChan);
-  UNUSED(lock);
-
-  return DXP_SUCCESS;
 }
 
 
@@ -747,4 +714,15 @@ XIA_MD_STATIC void dxp_md_vx_output(char *filename)
 
 }
 
+
+
+/** @brief Not implemented in vxWorks
+ * 
+ *
+ */
+XIA_MD_STATIC int XIA_MD_API dxp_md_process_msgs()
+{
+  dxp_md_log_warning("dxp_md_process_msgs", "This feature is not supported in vxWorks md driver");  
+  return DXP_SUCCESS;
+}
 
