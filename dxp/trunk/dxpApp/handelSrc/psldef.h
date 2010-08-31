@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: psldef.h,v 1.3 2009-07-06 18:24:30 rivers Exp $
+ * $Id: psldef.h 13820 2009-11-19 19:00:43Z patrick $
  *
  */
 
@@ -51,7 +51,7 @@
 
 #ifdef PSL_USE_DLL		/* Linking to a DLL libraries */
 
-#ifdef WIN32			/* If we are on a Windoze platform */
+#ifdef _WIN32		
 
 #ifdef  PSL_MAKE_DLL
 #define PSL_EXPORT __declspec(dllexport)
@@ -75,7 +75,7 @@
 
 #endif					/* Endif for PSL_MAKE_DLL */
 
-#else					/* Not on a Windoze platform */
+#else	
 
 #ifdef  PSL_MAKE_DLL
 #define PSL_EXPORT 
@@ -87,11 +87,11 @@
 #define PSL_API
 #endif					/* Endif for PSL_MAKE_DLL */
 
-#endif					/* Endif for WIN32 */
+#endif					/* Endif for _WIN32 */
 
 #else					/* We are using static libraries */
 
-#ifdef WIN32			/* If we are on a Windoze platform */
+#ifdef _WIN32
 
 #ifdef  PSL_MAKE_DLL
 #define PSL_EXPORT __declspec(dllexport)
@@ -103,7 +103,7 @@
 #define PSL_API    
 #endif					/* Endif for PSL_MAKE_DLL */
 
-#else					/* Not on a Windoze platform */
+#else				
 
 #ifdef  PSL_MAKE_DLL
 #define PSL_EXPORT 
@@ -115,7 +115,7 @@
 #define PSL_API
 #endif					/* Endif for PSL_MAKE_DLL */
 
-#endif					/* Endif for WIN32 */
+#endif					/* Endif for _WIN32 */
 
 #endif					/* Endif for PSL_USE_DLL */
 
