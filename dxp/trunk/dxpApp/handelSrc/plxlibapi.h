@@ -39,7 +39,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: plxlibapi.h,v 1.3 2009-07-06 18:24:30 rivers Exp $
+ * $Id: plxlibapi.h 12433 2009-07-15 21:30:36Z patrick $
  *
  * API for plxlib
  */
@@ -50,8 +50,16 @@
 #include "Dlldefs.h"
 #include "xia_common.h"
 
-/* Headers from PLX SDK */
+#ifdef _WIN32
+#pragma warning(disable : 4214)
+#endif /* _WIN32 */
+
 #include "PlxApi.h"
+
+#ifdef _WIN32
+#pragma warning(default : 4214)
+#endif /* _WIN32 */
+
 
 #ifdef __cplusplus
 extern "C" {
