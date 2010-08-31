@@ -56,13 +56,13 @@ extern "C" {
 /******************************************
  *   Definitions for Code Portability
  ******************************************/
-// Convert pointer to an integer
+/* Convert pointer to an integer */
 #define PLX_PTR_TO_INT( ptr )       ((PLX_UINT_PTR)(ptr))
 
-// Convert integer to a pointer
+/* Convert integer to a pointer */
 #define PLX_INT_TO_PTR( int )       ((VOID*)(PLX_UINT_PTR)(int))
 
-// For Big Endian CPUs, data shared with PLX device (SGL descr) needs to be swapped
+/* For Big Endian CPUs, data shared with PLX device (SGL descr) needs to be swapped */
 #if defined(PLX_LITTLE_ENDIAN)
     #define PLX_LE_DATA_32(value)   (value)
 #else
@@ -112,10 +112,10 @@ extern "C" {
 #endif
 
 
-// Constants used in performance API calculations
+/* Constants used in performance API calculations */
 #define MAX_NUM_PORTS               12
-#define TLP_HEADER_SIZE             22	//14
-#define COMPLETION_HEADER_SIZE      20	//12
+#define TLP_HEADER_SIZE             22	/*14 */
+#define COMPLETION_HEADER_SIZE      20	/*12 */
 #define DLLP_SIZE                   8
 #define MAX_PORTS_PER_STATION       4
 
@@ -125,7 +125,7 @@ extern "C" {
  *   PLX-specific types & structures
  ******************************************/
 
-// Access Size Type
+/* Access Size Type */
 typedef enum _PLX_API_METHOD
 {
     PLX_API_METHOD_DRIVER,
@@ -133,7 +133,7 @@ typedef enum _PLX_API_METHOD
 } PLX_API_METHOD;
 
 
-// Access Size Type
+/* Access Size Type */
 typedef enum _PLX_ACCESS_TYPE
 {
     BitSize8,
@@ -143,7 +143,7 @@ typedef enum _PLX_ACCESS_TYPE
 } PLX_ACCESS_TYPE;
 
 
-// Power State Definitions
+/* Power State Definitions */
 typedef enum _PLX_POWER_LEVEL
 {
     D0Uninitialized,
@@ -155,18 +155,18 @@ typedef enum _PLX_POWER_LEVEL
 } PLX_POWER_LEVEL;
 
 
-// EEPROM status
+/* EEPROM status */
 typedef enum _PLX_EEPROM_STATUS
 {
-    PLX_EEPROM_STATUS_NONE         = 0,     // Not present
-    PLX_EEPROM_STATUS_VALID        = 1,     // Present with valid data
-    PLX_EEPROM_STATUS_INVALID_DATA = 2,     // Present w/invalid data or CRC error
+    PLX_EEPROM_STATUS_NONE         = 0,     /* Not present */
+    PLX_EEPROM_STATUS_VALID        = 1,     /* Present with valid data */
+    PLX_EEPROM_STATUS_INVALID_DATA = 2,     /* Present w/invalid data or CRC error */
     PLX_EEPROM_STATUS_BLANK        = PLX_EEPROM_STATUS_INVALID_DATA,
     PLX_EEPROM_STATUS_CRC_ERROR    = PLX_EEPROM_STATUS_INVALID_DATA
 } PLX_EEPROM_STATUS;
 
 
-// Port types
+/* Port types */
 typedef enum _PLX_LINK_SPEED
 {
     PLX_LINK_SPEED_2_5_GBPS     = 1,
@@ -174,12 +174,12 @@ typedef enum _PLX_LINK_SPEED
 } PLX_LINK_SPEED;
 
 
-// Port types
+/* Port types */
 typedef enum _PLX_PORT_TYPE
 {
     PLX_PORT_UNKNOWN            = 0xFF,
     PLX_PORT_ENDPOINT           = 0,
-    PLX_PORT_NON_TRANS          = PLX_PORT_ENDPOINT,  // NT port is an endpoint
+    PLX_PORT_NON_TRANS          = PLX_PORT_ENDPOINT,  /* NT port is an endpoint */
     PLX_PORT_LEGACY_ENDPOINT    = 1,
     PLX_PORT_ROOT_PORT          = 4,
     PLX_PORT_UPSTREAM           = 5,
@@ -191,16 +191,16 @@ typedef enum _PLX_PORT_TYPE
 } PLX_PORT_TYPE;
 
 
-// Non-transparent Port types (used by PLX service driver)
+/* Non-transparent Port types (used by PLX service driver) */
 typedef enum _PLX_NT_PORT_TYPE
 {
-    PLX_NT_PORT_NONE            = 0,     // Not an NT port
-    PLX_NT_PORT_VIRTUAL         = 1,     // NT Virtual-side port
-    PLX_NT_PORT_LINK            = 2      // NT Link-side port
+    PLX_NT_PORT_NONE            = 0,     /* Not an NT port */
+    PLX_NT_PORT_VIRTUAL         = 1,     /* NT Virtual-side port */
+    PLX_NT_PORT_LINK            = 2      /* NT Link-side port */
 } PLX_NT_PORT_TYPE;
 
 
-// DMA Command Definitions
+/* DMA Command Definitions */
 typedef enum _PLX_DMA_COMMAND
 {
     DmaPause,
@@ -209,96 +209,96 @@ typedef enum _PLX_DMA_COMMAND
 } PLX_DMA_COMMAND;
 
 
-// PCI Memory Structure
+/* PCI Memory Structure */
 typedef struct _PLX_PHYSICAL_MEM
 {
-    U64 UserAddr;                    // User-mode virtual address
-    U64 PhysicalAddr;                // Bus physical address
-    U64 CpuPhysical;                 // CPU physical address
-    U32 Size;                        // Size of the buffer
+    U64 UserAddr;                    /* User-mode virtual address */
+    U64 PhysicalAddr;                /* Bus physical address */
+    U64 CpuPhysical;                 /* CPU physical address */
+    U32 Size;                        /* Size of the buffer */
 } PLX_PHYSICAL_MEM;
 
 
-// PLX Driver Properties
+/* PLX Driver Properties */
 typedef struct _PLX_DRIVER_PROP
 {
-    char    DriverName[16];          // Name of driver
-    BOOLEAN bIsServiceDriver;        // Is service driver or PnP driver?
-    U64     AcpiPcieEcam;            // Base address of PCIe ECAM
-    U8      Reserved[40];            // Reserved for future use
+    char    DriverName[16];          /* Name of driver */
+    BOOLEAN bIsServiceDriver;        /* Is service driver or PnP driver? */
+    U64     AcpiPcieEcam;            /* Base address of PCIe ECAM */
+    U8      Reserved[40];            /* Reserved for future use */
 } PLX_DRIVER_PROP;
 
 
-// PCI BAR Properties
+/* PCI BAR Properties */
 typedef struct _PLX_PCI_BAR_PROP
 {
-    U32      BarValue;               // Actual value in BAR
-    U64      Physical;               // BAR Physical Address
-    U64      Size;                   // Size of BAR space
-    BOOLEAN  bIoSpace;               // Memory or I/O space?
-    BOOLEAN  bPrefetchable;          // Is space pre-fetchable?
-    BOOLEAN  b64bit;                 // Is PCI BAR 64-bit?
+    U32      BarValue;               /* Actual value in BAR */
+    U64      Physical;               /* BAR Physical Address */
+    U64      Size;                   /* Size of BAR space */
+    BOOLEAN  bIoSpace;               /* Memory or I/O space? */
+    BOOLEAN  bPrefetchable;          /* Is space pre-fetchable? */
+    BOOLEAN  b64bit;                 /* Is PCI BAR 64-bit? */
 } PLX_PCI_BAR_PROP;
 
 
-// Used for getting the port properties and status
+/* Used for getting the port properties and status */
 typedef struct _PLX_PORT_PROP
 {
-    U8  PortType;                    // Port configuration
-    U8  PortNumber;                  // Internal port number
-    U8  LinkWidth;                   // Negotiated port link width
-    U8  MaxLinkWidth;                // Max link width device is capable of
-    U8  LinkSpeed;                   // Negotiated link speed
-    U8  MaxLinkSpeed;                // Max link speed device is capable of
-    U16 MaxReadReqSize;              // Max read request size allowed
-    U16 MaxPayloadSize;              // Max payload size setting
+    U8  PortType;                    /* Port configuration */
+    U8  PortNumber;                  /* Internal port number */
+    U8  LinkWidth;                   /* Negotiated port link width */
+    U8  MaxLinkWidth;                /* Max link width device is capable of */
+    U8  LinkSpeed;                   /* Negotiated link speed */
+    U8  MaxLinkSpeed;                /* Max link speed device is capable of */
+    U16 MaxReadReqSize;              /* Max read request size allowed */
+    U16 MaxPayloadSize;              /* Max payload size setting */
 } PLX_PORT_PROP;
 
 
-// PCI Device Key Identifier
+/* PCI Device Key Identifier */
 typedef struct _PLX_DEVICE_KEY
 {
-    U32 IsValidTag;                  // Magic number to determine validity
-    U8  bus;                         // Physical device location
+    U32 IsValidTag;                  /* Magic number to determine validity */
+    U8  bus;                         /* Physical device location */
     U8  slot;
     U8  function;
-    U16 VendorId;                    // Device Identifier
+    U16 VendorId;                    /* Device Identifier */
     U16 DeviceId;
     U16 SubVendorId;
     U16 SubDeviceId;
     U8  Revision;
-    U8  ApiIndex;                    // Used internally by the API
-    U8  DeviceNumber;                // Used internally by device drivers
+    U8  ApiIndex;                    /* Used internally by the API */
+    U8  DeviceNumber;                /* Used internally by device drivers */
 } PLX_DEVICE_KEY;
 
 
-// PLX Device Object Structure
+/* PLX Device Object Structure */
 typedef struct _PLX_DEVICE_OBJECT
 {
-    U32                IsValidTag;   // Magic number to determine validity
-    PLX_API_METHOD     ApiMethod;    // Method API uses to access device
-    PLX_DEVICE_KEY     Key;          // Device location key identifier
-    PLX_DRIVER_HANDLE  hDevice;      // Handle to driver
-    PLX_PCI_BAR_PROP   PciBar[6];    // PCI BAR properties
-    U64                PciBarVa[6];  // For PCI BAR user-mode BAR mappings
-    U8                 BarMapRef[6]; // BAR map count used by API
-    U32                PlxChipType;  // PLX chip type
-    U8                 PlxRevision;  // PLX chip revision
-    PLX_PHYSICAL_MEM   CommonBuffer; // Used to store common buffer information
-    U32                Reserved[8];  // Reserved for future use
+    U32                IsValidTag;   /* Magic number to determine validity */
+    PLX_API_METHOD     ApiMethod;    /* Method API uses to access device */
+    PLX_DEVICE_KEY     Key;          /* Device location key identifier */
+    PLX_DRIVER_HANDLE  hDevice;      /* Handle to driver */
+    PLX_PCI_BAR_PROP   PciBar[6];    /* PCI BAR properties */
+    U64                PciBarVa[6];  /* For PCI BAR user-mode BAR mappings */
+    U8                 BarMapRef[6]; /* BAR map count used by API */
+    U32                PlxChipType;  /* PLX chip type */
+    U8                 PlxRevision;  /* PLX chip revision */
+    PLX_PHYSICAL_MEM   CommonBuffer; /* Used to store common buffer information */
+    U32                Reserved[8];  /* Reserved for future use */
 } PLX_DEVICE_OBJECT;
 
 
-// PLX Notification Object
+/* PLX Notification Object */
 typedef struct _PLX_NOTIFY_OBJECT
 {
-    U32 IsValidTag;                  // Magic number to determine validity
-    U64 pWaitObject;                 // -- INTERNAL -- Wait object used by the driver
-    U64 hEvent;                      // User event handle (HANDLE can be 32 or 64 bit)
+    U32 IsValidTag;                  /* Magic number to determine validity */
+    U64 pWaitObject;                 /* -- INTERNAL -- Wait object used by the driver */
+    U64 hEvent;                      /* User event handle (HANDLE can be 32 or 64 bit) */
 } PLX_NOTIFY_OBJECT;
 
 
-// PLX Interrupt Structure 
+/* PLX Interrupt Structure  */
 typedef struct _PLX_INTERRUPT
 {
     U32 Doorbell;
@@ -326,11 +326,11 @@ typedef struct _PLX_INTERRUPT
     U8  HotPlugMrlSensor      :1;
     U8  HotPlugChangeDetect   :1;
     U8  HotPlugCmdCompleted   :1;
-    U32 Reserved              :32;      // Reserved space for future
+    U32 Reserved              :32;      /* Reserved space for future */
 } PLX_INTERRUPT;
 
 
-// DMA Channel Properties Structure
+/* DMA Channel Properties Structure */
 typedef struct _PLX_DMA_PROP
 {
     U8 ReadyInput           :1;
@@ -351,67 +351,67 @@ typedef struct _PLX_DMA_PROP
 } PLX_DMA_PROP;
 
 
-// DMA Transfer Parameters
+/* DMA Transfer Parameters */
 typedef struct _PLX_DMA_PARAMS
 {
     union
     {
-        U64 UserVa;                // User space virtual address
-        U32 PciAddrLow;            // Lower 32-bits of PCI address
+        U64 UserVa;                /* User space virtual address */
+        U32 PciAddrLow;            /* Lower 32-bits of PCI address */
     } u;
-    U32     PciAddrHigh;           // Upper 32-bits of PCI address
-    U32     LocalAddr;             // Local bus address
-    U32     ByteCount;             // Number of bytes to transfer
+    U32     PciAddrHigh;           /* Upper 32-bits of PCI address */
+    U32     LocalAddr;             /* Local bus address */
+    U32     ByteCount;             /* Number of bytes to transfer */
     U32     TerminalCountIntr :1;
     U32     LocalToPciDma     :1;
 } PLX_DMA_PARAMS;
 
 
-// Performance object
+/* Performance object */
 typedef struct _PLX_PERFORMANCE_OBJECT
 {
-    U32 IsValidTag;   // Magic number to determine validity
+    U32 IsValidTag;   /* Magic number to determine validity */
 
-    //Port properties
+    /*Port properties */
     U8  PortNumber;
     U8  LinkWidth;
     U8  Generation;
 
-    // TIC
+    /* TIC */
     U32 TicIngressTlpPostedHeader;
     U32 TicIngressTlpPostedDW;
     U32 TicIngressTlpNonpostedDW;
     U32 TicIngressTlpCompletionHeader;
     U32 TicIngressTlpCompletionDW;
 
-    // TEC 
+    /* TEC  */
     U32 TecEgressTlpPostedHeader;
     U32 TecEgressTlpPostedDW;
     U32 TecEgressTlpNonpostedDW;
     U32 TecEgressTlpCompletionHeader;
     U32 TecEgressTlpCompletionDW;
 
-    // DLLP
+    /* DLLP */
     U32 DllpIngress;
     U32 DllpEgress;
 
-    // PHY
+    /* PHY */
     U32 PhyIngress;
     U32 PhyEgress;
 } PLX_PERFORMANCE_OBJECT;
 
 
-// Performance statistics
+/* Performance statistics */
 typedef struct _PLX_PERF_STATISTICS_PER_PORT
 {
-    // Port Input Statistics
+    /* Port Input Statistics */
     double InputLinkUtilization;
     double InputPayLoadSize;
     double InputPayloadByteRate;
     double InputTotalBytes;
     double InputByteRate;
 
-    // Port Output Statistics
+    /* Port Output Statistics */
     double OutputLinkUtilization;
     double OutputPayLoadSize;
     double OutputPayloadByteRate;
