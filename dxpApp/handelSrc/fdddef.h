@@ -35,7 +35,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: fdddef.h,v 1.3 2009-07-06 18:24:29 rivers Exp $
+ * $Id: fdddef.h 13820 2009-11-19 19:00:43Z patrick $
  *
  */
 
@@ -65,7 +65,7 @@
 
 #ifdef FDD_USE_DLL		/* Linking to a DLL libraries */
 
-#ifdef WIN32			/* If we are on a Windoze platform */
+#ifdef _WIN32
 
 #ifdef FDD_MAKE_DLL
 #define FDD_EXPORT __declspec(dllexport)
@@ -75,7 +75,7 @@
 #define FDD_IMPORT __declspec(dllimport)
 #endif					/* Endif for FDD_MAKE_DLL */
 
-#else					/* Not on a Windoze platform */
+#else		
 
 #ifdef FDD_MAKE_DLL
 #define FDD_EXPORT 
@@ -85,11 +85,11 @@
 #define FDD_IMPORT extern
 #endif					/* Endif for FDD_MAKE_DLL */
 
-#endif					/* Endif for WIN32 */
+#endif					/* Endif for _WIN32 */
 
 #else					/* We are using static libraries */
 
-#ifdef WIN32			/* If we are on a Windoze platform */
+#ifdef _WIN32		
 
 #ifdef FDD_MAKE_DLL
 #define FDD_EXPORT __declspec(dllexport)
@@ -99,7 +99,7 @@
 #define FDD_IMPORT extern
 #endif					/* Endif for FDD_MAKE_DLL */
 
-#else					/* Not on a Windoze platform */
+#else				
 
 #ifdef FDD_MAKE_DLL
 #define FDD_EXPORT 
@@ -111,7 +111,7 @@
 #define FDD_API
 #endif					/* Endif for FDD_MAKE_DLL */
 
-#endif					/* Endif for WIN32 */
+#endif					/* Endif for _WIN32 */
 
 #endif					/* Endif for FDD_USE_DLL */
 
