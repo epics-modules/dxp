@@ -54,10 +54,12 @@
 #include "xerxes_errors.h"
 #include "xerxes_structures.h"
 #include "xia_handel.h"
+#include "xia_handel_structures.h"
+
 #include "handel_generic.h"
 #include "handeldef.h"
 #include "handel_errors.h"
-#include "xia_handel_structures.h"
+#include "handel_log.h"
 
 
 /*****************************************************************************
