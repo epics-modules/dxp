@@ -44,19 +44,14 @@
 
 
 #ifdef __MEM_DBG__
+#include <windows.h>
+#include <crtdbg.h>
 
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <time.h>
 
-#include <crtdbg.h>
-
-#pragma warning(disable : 4115)
-#include <windows.h>
-
 #include "xia_handel.h"
-
-#pragma warning(disable : 4127)
 
 static HANDLE memLog;
 static _CrtMemState before;
@@ -100,8 +95,14 @@ HANDEL_EXPORT void xiaMemCheckpoint(int pass)
 
 	case XIA_AFTER:
 		_CrtMemCheckpoint(&after);
+
+#pragma warning(disable : 4127)
 		_RPT0(_CRT_WARN, "****Dumping Memory Changes Between Checkpoints****\n");
+#pragma warning(default : 4127)
+
+#pragma warning(disable : 4127)
 		if (!_CrtMemDifference(&difference, &before, &after)) {
+#pragma warning(default : 4127)
 			_CrtMemDumpStatistics(&difference);
 		}
 		break;
@@ -113,7 +114,13 @@ HANDEL_EXPORT void xiaMemCheckpoint(int pass)
 
 HANDEL_EXPORT void xiaReport(char *message)
 {
+#ifndef _DEBUG
+    UNUSED(message);
+#endif /* _DEBUG */
+
+#pragma warning(disable : 4127)
 	_RPT0(_CRT_WARN, message);
+#pragma warning(default : 4127)
 
 	return;
 }
