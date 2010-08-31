@@ -1,8 +1,7 @@
 /*
- *  dxp4c2x.h
+ * Original author: Mark Rivers, University of Chicago
  *
- * Copyright (c) 2004, X-ray Instrumentation Associates
- *               2005, XIA LLC
+ * Copyright (c) 2009, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -35,13 +34,13 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  * 
- * *
- *    Following are prototypes for dxp4c2x.c routines
+ * $Id: dxp4c2x.h 12770 2009-08-21 21:26:51Z patrick $
+ *
  */
 
 
-#ifndef DXP4C2X_H
-#define DXP4C2X_H
+#ifndef __DXP4C2X_H__
+#define __DXP4C2X_H__
 
 #include "xerxesdef.h"
 #include "xerxes_generic.h"
@@ -184,4 +183,4 @@
 #define LIVETIME_TICK        400.0e-9
 #define REALTIME_TICK        400.0e-9
 
-#endif						/* Endif for DXP4C2X_H */
+#endif						/* Endif for __DXP4C2X_H__ */
