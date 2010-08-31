@@ -35,7 +35,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xia_mddef.h,v 1.3 2009-07-06 18:24:31 rivers Exp $
+ * $Id: xia_mddef.h 13820 2009-11-19 19:00:43Z patrick $
  *
  *
  *    Following are prototypes for dxp driver routines
@@ -56,7 +56,7 @@
 
 #ifdef XIA_MD_USE_DLL		/* Linking to a DLL libraries */
 
-#ifdef WIN32			/* If we are on a Windoze platform */
+#ifdef _WIN32
 
 #ifdef XIA_MD_MAKE_DLL
 #define XIA_MD_EXPORT __declspec(dllexport)
@@ -68,7 +68,7 @@
 #define XIA_MD_API
 #endif					/* Endif for XIA_MD_MAKE_DLL */
 
-#else					/* Not on a Windoze platform */
+#else		
 
 #ifdef XIA_MD_MAKE_DLL
 #define XIA_MD_EXPORT 
@@ -80,11 +80,11 @@
 #define XIA_MD_API
 #endif					/* Endif for XIA_MD_MAKE_DLL */
 
-#endif					/* Endif for WIN32 */
+#endif					/* Endif for _WIN32 */
 
 #else					/* We are using static libraries */
 
-#ifdef WIN32			/* If we are on a Windoze platform */
+#ifdef _WIN32	
 
 #ifdef XIA_MD_MAKE_DLL
 #define XIA_MD_EXPORT __declspec(dllexport)
@@ -96,7 +96,7 @@
 #define XIA_MD_API
 #endif					/* Endif for XIA_MD_MAKE_DLL */
 
-#else					/* Not on a Windoze platform */
+#else
 
 #ifdef XIA_MD_MAKE_DLL
 #define XIA_MD_EXPORT 
@@ -108,7 +108,7 @@
 #define XIA_MD_API
 #endif					/* Endif for XIA_MD_MAKE_DLL */
 
-#endif					/* Endif for WIN32 */
+#endif					/* Endif for _WIN32 */
 
 #endif					/* Endif for XIA_MD_USE_DLL */
 
