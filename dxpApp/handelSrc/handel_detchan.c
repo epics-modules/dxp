@@ -48,7 +48,9 @@
 #include "xia_handel.h"
 #include "xia_handel_structures.h"
 #include "xia_common.h"
+
 #include "handel_errors.h"
+#include "handel_log.h"
 
 
 HANDEL_STATIC DetChanSetElem* HANDEL_API xiaGetDetSetTail(DetChanSetElem *head);
