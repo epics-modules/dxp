@@ -1,8 +1,6 @@
 /*
- *  xia_fdd.h
- *
  * Copyright (c) 2004, X-ray Instrumentation Associates
- *               2005, XIA LLC
+ *               2005-2009, XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -35,14 +33,15 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xia_fdd.h,v 1.4 2009-07-06 18:24:31 rivers Exp $
- *
+ * $Id: xia_fdd.h 13819 2009-11-19 18:56:26Z patrick $
  *
  */
 
 
-#ifndef XIA_FDD_H
-#define XIA_FDD_H
+#ifndef __XIA_FDD_H__
+#define __XIA_FDD_H__
+
+#include <stdio.h>
 
 /* Define some generic constants for use by FDD */
 #include "handel_generic.h"
@@ -62,13 +61,6 @@
  */
 #define ALLCHAN              -1
 
-/* If this is compiled by a C++ compiler, make it clear that these are C routines */
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#ifdef _FDD_PROTO_
-#include <stdio.h>
 
 /*
  * following are internal prototypes for fdd.c routines
@@ -102,38 +94,10 @@ FDD_STATIC boolean_t xiaFddFindFirmware(const char *filename, const char *ftype,
 
 FDD_IMPORT int dxp_md_init_util(Xia_Util_Functions *funcs, char *type);
 
-#else									/* Begin old style C prototypes */
-/*
- * following are internal prototypes for fdd.c routines
- */
-FDD_EXPORT int FDD_API xiaFddInitialize();
-FDD_EXPORT int FDD_API xiaFddInitLibrary();
-FDD_EXPORT int FDD_API xiaFddGetFirmware();
-FDD_EXPORT int FDD_API xiaFddAddFirmware();
-FDD_EXPORT int FDD_API xiaFddCleanFirmware();
-FDD_EXPORT int FDD_API xiaFddGetNumFilter();
-FDD_EXPORT int FDD_API xiaFddGetFilterInfo();
-
-/* Routines contained in xia_common.c.  Routines that are used across libraries but not exported */
-static FILE* dxp_find_file();
-FDD_STATIC boolean_t xiaFddFindFirmware();
-
-FDD_IMPORT int dxp_md_init_util();
-
-#endif                                  /*   end if _FDD_PROTO_ */
-
-/* If this is compiled by a C++ compiler, make it clear that these are C routines */
-#ifdef __cplusplus
-}
-#endif
-
 /* 
  * Define the utility routines used throughout this library
  */
 
-/* Added new logging routines 8/22/01 -- PJF */
-
-DXP_MD_ERROR_CONTROL fdd_md_error_control;
 DXP_MD_ERROR fdd_md_error;
 DXP_MD_WARNING fdd_md_warning;
 DXP_MD_INFO fdd_md_info;
@@ -163,4 +127,4 @@ DXP_MD_PATH_SEP fdd_md_path_separator;
 #define fdd_md_free(ptr) xia_mem_free(ptr)
 #endif /* USE_XIA_MEM_MANAGER */
 
-#endif						/* Endif for XIA_FDD_H */
+#endif /* __XIA_FDD_H__ */
