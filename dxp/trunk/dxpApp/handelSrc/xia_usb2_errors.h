@@ -38,7 +38,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_usb2_errors.h,v 1.2 2009-07-06 18:24:32 rivers Exp $
+ * $Id: xia_usb2_errors.h 11620 2009-02-26 22:14:04Z patrick $
  */
 
 #ifndef __XIA_USB2_ERRORS_H__
