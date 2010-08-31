@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_xerxes.h,v 1.4 2009-07-06 18:24:32 rivers Exp $
+ * $Id: xia_xerxes.h 15329 2010-04-12 19:20:08Z patrick $
  *
  *    Following are prototypes for dxp driver routines
  */
@@ -169,7 +169,6 @@ extern "C"
   XERXES_EXPORT int XERXES_API dxp_det_to_elec(int *,Board **,int *);
   XERXES_EXPORT int XERXES_API dxp_elec_to_det(int *,int *,int *);
   XERXES_EXPORT int XERXES_API dxp_mem_dump(int *);
-  XERXES_EXPORT int XERXES_API dxp_get_statistics(int *, double *, double *, double *, unsigned long *);
   XERXES_EXPORT int XERXES_API dxp_replace_filesymbol(char *, char *);
   XERXES_EXPORT int XERXES_API dxp_read_filesymbol(char *, char *);
   XERXES_EXPORT int XERXES_API dxp_locate_system_files(unsigned int *, char **);
@@ -200,9 +199,9 @@ extern "C"
 #ifndef EXCLUDE_DXP4C2X
   XERXES_IMPORT int DXP_API dxp_init_dxp4c2x(Functions *funcs);
 #endif /* EXCLUDE_DXP4C2X */
-#ifndef EXCLUDE_DXPX10P
-  XERXES_IMPORT int DXP_API dxp_init_dxpx10p(Functions *funcs);
-#endif /* EXCLUDE_DXPX10P */
+#ifndef EXCLUDE_SATURN
+  XERXES_IMPORT int DXP_API dxp_init_saturn(Functions *funcs);
+#endif /* EXCLUDE_SATURN */
 #ifndef EXCLUDE_UDXPS
   XERXES_IMPORT int DXP_API dxp_init_udxps(Functions *funcs);
 #endif /* EXCLUDE_UDXPS */
@@ -313,7 +312,6 @@ extern "C"
   XERXES_EXPORT int XERXES_API dxp_det_to_elec();
   XERXES_EXPORT int XERXES_API dxp_elec_to_det();
   XERXES_EXPORT int XERXES_API dxp_mem_dump();
-  XERXES_EXPORT int XERXES_API dxp_get_statistics();
   XERXES_EXPORT int XERXES_API dxp_replace_filesymbol();
   XERXES_EXPORT int XERXES_API dxp_read_filesymbol();
   XERXES_EXPORT int XERXES_API dxp_locate_system_files();
@@ -342,9 +340,9 @@ extern "C"
 #ifndef EXCLUDE_DXP4C2X
   XERXES_IMPORT int DXP_API dxp_init_dxp4c2x();
 #endif /* EXCLUDE_DXP4C2X */
-#ifndef EXCLUDE_DXPX10P
-  XERXES_IMPORT int DXP_API dxp_init_dxpx10p();
-#endif /* EXCLUDE_DXPX10P */
+#ifndef EXCLUDE_SATURN
+  XERXES_IMPORT int DXP_API dxp_init_saturn();
+#endif /* EXCLUDE_SATURN */
 #ifndef EXCLUDE_UDXPS
   XERXES_IMPORT int DXP_API dxp_init_udxps();
 #endif /* EXCLUDE_UDXPS */
@@ -385,7 +383,6 @@ extern "C"
 
 /* Added new logging routines 8/22/01 -- PJF */
 
-DXP_MD_ERROR_CONTROL xerxes_md_error_control;
 DXP_MD_ERROR xerxes_md_error;
 DXP_MD_WARNING xerxes_md_warning;
 DXP_MD_INFO xerxes_md_info;
@@ -404,6 +401,7 @@ DXP_MD_FGETS xerxes_md_fgets;
 DXP_MD_TMP_PATH xerxes_md_tmp_path;
 DXP_MD_CLEAR_TMP xerxes_md_clear_tmp;
 DXP_MD_PATH_SEP  xerxes_md_path_separator;
+DXP_MD_PROCESS_MSGS xerxes_md_process_msgs;
 
 XERXES_EXPORT Utils *utils;
 
