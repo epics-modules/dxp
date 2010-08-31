@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xerxes_errors.h,v 1.3 2009-07-06 18:24:31 rivers Exp $
+ * $Id: xerxes_errors.h 4227 2006-08-18 00:22:29Z patrick $
  *
  */
 
