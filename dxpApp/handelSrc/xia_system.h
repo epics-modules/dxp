@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *
  *
- * $Id: xia_system.h,v 1.3 2009-07-06 18:24:32 rivers Exp $
+ * $Id: xia_system.h 12519 2009-07-29 18:35:19Z patrick $
  *
  */
 
@@ -56,17 +56,19 @@ typedef int (*downloadFirmware_FP)(int detChan, char *type, char *file,
                                    Module *m, char *rawFile, XiaDefaults *defs);
 typedef int (*setAcquisitionValues_FP)(int, char *, void *, XiaDefaults *,
 									   FirmwareSet *, CurrentFirmware *, char *,
-									   double, Detector *, int, Module *, int);
+									   Detector *, int, Module *, int);
 typedef int (*getAcquisitionValues_FP)(int, char *, void *, XiaDefaults *);
-typedef int (*gainOperation_FP)(int, char *, void *, Detector *, int, XiaDefaults *, double, 
-								CurrentFirmware *, char *, Module *);
+typedef int (*gainOperation_FP)(int detChan, char *name, void *value,
+                                Detector *detector, int detector_chan,
+                                XiaDefaults *defaults,
+								CurrentFirmware *currentFirmware,
+                                char *detectorType, Module *m);
 typedef int (*gainChange_FP)(int detChan, double deltaGain, XiaDefaults *defs,
 							 CurrentFirmware *currentFirmware, char *detType, 
-							 double gainScale, Detector *det, int detector_chan,
+							 Detector *det, int detector_chan,
 							 Module *m, int modChan);
 typedef int (*gainCalibrate_FP)(int detChan, Detector *det, int modChan,
-								Module *m, XiaDefaults *defs, double delta,
-								double scale);
+								Module *m, XiaDefaults *defs, double delta);
 typedef int (*startRun_FP)(int detChan, unsigned short resume, XiaDefaults *defs,
 						   Module *m);
 typedef int (*stopRun_FP)(int detChan, Module *m);
@@ -74,13 +76,18 @@ typedef int (*getRunData_FP)(int detChan, char *name, void *value,
 							 XiaDefaults *defs, Module *m);
 typedef int (*setPolarity_FP)(int detChan, Detector *det, int detector_channel,
 							  XiaDefaults *defs, Module *m);
-typedef int (*doSpecialRun_FP)(int, char *, double, void *, XiaDefaults *, Detector *, int);
+typedef int (*doSpecialRun_FP)(int detChan, char *name, void *info,
+                               XiaDefaults *defaults, Detector *detector,
+                               int detector_chan);
 typedef int (*getSpecialRunData_FP)(int, char *, void *, XiaDefaults *);
 typedef int (*setDetectorTypeValue_FP)(int, Detector *, int, XiaDefaults *);
 typedef int (*getParameter_FP)(int, const char *, unsigned short *);
 typedef int (*setParameter_FP)(int, const char *, unsigned short);
-typedef int (*userSetup_FP)(int, XiaDefaults *, FirmwareSet *, CurrentFirmware *, char *, 
-							double, Detector *, int, Module *, int);
+typedef int (*userSetup_FP)(int detChan, XiaDefaults *defaults,
+                            FirmwareSet *firmwareSet,
+                            CurrentFirmware *currentFirmware,
+                            char *detectorType, Detector *detector,
+                            int detector_chan, Module *module, int modChan);
 typedef int (*getDefaultAlias_FP)(char *, char **, double *);
 typedef int (*getNumParams_FP)(int, unsigned short *);
 typedef int (*getParamData_FP)(int, char *, void *);
