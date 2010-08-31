@@ -68,6 +68,7 @@
 
 #include "handel_generic.h"
 #include "handel_errors.h"
+#include "handel_log.h"
 #include "handeldef.h"
 
 #include "fdd.h"
@@ -294,7 +295,6 @@ HANDEL_STATIC int HANDEL_API xiaInitMemory()
     /* Make our function pointers equal to XerXes function pointers using the
      * imported utils variable
      */
-    handel_md_error_control = utils->funcs->dxp_md_error_control;
     handel_md_log           = utils->funcs->dxp_md_log;
     handel_md_output        = utils->funcs->dxp_md_output;
     handel_md_enable_log	  = utils->funcs->dxp_md_enable_log;
@@ -875,7 +875,6 @@ HANDEL_SHARED int HANDEL_API xiaFreeModule(Module *module)
 
     handel_md_free((void *)module->detector);
     handel_md_free((void *)module->detector_chan);
-    handel_md_free((void *)module->gain);
 
     if (module->firmware != NULL)
     {
