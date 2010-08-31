@@ -35,7 +35,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xia_handel.h,v 1.4 2009-07-06 18:24:31 rivers Exp $
+ * $Id: xia_handel.h 15951 2010-06-09 23:22:16Z patrick $
  *
  *
  *    Following are prototypes for HanDeL library routines
@@ -329,26 +329,19 @@ HANDEL_SHARED int HANDEL_API xiaTagAllRunActive(Module *module, boolean_t state)
 /* Create some useful abbreviations here so that I don't have to do utils->funcs->
  * everytime I want to use a function.
  */
-DXP_MD_ERROR_CONTROL handel_md_error_control;
-DXP_MD_LOG           handel_md_log;
-DXP_MD_ENABLE_LOG    handel_md_enable_log;
-DXP_MD_SUPPRESS_LOG  handel_md_suppress_log;
-DXP_MD_SET_LOG_LEVEL handel_md_set_log_level;
 DXP_MD_OUTPUT        handel_md_output;
 DXP_MD_ALLOC         handel_md_alloc;
 DXP_MD_FREE			 	handel_md_free;
 DXP_MD_PUTS			 	handel_md_puts;
 DXP_MD_WAIT			 	handel_md_wait;
 DXP_MD_FGETS         handel_md_fgets;
+DXP_MD_ENABLE_LOG    handel_md_enable_log;
+DXP_MD_SUPPRESS_LOG  handel_md_suppress_log;
+DXP_MD_SET_LOG_LEVEL handel_md_set_log_level;
+
 
 #define XIA_BEFORE		0
 #define XIA_AFTER			1
-
-/* Logging macro wrappers */
-#define xiaLogError(x, y, z)		handel_md_log(MD_ERROR, (x), (y), (z), __FILE__, __LINE__)
-#define xiaLogWarning(x, y)		handel_md_log(MD_WARNING, (x), (y), 0, __FILE__, __LINE__)
-#define xiaLogInfo(x, y)			handel_md_log(MD_INFO, (x), (y), 0, __FILE__, __LINE__)
-#define xiaLogDebug(x, y)			handel_md_log(MD_DEBUG, (x), (y), 0, __FILE__, __LINE__)
 
 
 /* Memory allocation macro wrappers */
@@ -364,8 +357,6 @@ DXP_MD_FGETS         handel_md_fgets;
 #define XIA_DET_RCFEED	0x0002
 
 /* Statics used in multiple source files */
-/* static variables */
-static char info_string[400];
 
 extern boolean_t isHandelInit;
 
@@ -399,6 +390,5 @@ extern Module *xiaModuleHead;
 #define isListEmpty(x)		(((x) == NULL) ? TRUE_ : FALSE_)
 #define getListNext(x)		((x)->next)
 #define getListPrev(x)		((x)->prev)
-
 
 #endif						/* Endif for XIA_HANDEL_H */
