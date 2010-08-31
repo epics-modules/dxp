@@ -35,7 +35,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: camacso.h,v 1.1 2009-07-06 18:24:28 rivers Exp $
+ * $Id: camacso.h 3139 2005-11-16 21:26:17Z patrick $
  *
  */
 
