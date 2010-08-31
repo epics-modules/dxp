@@ -1,15 +1,6 @@
-
 /*
- * handel_dyn_firmware.c
- *
- * Created 10/03/01 -- PJF
- *
- * This file is nothing more then the routines 
- * that were once in the (now non-existent) file
- * handel_dynamic_config.c. 
- *
- * Copyright (c) 2002,2003,2004 X-ray Instrumentation Associates
- *               2005, XIA LLC
+ * Copyright (c) 2002-2004 X-ray Instrumentation Associates
+ *               2005-2010 XIA LLC
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, 
@@ -42,6 +33,8 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
+ * $Id: handel_dyn_firmware.c 15170 2010-03-27 01:26:34Z patrick $
+ *
  */
 
 
@@ -53,13 +46,16 @@
 #include "xerxes.h"
 #include "xerxes_errors.h"
 #include "xerxes_structures.h"
+
 #include "xia_handel.h"
-#include "handel_generic.h"
-#include "handeldef.h"
-#include "handel_errors.h"
 #include "xia_handel_structures.h"
 #include "xia_common.h"
 #include "xia_assert.h"
+
+#include "handel_generic.h"
+#include "handeldef.h"
+#include "handel_errors.h"
+#include "handel_log.h"
 
 
 HANDEL_STATIC int HANDEL_API xiaSetFirmwareItem(FirmwareSet *fs, Firmware *f, 
@@ -195,7 +191,7 @@ HANDEL_EXPORT int HANDEL_API xiaAddFirmwareItem(char *alias, char *name, void *v
     /* convert the name to lower case */
     for (i = 0; i < (unsigned int)strlen(name); i++)
     {
-	strtemp[i] = (char)tolower(name[i]);
+        strtemp[i] = (char)tolower((int)name[i]);
     }
     strtemp[strlen(name)] = '\0';
 
@@ -309,7 +305,7 @@ HANDEL_EXPORT int HANDEL_API xiaModifyFirmwareItem(char *alias, unsigned short p
     /* convert the name to lower case */
     for (i = 0; i < (unsigned int)strlen(name); i++)
     {
-	strtemp[i] = (char)tolower(name[i]);
+        strtemp[i] = (char)tolower((int)name[i]);
     }
     strtemp[strlen(name)] = '\0';
 
@@ -407,8 +403,7 @@ HANDEL_EXPORT int HANDEL_API xiaGetFirmwareItem(char *alias, unsigned short ptrr
 
     /* Convert name to lower case */
     for (i = 0; i < (unsigned int)strlen(name); i++) {
-
-	strtemp[i] = (char)tolower(name[i]);
+        strtemp[i] = (char)tolower((int)name[i]);
     }
 
     strtemp[strlen(name)] = '\0';
@@ -733,13 +728,13 @@ HANDEL_STATIC int HANDEL_API xiaSetFirmwareItem(FirmwareSet *fs, Firmware *f, ch
 	
     } else if (STREQ(name, "fdd_tmp_path")) {
 
-      len = strlen((char *)value);
+        len = (unsigned int)strlen((char *)value);
 
-      fs->tmpPath = handel_md_alloc(len + 1);
+        fs->tmpPath = handel_md_alloc(len + 1);
 
-      if (!fs->tmpPath) {
-        sprintf(info_string, "Unable to allocated %d bytes for 'fs->tmpPath' with "
-                "alias = '%s'", len + 1, fs->alias);
+        if (!fs->tmpPath) {
+            sprintf(info_string, "Unable to allocated %u bytes for "
+                    "'fs->tmpPath' with alias = '%s'", len + 1, fs->alias);
         xiaLogError("xiaSetFirmwareItem", info_string, XIA_NOMEM);
         return XIA_NOMEM;
       }
@@ -971,7 +966,7 @@ HANDEL_EXPORT int HANDEL_API xiaRemoveFirmware(char *alias)
     /* Turn the alias into lower case version, and terminate with a null char */
     for (i = 0; i < (unsigned int)strlen(alias); i++) 
     {
-	strtemp[i] = (char)tolower(alias[i]);
+        strtemp[i] = (char)tolower((int)alias[i]);
     }
     strtemp[strlen(alias)] = '\0';
 
@@ -1031,7 +1026,7 @@ HANDEL_SHARED FirmwareSet* HANDEL_API xiaFindFirmware(char *alias)
     /* Turn the alias into lower case version, and terminate with a null char */
     for (i = 0; i < (unsigned int)strlen(alias); i++) 
     {
-	strtemp[i] = (char)tolower(alias[i]);
+        strtemp[i] = (char)tolower((int)alias[i]);
     }
     strtemp[strlen(alias)] = '\0';
 
