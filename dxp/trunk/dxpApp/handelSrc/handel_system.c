@@ -47,6 +47,7 @@
 #include "xia_common.h"
 
 #include "handel_errors.h"
+#include "handel_log.h"
 
 #include "psl.h"
 #include "fdd.h"
@@ -78,108 +79,95 @@ HANDEL_STATIC int HANDEL_API _parseMemoryName(char *name, char *type, boolean_t 
 
 
 
-/*****************************************************************************
+/** Starts the system previously defined via an .ini file.
  *
- * This routine does the following:
- * 1) Validates the information in HanDeL's data structures
- * 2) Builds XerXes data structures from it's own
- * 3) Downloads firmware to specified detChans
- *
- *****************************************************************************/
+ * This routine validates as much information about the system as
+ * possible before it binds to Xerxes, connects to the low-level I/O
+ * drivers, downloads firmware and acquisition values, and otherwise
+ * prepares the system for run operation.
+ */
 HANDEL_EXPORT int HANDEL_API xiaStartSystem(void)
 {
-  int status;
+    int status;
 
-  DetChanElement *current = NULL;
+    DetChanElement *current = NULL;
 
 
-  /* Validate system-wide LLs */
-  status = xiaValidateFirmwareSets();
-  if (status != XIA_SUCCESS)
-    {
-      xiaLogError("xiaStartSystem", "Error validating FirmwareSet data", status);
-      return status;
+    status = xiaValidateFirmwareSets();
+
+    if (status != XIA_SUCCESS) {
+        xiaLogError("xiaStartSystem", "Error validating system-wide firmware "
+                    "sets.", status);
+        return status;
     }
 
-  status = xiaValidateDetector();
-  if (status != XIA_SUCCESS)
-    {
-      xiaLogError("xiaStartSystem", "Error validating Detector data", status);
-      return status;
-    }
+    status = xiaValidateDetector();
 
-  /* Now we have to start dealing with stuff specific to the individual detChans */
-
-  current = xiaGetDetChanHead();
-
-  /* Add this check since having the detChanHead == NULL bypasses the while loop
-   * and convinces the system that it needs to try and download firmware to 
-   * a non-existant system. I suspect that this problem is due to the fact that
-   * XerXes isn't as careful about checking parameters. 
-   */
-  if (current == NULL)
-    {
-      status = XIA_NO_DETCHANS;
-      xiaLogError("xiaStartSystem", "No detChans are defined", status);
-      return status;
+    if (status != XIA_SUCCESS) {
+        xiaLogError("xiaStartSystem", "Error validating system-wide detector "
+                    "configurations.", status);
+        return status;
     }
 
 
-  while (current != NULL)
-    {
-		
-      switch (xiaGetElemType(current->detChan))
-        {
+    current = xiaGetDetChanHead();
+
+    if (!current) {
+        xiaLogError("xiaStartSystem", "Unable to start system, no detChans "
+                    "are defined.", XIA_NO_DETCHANS);
+        return XIA_NO_DETCHANS;
+    }
+
+    while (current != NULL) {
+        switch (xiaGetElemType(current->detChan)) {
         case SET:
-          xiaClearTags();
-          status = xiaValidateDetSet(current);
-          break;
+            xiaClearTags();
+            status = xiaValidateDetSet(current);
+            break;
 
         case SINGLE:
-          status = xiaValidateDetChan(current);
-          break;
+            status = xiaValidateDetChan(current);
+            break;
 
         case 999:
-          status = XIA_INVALID_DETCHAN;
-          xiaLogError("xiaStartSystem", "detChan number is not in the list of valid values ", status);
-          return status;
-          break;
+            status = XIA_INVALID_DETCHAN;
+            sprintf(info_string, "detChan %d has an invalid type.",
+                    current->detChan);
+            xiaLogError("xiaStartSystem", info_string, status);
+            /* Let the check below do the "return" for us. */
+            break;
+
         default:
-          status = XIA_UNKNOWN;
-          break;
+            FAIL();
+            break;
         }
 
-      if (status != XIA_SUCCESS)
-        {
-          sprintf(info_string, "Error validating detChan %u", current->detChan);
-          xiaLogError("xiaStartSystem", info_string, status);
-          return status;
+        if (status != XIA_SUCCESS) {
+            sprintf(info_string, "Error validating detChan %d.",
+                    current->detChan);
+            xiaLogError("xiaStartSystem", info_string, status);
+            return status;
         }
 
-      current = getListNext(current);
+        current = getListNext(current);
     }
 
-  /* [with baited breath] Now everything should be verified so that we can talk to 
-   * XerXes.
-   */
-  status = xiaBuildXerxesConfig();
+    status = xiaBuildXerxesConfig();
 
-  if (status != XIA_SUCCESS)
-    {
-      sprintf(info_string, "Error building Xerxes configuration");
-      xiaLogError("xiaStartSystem", info_string, status);
-      return status;
+    if (status != XIA_SUCCESS) {
+        xiaLogError("xiaStartSystem", "Error configuring Xerxes.", status);
+        return status;
     }
 
-  status = xiaUserSetup();
+    status = xiaUserSetup();
 
-  if (status != XIA_SUCCESS)
-    {
-      xiaLogError("xiaStartSystem", "Error downloading firmware", status);
-      return status;
+    if (status != XIA_SUCCESS) {
+        xiaLogError("xiaStartSystem", "Error performing user setup tasks.",
+                    status);
+        return status;
     }
 
-  return XIA_SUCCESS;
+    return XIA_SUCCESS;
 }
 
 
@@ -850,11 +838,11 @@ HANDEL_SHARED int HANDEL_API xiaLoadPSL(char *boardType, PSLFuncs *funcs)
   if (boardType == NULL) {
     status = XIA_UNKNOWN_BOARD;
 
-#ifndef EXCLUDE_DXPX10P
+#ifndef EXCLUDE_SATURN
   } else if (STREQ(boardType, "dxpx10p")) {
 
-    status = dxpx10p_PSLInit(funcs);
-#endif /* EXCLUDE_DXPX10P */   
+    status = saturn_PSLInit(funcs);
+#endif /* EXCLUDE_SATURN */   
 
 #ifndef EXCLUDE_DXP4C2X
   } else if (STREQ(boardType, "dxp4c2x") ||
