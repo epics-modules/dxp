@@ -179,9 +179,9 @@ record(mbbi, "$(P)InputLogicPolarity_RBV") {
 }
 
 record(mbbo, "$(P)AutoApply") {
-  field(DESC, "Auto apply on xMAP")
+  field(DESC, "Auto apply")
   field(DTYP, "asynInt32")
-  field(OUT,  "$(IO)DxpXMAPAutoApply")
+  field(OUT,  "$(IO)DxpAutoApply")
   field(PINI, "YES")
   field(ZRVL, "0")
   field(ZRST, "No")
@@ -191,9 +191,9 @@ record(mbbo, "$(P)AutoApply") {
 }
 
 record(mbbi, "$(P)AutoApply_RBV") {
-  field(DESC, "Auto apply on xMAP")
+  field(DESC, "Auto apply")
   field(DTYP, "asynInt32")
-  field(INP,  "$(IO)DxpXMAPAutoApply")
+  field(INP,  "$(IO)DxpAutoApply")
   field(ZRVL, "0")
   field(ZRST, "No")
   field(ONVL, "1")
@@ -202,11 +202,11 @@ record(mbbi, "$(P)AutoApply_RBV") {
 }
 
 record(longout, "$(P)Apply") {
-  field(DESC, "Force xMAP apply")
+  field(DESC, "Force apply")
   field(VAL,  "1")
   field(PINI, "NO")
   field(DTYP, "asynInt32")
-  field(OUT,  "$(IO)DxpXMAPApply")
+  field(OUT,  "$(IO)DxpApply")
 }
 
 
