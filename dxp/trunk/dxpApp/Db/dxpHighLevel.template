@@ -512,6 +512,20 @@ record(longin, "$(P)$(R)Events") {
     field(SCAN, "I/O Intr")
 }
 
+record(longin, "$(P)$(R)Overflows") {
+    field(DTYP, "asynInt32")
+    field(INP, "$(IO)DxpOverflows")
+    field(DESC, "number of overflows")
+    field(SCAN, "I/O Intr")
+}
+
+record(longin, "$(P)$(R)Underflows") {
+    field(DTYP, "asynInt32")
+    field(INP, "$(IO)DxpUnderflows")
+    field(DESC, "number of underflows")
+    field(SCAN, "I/O Intr")
+}
+
 record(ai, "$(P)$(R)InputCountRate") {
     field(DTYP, "asynFloat64")
     field(INP, "$(IO)DxpInputCountRate")
