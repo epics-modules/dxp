@@ -152,6 +152,33 @@ assign  PreampGain to
 int     CopyPreampGain; assign CopyPreampGain to "{P}CopyPreampGain";
 monitor CopyPreampGain; evflag CopyPreampGainMon; sync CopyPreampGain CopyPreampGainMon;
 
+int     DetectorPolarity[MAX_DETECTORS]; 
+assign  DetectorPolarity to
+            {"","","","","","","","","","","","","","","","","","","","","","","","","",
+             "","","","","","","","","","","","","","","","","","","","","","","","","",
+             "","","","","","","","","","","","","","","","","","","","","","","","","",
+             "","","","","","","","","","","","","","","","","","","","","","","","",""};
+int     CopyDetectorPolarity; assign CopyDetectorPolarity to "{P}CopyDetectorPolarity";
+monitor CopyDetectorPolarity; evflag CopyDetectorPolarityMon; sync CopyDetectorPolarity CopyDetectorPolarityMon;
+
+double  ResetDelay[MAX_DETECTORS]; 
+assign  ResetDelay to
+            {"","","","","","","","","","","","","","","","","","","","","","","","","",
+             "","","","","","","","","","","","","","","","","","","","","","","","","",
+             "","","","","","","","","","","","","","","","","","","","","","","","","",
+             "","","","","","","","","","","","","","","","","","","","","","","","",""};
+int     CopyResetDelay; assign CopyResetDelay to "{P}CopyResetDelay";
+monitor CopyResetDelay; evflag CopyResetDelayMon; sync CopyResetDelay CopyResetDelayMon;
+
+double  DecayTime[MAX_DETECTORS]; 
+assign  DecayTime to
+            {"","","","","","","","","","","","","","","","","","","","","","","","","",
+             "","","","","","","","","","","","","","","","","","","","","","","","","",
+             "","","","","","","","","","","","","","","","","","","","","","","","","",
+             "","","","","","","","","","","","","","","","","","","","","","","","",""};
+int     CopyDecayTime; assign CopyDecayTime to "{P}CopyDecayTime";
+monitor CopyDecayTime; evflag CopyDecayTimeMon; sync CopyDecayTime CopyDecayTimeMon;
+
 double  MaxEnergy[MAX_DETECTORS]; 
 assign  MaxEnergy to
             {"","","","","","","","","","","","","","","","","","","","","","","","","",
@@ -723,6 +750,15 @@ ss dxp_control {
                sprintf(temp, "%s%s%d:PreampGain", prefix, dxp, det);
                pvAssign(PreampGain[i], temp);
 
+               sprintf(temp, "%s%s%d:DetectorPolarity", prefix, dxp, det);
+               pvAssign(DetectorPolarity[i], temp);
+
+               sprintf(temp, "%s%s%d:ResetDelay", prefix, dxp, det);
+               pvAssign(ResetDelay[i], temp);
+
+               sprintf(temp, "%s%s%d:DecayTime", prefix, dxp, det);
+               pvAssign(DecayTime[i], temp);
+
                sprintf(temp, "%s%s%d:MaxEnergy", prefix, dxp, det);
                pvAssign(MaxEnergy[i], temp);
 
@@ -959,6 +995,36 @@ ss dxp_control {
             }
             CopyPreampGain = 0;
             pvPut(CopyPreampGain);
+        } state monitor_changes
+
+        when(efTestAndClear(CopyDetectorPolarityMon) && (CopyDetectorPolarity == 1)) {
+            pvGet(DetectorPolarity[0]);
+            for (i=0; i<nDetectors; i++) {
+                DetectorPolarity[i] = DetectorPolarity[0];
+                pvPut(DetectorPolarity[i]);
+            }
+            CopyDetectorPolarity = 0;
+            pvPut(CopyDetectorPolarity);
+        } state monitor_changes
+
+        when(efTestAndClear(CopyResetDelayMon) && (CopyResetDelay == 1)) {
+            pvGet(ResetDelay[0]);
+            for (i=0; i<nDetectors; i++) {
+                ResetDelay[i] = ResetDelay[0];
+                pvPut(ResetDelay[i]);
+            }
+            CopyResetDelay = 0;
+            pvPut(CopyResetDelay);
+        } state monitor_changes
+
+        when(efTestAndClear(CopyDecayTimeMon) && (CopyDecayTime == 1)) {
+            pvGet(DecayTime[0]);
+            for (i=0; i<nDetectors; i++) {
+                DecayTime[i] = DecayTime[0];
+                pvPut(DecayTime[i]);
+            }
+            CopyDecayTime = 0;
+            pvPut(CopyDecayTime);
         } state monitor_changes
 
         when(efTestAndClear(CopyMaxEnergyMon) && (CopyMaxEnergy == 1)) {
