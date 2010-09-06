@@ -10,6 +10,7 @@ $(P)$(R)MaxEnergy
 $(P)$(R)PreampGain
 $(P)$(R)DetectorPolarity
 $(P)$(R)ResetDelay
+$(P)$(R)DecayTime
 $(P)$(R)GapTime
 $(P)$(R)TriggerPeakingTime
 $(P)$(R)TriggerGapTime
