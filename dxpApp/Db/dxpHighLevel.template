@@ -294,21 +294,21 @@ record(bo, "$(P)$(R)DetectorPolarity") {
     field(VAL,  "1")
     field(DTYP, "asynInt32")
     field(OUT, "$(IO)DxpDetectorPolarity")
-    field(ZNAM, "Negative")
-    field(ONAM, "Positive")
+    field(ZNAM, "Neg")
+    field(ONAM, "Pos")
 }
 
 record(bi, "$(P)$(R)DetectorPolarity_RBV") {
     field(DTYP, "asynInt32")
     field(INP, "$(IO)DxpDetectorPolarity")
-    field(ZNAM, "Negative")
-    field(ONAM, "Positive")
+    field(ZNAM, "Neg")
+    field(ONAM, "Pos")
     field(SCAN, "I/O Intr")
 }
 
 record(ao, "$(P)$(R)ResetDelay") {
     field(PINI, "YES")
-    field(VAL,  "2.0")
+    field(VAL,  "10.0")
     field(DTYP, "asynFloat64")
     field(OUT, "$(IO)DxpResetDelay")
     field(PREC, "2")
@@ -318,6 +318,23 @@ record(ao, "$(P)$(R)ResetDelay") {
 record(ai, "$(P)$(R)ResetDelay_RBV") {
     field(DTYP, "asynFloat64")
     field(INP, "$(IO)DxpResetDelay")
+    field(PREC, "2")
+    field(EGU, "us")
+    field(SCAN, "I/O Intr")
+}
+
+record(ao, "$(P)$(R)DecayTime") {
+    field(PINI, "YES")
+    field(VAL,  "10.0")
+    field(DTYP, "asynFloat64")
+    field(OUT, "$(IO)DxpDecayTime")
+    field(PREC, "2")
+    field(EGU, "us")
+}
+
+record(ai, "$(P)$(R)DecayTime_RBV") {
+    field(DTYP, "asynFloat64")
+    field(INP, "$(IO)DxpDecayTime")
     field(PREC, "2")
     field(EGU, "us")
     field(SCAN, "I/O Intr")
