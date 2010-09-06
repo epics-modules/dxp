@@ -3994,3 +3994,183 @@ record(longin, "$(P)$(R)LL219Val_RBV") {
     field(INP,  "$(IO)DxpLL219Val")
     field(SCAN, "I/O Intr")
 }
+
+#************************************
+record(stringin, "$(P)$(R)LL220Name") {
+    field(PINI, "YES")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "$(IO)DxpLL220Name")
+}
+
+record(longout, "$(P)$(R)LL220Val") {
+    field(DTYP, "asynInt32")
+    field(OUT,  "$(IO)DxpLL220Val")
+}
+
+record(longin, "$(P)$(R)LL220Val_RBV") {
+    field(DTYP, "asynInt32")
+    field(INP,  "$(IO)DxpLL220Val")
+    field(SCAN, "I/O Intr")
+}
+
+#************************************
+record(stringin, "$(P)$(R)LL221Name") {
+    field(PINI, "YES")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "$(IO)DxpLL221Name")
+}
+
+record(longout, "$(P)$(R)LL221Val") {
+    field(DTYP, "asynInt32")
+    field(OUT,  "$(IO)DxpLL221Val")
+}
+
+record(longin, "$(P)$(R)LL221Val_RBV") {
+    field(DTYP, "asynInt32")
+    field(INP,  "$(IO)DxpLL221Val")
+    field(SCAN, "I/O Intr")
+}
+
+#************************************
+record(stringin, "$(P)$(R)LL222Name") {
+    field(PINI, "YES")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "$(IO)DxpLL222Name")
+}
+
+record(longout, "$(P)$(R)LL222Val") {
+    field(DTYP, "asynInt32")
+    field(OUT,  "$(IO)DxpLL222Val")
+}
+
+record(longin, "$(P)$(R)LL222Val_RBV") {
+    field(DTYP, "asynInt32")
+    field(INP,  "$(IO)DxpLL222Val")
+    field(SCAN, "I/O Intr")
+}
+
+#************************************
+record(stringin, "$(P)$(R)LL223Name") {
+    field(PINI, "YES")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "$(IO)DxpLL223Name")
+}
+
+record(longout, "$(P)$(R)LL223Val") {
+    field(DTYP, "asynInt32")
+    field(OUT,  "$(IO)DxpLL223Val")
+}
+
+record(longin, "$(P)$(R)LL223Val_RBV") {
+    field(DTYP, "asynInt32")
+    field(INP,  "$(IO)DxpLL223Val")
+    field(SCAN, "I/O Intr")
+}
+
+#************************************
+record(stringin, "$(P)$(R)LL224Name") {
+    field(PINI, "YES")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "$(IO)DxpLL224Name")
+}
+
+record(longout, "$(P)$(R)LL224Val") {
+    field(DTYP, "asynInt32")
+    field(OUT,  "$(IO)DxpLL224Val")
+}
+
+record(longin, "$(P)$(R)LL224Val_RBV") {
+    field(DTYP, "asynInt32")
+    field(INP,  "$(IO)DxpLL224Val")
+    field(SCAN, "I/O Intr")
+}
+
+#************************************
+record(stringin, "$(P)$(R)LL225Name") {
+    field(PINI, "YES")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "$(IO)DxpLL225Name")
+}
+
+record(longout, "$(P)$(R)LL225Val") {
+    field(DTYP, "asynInt32")
+    field(OUT,  "$(IO)DxpLL225Val")
+}
+
+record(longin, "$(P)$(R)LL225Val_RBV") {
+    field(DTYP, "asynInt32")
+    field(INP,  "$(IO)DxpLL225Val")
+    field(SCAN, "I/O Intr")
+}
+
+#************************************
+record(stringin, "$(P)$(R)LL226Name") {
+    field(PINI, "YES")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "$(IO)DxpLL226Name")
+}
+
+record(longout, "$(P)$(R)LL226Val") {
+    field(DTYP, "asynInt32")
+    field(OUT,  "$(IO)DxpLL226Val")
+}
+
+record(longin, "$(P)$(R)LL226Val_RBV") {
+    field(DTYP, "asynInt32")
+    field(INP,  "$(IO)DxpLL226Val")
+    field(SCAN, "I/O Intr")
+}
+
+#************************************
+record(stringin, "$(P)$(R)LL227Name") {
+    field(PINI, "YES")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "$(IO)DxpLL227Name")
+}
+
+record(longout, "$(P)$(R)LL227Val") {
+    field(DTYP, "asynInt32")
+    field(OUT,  "$(IO)DxpLL227Val")
+}
+
+record(longin, "$(P)$(R)LL227Val_RBV") {
+    field(DTYP, "asynInt32")
+    field(INP,  "$(IO)DxpLL227Val")
+    field(SCAN, "I/O Intr")
+}
+
+#************************************
+record(stringin, "$(P)$(R)LL228Name") {
+    field(PINI, "YES")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "$(IO)DxpLL228Name")
+}
+
+record(longout, "$(P)$(R)LL228Val") {
+    field(DTYP, "asynInt32")
+    field(OUT,  "$(IO)DxpLL228Val")
+}
+
+record(longin, "$(P)$(R)LL228Val_RBV") {
+    field(DTYP, "asynInt32")
+    field(INP,  "$(IO)DxpLL228Val")
+    field(SCAN, "I/O Intr")
+}
+
+#************************************
+record(stringin, "$(P)$(R)LL229Name") {
+    field(PINI, "YES")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "$(IO)DxpLL229Name")
+}
+
+record(longout, "$(P)$(R)LL229Val") {
+    field(DTYP, "asynInt32")
+    field(OUT,  "$(IO)DxpLL229Val")
+}
+
+record(longin, "$(P)$(R)LL229Val_RBV") {
+    field(DTYP, "asynInt32")
+    field(INP,  "$(IO)DxpLL229Val")
+    field(SCAN, "I/O Intr")
+}
