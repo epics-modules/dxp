@@ -675,7 +675,7 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     getLLDxpParams(this->pasynUserSelf, DXP_ALL);
 
     /* Set default values for parameters that cannot be read from Handel */
-    for (i=0; i<this->nChannels; i++) {
+    for (i=0; i<=this->nChannels; i++) {
         setIntegerParam(i, NDDxpTraceMode, NDDxpTraceADC);
         setDoubleParam (i, NDDxpTraceTime, 0.1);
         setIntegerParam(i, NDDxpPresetMode, NDDxpPresetModeNone);
@@ -874,15 +874,16 @@ asynStatus NDDxp::writeFloat64( asynUser *pasynUser, epicsFloat64 value)
         (function == NDDxpEnergyThreshold) ||
         (function == NDDxpCalibrationEnergy) ||
         (function == NDDxpADCPercentRule) ||
+        (function == NDDxpMaxEnergy) ||
         (function == NDDxpPreampGain) ||
         (function == NDDxpDetectorPolarity) ||
         (function == NDDxpResetDelay) ||
+        (function == NDDxpDecayTime) ||
         (function == NDDxpGapTime) ||
         (function == NDDxpTriggerPeakingTime) ||
         (function == NDDxpTriggerGapTime) ||
         (function == NDDxpBaselineCut) ||
-        (function == NDDxpMaxWidth) ||
-        (function == NDDxpMaxEnergy)) 
+        (function == NDDxpMaxWidth))
     {
         this->setDxpParam(pasynUser, addr, function, value);
     }
@@ -1066,6 +1067,11 @@ asynStatus NDDxp::setPresets(asynUser *pasynUser, int addr)
             presetType = XIA_PRESET_FIXED_TRIGGERS;
             strcpy(presetString, "error");
             break;
+        default:
+            asynPrint(pasynUser, ASYN_TRACE_ERROR,
+                "%s:%s: unknown presetMode=%d\n",
+                driverName, functionName, presetMode);
+            break;
     }
 
     if ((this->deviceType == NDDxpModelXMAP) ||
@@ -1163,6 +1169,8 @@ asynStatus NDDxp::setDxpParam(asynUser *pasynUser, int addr, int function, doubl
         status = this->xia_checkError(pasynUser, xiastatus, "setting detector_polarity");
     } else if (function == NDDxpResetDelay) {
         xiastatus = xiaSetAcquisitionValues(channel, "reset_delay", &dvalue);
+    } else if (function == NDDxpDecayTime) {
+        xiastatus = xiaSetAcquisitionValues(channel, "decay_time", &dvalue);
     } else if (function == NDDxpGapTime) {
         if ((this->deviceType == NDDxpModelXMAP) || 
             (this->deviceType == NDDxpModelMercury)) {
