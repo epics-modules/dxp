@@ -241,6 +241,21 @@ record(bo,"$(P)CopyPreampGain") {
     field(ONAM, "Copy")
 }
 
+record(bo,"$(P)CopyDetectorPolarity") {
+    field(ZNAM, "Done")
+    field(ONAM, "Copy")
+}
+
+record(bo,"$(P)CopyResetDelay") {
+    field(ZNAM, "Done")
+    field(ONAM, "Copy")
+}
+
+record(bo,"$(P)CopyDecayTime") {
+    field(ZNAM, "Done")
+    field(ONAM, "Copy")
+}
+
 record(bo,"$(P)CopyBaselineFilterLength") {
     field(ZNAM, "Done")
     field(ONAM, "Copy")
