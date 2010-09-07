@@ -400,7 +400,7 @@ text {
 	"basic attribute" {
 		clr=14
 	}
-	textix="xMAP parameters"
+	textix="Mapping parameters"
 }
 "related display" {
 	object {
@@ -410,8 +410,8 @@ text {
 		height=20
 	}
 	display[0] {
-		label="xMAP control"
-		name="xMAP_control.adl"
+		label="Mapping control"
+		name="mappingControl.adl"
 		args="P=$(P)"
 	}
 	clr=14
