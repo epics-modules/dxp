@@ -148,6 +148,9 @@ typedef struct moduleStatistics {
 #define NDDxpIgnoreGateString               "DxpIgnoreGate"
 #define NDDxpSyncCountString                "DxpSyncCount"
 #define NDDxpInputLogicPolarityString       "DxpInputLogicPolarity"
+#define NDDxpSyncMasterChannelString        "DxpSyncMasterChannel"
+#define NDDxpGateMasterChannelString        "DxpGateMasterChannel"
+#define NDDxpLBUSMasterChannelString        "DxpLBUSMasterChannel"
 
 /* Internal asyn driver parameters */
 #define NDDxpErasedString                   "DxpErased"
@@ -166,7 +169,7 @@ typedef struct moduleStatistics {
 #define NDDxpTraceDataString                "DxpTraceData"
 #define NDDxpTraceTimeArrayString           "DxpTraceTimeArray"
 #define NDDxpBaselineHistogramString        "DxpBaselineHistogram"
-#define NDDxpBaselineEnergyString           "DxpBaselineEnergy"
+#define NDDxpBaselineEnergyString           "DxpBaselineEnergy" /* Internal use only !!! */
 #define NDDxpBaselineEnergyArrayString      "DxpBaselineEnergyArray"
 
 /* Runtime statistics */
@@ -261,6 +264,7 @@ public:
     asynStatus getBaselineHistogram(asynUser* pasynUser, int addr,
                         epicsInt32* data, size_t maxLen, size_t *actualLen);
     asynStatus configureCollectMode();
+    asynStatus configureMasterModes();
     asynStatus setNumChannels(asynUser *pasynUser, epicsInt32 newsize, epicsInt32 *rbValue);
     asynStatus startAcquiring(asynUser *pasynUser);
     asynStatus stopAcquiring(asynUser *pasynUser);
@@ -281,6 +285,9 @@ protected:
     int NDDxpIgnoreGate;
     int NDDxpSyncCount;
     int NDDxpInputLogicPolarity;
+    int NDDxpSyncMasterChannel;
+    int NDDxpGateMasterChannel;
+    int NDDxpLBUSMasterChannel;
 
     /* Internal asyn driver parameters */
     int NDDxpErased;               /** < Erased flag. (0=not erased; 1=erased) */
@@ -475,6 +482,9 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     createParam(NDDxpIgnoreGateString,             asynParamInt32,   &NDDxpIgnoreGate);
     createParam(NDDxpSyncCountString,              asynParamInt32,   &NDDxpSyncCount);
     createParam(NDDxpInputLogicPolarityString,     asynParamInt32,   &NDDxpInputLogicPolarity);
+    createParam(NDDxpSyncMasterChannelString,      asynParamInt32,   &NDDxpSyncMasterChannel);
+    createParam(NDDxpGateMasterChannelString,      asynParamInt32,   &NDDxpGateMasterChannel);
+    createParam(NDDxpLBUSMasterChannelString,      asynParamInt32,   &NDDxpLBUSMasterChannel);
 
 
     /* Internal asyn driver parameters */
@@ -730,7 +740,7 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     
     // Enable array callbacks by default
     setIntegerParam(NDArrayCallbacks, 1);
-    
+
     // Disable auto-apply
     setIntegerParam(NDDxpAutoApply, 0);
 }
@@ -761,11 +771,18 @@ asynStatus NDDxp::writeInt32( asynUser *pasynUser, epicsInt32 value)
         (function == NDDxpAutoPixelsPerBuffer) ||
         (function == NDDxpSyncCount)           ||
         (function == NDDxpIgnoreGate)          ||
-        (function == NDDxpInputLogicPolarity)  ||
-        (function == NDDxpPixelAdvanceMode)) 
+        (function == NDDxpPixelAdvanceMode)    ||
+        (function == NDDxpInputLogicPolarity))
     {
         status = this->configureCollectMode();
     } 
+    else if 
+        ((function == NDDxpSyncMasterChannel)   ||
+         (function == NDDxpGateMasterChannel)   ||
+         (function == NDDxpLBUSMasterChannel))
+    {
+        status = this->configureMasterModes();
+    }
     else if (function == NDDxpNextPixel) 
     {
         for (firstCh=0; firstCh<this->nChannels; firstCh+=this->channelsPerCard)
@@ -1541,7 +1558,7 @@ asynStatus NDDxp::configureCollectMode()
             dTmp = inputLogicPolarity;
             xiastatus = xiaSetAcquisitionValues(firstCh, "input_logic_polarity", &dTmp);
             status = this->xia_checkError(pasynUserSelf, xiastatus, "input_logic_polarity");
-
+            
             /* Apply the values */
             this->apply(firstCh);
 
@@ -1560,12 +1577,69 @@ asynStatus NDDxp::configureCollectMode()
         break;
     }
 
+    /* When the mapping mode changes we need to re-apply the _master logic
+     * This may be fixed in the final release of Handel 1.1.0, at which point we can do this in writeInt32 */
+    this->configureMasterModes();
+
     asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
         "%s:%s: returning status=%d\n",
         driverName, functionName);
     return status;
 }
 
+asynStatus NDDxp::configureMasterModes()
+{
+    asynStatus status = asynSuccess;
+    int xiastatus;
+    int masterChan;
+    double dTmp;
+    const char* functionName = "configureMasterModes";
+
+    for (masterChan=0; masterChan<this->nChannels; masterChan+=this->channelsPerCard) {
+        dTmp = 0;
+        /* Clear all master settings.  This may not be needed when Handel 1.1 is released. */
+        xiastatus = xiaSetAcquisitionValues(masterChan, "sync_master", &dTmp);
+        status = this->xia_checkError(pasynUserSelf, xiastatus, "sync_master");
+        xiastatus = xiaSetAcquisitionValues(masterChan, "gate_master", &dTmp);
+        status = this->xia_checkError(pasynUserSelf, xiastatus, "gate_master");
+        xiastatus = xiaSetAcquisitionValues(masterChan, "lbus_master", &dTmp);
+        status = this->xia_checkError(pasynUserSelf, xiastatus, "lbus_master");
+        /* Apply the values */
+        this->apply(masterChan);
+    }
+            
+    dTmp = 1.0;
+    getIntegerParam(NDDxpSyncMasterChannel, &masterChan);
+    if ((masterChan >= 0) && (masterChan < this->nChannels)) {
+        /* Restrict masterChan to the first channel on a module */
+        masterChan = (masterChan/this->channelsPerCard)*this->channelsPerCard;
+        setIntegerParam(NDDxpSyncMasterChannel, masterChan);
+        xiastatus = xiaSetAcquisitionValues(masterChan, "sync_master", &dTmp);
+        status = this->xia_checkError(pasynUserSelf, status, "sync_master");
+    }
+    getIntegerParam(NDDxpGateMasterChannel, &masterChan);
+    if ((masterChan >= 0) && (masterChan < this->nChannels)) {
+        /* Restrict masterChan to the first channel on a module */
+        masterChan = (masterChan/this->channelsPerCard)*this->channelsPerCard;
+        setIntegerParam(NDDxpGateMasterChannel, masterChan);
+        xiastatus = xiaSetAcquisitionValues(masterChan, "gate_master", &dTmp);
+        status = this->xia_checkError(pasynUserSelf, status, "gate_master");
+    }
+    getIntegerParam(NDDxpLBUSMasterChannel, &masterChan);
+    if ((masterChan >= 0) && (masterChan < this->nChannels)) {
+        /* Restrict masterChan to the first channel on a module */
+        masterChan = (masterChan/this->channelsPerCard)*this->channelsPerCard;
+        setIntegerParam(NDDxpLBUSMasterChannel, masterChan);
+        xiastatus = xiaSetAcquisitionValues(masterChan, "lbus_master", &dTmp);
+        status = this->xia_checkError(pasynUserSelf, status, "lbus_master");
+    }
+
+    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
+        "%s:%s: returning status=%d\n",
+        driverName, functionName);
+    return status;
+    this->apply(DXP_ALL);    
+}
 
 asynStatus NDDxp::getAcquisitionStatus(asynUser *pasynUser, int addr)
 {
@@ -1760,6 +1834,7 @@ asynStatus NDDxp::getDxpParams(asynUser *pasynUser, int addr)
     int syncCount;
     int ignoreGate;
     int inputLogicPolarity;
+    int masterChan;
     NDDxpPixelAdvanceMode_t pixelAdvanceMode;
     const char* functionName = "getDxpParams";
 
@@ -1912,6 +1987,30 @@ asynStatus NDDxp::getDxpParams(asynUser *pasynUser, int addr)
                     "%s::%s [%d] Got buffer_len = %u\n", 
                     driverName, functionName, channel, bufLen);
                 setIntegerParam(channel, NDArraySize, (int)bufLen);
+                
+                setIntegerParam(NDDxpSyncMasterChannel, -1);
+                setIntegerParam(NDDxpGateMasterChannel, -1);
+                setIntegerParam(NDDxpLBUSMasterChannel, -1);
+                for (masterChan=0; masterChan<this->nChannels; masterChan++) {
+                    xiastatus = xiaGetAcquisitionValues(masterChan, "sync_master", &dTmp);
+                    status = this->xia_checkError(pasynUserSelf, xiastatus, "sync_master");
+                    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                        "%s::%s [%d] Got sync_master = %f\n", 
+                        driverName, functionName, masterChan, dTmp);
+                    if (dTmp) setIntegerParam(NDDxpSyncMasterChannel, masterChan);
+                    xiastatus = xiaGetAcquisitionValues(masterChan, "gate_master", &dTmp);
+                    status = this->xia_checkError(pasynUserSelf, xiastatus, "gate_master");
+                    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                        "%s::%s [%d] Got gate_master = %f\n", 
+                        driverName, functionName, masterChan, dTmp);
+                    if (dTmp) setIntegerParam(NDDxpGateMasterChannel, masterChan);
+                    xiastatus = xiaGetAcquisitionValues(masterChan, "lbus_master", &dTmp);
+                    status = this->xia_checkError(pasynUserSelf, xiastatus, "lbus_master");
+                    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                        "%s::%s [%d] Got lbus_master = %f\n", 
+                        driverName, functionName, masterChan, dTmp);
+                    if (dTmp) setIntegerParam(NDDxpLBUSMasterChannel, masterChan);
+                }                
             }
         }
     }
