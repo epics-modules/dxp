@@ -6,3 +6,6 @@ $(P)PixelsPerBuffer
 $(P)IgnoreGate
 $(P)SyncCount
 $(P)InputLogicPolarity
+$(P)SyncMasterChannel
+$(P)GateMasterChannel
+$(P)LBUSMasterChannel
