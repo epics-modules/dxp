@@ -474,12 +474,22 @@ record(ai, "$(P)$(R)TraceTime_RBV") {
 }
 
 record(waveform, "$(P)$(R)TraceData") {
-    field(DESC, "Get trace data")
+    field(DESC, "Trace data")
     field(DTYP, "asynInt32ArrayIn")
     field(PREC, "0")
-    field(INP, "$(IO)DxpTrace")
+    field(INP, "$(IO)DxpTraceData")
     field(NELM, "4096")
     field(FTVL, "LONG")
+}
+
+record(waveform, "$(P)$(R)TraceTimeArray") {
+    field(DESC, "Trace data")
+    field(DTYP, "asynFloat64ArrayIn")
+    field(PREC, "0")
+    field(INP, "$(IO)DxpTraceTimeArray")
+    field(NELM, "4096")
+    field(FTVL, "DOUBLE")
+    field(SCAN, "I/O Intr")
 }
 
 record(waveform, "$(P)$(R)BaselineHistogram") {
@@ -489,6 +499,16 @@ record(waveform, "$(P)$(R)BaselineHistogram") {
     field(INP, "$(IO)DxpBaselineHistogram")
     field(NELM, "1024")
     field(FTVL, "LONG")
+}
+
+record(waveform, "$(P)$(R)BaselineEnergyArray") {
+    field(DESC, "Baseline histogram energy array")
+    field(DTYP, "asynFloat64ArrayIn")
+    field(PREC, "0")
+    field(INP, "$(IO)DxpBaselineEnergyArray")
+    field(NELM, "1024")
+    field(FTVL, "DOUBLE")
+    field(SCAN, "I/O Intr")
 }
 
 # This is really redundant with the MCA_ELAPSED_REAL parameter
