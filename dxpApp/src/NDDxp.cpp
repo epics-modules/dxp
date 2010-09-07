@@ -1,3 +1,12 @@
+/* NDDxp.cpp
+ *
+ * Driver for XIA DSP modules (Saturn, DXP4C2X, xMAP, and Mercury 
+ * 
+ * Mark Rivers
+ * University of Chicago
+ *
+ */
+
 /* Standard includes... */
 #include <stddef.h>
 #include <stdlib.h>
@@ -153,8 +162,12 @@ typedef struct moduleStatistics {
 /* Diagnostic trace parameters */
 #define NDDxpTraceModeString                "DxpTraceMode"
 #define NDDxpTraceTimeString                "DxpTraceTime"
-#define NDDxpTraceString                    "DxpTrace"
+#define NDDxpNewTraceTimeString             "DxpNewTraceTime" /* Internal use only !!! */
+#define NDDxpTraceDataString                "DxpTraceData"
+#define NDDxpTraceTimeArrayString           "DxpTraceTimeArray"
 #define NDDxpBaselineHistogramString        "DxpBaselineHistogram"
+#define NDDxpBaselineEnergyString           "DxpBaselineEnergy"
+#define NDDxpBaselineEnergyArrayString      "DxpBaselineEnergyArray"
 
 /* Runtime statistics */
 #define NDDxpTriggerLiveTimeString          "DxpTriggerLiveTime"
@@ -282,8 +295,12 @@ protected:
     /* Diagnostic trace parameters */
     int NDDxpTraceMode;            /** < Select what type of trace to do: ADC, baseline hist, .. etc. */
     int NDDxpTraceTime;            /** < Set the trace sample time in us. */
-    int NDDxpTrace;                /** < The trace array data (read) */
+    int NDDxpNewTraceTime;         /** < Flag indicating trace time changed */
+    int NDDxpTraceData;            /** < The trace array data (read) */
+    int NDDxpTraceTimeArray;       /** < The trace timebase array (read) */
     int NDDxpBaselineHistogram;    /** < The baseline histogram array data (read) */
+    int NDDxpBaselineEnergy;       /** < The baseline histogram energy per bin (read) */
+    int NDDxpBaselineEnergyArray;  /** < The baseline histogram energy array (read) */
 
     /* Runtime statistics */
     int NDDxpTriggerLiveTime;           /** < live time in seconds (double) */
@@ -383,7 +400,9 @@ private:
     int traceLength;
     int baselineLength;
     epicsInt32 *traceBuffer;
+    epicsFloat64 *traceTimeBuffer;
     epicsInt32 *baselineBuffer;
+    epicsFloat64 *baselineEnergyBuffer;
     
     moduleStatistics moduleStats[MAX_CHANNELS_PER_CARD];
 
@@ -428,8 +447,8 @@ extern "C" int NDDxp_config(const char *portName, int nChannels,
 /* Note: we use nChannels+1 for maxAddr because the last address is used for "all" channels" */
 NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemory)
     : asynNDArrayDriver(portName, nChannels + 1, NUM_DXP_PARAMS, maxBuffers, maxMemory,
-            asynFloat64Mask | asynInt32ArrayMask | asynGenericPointerMask | asynOctetMask | asynInt32Mask | asynDrvUserMask,
-            asynFloat64Mask | asynInt32ArrayMask | asynGenericPointerMask | asynOctetMask | asynInt32Mask,
+            asynInt32Mask | asynFloat64Mask | asynInt32ArrayMask | asynFloat64ArrayMask | asynGenericPointerMask | asynOctetMask | asynDrvUserMask,
+            asynInt32Mask | asynFloat64Mask | asynInt32ArrayMask | asynFloat64ArrayMask | asynGenericPointerMask | asynOctetMask,
             ASYN_MULTIDEVICE | ASYN_CANBLOCK, 1, 0, 0)
 {
     int status = asynSuccess;
@@ -471,8 +490,12 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     /* Diagnostic trace parameters */
     createParam(NDDxpTraceModeString,              asynParamInt32,   &NDDxpTraceMode);
     createParam(NDDxpTraceTimeString,              asynParamFloat64, &NDDxpTraceTime);
-    createParam(NDDxpTraceString,                  asynParamInt32Array, &NDDxpTrace);
+    createParam(NDDxpNewTraceTimeString,           asynParamInt32,   &NDDxpNewTraceTime);
+    createParam(NDDxpTraceDataString,              asynParamInt32Array, &NDDxpTraceData);
+    createParam(NDDxpTraceTimeArrayString,         asynParamFloat64Array, &NDDxpTraceTimeArray);
     createParam(NDDxpBaselineHistogramString,      asynParamInt32Array, &NDDxpBaselineHistogram);
+    createParam(NDDxpBaselineEnergyString,         asynParamFloat64, &NDDxpBaselineEnergy);
+    createParam(NDDxpBaselineEnergyArrayString,    asynParamFloat64Array, &NDDxpBaselineEnergyArray);
 
     /* Runtime statistics */
     createParam(NDDxpTriggerLiveTimeString,        asynParamFloat64, &NDDxpTriggerLiveTime);
@@ -620,9 +643,9 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     this->cmdStopEvent = new epicsEvent();
     this->stoppedEvent = new epicsEvent();
 
-    /* allocate a memory pointer for each of the channels */
+    /* Allocate a memory pointer for each of the channels */
     this->pMcaRaw = (epicsUInt32**) calloc(this->nChannels, sizeof(epicsUInt32*));
-    /* allocate a memory area for each spectrum */
+    /* Allocate a memory area for each spectrum */
     for (ch=0; ch<this->nChannels; ch++) {
         this->pMcaRaw[ch] = (epicsUInt32*)calloc(MAX_MCA_BINS, sizeof(epicsUInt32));
     }
@@ -636,11 +659,17 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     /* Allocate a buffer for the trace data */
     this->traceBuffer = (epicsInt32 *)malloc(this->traceLength * sizeof(epicsInt32));
 
+    /* Allocate a buffer for the trace time array */
+    this->traceTimeBuffer = (epicsFloat64 *)malloc(this->traceLength * sizeof(epicsFloat64));
+
     xiastatus = xiaGetRunData(0, "baseline_length",  &(this->baselineLength));
     if (xiastatus != XIA_SUCCESS) printf("Error calling xiaGetRunData for baseline_length");
 
     /* Allocate a buffer for the baseline histogram data */
     this->baselineBuffer = (epicsInt32 *)malloc(this->baselineLength * sizeof(epicsInt32));
+
+    /* Allocate a buffer for the baseline energy array */
+    this->baselineEnergyBuffer = (epicsFloat64 *)malloc(this->baselineLength * sizeof(epicsFloat64));
 
     /* Allocating a temporary buffer for use in mapping mode. */
     this->pMapRaw = (epicsUInt32*)malloc(XMAP_BUFFER_READ_SIZE);
@@ -678,6 +707,8 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     for (i=0; i<=this->nChannels; i++) {
         setIntegerParam(i, NDDxpTraceMode, NDDxpTraceADC);
         setDoubleParam (i, NDDxpTraceTime, 0.1);
+        setIntegerParam(i, NDDxpNewTraceTime, 1);
+        setDoubleParam (i, NDDxpBaselineEnergy, 0.);
         setIntegerParam(i, NDDxpPresetMode, NDDxpPresetModeNone);
         setIntegerParam(i, NDDxpPresetEvents, 0);
         setIntegerParam(i, NDDxpPresetTriggers, 0);
@@ -887,7 +918,11 @@ asynStatus NDDxp::writeFloat64( asynUser *pasynUser, epicsFloat64 value)
     {
         this->setDxpParam(pasynUser, addr, function, value);
     }
-
+    else if  (function == NDDxpTraceTime)
+    {
+        /* Set a flag indicating the trace time has changed for this channel */
+        setIntegerParam(addr, NDDxpNewTraceTime, 1);
+    }
     /* Call the callback */
     callParamCallbacks(addr, addr);
 
@@ -909,7 +944,7 @@ asynStatus NDDxp::readInt32Array(asynUser *pasynUser, epicsInt32 *value, size_t 
     asynPrint(pasynUser, ASYN_TRACE_FLOW, 
         "%s::%s addr=%d channel=%d function=%d\n",
         driverName, functionName, addr, channel, function);
-    if (function == NDDxpTrace) 
+    if (function == NDDxpTraceData) 
     {
         status = this->getTrace(pasynUser, channel, value, nElements, nIn);
     } 
@@ -2138,7 +2173,8 @@ asynStatus NDDxp::getTrace(asynUser* pasynUser, int addr,
 {
     asynStatus status = asynSuccess;
     int xiastatus, channel=addr;
-    int i;
+    int i, j;
+    int newTraceTime;
     double info[2];
     double traceTime;
     int traceMode;
@@ -2152,6 +2188,7 @@ asynStatus NDDxp::getTrace(asynUser* pasynUser, int addr,
         }
     } else {
         getDoubleParam(channel, NDDxpTraceTime, &traceTime);
+        getIntegerParam(channel, NDDxpNewTraceTime, &newTraceTime);
         getIntegerParam(channel, NDDxpTraceMode, &traceMode);
         info[0] = 0.;
         /* Convert from us to ns */
@@ -2169,6 +2206,12 @@ asynStatus NDDxp::getTrace(asynUser* pasynUser, int addr,
         if (status == asynError) return status;
 
         memcpy(data, this->traceBuffer, *actualLen * sizeof(epicsInt32));
+        
+        if (newTraceTime) {
+            setIntegerParam(channel, NDDxpNewTraceTime, 0);  /* Clear flag */
+            for (j=0; j<this->traceLength; j++) this->traceTimeBuffer[j] = j*traceTime;
+            doCallbacksFloat64Array(this->traceTimeBuffer, this->traceLength, NDDxpTraceTimeArray, channel);
+        }
     }
     return status;
 }
@@ -2178,9 +2221,12 @@ asynStatus NDDxp::getBaselineHistogram(asynUser* pasynUser, int addr,
                                        epicsInt32* data, size_t maxLen, size_t *actualLen)
 {
     asynStatus status = asynSuccess;
-    int i;
+    int i, j;
     int xiastatus, channel=addr;
-    //const char *functionName = "getBaselineHistogram";
+    double dynamicRange, keVPerBin, eVPerBin, energyPerBin, offset;
+    unsigned short baseBinning, slowLen, baseLen;
+    double calibrationEnergy, ADCPercentRule;
+    const char *functionName = "getBaselineHistogram";
 
     if (addr == this->nChannels) channel = DXP_ALL;
     if (channel == DXP_ALL) {  /* All channels */
@@ -2197,6 +2243,32 @@ asynStatus NDDxp::getBaselineHistogram(asynUser* pasynUser, int addr,
         if (status == asynError) return status;
 
         memcpy(data, this->baselineBuffer, *actualLen * sizeof(epicsInt32));
+        
+        /* Compute the energy increment per bin */
+        if ((this->deviceType == NDDxpModelXMAP) ||
+            (this->deviceType == NDDxpModelMercury)) {
+            xiaGetAcquisitionValues(channel, "dynamic_range", &dynamicRange);
+            keVPerBin = dynamicRange/1024/1000.;
+        } else {
+            xiaGetParameter(channel, "BASEBINNING", &baseBinning);
+            xiaGetParameter(channel, "SLOWLEN", &slowLen);
+            xiaGetParameter(channel, "BASELEN", &baseLen);
+            xiaGetAcquisitionValues(channel, "calibration_energy", &calibrationEnergy);
+            xiaGetAcquisitionValues(channel, "adc_percent_rule", &ADCPercentRule);
+            eVPerBin = ((2 << (baseBinning - 1)) * (calibrationEnergy /
+                       (4 * slowLen * baseLen))) / (ADCPercentRule / 100.);
+            asynPrint(pasynUser, ASYN_TRACE_FLOW,
+                "%s:%s: evPerBin=%f, baseBinning=%d, slowLen=%d, baseLen=%d, calibrationEnergy=%f, adc_percent_rule=%f\n",
+                driverName, functionName, eVPerBin, baseBinning, slowLen, baseLen, calibrationEnergy, ADCPercentRule);
+            keVPerBin = eVPerBin/1000.;
+        }
+        getDoubleParam(channel, NDDxpBaselineEnergy, &energyPerBin);
+        if (keVPerBin != energyPerBin) {
+            setDoubleParam(channel, NDDxpBaselineEnergy, keVPerBin);
+            offset = -this->baselineLength * keVPerBin/2.;
+            for (j=0; j<this->baselineLength; j++) this->baselineEnergyBuffer[j] = offset + j*keVPerBin;
+            doCallbacksFloat64Array(this->baselineEnergyBuffer, this->baselineLength, NDDxpBaselineEnergyArray, channel);
+        }
     }
     return status;
 }
