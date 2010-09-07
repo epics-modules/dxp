@@ -115,6 +115,7 @@ rectangle {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)1:TraceTimeArray"
 		ydata="$(P)$(D)1:TraceData"
 		data_clr=27
 	}
@@ -145,6 +146,7 @@ rectangle {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)2:TraceTimeArray"
 		ydata="$(P)$(D)2:TraceData"
 		data_clr=27
 	}
@@ -175,6 +177,7 @@ rectangle {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)4:TraceTimeArray"
 		ydata="$(P)$(D)4:TraceData"
 		data_clr=27
 	}
@@ -205,6 +208,7 @@ rectangle {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)3:TraceTimeArray"
 		ydata="$(P)$(D)3:TraceData"
 		data_clr=27
 	}
@@ -283,6 +287,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)5:TraceTimeArray"
 		ydata="$(P)$(D)5:TraceData"
 		data_clr=27
 	}
@@ -313,6 +318,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)7:TraceTimeArray"
 		ydata="$(P)$(D)7:TraceData"
 		data_clr=27
 	}
@@ -343,6 +349,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)8:TraceTimeArray"
 		ydata="$(P)$(D)8:TraceData"
 		data_clr=27
 	}
@@ -373,6 +380,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)6:TraceTimeArray"
 		ydata="$(P)$(D)6:TraceData"
 		data_clr=27
 	}
@@ -403,6 +411,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)9:TraceTimeArray"
 		ydata="$(P)$(D)9:TraceData"
 		data_clr=27
 	}
@@ -493,6 +502,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)16:TraceTimeArray"
 		ydata="$(P)$(D)16:TraceData"
 		data_clr=27
 	}
@@ -535,6 +545,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)15:TraceTimeArray"
 		ydata="$(P)$(D)15:TraceData"
 		data_clr=27
 	}
@@ -577,6 +588,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)14:TraceTimeArray"
 		ydata="$(P)$(D)14:TraceData"
 		data_clr=27
 	}
@@ -619,6 +631,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)12:TraceTimeArray"
 		ydata="$(P)$(D)12:TraceData"
 		data_clr=27
 	}
@@ -649,6 +662,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)13:TraceTimeArray"
 		ydata="$(P)$(D)13:TraceData"
 		data_clr=27
 	}
@@ -679,6 +693,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)10:TraceTimeArray"
 		ydata="$(P)$(D)10:TraceData"
 		data_clr=27
 	}
@@ -745,6 +760,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)11:TraceTimeArray"
 		ydata="$(P)$(D)11:TraceData"
 		data_clr=27
 	}
