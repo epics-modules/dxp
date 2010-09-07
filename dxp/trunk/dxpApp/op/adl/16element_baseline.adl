@@ -128,6 +128,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)1:BaselineEnergyArray"
 		ydata="$(P)$(D)1:BaselineHistogram"
 		data_clr=27
 	}
@@ -159,6 +160,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)2:BaselineEnergyArray"
 		ydata="$(P)$(D)2:BaselineHistogram"
 		data_clr=27
 	}
@@ -190,6 +192,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)4:BaselineEnergyArray"
 		ydata="$(P)$(D)4:BaselineHistogram"
 		data_clr=27
 	}
@@ -221,6 +224,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)3:BaselineEnergyArray"
 		ydata="$(P)$(D)3:BaselineHistogram"
 		data_clr=27
 	}
@@ -300,6 +304,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)5:BaselineEnergyArray"
 		ydata="$(P)$(D)5:BaselineHistogram"
 		data_clr=27
 	}
@@ -331,6 +336,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)7:BaselineEnergyArray"
 		ydata="$(P)$(D)7:BaselineHistogram"
 		data_clr=27
 	}
@@ -362,6 +368,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)8:BaselineEnergyArray"
 		ydata="$(P)$(D)8:BaselineHistogram"
 		data_clr=27
 	}
@@ -393,6 +400,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)6:BaselineEnergyArray"
 		ydata="$(P)$(D)6:BaselineHistogram"
 		data_clr=27
 	}
@@ -424,6 +432,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)9:BaselineEnergyArray"
 		ydata="$(P)$(D)9:BaselineHistogram"
 		data_clr=27
 	}
@@ -515,6 +524,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)16:BaselineEnergyArray"
 		ydata="$(P)$(D)16:BaselineHistogram"
 		data_clr=27
 	}
@@ -558,6 +568,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)15:BaselineEnergyArray"
 		ydata="$(P)$(D)15:BaselineHistogram"
 		data_clr=27
 	}
@@ -601,6 +612,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)14:BaselineEnergyArray"
 		ydata="$(P)$(D)14:BaselineHistogram"
 		data_clr=27
 	}
@@ -644,6 +656,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)12:BaselineEnergyArray"
 		ydata="$(P)$(D)12:BaselineHistogram"
 		data_clr=27
 	}
@@ -675,6 +688,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)13:BaselineEnergyArray"
 		ydata="$(P)$(D)13:BaselineHistogram"
 		data_clr=27
 	}
@@ -706,6 +720,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)10:BaselineEnergyArray"
 		ydata="$(P)$(D)10:BaselineHistogram"
 		data_clr=27
 	}
@@ -773,6 +788,7 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
+		xdata="$(P)$(D)11:BaselineEnergyArray"
 		ydata="$(P)$(D)11:BaselineHistogram"
 		data_clr=27
 	}
