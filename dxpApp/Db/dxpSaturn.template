@@ -31,8 +31,11 @@ record(mbbi, "$(P)$(R)PresetMode_RBV") {
     field(FRST, "")
 }
 
-# Redefine the number of elements in TraceData. xMAP has 4096, Saturn has only 4000  
+# Redefine the number of elements in trace data. xMAP has 4096, Saturn has only 4000  
 record(waveform, "$(P)$(R)TraceData") {
     field(NELM, "4000")
 }
 
+record(waveform, "$(P)$(R)TraceTimeArray") {
+    field(NELM, "4000")
+}
