@@ -1,6 +1,6 @@
 
 file {
-	name="/home/epics/devel/xmap/xmapApp/opi/adl/dxp_baseline.adl"
+	name="/home/epics/devel/dxp/dxpApp/op/adl/dxp_baseline.adl"
 	version=030102
 }
 display {
@@ -103,6 +103,7 @@ display {
 	}
 	style="line"
 	trace[0] {
+		xdata="$(P)$(R)BaselineEnergyArray"
 		ydata="$(P)$(R)BaselineHistogram"
 		data_clr=54
 	}
