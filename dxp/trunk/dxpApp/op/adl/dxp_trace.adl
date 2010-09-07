@@ -1,6 +1,6 @@
 
 file {
-	name="/home/epics/devel/xmap/xmapApp/opi/adl/dxp_trace.adl"
+	name="/home/epics/devel/dxp/dxpApp/op/adl/dxp_trace.adl"
 	version=030102
 }
 display {
@@ -103,6 +103,7 @@ display {
 	}
 	style="line"
 	trace[0] {
+		xdata="$(P)$(R)TraceTimeArray"
 		ydata="$(P)$(R)TraceData"
 		data_clr=54
 	}
