@@ -1892,15 +1892,21 @@ asynStatus NDDxp::getDxpParams(asynUser *pasynUser, int addr)
             (this->deviceType == NDDxpModelMercury)){
             xiaGetAcquisitionValues(channel, "dynamic_range", &dvalue);
         } else dvalue = 0.;
+        /* Convert from eV to keV */
+        dvalue /= 1000.;
         setDoubleParam(channel, NDDxpDynamicRange, dvalue);
         xiaGetAcquisitionValues(channel, "calibration_energy", &dvalue);
+        /* Convert from eV to keV */
+        dvalue /= 1000.;
         setDoubleParam(channel, NDDxpCalibrationEnergy, dvalue);
         xiaGetAcquisitionValues(channel, "mca_bin_width", &mcaBinWidth);
+        /* Convert from eV to keV */
+        mcaBinWidth /= 1000.;
         setDoubleParam(channel, NDDxpMCABinWidth, mcaBinWidth);
         xiaGetAcquisitionValues(channel, "number_mca_channels", &numMcaChannels);
         setIntegerParam(channel, mcaNumChannels, (int)numMcaChannels);
-        /* Compute emax from mcaBinWidth and mcaNumChannels, convert eV to keV */
-        emax = numMcaChannels * mcaBinWidth / 1000.;
+        /* Compute emax from mcaBinWidth and mcaNumChannels */
+        emax = numMcaChannels * mcaBinWidth;
         setDoubleParam(channel, NDDxpMaxEnergy, emax);
         xiaGetAcquisitionValues(channel, "detector_polarity", &dvalue);
         setIntegerParam(channel, NDDxpDetectorPolarity, (int)dvalue);
