@@ -35,7 +35,6 @@ dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=dxpXMAP:,R=ne
 dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFile.template",      "P=dxpXMAP:,R=netCDF1:,PORT=DXP1NetCDF,ADDR=0,TIMEOUT=1")
 dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFileNetCDF.template","P=dxpXMAP:,R=netCDF1:,PORT=DXP1NetCDF,ADDR=0,TIMEOUT=1")
 
-#xiaSetLogLevel(4)
 #asynSetTraceMask DXP1 0 255
 asynSetTraceIOMask DXP1 0 2
 
@@ -57,8 +56,5 @@ saveData_Init("saveData.req", "P=dxpXMAP:")
 
 # Sleep for 10 seconds to let initialization complete and then turn on AutoApply and do Apply manually once
 epicsThreadSleep(10.)
-dbpf("dxpXMAP:AutoApply", "1")
+dbpf("dxpXMAP:AutoApply", "Yes")
 dbpf("dxpXMAP:Apply", "1")
-# Seems to be necessary to write mapping mode parameters, otherwise initial values are wrong?
-dbpf("dxpXMAP:PixelsPerRun.PROC", "1");
-
