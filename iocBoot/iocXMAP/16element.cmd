@@ -1,4 +1,3 @@
-date
 < envPaths
 
 # Tell EPICS all about the record types, device-support modules, drivers,
@@ -20,18 +19,14 @@ set_pass0_restoreFile("auto_settings16.sav")
 set_pass1_restoreFile("auto_settings16.sav")
 
 # Set logging level (1=ERROR, 2=WARNING, 3=INFO, 4=DEBUG)
-date
 xiaSetLogLevel(2)
 xiaInit("xmap16.ini")
 xiaStartSystem
 
 # DXPConfig(serverName, ndetectors, maxBuffers, maxMemory)
-date
 NDDxpConfig("DXP1",  16, -1, -1)
-date
 
 dbLoadTemplate("16element.substitutions")
-date
 
 # Create a netCDF file saving plugin
 NDFileNetCDFConfigure("DXP1NetCDF", 100, 0, "DXP1", 0)
@@ -61,9 +56,7 @@ dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFileNexus.template", "P=dxpXMAP:,R=Ne
 # 1D data, but it doesn't store anything to disk.  (See 'saveData' below for that.)
 dbLoadRecords("$(SSCAN)/sscanApp/Db/scan.db","P=dxpXMAP:,MAXPTS1=2000,MAXPTS2=1000,MAXPTS3=10,MAXPTS4=10,MAXPTSH=2048")
 
-date
 iocInit
-date
 
 seq dxpMED, "P=dxpXMAP:, DXP=dxp, MCA=mca, N_DETECTORS=16, N_SCAS=16"
 
@@ -78,5 +71,3 @@ saveData_Init("saveData.req", "P=dxpXMAP:")
 epicsThreadSleep(30.)
 dbpf("dxpXMAP:AutoApply", "Yes")
 dbpf("dxpXMAP:Apply", "1")
-dbpf("dxpXMAP:PixelsPerRun.PROC","1");
-date
