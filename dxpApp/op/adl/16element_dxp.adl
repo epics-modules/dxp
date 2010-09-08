@@ -1,6 +1,6 @@
 
 file {
-	name="/home/epics/devel/dxp-3-0/dxpApp/op/adl/16element_dxp.adl"
+	name="/home/epics/devel/dxp/dxpApp/op/adl/16element_dxp.adl"
 	version=030102
 }
 display {
@@ -229,8 +229,13 @@ rectangle {
 		height=20
 	}
 	display[0] {
-		label="DXP Control"
-		name="16element_dxp_all.adl"
+		label="Filter parameters"
+		name="16elementFilters.adl"
+		args="P=$(P), D=$(D), M=$(M)"
+	}
+	display[1] {
+		label="Pre-amp & MCA parameters"
+		name="16element_PreAmp_MCA.adl"
 		args="P=$(P), D=$(D), M=$(M)"
 	}
 	clr=14
@@ -400,7 +405,7 @@ text {
 	"basic attribute" {
 		clr=14
 	}
-	textix="Mapping parameters"
+	textix="Mapping params"
 }
 "related display" {
 	object {
