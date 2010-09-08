@@ -1,18 +1,22 @@
-find . -name 'auto_settings*.sav_0*' -exec rm -fv {} \;
+find . -name 'auto_settings*.sav_*' -exec rm -fv {} \;
 find . -name 'core.*' -exec rm -fv {} \;
-tar czvf /home/epics/public_html/pub/dxpStandalone_2-11beta1.tgz -C ../.. \
-mca/6-11/mcaApp/Db/ \
-mca/6-11/mcaApp/op/adl/ \
-autosave/4-5/asApp/Db/ \
-autosave/4-5/asApp/op/adl/ \
-sscan/2-6-6/sscanApp/Db/ \
-sscan/2-6-6/sscanApp/op/adl/ \
-dxp/2-10/documentation \
-dxp/2-10/dxpApp/Db \
-dxp/2-10/dxpApp/firmware \
-dxp/2-10/dxpApp/op/adl \
-dxp/2-10/bin/cygwin-x86 \
-dxp/2-10/bin/win32-x86 \
-dxp/2-10/bin/linux-x86 \
-dxp/2-10/dbd/ \
-dxp/2-10/iocBoot
+tar czvf /home/epics/public_html/pub/dxpStandalone_3-0.tgz  --exclude '.svn*' -C .. \
+mca-6-12-1/mcaApp/Db/ \
+mca-6-12-1/mcaApp/op/adl/ \
+autosave-4-7/asApp/Db/ \
+autosave-4-7/asApp/op/adl/ \
+sscan-2-6-6/sscanApp/Db/ \
+sscan-2-6-6/sscanApp/op/adl/ \
+areaDetector-1-6/bin/cygwin-x86 \
+areaDetector-1-6/bin/win32-x86 \
+areaDetector-1-6/ADApp/Db/ \
+areaDetector-1-6/ADApp/op/adl/ \
+dxp-3-0/documentation \
+dxp-3-0/dxpApp/Db \
+dxp-3-0/dxpApp/firmware \
+dxp-3-0/dxpApp/op/adl \
+dxp-3-0/bin/cygwin-x86 \
+dxp-3-0/bin/win32-x86 \
+dxp-3-0/bin/linux-x86 \
+dxp-3-0/dbd/ \
+dxp-3-0/iocBoot
