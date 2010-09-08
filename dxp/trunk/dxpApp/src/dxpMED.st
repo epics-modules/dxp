@@ -318,6 +318,15 @@ assign  mcaDeadTime to
 double  DeadTime; assign DeadTime to "{P}DeadTime";
 evflag  DeadTimeMon; sync mcaDeadTime DeadTimeMon;
 
+double  mcaIDeadTime[MAX_DETECTORS]; 
+assign  mcaIDeadTime to
+            {"","","","","","","","","","","","","","","","","","","","","","","","","",
+             "","","","","","","","","","","","","","","","","","","","","","","","","",
+             "","","","","","","","","","","","","","","","","","","","","","","","","",
+             "","","","","","","","","","","","","","","","","","","","","","","","",""};
+double  IDeadTime; assign IDeadTime to "{P}IDeadTime";
+evflag  IDeadTimeMon; sync mcaIDeadTime IDeadTimeMon;
+
 int     mcaNumChans[MAX_DETECTORS]; 
 assign  mcaNumChans to
             {"","","","","","","","","","","","","","","","","","","","","","","","","",
@@ -804,9 +813,13 @@ ss dxp_control {
                sprintf(temp, "%s%s%d.PLTM", prefix, mca, det);
                pvAssign(mcaPresetLive[i], temp);
 
-               sprintf(temp, "%s%s%d.IDTIM", prefix, mca, det);
+               sprintf(temp, "%s%s%d.DTIM", prefix, mca, det);
                pvAssign(mcaDeadTime[i], temp);
                pvMonitor(mcaDeadTime[i]);
+
+               sprintf(temp, "%s%s%d.IDTIM", prefix, mca, det);
+               pvAssign(mcaIDeadTime[i], temp);
+               pvMonitor(mcaIDeadTime[i]);
 
                sprintf(temp, "%s%s%d.CALO", prefix, mca, det);
                pvAssign(mcaCalOffset[i], temp);
@@ -1165,9 +1178,19 @@ ss dxp_control {
         when(efTestAndClear(DeadTimeMon)) {
             DeadTime = 0.;
             for (i=0; i<nDetectors; i++) {
-                if (mcaDeadTime[i] > DeadTime) DeadTime = mcaDeadTime[i];
+                DeadTime += mcaDeadTime[i];
             }
+            DeadTime /= nDetectors;
             pvPut(DeadTime);
+        } state monitor_changes
+ 
+        when(efTestAndClear(IDeadTimeMon)) {
+            IDeadTime = 0.;
+            for (i=0; i<nDetectors; i++) {
+                IDeadTime += mcaIDeadTime[i];
+            }
+            IDeadTime /= nDetectors;
+            pvPut(IDeadTime);
         } state monitor_changes
  
         /* Copy all detector 1 ROIs to all detectors by channel */
