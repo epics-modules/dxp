@@ -91,6 +91,10 @@ record(ai,"$(P)DeadTime") {
     field(PREC, "2")
 }
 
+record(ai,"$(P)IDeadTime") {
+    field(PREC, "2")
+}
+
 record(ai,"$(P)StatusAll") {
     field(SCAN,".5 second")
     field(DISV,"0")
