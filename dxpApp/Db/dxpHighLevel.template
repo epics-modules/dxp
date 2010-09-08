@@ -162,6 +162,7 @@ record(bi, "$(P)$(R)BaselineCutEnable_RBV") {
 }
 
 record(mbbo, "$(P)$(R)BaselineFilterLength") {
+    field(PINI, "YES")
     field(DESC, "baseline filter len")
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpBaselineAverage")
@@ -243,14 +244,14 @@ record(ai, "$(P)$(R)ADCPercentRule_RBV") {
 #    field(VAL,  "10.0")
 #    field(DTYP, "asynFloat64")
 #    field(OUT, "$(IO)DxpMCABinWidth")
-#    field(PREC, "3")
+#    field(PREC, "4")
 #    field(EGU, "eV/bin")
 #}
 
 record(ai, "$(P)$(R)MCABinWidth_RBV") {
     field(DTYP, "asynFloat64")
     field(INP, "$(IO)DxpMcaBinWidth")
-    field(PREC, "3")
+    field(PREC, "4")
     field(EGU, "eV/bin")
     field(SCAN, "I/O Intr")
 }
