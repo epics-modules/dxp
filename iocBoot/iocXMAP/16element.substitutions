@@ -3,7 +3,7 @@ file "$(DXP)/dxpApp/Db/dxpSystem.template" {
 }
 
 file "$(DXP)/dxpApp/Db/dxpMED.template" {
-{P=dxpXMAP:, MCAALL=mcaAll, DET0="@asyn(DXP1,0,1)", DETALL="@asyn(DXP1,16,1)"} 
+{P=dxpXMAP:, DETALL="@asyn(DXP1,16,1)"} 
 }
 
 file "$(DXP)/dxpApp/Db/dxpXMAP.template" {
@@ -100,6 +100,11 @@ pattern
 {dxpXMAP:,  mca14,  "asynMCA",  "@asyn(DXP1,13)",     2,     2048}
 {dxpXMAP:,  mca15,  "asynMCA",  "@asyn(DXP1,14)",     2,     2048}
 {dxpXMAP:,  mca16,  "asynMCA",  "@asyn(DXP1,15)",     2,     2048}
-{dxpXMAP:, mcaAll,  "asynMCA",  "@asyn(DXP1,16)",     2,     2048}
 }
 
+file "$(ASYN)/db/asynRecord.db"
+{
+pattern
+{       P,    R,  PORT,   ADDR,  IMAX,  OMAX}
+{dxpXMAP:, Asyn,  DXP1,      0,    80,    80}
+}
