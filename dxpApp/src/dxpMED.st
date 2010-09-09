@@ -32,7 +32,6 @@ int chan;
 int det;
 int nDetectors;
 int nSCAs;
-int prevAcquiring;
 int allDone;
 char temp[100];
 int prevAutoApply;
@@ -241,7 +240,6 @@ assign  ReadMCA to
              "","","","","","","","","","","","","","","","","","","","","","","","",""};
 int     ReadMCAs; assign ReadMCAs to "{P}DoReadAll";
 monitor ReadMCAs; evflag ReadMCAsMon; sync ReadMCAs ReadMCAsMon;
-int     ReadMCAAll; assign ReadMCAAll to "";
 
 int     statusMCA[MAX_DETECTORS];
 assign  statusMCA to
@@ -251,16 +249,8 @@ assign  statusMCA to
              "","","","","","","","","","","","","","","","","","","","","","","","",""};
 int     StatusMCAs; assign StatusMCAs to "{P}DoStatusAll";
 monitor StatusMCAs; evflag StatusMCAsMon; sync StatusMCAs StatusMCAsMon;
-int     statusMCAAll; assign statusMCAAll to "";
 
-int     mcaAcquiring[MAX_DETECTORS]; 
-assign  mcaAcquiring to
-            {"","","","","","","","","","","","","","","","","","","","","","","","","",
-             "","","","","","","","","","","","","","","","","","","","","","","","","",
-             "","","","","","","","","","","","","","","","","","","","","","","","","",
-             "","","","","","","","","","","","","","","","","","","","","","","","",""};
-monitor mcaAcquiring; evflag  mcaAcquiringMon; sync mcaAcquiring mcaAcquiringMon;
-int     Acquiring; assign Acquiring to "";
+int     Acquiring; assign Acquiring to "{P}Acquiring";
 monitor Acquiring; evflag AcquiringMon; sync Acquiring AcquiringMon;
 
 double  mcaPresetReal[MAX_DETECTORS]; 
@@ -694,6 +684,8 @@ int     CopyROIEnergy;  assign CopyROIEnergy      to "{P}CopyROIEnergy";
 monitor CopyROIEnergy;  evflag CopyROIEnergyMon;  sync CopyROIEnergy CopyROIEnergyMon;
 int     CopyROI_SCA;    assign CopyROI_SCA        to "{P}CopyROI_SCA";
 monitor CopyROI_SCA;    evflag CopyROI_SCAMon;    sync CopyROI_SCA CopyROI_SCAMon;
+int     AsynDebug;      assign AsynDebug          to "{P}Asyn.TB1";
+monitor AsynDebug;
 
 int AcquireBusy; assign AcquireBusy to "{P}AcquireBusy";
 int AutoApply;   assign AutoApply   to "{P}AutoApply";      monitor AutoApply;
@@ -804,9 +796,6 @@ ss dxp_control {
                sprintf(temp, "%s%s%d.PROC", prefix, mca, det);
                pvAssign(statusMCA[i], temp);
 
-               sprintf(temp, "%s%s%d.ACQG", prefix, mca, det);
-               pvAssign(mcaAcquiring[i], temp);
-
                sprintf(temp, "%s%s%d.PRTM", prefix, mca, det);
                pvAssign(mcaPresetReal[i], temp);
 
@@ -852,16 +841,6 @@ ss dxp_control {
                    pvAssign(dxpSCAHigh[k], temp);
                }
            }
-           sprintf(temp, "%s%sAll.PROC", prefix, mca);
-           pvAssign(statusMCAAll, temp);
-
-           sprintf(temp, "%s%sAll.READ", prefix, mca);
-           pvAssign(ReadMCAAll, temp);
-
-           sprintf(temp, "%s%sAll.ACQG", prefix, mca);
-           pvAssign(Acquiring, temp);
-
-           prevAcquiring = Acquiring;
         } state waitConnected
     }
     state waitConnected {
@@ -1093,50 +1072,43 @@ ss dxp_control {
         } state monitor_changes
 
         when(efTestAndClear(ReadMCAsMon) && (ReadMCAs == 1)) {
-            /* printf("dxpMED: Read MCAs\n"); */
+            if (AsynDebug) printf("dxpMED.st: Read MCA data\n");
             for (i=0; i<nDetectors; i++) {
                 ReadMCA[i] = 1;
                 pvPut(ReadMCA[i]);
             }
-            ReadMCAAll = 1;
-            pvPut(ReadMCAAll);
             ReadMCAs = 0;
             pvPut(ReadMCAs);
         } state monitor_changes
 
         when(efTestAndClear(StatusMCAsMon) && (StatusMCAs == 1)) {
-            /* printf("dxpMED: Read MCA status\n"); */
+            if (AsynDebug) printf("dxpMED.st: Read MCA status\n");
             for (i=0; i<nDetectors; i++) {
                 statusMCA[i] = 1;
                 pvPut(statusMCA[i]);
             }
-            statusMCAAll = 1;
-            pvPut(statusMCAAll);
             StatusMCAs = 0;
             pvPut(StatusMCAs);
         } state monitor_changes
 
 
         when(efTestAndClear(AcquiringMon)) {
-            /* printf("dxpMED: Acquiring=%d, prevAcquiring=%d\n", Acquiring, prevAcquiring); */
-            /* On the transition from Acquiring=1 to 0 clear the AcquireBusy record */
-            if ((Acquiring == 0) && (prevAcquiring == 1)) {
+            if (AsynDebug) printf("dxpMED.st: AcquiringMon, Acquiring=%d\n", Acquiring);
+            /* If the detector is acquiring then force each MCA record to read status */
+            if (Acquiring) {
+                for (i=0; i<nDetectors; i++) {
+                    statusMCA[i] = 1;
+                    pvPut(statusMCA[i]);
+                }
+            } else {
+                /* If the detector is done then force each MCA record to read data 
+                 for (i=0; i<nDetectors; i++) {
+                    ReadMCA[i] = 1;
+                    pvPut(ReadMCA[i]);
+                }
+               /* Clear the AcquireBusy record */
                AcquireBusy = 0;
                pvPut(AcquireBusy);
-            }
-            prevAcquiring = Acquiring;
-        } state monitor_changes
-
-        when(efTestAndClear(mcaAcquiringMon)) {
-            /* Transition on one or more mcaAcquiring status, wait 10msec for mcaAll to also change */
-            allDone = 1;
-            for (i=0; i<nDetectors; i++) {
-                if (mcaAcquiring[i]) allDone = 0;
-            }
-            /* If all individual MCAs are done, but mcaAll is not done, then force Read on mcaAll */
-            if (allDone && Acquiring) {
-               ReadMCAAll = 1;
-               pvPut(ReadMCAAll);
             }
         } state monitor_changes
 
