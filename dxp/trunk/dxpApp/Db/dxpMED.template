@@ -3,42 +3,50 @@
 
 record(bo,"$(P)EraseAll") {
     field(VAL,"1")
-    field(OUT,"$(P)$(MCAALL).ERAS CA MS")
+    field(DTYP, "asynInt32")
+    field(OUT, "$(DETALL)MCA_ERASE")
+    field(ZNAM,"Done")
+    field(ONAM,"Erase")
     field(FLNK,"$(P)ReadAllOnce")
 }
 
 record(bo,"$(P)EraseStart") {
     field(VAL,"1")
-    field(OUT,"$(P)$(MCAALL).ERST CA MS")
-    field(FLNK,"$(P)SetAcquireBusy")
+    field(DTYP, "asynInt32")
+    field(OUT, "$(DETALL)MCA_ERASE")
+    field(ZNAM,"Done")
+    field(ONAM,"Erase")
+    field(FLNK,"$(P)StartAll")
 }
 
 record(bo,"$(P)StartAll") {
     field(VAL,"1")
-    field(OUT,"$(P)$(MCAALL).STRT CA MS")
+    field(DTYP, "asynInt32")
+    field(OUT, "$(DETALL)MCA_START_ACQUIRE")
+    field(ZNAM,"Done")
+    field(ONAM,"Start")
     field(FLNK,"$(P)SetAcquireBusy")
 }
 
-# 
-# Set Acquiring to 1, so StatusAll begins processing
 record(bo,"$(P)SetAcquireBusy") {
-    field(VAL, "1")
-#    field(OUT, "$(P)ReadAllOnce.PROC PP MS")
-    field(FLNK,"$(P)SetAcquireBusy2")
-}
-
-record(bo,"$(P)SetAcquireBusy2") {
     field(VAL,"1")
     field(OUT,"$(P)AcquireBusy PP MS")
+    field(ZNAM,"Done")
+    field(ONAM,"Set")
     field(FLNK,"$(P)SetClientWait")
 }
 
 record(busy,"$(P)AcquireBusy") {
+    field(ZNAM,"Done")
+    field(ONAM,"Busy")
 }
 
 record(bo,"$(P)StopAll") {
     field(VAL,"1")
-    field(OUT,"$(P)$(MCAALL).STOP CA MS")
+    field(DTYP, "asynInt32")
+    field(OUT, "$(DETALL)MCA_STOP_ACQUIRE")
+    field(ZNAM,"Done")
+    field(ONAM,"Stop")
 }
 
 record(mbbo, "$(P)PresetMode") {
@@ -72,18 +80,24 @@ record(longout, "$(P)PresetEvents") {
 }
 
 record(bi,"$(P)Acquiring") {
-    field("INP", "$(P)$(MCAALL).ACQG CP MS")
-    field("ZNAM","Done")
-    field("ONAM","Acquiring")
+    field(SCAN,"I/O Intr")
+    field(DTYP, "asynInt32")
+    field(INP, "$(DETALL)MCA_ACQUIRING")
+    field(ZNAM,"Done")
+    field(ONAM,"Acquiring")
 }
 
 record(ai,"$(P)ElapsedReal") {
-    field(INP,"$(P)$(MCAALL).ERTM CP MS")
+    field(SCAN,"I/O Intr")
+    field(DTYP, "asynFloat64")
+    field(INP, "$(DETALL)MCA_ELAPSED_REAL")
     field(PREC, "2")
 }
 
 record(ai,"$(P)ElapsedLive") {
-    field(INP,"$(P)$(MCAALL).ELTM CP MS")
+    field(SCAN,"I/O Intr")
+    field(DTYP, "asynFloat64")
+    field(INP, "$(DETALL)MCA_ELAPSED_LIVE")
     field(PREC, "2")
 }
 
@@ -95,40 +109,59 @@ record(ai,"$(P)IDeadTime") {
     field(PREC, "2")
 }
 
-record(ai,"$(P)StatusAll") {
+record(bo,"$(P)StatusAll") {
     field(SCAN,".5 second")
     field(DISV,"0")
     field(SDIS,"$(P)Acquiring NPP NMS")
+    field(ZNAM,"Done")
+    field(ONAM,"Status")
     field(FLNK, "$(P)StatusAllOnce PP MS")
 }
 
 record(bo,"$(P)StatusAllOnce") {
     field(VAL, "1")
     field(OUT, "$(P)DoStatusAll PP MS")
+    field(ZNAM,"Done")
+    field(ONAM,"Status")
+    field(FLNK, "$(P)DoStatusAll1")
+}
+
+record(bo,"$(P)DoStatusAll1") {
+    field(VAL, "1")
+    field(DTYP, "asynInt32")
+    field(OUT, "$(DETALL)MCA_READ_STATUS")
+    field(ZNAM,"Done")
+    field(ONAM,"Status")
 }
 
 record(bo,"$(P)DoStatusAll") {
-    field(ZNAM, "Done")
-    field(ONAM, "Read")
+    field(ZNAM,"Done")
+    field(ONAM,"Status")
 }
 
-record(ai,"$(P)ReadCallback") {
-    field(SCAN,"I/O Intr")
-    field(DTYP, "asynInt32")
-    field(INP, "$(DETALL)MCA_ACQUIRING")
-    field(FLNK, "$(P)ReadAllOnce PP MS")
-}
-
-record(ai,"$(P)ReadAll") {
+record(bo,"$(P)ReadAll") {
     field(SCAN,"1 second")
     field(DISV,"0")
     field(SDIS,"$(P)Acquiring NPP NMS")
+    field(ZNAM,"Done")
+    field(ONAM,"Read")
     field(FLNK, "$(P)ReadAllOnce PP MS")
 }
 
 record(bo,"$(P)ReadAllOnce") {
     field(VAL, "1")
     field(OUT, "$(P)DoReadAll PP MS")
+    field(ZNAM,"Done")
+    field(ONAM,"Read")
+    field(FLNK, "$(P)DoReadAll1")
+}
+
+record(bo,"$(P)DoReadAll1") {
+    field(VAL, "1")
+    field(DTYP, "asynInt32")
+    field(OUT, "$(DETALL)MCA_READ_STATUS")
+    field(ZNAM,"Done")
+    field(ONAM,"Read")
 }
 
 record(bo,"$(P)DoReadAll") {
@@ -149,6 +182,8 @@ record(bo,"$(P)ReadBaselineHistograms") {
     field(SCAN,"Passive")
     field(VAL, "1")
     field(OUT, "$(P)DoReadBaselineHistograms PP MS")
+    field(ZNAM,"Done")
+    field(ONAM,"Read")
 }
 
 record(bo,"$(P)DoReadBaselineHistograms") {
@@ -178,6 +213,8 @@ record(bo,"$(P)ReadTraces") {
     field(SCAN,"Passive")
     field(VAL, "1")
     field(OUT, "$(P)DoReadTraces PP MS")
+    field(ZNAM,"Done")
+    field(ONAM,"Read")
 }
 
 record(bo,"$(P)DoReadTraces") {
