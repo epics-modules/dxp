@@ -736,158 +736,125 @@ composite {
 		}
 	}
 }
-composite {
+"message button" {
 	object {
 		x=10
 		y=368
-		width=247
-		height=21
+		width=50
+		height=20
 	}
-	"composite name"=""
-	children {
-		"message button" {
-			object {
-				x=10
-				y=368
-				width=50
-				height=20
-			}
-			control {
-				chan="$(P)StatusAll.PROC"
-				clr=14
-				bclr=51
-			}
-			label="Read"
-			press_msg="1"
-		}
-		menu {
-			object {
-				x=61
-				y=368
-				width=80
-				height=20
-			}
-			control {
-				chan="$(P)StatusAll.SCAN"
-				clr=14
-				bclr=51
-			}
-		}
-		text {
-			object {
-				x=147
-				y=369
-				width=110
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="MCA Status rate"
-		}
+	control {
+		chan="$(P)StatusAllOnce.PROC"
+		clr=14
+		bclr=51
+	}
+	label="Read"
+	press_msg="1"
+}
+menu {
+	object {
+		x=61
+		y=368
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)StatusAll.SCAN"
+		clr=14
+		bclr=51
 	}
 }
-composite {
+text {
+	object {
+		x=147
+		y=369
+		width=110
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="MCA Status rate"
+}
+menu {
+	object {
+		x=61
+		y=394
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)ReadAll.SCAN"
+		clr=14
+		bclr=51
+	}
+}
+"message button" {
 	object {
 		x=10
 		y=394
-		width=267
-		height=21
+		width=50
+		height=20
 	}
-	"composite name"=""
-	children {
-		menu {
-			object {
-				x=61
-				y=394
-				width=80
-				height=20
-			}
-			control {
-				chan="$(P)ReadAll.SCAN"
-				clr=14
-				bclr=51
-			}
-		}
-		"message button" {
-			object {
-				x=10
-				y=394
-				width=50
-				height=20
-			}
-			control {
-				chan="$(P)ReadAll.PROC"
-				clr=14
-				bclr=51
-			}
-			label="Read"
-			press_msg="1"
-		}
-		text {
-			object {
-				x=147
-				y=395
-				width=130
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="MCA Read rate"
-		}
+	control {
+		chan="$(P)ReadAllOnce.PROC"
+		clr=14
+		bclr=51
 	}
+	label="Read"
+	press_msg="1"
 }
-composite {
+text {
+	object {
+		x=147
+		y=395
+		width=130
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="MCA Read rate"
+}
+"message button" {
 	object {
 		x=10
 		y=420
-		width=267
-		height=21
+		width=50
+		height=20
 	}
-	"composite name"=""
-	children {
-		"message button" {
-			object {
-				x=10
-				y=420
-				width=50
-				height=20
-			}
-			control {
-				chan="$(P)ReadLLParams.PROC"
-				clr=14
-				bclr=51
-			}
-			label="Read"
-			press_msg="1"
-		}
-		menu {
-			object {
-				x=61
-				y=420
-				width=80
-				height=20
-			}
-			control {
-				chan="$(P)ReadLLParams.SCAN"
-				clr=14
-				bclr=51
-			}
-		}
-		text {
-			object {
-				x=147
-				y=421
-				width=130
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Low-level params"
-		}
+	control {
+		chan="$(P)ReadLLParams.PROC"
+		clr=14
+		bclr=51
 	}
+	label="Read"
+	press_msg="1"
+}
+menu {
+	object {
+		x=61
+		y=420
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)ReadLLParams.SCAN"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=147
+		y=421
+		width=130
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Low-level params"
 }
 composite {
 	object {
@@ -1232,4 +1199,31 @@ composite {
 			textix="Poll time"
 		}
 	}
+}
+"related display" {
+	object {
+		x=328
+		y=294
+		width=70
+		height=20
+	}
+	display[0] {
+		label="asyn record"
+		name="asynRecord.adl"
+		args="P=$(P), R=Asyn"
+	}
+	clr=14
+	bclr=51
+}
+text {
+	object {
+		x=403
+		y=294
+		width=110
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Asyn record"
 }
