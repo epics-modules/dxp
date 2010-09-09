@@ -1448,8 +1448,12 @@ asynStatus NDDxp::setNumChannels(asynUser* pasynUser, epicsInt32 value, epicsInt
             return status;
             }
         setIntegerParam(i, mcaNumChannels, *rbValue);
-        callParamCallbacks(i,i);
+        callParamCallbacks(i);
     }
+    
+    /* We also need to set the number of channels for the DXP_ALL channel, it is used in mcaErase */
+    setIntegerParam(this->nChannels, mcaNumChannels, *rbValue);
+    callParamCallbacks(this->nChannels);
 
     /* If in mapping mode we need to modify the Y size as well in order to fit in the 2MB buffer!
      * We also need to read out the new lenght of the mapping buffer because that can possibly change... */
