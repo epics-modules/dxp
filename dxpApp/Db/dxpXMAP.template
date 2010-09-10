@@ -254,3 +254,19 @@ record(longin, "$(P)LBUSMasterChannel_RBV") {
   field(SCAN, "I/O Intr")
 }
 
+record(ai, "$(P)ReadRate_RBV") {
+  field(DESC, "Mapping mode read rate")
+  field(DTYP, "asynFloat64")
+  field(INP,  "$(IO)DxpReadRate")
+  field(PREC, "2")
+  field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(P)MBytesRead_RBV") {
+  field(DESC, "MegaBytes read")
+  field(DTYP, "asynFloat64")
+  field(INP,  "$(IO)DxpMBytesRead")
+  field(PREC, "2")
+  field(SCAN, "I/O Intr")
+}
+
