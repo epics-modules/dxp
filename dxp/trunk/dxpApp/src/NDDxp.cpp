@@ -143,8 +143,8 @@ typedef struct moduleStatistics {
 #define NDDxpAutoPixelsPerBufferString      "DxpAutoPixelsPerBuffer"
 #define NDDxpPixelsPerRunString             "DxpPixelsPerRun"
 #define NDDxpBufferOverrunString            "DxpBufferOverrun"
-#define NDDxpMBytesReceivedString           "DxpMBytesReceived"
-#define NDDxpReadSpeedString                "DxpReadSpeed"
+#define NDDxpMBytesReadString               "DxpMBytesRead"
+#define NDDxpReadRateString                 "DxpReadRate"
 #define NDDxpIgnoreGateString               "DxpIgnoreGate"
 #define NDDxpSyncCountString                "DxpSyncCount"
 #define NDDxpInputLogicPolarityString       "DxpInputLogicPolarity"
@@ -280,8 +280,8 @@ protected:
     int NDDxpAutoPixelsPerBuffer;
     int NDDxpPixelsPerRun;                  /** < Preset value how many pixels to acquire in one run (r/w) mapping mode*/
     int NDDxpBufferOverrun;
-    int NDDxpMBytesReceived;
-    int NDDxpReadSpeed;
+    int NDDxpMBytesRead;
+    int NDDxpReadRate;
     int NDDxpIgnoreGate;
     int NDDxpSyncCount;
     int NDDxpInputLogicPolarity;
@@ -477,8 +477,8 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     createParam(NDDxpAutoPixelsPerBufferString,    asynParamInt32,   &NDDxpAutoPixelsPerBuffer);
     createParam(NDDxpPixelsPerRunString,           asynParamInt32,   &NDDxpPixelsPerRun);
     createParam(NDDxpBufferOverrunString,          asynParamInt32,   &NDDxpBufferOverrun);
-    createParam(NDDxpMBytesReceivedString,         asynParamFloat64, &NDDxpMBytesReceived);
-    createParam(NDDxpReadSpeedString,              asynParamFloat64, &NDDxpReadSpeed);
+    createParam(NDDxpMBytesReadString,             asynParamFloat64, &NDDxpMBytesRead);
+    createParam(NDDxpReadRateString,               asynParamFloat64, &NDDxpReadRate);
     createParam(NDDxpIgnoreGateString,             asynParamInt32,   &NDDxpIgnoreGate);
     createParam(NDDxpSyncCountString,              asynParamInt32,   &NDDxpSyncCount);
     createParam(NDDxpInputLogicPolarityString,     asynParamInt32,   &NDDxpInputLogicPolarity);
@@ -2158,7 +2158,7 @@ asynStatus NDDxp::getMappingData()
     int dims[2], pixelCounter, bufferCounter, arraySize;
     epicsTimeStamp now, after;
     double mBytesRead;
-    double readoutTime, readoutBurstSpeed, MBbufSize;
+    double readoutTime, readoutBurstRate, MBbufSize;
     const char* functionName = "getMappingData";
 
     getIntegerParam(NDDataType, (int *)&dataType);
@@ -2167,7 +2167,7 @@ asynStatus NDDxp::getMappingData()
     bufferCounter++;
     setIntegerParam(NDDxpBufferCounter, bufferCounter);
     getIntegerParam(NDArraySize, &arraySize);
-    getDoubleParam(NDDxpMBytesReceived, &mBytesRead);
+    getDoubleParam(NDDxpMBytesRead, &mBytesRead);
     getIntegerParam(NDArrayCallbacks, &arrayCallbacks);
     MBbufSize = (double)((arraySize)*sizeof(epicsUInt16)) / (double)MEGABYTE;
 
@@ -2182,10 +2182,10 @@ asynStatus NDDxp::getMappingData()
         status = xia_checkError(this->pasynUserSelf, xiastatus, "GetRunData mapping");
         epicsTimeGetCurrent(&after);
         readoutTime = epicsTimeDiffInSeconds(&after, &now);
-        readoutBurstSpeed = MBbufSize / readoutTime;
+        readoutBurstRate = MBbufSize / readoutTime;
         mBytesRead += MBbufSize;
-        setDoubleParam(NDDxpMBytesReceived, mBytesRead);
-        setDoubleParam(NDDxpReadSpeed, readoutBurstSpeed);
+        setDoubleParam(NDDxpMBytesRead, mBytesRead);
+        setDoubleParam(NDDxpReadRate, readoutBurstRate);
         /* Notify system that we read out the buffer */
         xiastatus = xiaBoardOperation(channel, "buffer_done", NDDxpBufferCharString[buf]);
         status = xia_checkError(this->pasynUserSelf, xiastatus, "buffer_done");
@@ -2194,7 +2194,7 @@ asynStatus NDDxp::getMappingData()
         callParamCallbacks();
         asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, 
             "%s::%s Got data! size=%.3fMB (%d) dt=%.3fs speed=%.3fMB/s\n",
-            driverName, functionName, MBbufSize, arraySize, readoutTime, readoutBurstSpeed);
+            driverName, functionName, MBbufSize, arraySize, readoutTime, readoutBurstRate);
     
         /* If this is MCA mapping mode then copy the spectral data for the first pixel
          * in this buffer to the mcaRaw buffers.
