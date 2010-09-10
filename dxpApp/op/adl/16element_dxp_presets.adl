@@ -1,6 +1,6 @@
 
 file {
-	name="/home/epics/devel/dxp-3-0/dxpApp/op/adl/16element_dxp_presets.adl"
+	name="/home/epics/devel/dxp/dxpApp/op/adl/16element_dxp_presets.adl"
 	version=030102
 }
 display {
@@ -89,9 +89,9 @@ display {
 }
 rectangle {
 	object {
-		x=0
+		x=50
 		y=9
-		width=500
+		width=400
 		height=25
 	}
 	"basic attribute" {
