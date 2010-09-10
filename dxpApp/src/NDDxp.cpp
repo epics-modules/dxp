@@ -1311,13 +1311,13 @@ asynStatus NDDxp::setSCAs(asynUser *pasynUser, int addr)
     dTmp = numSCAs;
     CALLHANDEL(xiaSetAcquisitionValues(channel, "number_of_scas", &dTmp), "number_of_scas");
     for (i=0; i<numSCAs; i++) {
-        getIntegerParam(addr, NDDxpSCALow[i], &low);
-        if (low < 0) {
+        status = getIntegerParam(addr, NDDxpSCALow[i], &low);
+        if (status || (low < 0)) {
             low = 0;
             setIntegerParam(addr, NDDxpSCALow[i], low);
         }
-        getIntegerParam(addr, NDDxpSCAHigh[i], &high);
-        if (high < 0) {
+        status = getIntegerParam(addr, NDDxpSCAHigh[i], &high);
+        if (status || (high < 0)) {
             high = 0;
             setIntegerParam(addr, NDDxpSCAHigh[i], high);
         }
