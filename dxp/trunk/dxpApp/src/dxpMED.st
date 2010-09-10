@@ -1101,14 +1101,14 @@ ss dxp_control {
                     pvPut(statusMCA[i]);
                 }
             } else {
-                /* If the detector is done then force each MCA record to read data 
-                 for (i=0; i<nDetectors; i++) {
+                /* If the detector is done then force each MCA record to read data */
+                for (i=0; i<nDetectors; i++) {
                     ReadMCA[i] = 1;
                     pvPut(ReadMCA[i]);
                 }
-               /* Clear the AcquireBusy record */
-               AcquireBusy = 0;
-               pvPut(AcquireBusy);
+                /* Clear the AcquireBusy record */
+                AcquireBusy = 0;
+                pvPut(AcquireBusy);
             }
         } state monitor_changes
 
