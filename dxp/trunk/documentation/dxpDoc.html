@@ -12,7 +12,7 @@
     <h2>
       Release 3-0</h2>
     <h2>
-      February 20, 2010</h2>
+      October XXX, 2010</h2>
     <h2>
       Mark Rivers</h2>
     <h2>
@@ -82,7 +82,10 @@
     DXP currently supports the following hardware</p>
   <ul>
     <li>The xMAP, which is a 4-channel PXI card. The PXI crate is typically connected
-      to a Windows PC with a PCI/PXI fiber-optic bridge.</li>
+      to a Windows PC with a PCI/PXI fiber-optic bridge, but can also be controlled by
+      a CPU processor card in the PXI crate itself.</li>
+    <li>The Mercury, which is 1 or 4 channel standalone desktop unit that communicates
+        over the USB port.  It has similar mapping features to the xMAP.
     <li>The Saturn, which is a standalone desktop unit that communicates over the PC Enhanced
       Parallel Port (EPP) or USB port. The Vortex detector from SII (formerly Radiant)
       is an OEM version of the Saturn, and it also works with this software.</li>
@@ -93,17 +96,18 @@
     DXP currently supports this hardware under the following operating systems and interfaces:</p>
   <ul>
     <li>The xMAP with the EPICS IOC running on Windows, using the National Instruments
-      PCI/PXI adapter. The EPICS win32-x86 (Microsoft VC++) and cygwin-x86 (gcc) architectures
-      are supported.</li>
-    <li>The Saturn with the EPICS IOC running on Windows, using the EPP parallel port,
-      USB 1.0, or USB 2.0 interfaces. The EPICS win32-x86 (Microsoft VC++) and cygwin-x86
-      (gcc) architectures are supported.</li>
-    <li>The Saturn with the EPICS IOC running on Linux, using the EPP parallel port, USB
-      1.0, or USB 2.0 interfaces.</li>
+      PCI/PXI adapter, or with a PXI processor card running Windows. </li>
+    <li>The Mercury with the EPICS IOC running on Windows or Linux using the USB 2.0 interface.
+      NOTE: This support is current untested because I have not yet been able to obtain a Mercury
+      to test with.</li>
+    <li>The Saturn with the EPICS IOC running on Windows or Linux, using the EPP parallel port,
+      USB 1.0, or USB 2.0 interfaces.</li>
     <li>The DXP2X with the EPICS IOC running on vxWorks, using the Kinetic Systems 2917/3922
       VME to CAMAC interface. Other CAMAC interfaces that have software support for the
       ESONE standard CAMAC library calls should also work, but have not been tested.</li>
   </ul>
+  <p>On Windows both the EPICS win32-x86 (Microsoft VC++ compiler) and cygwin-x86 (gcc compiler) architectures
+      are supported.</p>
   <p>
     The features of the EPICS software, compared with software available from XIA are:</p>
   <ul>
@@ -117,8 +121,8 @@
       it allows the DXP control and data acquisition to be integrated with other hardware
       and software. For example, a control software program can move a motor, command
       the DXP to acquire data, and write the data to disk.</li>
-    <li>A single software package supports the xMAP, Saturn, and the DXP2X.</li>
-    <li>The Saturn can be run from Windows and Linux, while the XIA Saturn control programs
+    <li>A single software package supports the xMAP, Mercury, Saturn, and DXP2X.</li>
+    <li>The Saturn and Mercury can be run from Windows and Linux, while the XIA control programs
       only run on Windows.</li>
     <li>The DXP2X support uses the standard XIA Handel library, while the XIA MESA package
       uses an old LabView interface</li>
@@ -130,26 +134,29 @@
   <ul>
     <li>An <a href="http://www.aps.anl.gov/epics/modules/soft/asyn/">asyn port driver</a>.
       This driver is derived from the <a href="http://cars.uchicago.edu/software/epics/areaDetectorDoc.html#asynNDArrayDriver">
-        asynNDArrayDriver</a> and <a href="http://www.aps.anl.gov/epics/modules/soft/asyn">
-          asynPortDriver</a> base C++ classes. It provides support for the <a href="http://cars.uchicago.edu/software/epics/mcaRecord.html">
-            EPICS MCA record</a> via the asyn MCA device support. This permits each channel
-      of the DXP to be connected to an MCA record identically with other supported MCA
-      hardware, such as the Canberra AIM. The MCA record is used to control data acquisition
-      and to acquire spectra or define regions of interest. The driver communicates with
+        asynNDArrayDriver</a> and <a href="http://www.aps.anl.gov/epics/modules/soft/asyn/R4-14/asynPortDriver.html">
+          asynPortDriver</a> base C++ classes. The driver communicates with
       the hardware using the <a href="Handel_API_012902_branch2.pdf">XIA Handel library</a>,
       which in turn communicates with the <a href="http://www.xia.com/Manuals/XIA_Host_Software_Manual.pdf">
         XIA Xerxes library</a>. </li>
+    <li>An <a href="http://cars.uchicago.edu/software/epics/mcaRecord.html">
+       EPICS MCA record</a> for each detector.  This communicates with the driver via the asyn MCA device support. 
+      This support allows each detector to be treated identically with other supported MCA
+      hardware, such as the Canberra AIM. The MCA record is used for data acquisition
+      in the non-mapping modes, and to define regions of interest.</li>
     <li>A set of standard EPICS records (ai, ao, bi, bo, waveform, etc.) that are used
       to set all of the many software selectable parameters for the DXP, including peaking
-      times, pileup rejection criteria, etc. These are also used to acquire diagnostic
-      data, such as the baseline histogram and ADC trace.</li>
+      times, pileup rejection criteria, etc. These are also used for data acquisition in the mapping modes
+      and to acquire diagnostic
+      data, such as the baseline histogram and ADC trace.  These records
+      use the standard asyn device support.</li>
+    <li>A State Notation Language program for synchronizing acquisition, ROIs, and DXP parameters
+      in multi-element detector systems.</li>
     <li>Support for the file-saving plugins from the <a href="http://cars.uchicago.edu/software/epics/areaDetector.html">
       areaDetector</a> package. These plugins are used to stream data to disk in the mappping
       modes on the xMAP.</li>
     <li>Databases for single-element and multi-element detector systems.</li>
     <li>medm display screens for single-element and multi-element detector systems.</li>
-    <li>A State Notation Language program for synchronizing acquisition and DXP parameters
-      in multi-element detector systems.</li>
     <li>Example IOC boot directories for the Saturn on Windows and Linux, and for multi-element
       detectors with the xMAP on Windows and the DXP2X on vxWorks.</li>
   </ul>
@@ -369,6 +376,16 @@
       </tr>
       <tr valign="top">
         <td>
+          DecayTime<br />
+          DecayTime_RBV</td>
+        <td>
+          ao<br />
+          ai</td>
+        <td>
+          For RC pre-amps the characteristic decay time in microseconds.</td>
+      </tr>
+      <tr valign="top">
+        <td>
           MaxEnergy<br />
           MaxEnergy_RBV</td>
         <td>
@@ -385,8 +402,8 @@
         <td>
           ai</td>
         <td>
-          The width of each bin in the MCA spectrum in keV. This is computed from PreampGain
-          and MaxEnergy.</td>
+          The width of each bin in the MCA spectrum in keV. This is computed from PreampGain,
+          MaxEnergy, and the NUSE field of the MCA record.</td>
       </tr>
       <tr valign="top">
         <td>
@@ -419,7 +436,7 @@
         <td>
           ai</td>
         <td>
-          The dynamic range of the ADC. This is computed from PreampGain, MaxEnergy, ADCPercentRule.</td>
+          The dynamic range of the ADC. This is computed from PreampGain, MaxEnergy, and ADCPercentRule.</td>
       </tr>
       <tr>
         <td align="center" colspan="3">
@@ -455,7 +472,7 @@
           longin</td>
         <td>
           The number of events to count for. Events are x-rays that were processed by the
-          energy filter, and includes underflow and overflow events that are actually present
+          energy filter, and includes underflow and overflow events that are not actually present
           in the spectrum.</td>
       </tr>
       <tr valign="top">
@@ -467,7 +484,7 @@
           longin</td>
         <td>
           The number of triggers to count for. Triggers are x-rays that were processed by
-          the trigger filter, and includes pileups and other events that are actually present
+          the trigger filter, and includes pileups and other events that are not actually present
           in the spectrum.</td>
       </tr>
       <tr>
@@ -515,6 +532,23 @@
           longin</td>
         <td>
           The number of energy filter events.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          Underflows</td>
+        <td>
+          longin</td>
+        <td>
+          The number of underflow events, which are events that would be in channels less than 0.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          Overflows</td>
+        <td>
+          longin</td>
+        <td>
+          The number of overflow events, which are events that would be in channels greater than
+          the last channel in the spectrum.</td>
       </tr>
       <tr valign="top">
         <td>
@@ -577,6 +611,15 @@
       </tr>
       <tr valign="top">
         <td>
+          BaselineEnergyArray</td>
+        <td>
+          waveform</td>
+        <td>
+          The energy values for the baseline histogram.  This array is used to provide a
+          calibrated X-axis when plotting the BaselineHistogram.</td>
+      </tr>
+      <tr valign="top">
+        <td>
           TraceMode<br />
           TraceMode_RBV</td>
         <td>
@@ -621,6 +664,15 @@
           on the hardware type; it is 0.1 microseconds for the 20 MHz Saturn and DXP2X, .05
           microseconds for the 40MHz Saturn, and 0.02 microseconds for the xMAP.</td>
       </tr>
+      <tr valign="top">
+        <td>
+          TraceTimeArray</td>
+        <td>
+          waveform</td>
+        <td>
+          The time values for the trace data.  This array is used to provide a
+          calibrated X-axis when plotting the TraceData.</td>
+      </tr>
     </tbody>
   </table>
   <h3 id="dxpSCA_16">
@@ -638,10 +690,10 @@
     The Saturn puts out a pulse on one of 16 TTL output lines when an x-ray falls within
     the channel range of that SCA. This allows very fast mapping with the Saturn, since
     there is no need to read the spectrum at each point in the scan. <i>Note: in normal
-      MCA spectra mode SCAs are permitted to overlap in channels. However in xMAP SCA
-      mapping mode and Saturn ROI pulse output mode, the SCA definitions must not overlap.
-      This is because, for performance reasons, each spectrum channel must be assigned
-      to at most one SCA.</i></p>
+    MCA spectra mode SCAs are permitted to overlap in channels. However in xMAP SCA
+    mapping mode and Saturn ROI pulse output mode, the SCA definitions must not overlap.
+    This is because, for performance reasons, each spectrum channel must be assigned
+    to at most one SCA.</i></p>
   <p>
     One instance of this database is loaded for each detector channel in the system.
     All of the record names in the template file are preceeded by the macro parameters
@@ -707,8 +759,8 @@
     each parameter, and a longout record which allows the parameter to be modified.
     Note that all parameters have a corresponding longout record, but some parameters
     are inherently read-only, so their longout records actually do nothing. The driver
-    currently hardcodes a maximum of 220 low-level parameters, which is more than the
-    number used by any of the existing firmware (209 is the current maximum, for the
+    currently hardcodes a maximum of 230 low-level parameters, which is more than the
+    number used by any of the existing firmware (224 is the current maximum, for the
     xMAP reset firmware). If a future firmware version has more parameters than this,
     then a single constant in the driver will need to be increased, and more records
     will need to be added to dxpLowLevel.template.</p>
@@ -753,7 +805,7 @@
         <td>
           stringin</td>
         <td>
-          The firmware name for low-level parameter $(N), N=0-219. Actual record names are
+          The firmware name for low-level parameter $(N), N=0 to NumLLParams-1. Actual record names are
           LL0Name, LL1Name, etc.</td>
       </tr>
       <tr valign="top">
@@ -762,7 +814,7 @@
         <td>
           longin</td>
         <td>
-          The readback value for low-level parameter $(N), N=0-219. Actual record names are
+          The readback value for low-level parameter $(N), N=0 to NumLLParams-1. Actual record names are
           LL0Val_RBV, LL1Val_RBV, etc.</td>
       </tr>
       <tr valign="top">
@@ -771,7 +823,7 @@
         <td>
           longout</td>
         <td>
-          The output value for low-level parameter $(N), N=0-219. Actual record names are
+          The output value for low-level parameter $(N), N=0 to NumLLParams-1. Actual record names are
           LL0Val, LL1Val, etc.</td>
       </tr>
     </tbody>
@@ -819,8 +871,8 @@
         <td>
           The name of a file in which to save the system information. This file is created
           by the XIA Handel software, and is the ".ini" file format used in the call to xiaInit()
-          in the startup script. One can save the system information in this file, rather
-          than using the EPICS save/restore system if desired. This is a waveform record with
+          in the startup script. This file can be used to transfer
+          settings between XIA's programs (xManager, ProSpect) and EPICS. This is a waveform record with
           type DBF_UCHAR and length 256, rather than a stringout record, so that file paths/names
           longer than 40 characters can be used. Client applications must convert the file
           name to an unsigned char array when writing to this field.</td>

@@ -13,15 +13,18 @@
   <p>
     Module Owner: Mark Rivers: University of Chicago</p>
   <p>
-    This page is the home of <b>dxp</b>.&nbsp;</p>
+    This page is the home of <b>dxp</b>.</p>
   <p>
     Devices supported in <b>dxp</b> include:</p>
   <p>
     From <a href="http://www.xia.com">XIA</a></p>
   <ul>
-    <li>DXP digital-signal processing spectroscopy systems.&nbsp; These include the xMAP
+    <li>DXP digital-signal processing spectroscopy systems. These include the xMAP
       PXI module, the DXP2X4C CAMAC module, and the Saturn module that uses the enhanced
-      parallel port interface (EPP), USB 1.0, or USB 2.0 </li>
+      parallel port interface (EPP), USB 1.0, or USB 2.0.  </li>
+     <li>Release 3-0 has untested support
+      for the Mercury module, which has 1 or 4 channels with capabilities similar to the xMAP
+      but in a standalone box with a USB 2.0 interface. </li>
   </ul>
   <p>
     Prior to EPICS 3.14 this support was in the <b>camac</b> module of synApps. Starting
@@ -50,6 +53,22 @@
           Release Notes</th>
         <th>
           Known Problems</th>
+      </tr>
+      <tr valign="top">
+        <td>
+          3-0</td>
+        <td>
+          xxx-Oct-2010</td>
+        <td>
+          <a href="http://cars.uchicago.edu/software/pub/dxpR3-0.tgz">dxpR3-0.tgz</a></td>
+        <td>
+          <a href="http://cars.uchicago.edu/software/pub/dxpStandalone_3-0.tgz">dxpStandalone_3-0.tgz</a></td>
+        <td>
+          <a href="dxpDoc.html">dxpDoc.html</a><br />
+        <td>
+          <a href="dxpReleaseNotes.html">Release notes</a></td>
+        <td>
+          <a href="dxpKnownProblems.html">Known Problems</a></td>
       </tr>
       <tr valign="top">
         <td>
@@ -285,6 +304,88 @@
           Release needed</th>
         <th>
           Required for</th>
+      </tr>
+      <tr>
+        <td rowspan="10">
+          3-0</td>
+        <td>
+          EPICS base</td>
+        <td>
+          3.14.11</td>
+        <td>
+          Base support</td>
+      </tr>
+      <tr>
+        <td>
+          seq</td>
+        <td>
+          2.0.12</td>
+        <td>
+          State notation language sequencer</td>
+      </tr>
+      <tr>
+        <td>
+          areaDetector</td>
+        <td>
+          1-6</td>
+        <td>
+          File-saving plugin support for mapping mode</td>
+      </tr>
+      <tr>
+        <td>
+          calc</td>
+        <td>
+          2-8</td>
+        <td>
+          Record support</td>
+      </tr>
+      <tr>
+        <td>
+          busy</td>
+        <td>
+          1-2</td>
+        <td>
+          Busy record support</td>
+      </tr>
+      <tr>
+        <td>
+          sscan</td>
+        <td>
+          2-6-6</td>
+        <td>
+          Scanning support</td>
+      </tr>
+      <tr>
+        <td>
+          autosave</td>
+        <td>
+          4-7</td>
+        <td>
+          Save/restore support</td>
+      </tr>
+      <tr>
+        <td>
+          asyn</td>
+        <td>
+          4-14</td>
+        <td>
+          Driver support</td>
+      </tr>
+      <tr>
+        <td>
+          mca</td>
+        <td>
+          6-12-1</td>
+        <td>
+          MCA support</td>
+      </tr>
+      <tr>
+        <td>
+          camac</td>
+        <td>
+          2-5</td>
+        <td>
+          CAMAC support</td>
       </tr>
       <tr>
         <td rowspan="9">
@@ -1027,7 +1128,7 @@ tar xvf dxpRX-Y.tar
       of EPICS base and to your versions of supporting modules.</li>
     <li>Run <tt>gnumake</tt> in the top level directory and check for any compilation
       errors.</li>
-    <li>Please email&nbsp; <a href="mailto:rivers@cars.uchicago.edu">Mark Rivers</a>&nbsp;
+    <li>Please email <a href="mailto:rivers@cars.uchicago.edu">Mark Rivers</a>
       so that a record can be kept of which sites are using this software.</li>
   </ol>
   <h2>
@@ -1035,10 +1136,11 @@ tar xvf dxpRX-Y.tar
   <p>
     This software was originally developed by Mark Rivers.</p>
   <ul>
-    <li>ANL/APS : In use at CARS, XOR, PNC, the APS detector pool for Vortex detectors,
+    <li>ANL/APS : In use at CARS, XSD, PNC, the APS detector pool,
       and several other beamlines.</li>
-    <li>NSLS: In use at&nbsp; X-26A, X-17B2 and several other beamlines</li>
-    <li>Others: In use at the Swiss Light Source, Advanced Light Source and others.</li>
+    <li>NSLS: In use at X-26A, X-27A, X-17B2 and several other beamlines</li>
+    <li>Others: In use at the Swiss Light Source, Diamond Light Source, Advanced Light Source, Shanghai
+    Synchrotron, Australian Synchrotron and others.</li>
   </ul>
 </body>
 </html>
