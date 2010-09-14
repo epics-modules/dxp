@@ -18,7 +18,7 @@ int main(int argc, char **argv)
     printf("Initializing ...\n");
     status = xiaSetLogLevel(debugLevel);
     CHECK_STATUS(status);
-    status = xiaInit("xmap16.ini");
+    status = xiaInit("xmap_test.ini");
     CHECK_STATUS(status);
     status = xiaStartSystem();
     CHECK_STATUS(status);
