@@ -12,19 +12,22 @@
 
 int main(int argc, char **argv)
 {
-    int iter, mode;
-    int status;
+    int iter, mode, status, debugLevel=2;
     double dvalue;
 
     printf("Initializing ...\n");
-    status = xiaSetLogLevel(2);
+    status = xiaSetLogLevel(debugLevel);
     CHECK_STATUS(status);
     status = xiaInit("xmap16.ini");
     CHECK_STATUS(status);
     status = xiaStartSystem();
     CHECK_STATUS(status);
-
-    status = xiaSetLogLevel(4);
+    
+    if (argc > 0) {
+        debugLevel = atoi(argv[1]);
+        printf("Debug level = %d\n", debugLevel);
+    }
+    status = xiaSetLogLevel(debugLevel);
     CHECK_STATUS(status);
 
     for (iter=0; iter<MAX_ITERATIONS; iter++) {
