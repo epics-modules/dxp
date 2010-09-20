@@ -100,8 +100,7 @@ saturn_benchmark1_SYS_LIBS_cygwin32 += setupapi
 saturn_benchmark1_SYS_LIBS_cygwin32 += rpc
 saturn_benchmark1_SYS_LIBS_WIN32 += setupapi
 
-PROD_IOC_WIN32 += test_xmap_mode_switch
-PROD_IOC_cygwin32 += test_xmap_mode_switch
+PROD_IOC+= test_xmap_mode_switch
 test_xmap_mode_switch_SRCS += test_xmap_mode_switch.c
 test_xmap_mode_switch_LIBS += dxp
 test_xmap_mode_switch_LIBS += handel asyn
@@ -111,6 +110,7 @@ test_xmap_mode_switch_SYS_LIBS_cygwin32 += DLPORTIO PlxApi
 test_xmap_mode_switch_SYS_LIBS_cygwin32 += setupapi
 test_xmap_mode_switch_SYS_LIBS_cygwin32 += rpc
 test_xmap_mode_switch_SYS_LIBS_WIN32 += setupapi
+test_xmap_mode_switch_SYS_LIBS_Linux += usb
 
 #===========================
 #===========================
