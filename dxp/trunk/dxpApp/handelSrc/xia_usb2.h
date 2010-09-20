@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2006-2010, XIA LLC
- * All rights reserved.
+ * Copyright (c) 2006-2010 XIA LLC
+ * All rights reserved
  *
  * Redistribution and use in source and binary forms, 
  * with or without modification, are permitted provided 
@@ -13,7 +13,7 @@
  *     above copyright notice, this list of conditions and the 
  *     following disclaimer in the documentation and/or other 
  *     materials provided with the distribution.
- *   * Neither the name of X-ray Instrumentation Associates 
+ *   * Neither the name of XIA LLC 
  *     nor the names of its contributors may be used to endorse 
  *     or promote products derived from this software without 
  *     specific prior written permission.
@@ -32,8 +32,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- *
- * $Id: xia_usb2.h 14795 2010-03-02 23:28:20Z patrick $
+ * $Id: xia_usb2.h 16630 2010-08-30 21:53:39Z patrick $
  *
  */
 
@@ -46,7 +45,6 @@
 
 #include "Dlldefs.h"
 
-#include "xia_usb2_cb.h"
 #include "xia_common.h"
 
 #ifdef __cplusplus

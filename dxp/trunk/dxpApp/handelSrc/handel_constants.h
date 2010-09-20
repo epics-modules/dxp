@@ -1,13 +1,7 @@
 /*
- * handel_constants.h
- *
- * This header file contains external constants that
- * may be required by users of Handel. Internal constants
- * do not belong in this file.
- *
- * Copyright (c) 2004, X-ray Instrumentation Associates
- *               2005, XIA LLC
- * All rights reserved.
+ * Copyright (c) 2004 X-ray Instrumentation Associates
+ *               2005-2010 XIA LLC
+ * All rights reserved
  *
  * Redistribution and use in source and binary forms, 
  * with or without modification, are permitted provided 
@@ -20,7 +14,7 @@
  *     above copyright notice, this list of conditions and the 
  *     following disclaimer in the documentation and/or other 
  *     materials provided with the distribution.
- *   * Neither the name of X-ray Instrumentation Associates 
+ *   * Neither the name of XIA LLC 
  *     nor the names of its contributors may be used to endorse 
  *     or promote products derived from this software without 
  *     specific prior written permission.
@@ -39,7 +33,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: handel_constants.h 15938 2010-06-09 19:20:45Z patrick $
+ * $Id: handel_constants.h 16607 2010-08-26 15:56:19Z patrick $
  *
  */
 
@@ -86,5 +80,22 @@
 #define XIA_LIST_MODE_SLOW_PIXEL 0.0
 #define XIA_LIST_MODE_FAST_PIXEL 1.0
 #define XIA_LIST_MODE_CLOCK      2.0
+
+/** microDXP acquisition value "apply" constants **/
+#define AV_MEM_NONE       0x01
+#define AV_MEM_REQ        0x02
+#define AV_MEM_PARSET     0x04
+#define AV_MEM_GENSET     0x08
+#define AV_MEM_FIPPI      0x10
+#define AV_MEM_ADC        0x20
+#define AV_MEM_GLOB       0x40
+#define AV_MEM_CUST       0x80
+
+#define AV_MEM_R_PAR    (AV_MEM_REQ | AV_MEM_PARSET)
+#define AV_MEM_R_GEN    (AV_MEM_REQ | AV_MEM_GENSET)
+#define AV_MEM_R_FIP    (AV_MEM_REQ | AV_MEM_FIPPI)
+#define AV_MEM_R_ADC    (AV_MEM_REQ | AV_MEM_ADC)
+#define AV_MEM_R_GLB    (AV_MEM_REQ | AV_MEM_GLOB)
+
 
 #endif /* HANDEL_CONSTANTS_H */

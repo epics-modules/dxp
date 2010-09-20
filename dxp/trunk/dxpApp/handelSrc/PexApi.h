@@ -2,12 +2,12 @@
 #define __PEX_API_H
 
 /*******************************************************************************
- * Copyright (c) 2007 PLX Technology, Inc.
- * 
- * PLX Technology Inc. licenses this software under specific terms and
- * conditions.  Use of any of the software or derviatives thereof in any
- * product without a PLX Technology chip is strictly prohibited. 
- * 
+ * Copyright (c) PLX Technology, Inc.
+ *
+ * PLX Technology Inc. licenses this source file under the GNU Lesser General Public
+ * License (LGPL) version 2.  This source file may be modified or redistributed
+ * under the terms of the LGPL and without express permission from PLX Technology.
+ *
  * PLX Technology, Inc. provides this software AS IS, WITHOUT ANY WARRANTY,
  * EXPRESS OR IMPLIED, INCLUDING, WITHOUT LIMITATION, ANY WARRANTY OF
  * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  PLX makes no guarantee
@@ -15,12 +15,11 @@
  * the software and documentation in terms of correctness, accuracy,
  * reliability, currentness, or otherwise; and you rely on the software,
  * documentation and results solely at your own risk.
- * 
+ *
  * IN NO EVENT SHALL PLX BE LIABLE FOR ANY LOSS OF USE, LOSS OF BUSINESS,
  * LOSS OF PROFITS, INDIRECT, INCIDENTAL, SPECIAL OR CONSEQUENTIAL DAMAGES
- * OF ANY KIND.  IN NO EVENT SHALL PLX'S TOTAL LIABILITY EXCEED THE SUM
- * PAID TO PLX FOR THE PRODUCT LICENSED HEREUNDER.
- * 
+ * OF ANY KIND.
+ *
  ******************************************************************************/
 
 /******************************************************************************
@@ -31,11 +30,11 @@
  *
  * Description:
  *
- *     This file contains all the PLX API function prototypes.
+ *     This file contains all the PLX API function prototypes
  *
  * Revision:
  *
- *     04-01-07 : PLX SDK v5.00
+ *     06-01-09 : PLX SDK v6.20
  *
  ******************************************************************************/
 
@@ -83,6 +82,20 @@ PlxPci_DeviceFind(
     U8              DeviceNumber
     );
 
+PLX_STATUS EXPORT
+PlxPci_DeviceFindEx(
+    PLX_DEVICE_KEY *pKey,
+    U8              DeviceNumber,
+    PLX_API_MODE    ApiMode,
+    PLX_MODE_PROP  *pModeProp
+    );
+
+PLX_STATUS EXPORT
+PlxPci_GetI2cPorts(
+    PLX_API_MODE  ApiMode,
+    U32          *pI2cPorts
+    );
+
 
 /******************************************
  *    Query for Information Functions
@@ -92,6 +105,12 @@ PlxPci_ApiVersion(
     U8 *pVersionMajor,
     U8 *pVersionMinor,
     U8 *pVersionRevision
+    );
+
+PLX_STATUS EXPORT
+PlxPci_I2cVersion(
+    U16          I2cPort,
+    PLX_VERSION *pVersion
     );
 
 PLX_STATUS EXPORT
@@ -109,16 +128,21 @@ PlxPci_DriverProperties(
     );
 
 PLX_STATUS EXPORT
+PlxPci_DriverScheduleRescan(
+    PLX_DEVICE_OBJECT *pDevice
+    );
+
+PLX_STATUS EXPORT
 PlxPci_ChipTypeGet(
     PLX_DEVICE_OBJECT *pDevice,
-    U32               *pChipType,
+    U16               *pChipType,
     U8                *pRevision
     );
 
 PLX_STATUS EXPORT
 PlxPci_ChipTypeSet(
     PLX_DEVICE_OBJECT *pDevice,
-    U32                ChipType,
+    U16                ChipType,
     U8                 Revision
     );
 
@@ -174,7 +198,7 @@ PlxPci_PciRegisterWriteFast(
     );
 
 U32 EXPORT
-PlxPci_PciRegisterRead_Unsupported(
+PlxPci_PciRegisterRead_BypassOS(
     U8          bus,
     U8          slot,
     U8          function,
@@ -183,7 +207,7 @@ PlxPci_PciRegisterRead_Unsupported(
     );
 
 PLX_STATUS EXPORT
-PlxPci_PciRegisterWrite_Unsupported(
+PlxPci_PciRegisterWrite_BypassOS(
     U8  bus,
     U8  slot,
     U8  function,
@@ -198,14 +222,14 @@ PlxPci_PciRegisterWrite_Unsupported(
 U32 EXPORT
 PlxPci_PlxRegisterRead(
     PLX_DEVICE_OBJECT *pDevice,
-    U16                offset,
+    U32                offset,
     PLX_STATUS        *pStatus
     );
 
 PLX_STATUS EXPORT
 PlxPci_PlxRegisterWrite(
     PLX_DEVICE_OBJECT *pDevice,
-    U16                offset,
+    U32                offset,
     U32                value
     );
 
@@ -220,6 +244,20 @@ PLX_STATUS EXPORT
 PlxPci_PlxMappedRegisterWrite(
     PLX_DEVICE_OBJECT *pDevice,
     U32                offset,
+    U32                value
+    );
+
+U32 EXPORT
+PlxPci_PlxMailboxRead(
+    PLX_DEVICE_OBJECT *pDevice,
+    U16                mailbox,
+    PLX_STATUS        *pStatus
+    );
+
+PLX_STATUS EXPORT
+PlxPci_PlxMailboxWrite(
+    PLX_DEVICE_OBJECT *pDevice,
+    U16                mailbox,
     U32                value
     );
 
@@ -468,6 +506,27 @@ PlxPci_VpdWrite(
  *            DMA Functions
  *****************************************/
 PLX_STATUS EXPORT
+PlxPci_DmaChannelOpen(
+    PLX_DEVICE_OBJECT *pDevice,
+    U8                 channel,
+    PLX_DMA_PROP      *pDmaProp
+    );
+
+PLX_STATUS EXPORT
+PlxPci_DmaGetProperties(
+    PLX_DEVICE_OBJECT *pDevice,
+    U8                 channel,
+    PLX_DMA_PROP      *pDmaProp
+    );
+
+PLX_STATUS EXPORT
+PlxPci_DmaSetProperties(
+    PLX_DEVICE_OBJECT *pDevice,
+    U8                 channel,
+    PLX_DMA_PROP      *pDmaProp
+    );
+
+PLX_STATUS EXPORT
 PlxPci_DmaControl(
     PLX_DEVICE_OBJECT *pDevice,
     U8                 channel,
@@ -478,13 +537,6 @@ PLX_STATUS EXPORT
 PlxPci_DmaStatus(
     PLX_DEVICE_OBJECT *pDevice,
     U8                 channel
-    );
-
-PLX_STATUS EXPORT
-PlxPci_DmaChannelOpen(
-    PLX_DEVICE_OBJECT *pDevice,
-    U8                 channel,
-    PLX_DMA_PROP      *pDmaProp
     );
 
 PLX_STATUS EXPORT
@@ -514,30 +566,58 @@ PlxPci_DmaChannelClose(
  *   Performance Monitoring Functions
  *****************************************/
 PLX_STATUS EXPORT
-PlxPci_PerformanceOpen(
-    PLX_DEVICE_OBJECT      *pDevice,
-    PLX_PERFORMANCE_OBJECT *pPerformanceObject
-    );
-
-PLX_STATUS EXPORT
-PlxPci_PerformanceClose(
-    PLX_DEVICE_OBJECT      *pDevice,
-    PLX_PERFORMANCE_OBJECT *pPerformanceObject
-    );
-
-PLX_STATUS EXPORT
-PlxPci_PerformanceStartAndGetCounterValues(
+PlxPci_PerformanceInitializeProperties(
     PLX_DEVICE_OBJECT *pDevice,
-    U32               *PerformanceCountersForAllPorts,
-    U32                NoOfMilliSeconds
+    PLX_PERF_PROP     *pPerfObject
     );
 
 PLX_STATUS EXPORT
-PlxPci_PerformanceGetStatistics(
-    PLX_PERFORMANCE_OBJECT       *pPerformanceObject,
-    PLX_PERF_STATISTICS_PER_PORT *pPerformanceStatistics,
-    U32                           NoOfMilliSeconds
+PlxPci_PerformanceMonitorControl(
+    PLX_DEVICE_OBJECT *pDevice,
+    PLX_PERF_CMD       command
     );
+
+PLX_STATUS EXPORT
+PlxPci_PerformanceResetCounters(
+    PLX_DEVICE_OBJECT *pDevice,
+    PLX_PERF_PROP     *pPerfProps,
+    U8                 NumOfObjects
+    );
+
+PLX_STATUS EXPORT
+PlxPci_PerformanceGetCounters(
+    PLX_DEVICE_OBJECT *pDevice,
+    PLX_PERF_PROP     *pPerfProps,
+    U8                 NumOfObjects
+    );
+
+PLX_STATUS EXPORT
+PlxPci_PerformanceCalcStatistics(
+    PLX_PERF_PROP  *pPerfProp,
+    PLX_PERF_STATS *pPerfStats,
+    U32             ElapsedTime_ms
+    );
+
+
+/******************************************
+ *   Multi-Host Switch Related Functions
+ *****************************************/
+PLX_STATUS EXPORT
+PlxPci_MH_GetProperties(
+    PLX_DEVICE_OBJECT   *pDevice,
+    PLX_MULTI_HOST_PROP *pMHProp
+    );
+
+PLX_STATUS EXPORT
+PlxPci_MH_MigratePorts(
+    PLX_DEVICE_OBJECT *pDevice,
+    U16                VS_Source,
+    U16                VS_Dest,
+    U32                DsPortMask,
+    BOOLEAN            bResetSrc
+    );
+
+
 
 
 

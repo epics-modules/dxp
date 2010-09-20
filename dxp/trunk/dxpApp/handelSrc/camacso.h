@@ -1,9 +1,7 @@
 /* 
- * camacso.h
- *
- * Copyright (c) 2004, X-ray Instrumentation Associates
- *               2005, XIA LLC
- * All rights reserved.
+ * Copyright (c) 2004 X-ray Instrumentation Associates
+ *               2005-2010 XIA LLC
+ * All rights reserved
  *
  * Redistribution and use in source and binary forms, 
  * with or without modification, are permitted provided 
@@ -16,7 +14,7 @@
  *     above copyright notice, this list of conditions and the 
  *     following disclaimer in the documentation and/or other 
  *     materials provided with the distribution.
- *   * Neither the name of X-ray Instrumentation Associates 
+ *   * Neither the name of XIA LLC 
  *     nor the names of its contributors may be used to endorse 
  *     or promote products derived from this software without 
  *     specific prior written permission.
@@ -35,7 +33,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: camacso.h 3139 2005-11-16 21:26:17Z patrick $
+ * $Id: camacso.h 16573 2010-08-21 01:34:29Z patrick $
  *
  */
 
