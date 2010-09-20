@@ -1,11 +1,7 @@
 /*
- * fdd.c
- *
- *   Created        15-Dec-2001  by John Wahl
- *
- * Copyright (c) 2002,2003,2004 X-ray Instrumentation Associates
- *               2005, XIA LLC
- * All rights reserved.
+ * Copyright (c) 2002-2004 X-ray Instrumentation Associates
+ *               2005-2010 XIA LLC
+ * All rights reserved
  *
  * Redistribution and use in source and binary forms,
  * with or without modification, are permitted provided
@@ -18,7 +14,7 @@
  *     above copyright notice, this list of conditions and the
  *     following disclaimer in the documentation and/or other
  *     materials provided with the distribution.
- *   * Neither the name of X-ray Instrumentation Associates
+ *   * Neither the name of XIA LLC
  *     nor the names of its contributors may be used to endorse
  *     or promote products derived from this software without
  *     specific prior written permission.
@@ -37,10 +33,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *   This file contains routine to extract information from a Firmware
- *   Definition Database (FDD).  The library will create temporary files
- *   for a xerxes or handel application to use.  The library will also
- *   allow inclusion of new files in the database.
+ * $Id: fdd.c 16592 2010-08-25 17:53:01Z patrick $
  *
  */
 
@@ -184,26 +177,65 @@ FDD_EXPORT int FDD_API xiaFddGetFirmware(const char *filename, char *path,
 
   /* Add the detector type to the keywords list here */
   keywords = (char **)fdd_md_alloc((nother + 1) * sizeof(char *));
+
+  if (!keywords) {
+      sprintf(info_string, "Unable to allocate %d bytes for the keywords "
+              "array.", (nother + 1) * sizeof(char *));
+      xiaFddLogError("xiaFddGetFirmware", info_string, XIA_NOMEM);
+      return XIA_NOMEM;
+  }
+
   for (i = 0; i < nother; i++) {
     len = strlen(others[i]);
     keywords[i] = (char *)fdd_md_alloc((len + 1) * sizeof(char));
+
+    if (!keywords[i]) {
+        int j;
+
+        for (j = 0; j < i; j++) {
+            fdd_md_free(keywords[j]);
+        }
+        
+        fdd_md_free(keywords);
+
+        sprintf(info_string, "Unable to allocate %d bytes for the keywords[%u] "
+                "array.", len + 1, i);
+        xiaFddLogError("xiaFddGetFirmware", info_string, XIA_NOMEM);
+        return XIA_NOMEM;
+    }
+
     strcpy(keywords[i], others[i]);
   }
 
   len = strlen(detectorType);
   keywords[nother] = (char *)fdd_md_alloc((len + 1) * sizeof(char));
+
+  if (!keywords[nother]) {
+      for (i = 0; i < nother; i++) {
+          fdd_md_free(keywords[i]);
+      }
+
+      fdd_md_free(keywords);
+
+      sprintf(info_string, "Unable to allocate %d bytes for keywords[%u] "
+              "array.", len + 1, nother);
+      xiaFddLogError("xiaFddGetFirmware", info_string, XIA_NOMEM);
+      return XIA_NOMEM;
+  }
+
   strcpy(keywords[nother], detectorType);
 
 
   /* First find and open the FDD file */
-  isFound = xiaFddFindFirmware(filename, ftype, pt, -1.0, (unsigned short) (nother + 1),
-                               keywords, "r", &fp, &exact, rawFilename);
+  isFound = xiaFddFindFirmware(filename, ftype, pt, -1.0,
+                               (unsigned short)(nother + 1), keywords, "r",
+                               &fp, &exact, rawFilename);
 
   for (i = 0; i < (nother + 1); i++) {
-    fdd_md_free((void *)keywords[i]);
+    fdd_md_free(keywords[i]);
   }
 
-  fdd_md_free((void *)keywords);
+  fdd_md_free(keywords);
 
   if (!isFound)  {
     sprintf(info_string,"Cannot find '%s' in '%s': pt = %f, det = '%s'",
@@ -503,6 +535,14 @@ static FILE* dxp_find_file(const char* filename, const char* mode, char newFile[
   if ((home=getenv("XIAHOME"))!=NULL) {
     name = (char *) fdd_md_alloc(sizeof(char)*
                                  (strlen(home)+strlen(filename)+2));
+
+    if (!name) {
+        sprintf(info_string, "Error allocating %d bytes for 'name' string.",
+                strlen(home) + strlen(filename) + 2);
+        xiaFddLogError("xiaFddGetFirmware", info_string, XIA_NOMEM);
+        return NULL;
+    }
+
     sprintf(name, "%s/%s", home, filename);
     if ((fp=xia_file_open(name,mode))!=NULL) {
       len = MAXFILENAME_LEN>(strlen(name)+1) ? strlen(name) : MAXFILENAME_LEN;
@@ -518,6 +558,14 @@ static FILE* dxp_find_file(const char* filename, const char* mode, char newFile[
   if ((home=getenv("DXPHOME"))!=NULL) {
     name = (char *) fdd_md_alloc(sizeof(char)*
                                  (strlen(home)+strlen(filename)+2));
+
+    if (!name) {
+        sprintf(info_string, "Error allocating %d bytes for 'name' string.",
+                strlen(home) + strlen(filename) + 2);
+        xiaFddLogError("xiaFddGetFirmware", info_string, XIA_NOMEM);
+        return NULL;
+    }
+
     sprintf(name, "%s/%s", home, filename);
     if ((fp=xia_file_open(name,mode))!=NULL) {
       len = MAXFILENAME_LEN>(strlen(name)+1) ? strlen(name) : MAXFILENAME_LEN;
@@ -546,6 +594,14 @@ static FILE* dxp_find_file(const char* filename, const char* mode, char newFile[
 
       name = (char *) fdd_md_alloc(sizeof(char)*
                                    (strlen(home)+strlen(name2)+2));
+
+    if (!name) {
+        sprintf(info_string, "Error allocating %d bytes for 'name' string.",
+                strlen(home) + strlen(name2) + 2);
+        xiaFddLogError("xiaFddGetFirmware", info_string, XIA_NOMEM);
+        return NULL;
+    }
+
       sprintf(name, "%s/%s", home, name2);
       if ((fp=xia_file_open(name,mode))!=NULL) {
         len = MAXFILENAME_LEN>(strlen(name)+1) ? strlen(name) : MAXFILENAME_LEN;
@@ -565,6 +621,14 @@ static FILE* dxp_find_file(const char* filename, const char* mode, char newFile[
 
       name = (char *) fdd_md_alloc(sizeof(char)*
                                    (strlen(home)+strlen(name2)+2));
+
+    if (!name) {
+        sprintf(info_string, "Error allocating %d bytes for 'name' string.",
+                strlen(home) + strlen(name2) + 2);
+        xiaFddLogError("xiaFddGetFirmware", info_string, XIA_NOMEM);
+        return NULL;
+    }
+
       sprintf(name, "%s/%s", home, name2);
       if ((fp=xia_file_open(name,mode))!=NULL) {
         len = MAXFILENAME_LEN>(strlen(name)+1) ? strlen(name) : MAXFILENAME_LEN;
@@ -664,7 +728,7 @@ FDD_EXPORT int FDD_API xiaFddAddFirmware(const char *filename, const char *ftype
   fprintf(fp, "%s\n", ftype);
 
   /* Write the other types */
-  fprintf(fp, "%d\n", nother);
+  fprintf(fp, "%hu\n", nother);
   for (i=0; i < nother; i++) {
     fprintf(fp, "%s\n",others[i]);
   }
