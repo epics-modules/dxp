@@ -2,9 +2,9 @@
  * The PLX API (and all code from the SDK) is
  * Copyright (c) 2003 PLX Technology Inc
  *
- * Copyright (c) 2004, X-ray Instrumentation Associates
- *               2005-2009, XIA LLC
- * All rights reserved.
+ * Copyright (c) 2004 X-ray Instrumentation Associates
+ *               2005-2010 XIA LLC
+ * All rights reserved
  *
  * Redistribution and use in source and binary forms, 
  * with or without modification, are permitted provided 
@@ -17,7 +17,7 @@
  *     above copyright notice, this list of conditions and the 
  *     following disclaimer in the documentation and/or other 
  *     materials provided with the distribution.
- *   * Neither the name of X-ray Instrumentation Associates 
+ *   * Neither the name of XIA LLC 
  *     nor the names of its contributors may be used to endorse 
  *     or promote products derived from this software without 
  *     specific prior written permission.
@@ -36,11 +36,8 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
+ * $Id: plxlib.h 16573 2010-08-21 01:34:29Z patrick $
  *
- * $Id: plxlib.h 12433 2009-07-15 21:30:36Z patrick $
- *
- * This driver serves as the interface between the MD layer and the PLX
- * chip on our PXI/cPCI hardware.
  */
 
 #ifndef __PLXLIB_H__

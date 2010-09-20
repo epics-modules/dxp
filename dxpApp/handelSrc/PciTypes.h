@@ -1,13 +1,13 @@
-#ifndef __PCITYPES_H
-#define __PCITYPES_H
+#ifndef __PCI_TYPES_H
+#define __PCI_TYPES_H
 
 /*******************************************************************************
- * Copyright (c) 2007 PLX Technology, Inc.
- * 
- * PLX Technology Inc. licenses this software under specific terms and
- * conditions.  Use of any of the software or derviatives thereof in any
- * product without a PLX Technology chip is strictly prohibited. 
- * 
+ * Copyright (c) PLX Technology, Inc.
+ *
+ * PLX Technology Inc. licenses this source file under the GNU Lesser General Public
+ * License (LGPL) version 2.  This source file may be modified or redistributed
+ * under the terms of the LGPL and without express permission from PLX Technology.
+ *
  * PLX Technology, Inc. provides this software AS IS, WITHOUT ANY WARRANTY,
  * EXPRESS OR IMPLIED, INCLUDING, WITHOUT LIMITATION, ANY WARRANTY OF
  * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  PLX makes no guarantee
@@ -15,12 +15,11 @@
  * the software and documentation in terms of correctness, accuracy,
  * reliability, currentness, or otherwise; and you rely on the software,
  * documentation and results solely at your own risk.
- * 
+ *
  * IN NO EVENT SHALL PLX BE LIABLE FOR ANY LOSS OF USE, LOSS OF BUSINESS,
  * LOSS OF PROFITS, INDIRECT, INCIDENTAL, SPECIAL OR CONSEQUENTIAL DAMAGES
- * OF ANY KIND.  IN NO EVENT SHALL PLX'S TOTAL LIABILITY EXCEED THE SUM
- * PAID TO PLX FOR THE PRODUCT LICENSED HEREUNDER.
- * 
+ * OF ANY KIND.
+ *
  ******************************************************************************/
 
 /******************************************************************************
@@ -35,7 +34,7 @@
  *
  * Revision:
  *
- *      09-01-07 : PLX SDK v5.20
+ *      04-01-08 : PLX SDK v6.00
  *
  ******************************************************************************/
 
@@ -63,6 +62,10 @@
     #include <linux/types.h>    // Linux types
 #endif
 
+#if defined(PLX_LINUX)
+    #include <limits.h>         // For MAX_SCHEDULE_TIMEOUT in Linux applications
+#endif
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -80,13 +83,9 @@ extern "C" {
     typedef __u16                 U16;
     typedef __s32                 S32;
     typedef __u32                 U32;
-  #if defined(PLX_BIG_ENDIAN)           // To avoid 64-bit issues on BE systems
-    typedef __s32                 S64;
-    typedef __u32                 U64;
-  #else
     typedef __s64                 S64;
     typedef __u64                 U64;
-  #endif
+    #define PLX_SIZE_64           8
     typedef signed long           PLX_INT_PTR;        // For 32/64-bit code compatability
     typedef unsigned long         PLX_UINT_PTR;
 
@@ -94,6 +93,10 @@ extern "C" {
     typedef int                   PLX_DRIVER_HANDLE;  // Linux-specific driver handle
 
     #define INVALID_HANDLE_VALUE  (HANDLE)-1
+
+    #if !defined(MAX_SCHEDULE_TIMEOUT)
+        #define MAX_SCHEDULE_TIMEOUT    LONG_MAX
+    #endif
 #endif
 
 
@@ -108,13 +111,9 @@ extern "C" {
     typedef u16                   U16;
     typedef s32                   S32;
     typedef u32                   U32;
-  #if defined(PLX_BIG_ENDIAN)           // To avoid 64-bit issues on BE systems
-    typedef s32                   S64;
-    typedef u32                   U64;
-  #else
     typedef s64                   S64;
     typedef u64                   U64;
-  #endif
+    #define PLX_SIZE_64           8
     typedef signed long           PLX_INT_PTR;        // For 32/64-bit code compatability
     typedef unsigned long         PLX_UINT_PTR;
 
@@ -144,6 +143,7 @@ extern "C" {
     typedef UINT_PTR              PLX_UINT_PTR;
 
     typedef HANDLE                PLX_DRIVER_HANDLE;  // Windows-specific driver handle
+    #define PLX_SIZE_64           8
 #endif
 
 
@@ -163,9 +163,10 @@ extern "C" {
     typedef S32                   PLX_INT_PTR;        // For 32/64-bit code compatability
     typedef U32                   PLX_UINT_PTR;
 
-    typedef void*                 HANDLE;
-    typedef void*                 PLX_DRIVER_HANDLE;
-    #define INVALID_HANDLE_VALUE  (NULL)
+    typedef unsigned long         HANDLE;
+    typedef HANDLE                PLX_DRIVER_HANDLE;
+    #define INVALID_HANDLE_VALUE  0
+    #define PLX_SIZE_64           8
 
     #if !defined(_far)
         #define _far

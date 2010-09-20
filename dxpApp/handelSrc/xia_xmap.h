@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2004 X-ray Instrumentation Associates
  *               2005-2010 XIA LLC
- * All rights reserved.
+ * All rights reserved
  *
  * Redistribution and use in source and binary forms, 
  * with or without modification, are permitted provided 
@@ -14,7 +14,7 @@
  *     above copyright notice, this list of conditions and the 
  *     following disclaimer in the documentation and/or other 
  *     materials provided with the distribution.
- *   * Neither the name of X-ray Instrumentation Associates 
+ *   * Neither the name of XIA LLC 
  *     nor the names of its contributors may be used to endorse 
  *     or promote products derived from this software without 
  *     specific prior written permission.
@@ -33,7 +33,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xia_xmap.h 15170 2010-03-27 01:26:34Z patrick $
+ * $Id: xia_xmap.h 16756 2010-09-17 22:23:33Z patrick $
  *
  */
 
@@ -158,7 +158,8 @@ XERXES_STATIC int dxp_read_global_register(int ioChan, unsigned long reg,
 XERXES_STATIC int dxp_load_symbols_from_file(char *file, Dsp_Params *params);
 XERXES_STATIC int dxp_load_dsp_code_from_file(char *file, Dsp_Info *dsp);
 XERXES_STATIC int dxp_reset_dsp(int ioChan);
-XERXES_STATIC int dxp_boot_dsp(int ioChan, int modChan, Board *b);
+XERXES_STATIC int dxp_boot_dsp(int ioChan, int modChan, Board *b,
+                               boolean_t first_time);
 
 XERXES_STATIC int dxp_get_symbol_by_index(int modChan, unsigned short index,
                                           Board *board, char *name);
@@ -216,12 +217,12 @@ XERXES_STATIC int dxp_get_num_params(int modChan, Board *b,
 #define XMAP_XDONE     1
 
 /* Used for controlling the DSP interface */
-#define XMAP_DSP_RESET_BIT    2
-#define XMAP_DSP_BOOT_BIT     3
-#define XMAP_CSR_RUN_ENA      0
-#define XMAP_CSR_RESET_MCA    1
-#define XMAP_CSR_RUN_ACT_BIT 16
-#define XMAP_CSR_DSP_ACT_BIT 17
+#define XMAP_DSP_RESET_BIT      2
+#define XMAP_DSP_BOOT_BIT       3
+#define XMAP_CSR_RUN_ENA        0
+#define XMAP_CSR_RESET_MCA      1
+#define XMAP_CSR_RUN_ACT_BIT    16
+#define XMAP_CSR_DSP_ACT_BIT    17
 
 static unsigned long XMAP_CFG_STATUS[XMAP_NUM_TARGETS][2] = {
   { 0x1,  0x2  },

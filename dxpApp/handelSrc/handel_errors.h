@@ -1,9 +1,7 @@
 /*
- *  handel_errors.h
- *
- * Copyright (c) 2004, X-ray Instrumentation Associates
- *               2005, XIA LLC
- * All rights reserved.
+ * Copyright (c) 2004 X-ray Instrumentation Associates
+ *               2005-2010 XIA LLC
+ * All rights reserved
  *
  * Redistribution and use in source and binary forms, 
  * with or without modification, are permitted provided 
@@ -16,7 +14,7 @@
  *     above copyright notice, this list of conditions and the 
  *     following disclaimer in the documentation and/or other 
  *     materials provided with the distribution.
- *   * Neither the name of X-ray Instrumentation Associates 
+ *   * Neither the name of XIA LLC 
  *     nor the names of its contributors may be used to endorse 
  *     or promote products derived from this software without 
  *     specific prior written permission.
@@ -35,8 +33,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: handel_errors.h 15938 2010-06-09 19:20:45Z patrick $
- * 
+ * $Id: handel_errors.h 16573 2010-08-21 01:34:29Z patrick $
  *
  */
 
@@ -236,6 +233,7 @@
 #define XIA_UNKNOWN_MAPPING 674 /** Unknown mapping mode value specified. */
 #define XIA_UNKNOWN_LIST_MODE_VARIANT 675 /** Illegal list mode variant. */
 #define XIA_MALFORMED_LENGTH 676 /** List mode upper length word is malformed. */
+#define XIA_CLRBUFSIZE_LENGTH 677 /** Clear Buffer Size length is too large. */
 
 /* XUP errors 701-800 */
 #define XIA_XUP_VERSION     701 /** XUP version is not supported */

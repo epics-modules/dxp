@@ -1,17 +1,7 @@
 /*
- *  handel.h
- *
- *  Modified 2-Feb-97 EO: add prototype for dxp_primitive routines
- *      dxp_read_long and dxp_write_long; added various parameters
- *  Major Mods 3-17-00 JW: Complete revamping of libraries
- *  Copied 6-25-01 JW: copied xia_xerxes.h to xia_handel.h
- *  Major Mods 8-21-01: renamed to handel.h and added more prototypes
- *                      from specification.
- *
- *
- * Copyright (c) 2002,2003,2004 X-ray Instrumentation Associates
- *               2005 XIA LLC
- * All rights reserved.
+ * Copyright (c) 2002-2004 X-ray Instrumentation Associates
+ *               2005-2010 XIA LLC
+ * All rights reserved
  *
  * Redistribution and use in source and binary forms, 
  * with or without modification, are permitted provided 
@@ -24,7 +14,7 @@
  *     above copyright notice, this list of conditions and the 
  *     following disclaimer in the documentation and/or other 
  *     materials provided with the distribution.
- *   * Neither the name of X-ray Instrumentation Associates 
+ *   * Neither the name of XIA LLC 
  *     nor the names of its contributors may be used to endorse 
  *     or promote products derived from this software without 
  *     specific prior written permission.
@@ -43,13 +33,9 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- *  Following are prototypes for HanDeL library routines
- *
- * $Id: handel.h 6746 2007-07-04 02:05:42Z ann $
+ * $Id: handel.h 16607 2010-08-26 15:56:19Z patrick $
  *
  */
-
-/** @file handel.h */
 
 #ifndef HANDEL_H
 #define HANDEL_H
@@ -65,11 +51,6 @@
 
 #define XIA_BEFORE		0
 #define XIA_AFTER		1
-
-/* Acquisition value membership constants */
-#define AV_MEM_PARSET 0x04
-#define AV_MEM_GENSET 0x08
-
 
 /* If this is compiled by a C++ compiler, make it clear that these are C routines */
 #ifdef __cplusplus
