@@ -1,32 +1,42 @@
-/******************************************************************************
+/*
+ * Copyright (c) 1998-2004 X-ray Instrumentation Associates 
+ *               2005-2010 XIA LLC
+ * All rights reserved 
  *
- *   Copyright 1998-2004, X-ray Instrumentation Associates 
- *             2005, XIA LLC
- *   All rights reserved 
+ * Redistribution and use in source and binary forms, 
+ * with or without modification, are permitted provided 
+ * that the following conditions are met:
  *
- *   epplib.cpp
- *   Created 15-Apr-1998   E.Oltman
+ *   * Redistributions of source code must retain the above 
+ *     copyright notice, this list of conditions and the 
+ *     following disclaimer.
+ *   * Redistributions in binary form must reproduce the 
+ *     above copyright notice, this list of conditions and the 
+ *     following disclaimer in the documentation and/or other 
+ *     materials provided with the distribution.
+ *   * Neither the name of XIA LLC 
+ *     nor the names of its contributors may be used to endorse 
+ *     or promote products derived from this software without 
+ *     specific prior written permission.
  *
- *   Modified 25-May-1998  E.Oltman: Added write_block
- *   Modified 20-Jul-1998  E.Oltman: Turn into a dll
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+ * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+ * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+ * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE 
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON 
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR 
+ * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
+ * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
+ * SUCH DAMAGE. 
  *
- *   
- *   C-callable routine for communicating with the DXP-X10P under Windows 95
+ * $Id: xia_epp.c 16573 2010-08-21 01:34:29Z patrick $
  *
- *   Developed in Microsoft Visual C++ Version 5.0.  The following functions
- *   must be replaced if you arw working with a different compiler...
- *   Note: This routine must be compiled w/default (or no) optimization in VC++
- *
- *      GetTickCount:  Returns elapsed time in msec
- *      Sleep          Suspends executions for time in msec
- *      _inp           reads a byte from a port
- *      _outp          writes a byte to a port
- *
- *    
- *
- *
- *
- *****************************************************************************/
+ */
+
 #include <windows.h>
 
 #define CSR  0x8000

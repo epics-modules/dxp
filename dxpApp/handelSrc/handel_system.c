@@ -1,12 +1,7 @@
-
 /*
- * handel_system.c
- *
- * Created 10/12/01 -- PJF
- *
- * Copyright (c) 2002,2003,2004, X-ray Instrumentation Associates
- *               2005, XIA LLC
- * All rights reserved.
+ * Copyright (c) 2002-2004 X-ray Instrumentation Associates
+ *               2005-2010 XIA LLC
+ * All rights reserved
  *
  * Redistribution and use in source and binary forms, 
  * with or without modification, are permitted provided 
@@ -19,7 +14,7 @@
  *     above copyright notice, this list of conditions and the 
  *     following disclaimer in the documentation and/or other 
  *     materials provided with the distribution.
- *   * Neither the name of X-ray Instrumentation Associates 
+ *   * Neither the name of XIA LLC 
  *     nor the names of its contributors may be used to endorse 
  *     or promote products derived from this software without 
  *     specific prior written permission.
@@ -37,6 +32,8 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
+ *
+ * $Id: handel_system.c 16592 2010-08-25 17:53:01Z patrick $
  *
  */
 
@@ -745,12 +742,12 @@ HANDEL_STATIC int HANDEL_API xiaValidateDetChan(DetChanElement *current)
 
   status = xiaValidateModule(&localFuncs, current->detChan);
 	
-  if (status != XIA_SUCCESS)
-    {
-      sprintf(info_string, "Error validating Module data for detChan %u", current->detChan);
+  if (status != XIA_SUCCESS) {
+      sprintf(info_string, "Error validating Module data for detChan %d",
+              current->detChan);
       xiaLogError("xiaValidateDetChan", info_string, status);
       return status;
-    }
+  }
 
   return XIA_SUCCESS;
 
@@ -789,12 +786,12 @@ HANDEL_STATIC int HANDEL_API xiaValidateDetSet(DetChanElement *head)
           break;
 
         case SET:
-          if (current->isTagged)
-            {
-              status = XIA_INFINITE_LOOP;
-              sprintf(info_string, "Infinite loop detected involving detChan %u", current->detChan);
-              xiaLogError("xiaValidateDetSet", info_string, status);
-              return status;
+            if (current->isTagged) {
+                sprintf(info_string, "Infinite loop detected involving "
+                        "detChan %d", current->detChan);
+                xiaLogError("xiaValidateDetSet", info_string,
+                            XIA_INFINITE_LOOP);
+                return XIA_INFINITE_LOOP;
             }
           status = xiaValidateDetSet(current);
           break;

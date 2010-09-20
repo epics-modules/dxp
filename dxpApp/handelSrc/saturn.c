@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2002-2004 X-ray Instrumentation Associates
  *               2005-2010 XIA LLC
- * All rights reserved.
+ * All rights reserved
  *
  * Redistribution and use in source and binary forms,
  * with or without modification, are permitted provided
@@ -14,7 +14,7 @@
  *     above copyright notice, this list of conditions and the
  *     following disclaimer in the documentation and/or other
  *     materials provided with the distribution.
- *   * Neither the name of X-ray Instrumentation Associates
+ *   * Neither the name of XIA LLC
  *     nor the names of its contributors may be used to endorse
  *     or promote products derived from this software without
  *     specific prior written permission.
@@ -33,7 +33,8 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: saturn.c 15956 2010-06-10 15:46:34Z patrick $
+ * $Id: saturn.c 16592 2010-08-25 17:53:01Z patrick $
+ *
  */
 
 
@@ -675,7 +676,7 @@ static int dxp_read_block(int* ioChan, int* modChan, unsigned short* addr,
     status = dxp_read_data(ioChan, &readdata[maxblk*i], xlen);
     if (status!=DXP_SUCCESS) {
       status = DXP_READ_BLOCK;
-      sprintf(info_string,"Error reading %dth block transer",i);
+      sprintf(info_string,"Error reading %uth block transer",i);
       dxp_log_error("dxp_read_block",info_string,status);
       return status;
     }
@@ -741,7 +742,7 @@ static int dxp_write_block(int* ioChan, int* modChan, unsigned short* addr,
     status = dxp_write_data(ioChan, &writedata[maxblk*i], xlen);
     if (status!=DXP_SUCCESS) {
       status = DXP_WRITE_BLOCK;
-      sprintf(info_string,"Error in %dth block transfer",i);
+      sprintf(info_string,"Error in %uth block transfer",i);
       dxp_log_error("dxp_write_block",info_string,status);
       return status;
     }
@@ -897,7 +898,7 @@ static int dxp_download_fpgaconfig(int* ioChan, int* modChan, char *name, Board*
     status = dxp_write_fippi(ioChan, &(fippi->data[i]), 1);
     if (status!=DXP_SUCCESS) {
       status = DXP_WRITE_WORD;
-      sprintf(info_string,"Error in %dth 1-word transfer",i);
+      sprintf(info_string,"Error in %uth 1-word transfer",i);
       dxp_log_error("dxp_download_fpgaconfig",info_string,status);
       return status;
     }
@@ -930,7 +931,7 @@ static int dxp_download_fpgaconfig(int* ioChan, int* modChan, char *name, Board*
     status = dxp_write_fippi(ioChan, &(fippi->data[j*maxblk+10]), xlen);
     if (status!=DXP_SUCCESS) {
       status = DXP_WRITE_BLOCK;
-      sprintf(info_string,"Error in %dth (last) block transfer",j);
+      sprintf(info_string,"Error in %uth (last) block transfer",j);
       dxp_log_error("dxp_download_fpgaconfig",info_string,status);
       return status;
     }
@@ -1216,7 +1217,7 @@ static int dxp_download_dspconfig(int* ioChan, int* modChan, Board *board)
     status = dxp_write_block(ioChan, modChan, &start_addr, &xlen, &(dsp->data[j*maxblk+2]));
     if (status!=DXP_SUCCESS) {
       status = DXP_WRITE_BLOCK;
-      sprintf(info_string,"Error in  %dth block transfer",j);
+      sprintf(info_string,"Error in %uth block transfer",j);
       dxp_log_error("dxp_download_dspconfig",info_string,status);
       return status;
     }
@@ -1313,8 +1314,8 @@ static int dxp_download_dsp_done(int* ioChan, int* modChan, int* mod,
 
   /* If here, then timeout period reached.  Report error. */
   status = DXP_DSPTIMEOUT;
-  sprintf(info_string,"Timeout waiting for DSP BUSY=%d from module %d channel %d",
-          *value, *mod, *modChan);
+  sprintf(info_string,"Timeout waiting for DSP BUSY=%hu from module %d "
+          "channel %d", *value, *mod, *modChan);
   dxp_log_error("dxp_download_dsp_done",info_string,status);
   return status;
 }
@@ -1613,7 +1614,7 @@ static int dxp_load_dspsymbol_table(FILE* fp, Dsp_Info* dsp)
    */
 	while(saturn_md_fgets(line,LINE_LEN,fp)!=NULL){
     if (line[0]=='*') continue;
-    sscanf(line,"%hd",&(dsp->params->nsymbol));
+    sscanf(line,"%hu",&(dsp->params->nsymbol));
     break;
   }
   if (dsp->params->nsymbol>0) {
@@ -1639,8 +1640,9 @@ static int dxp_load_dspsymbol_table(FILE* fp, Dsp_Info* dsp)
                       "Error in SYMBOL format of DSP file",status);
         return status;
       }
-      retval = sscanf(line, "%s %1s %hd %hd", dsp->params->parameters[i].pname, atype,
-                      &(dsp->params->parameters[i].lbound), &(dsp->params->parameters[i].ubound));
+      retval = sscanf(line, "%s %1s %hu %hu", dsp->params->parameters[i].pname,
+                      atype, &(dsp->params->parameters[i].lbound),
+                      &(dsp->params->parameters[i].ubound));
       dsp->params->parameters[i].address = i;
       dsp->params->parameters[i].access = 1;
       if (retval>1) {
@@ -1907,7 +1909,8 @@ static int dxp_modify_dspsymbol(int* ioChan, int* modChan, char* name,
 
   if (strlen(name)>dsp->params->maxsymlen) {
     status = DXP_NOSYMBOL;
-    sprintf(info_string, "Symbol name must be <%d characters", dsp->params->maxsymlen);
+    sprintf(info_string, "Symbol name must be <%hu characters",
+            dsp->params->maxsymlen);
     dxp_log_error("dxp_modify_dspsymbol", info_string, status);
     return status;
   }
@@ -2003,7 +2006,7 @@ static int dxp_write_dsp_param_addr(int* ioChan, int* modChan,
   saddr = (unsigned short) (*addr + startp);
 
   if ((status=dxp_write_word(ioChan,modChan,&saddr,value))!=DXP_SUCCESS) {
-    sprintf(info_string, "Error writing parameter at %d", *addr);
+    sprintf(info_string, "Error writing parameter at %#hx", *addr);
     dxp_log_error("dxp_write_dsp_param_addr",info_string,status);
     return status;
   }
@@ -2051,7 +2054,8 @@ static int dxp_read_dspsymbol(int* ioChan, int* modChan, char* name,
 
   if (strlen(name) > (dsp->params->maxsymlen)) {
     status = DXP_NOSYMBOL;
-    sprintf(info_string, "Symbol Name must be <%i characters", dsp->params->maxsymlen);
+    sprintf(info_string, "Symbol Name must be <%hu characters",
+            dsp->params->maxsymlen);
     dxp_log_error("dxp_read_dspsymbol", info_string, status);
     return status;
   }
@@ -2657,7 +2661,7 @@ static int dxp_begin_run(int* ioChan, int* modChan, unsigned short* gate,
     return status;
   }
 
-  sprintf(info_string, "resume = %d, gate = %d", *resume, *gate);
+  sprintf(info_string, "resume = %hu, gate = %hu", *resume, *gate);
   dxp_log_debug("dxp_begin_run",info_string);
 
   data |= MASK_RUNENABLE;
@@ -3199,7 +3203,7 @@ static int dxp_control_task_data(int* ioChan, int* modChan, short *type,
 
     if (!stemp) {
       sprintf(info_string, "Not enough memory to allocate temporary array "
-              "of length %d", lenh);
+              "of length %u", lenh);
       dxp_log_error("dxp_control_task_data", info_string, status);
       return status;
     }

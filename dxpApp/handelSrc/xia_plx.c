@@ -1,44 +1,44 @@
 /*
-* The PLX API (and all code from the SDK) is
-* Copyright (c) 2003 PLX Technology Inc
-*
-* Copyright (c) 2004, X-ray Instrumentation Associates
-*               2005-2009, XIA LLC
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms,
-* with or without modification, are permitted provided
-* that the following conditions are met:
-*
-*   * Redistributions of source code must retain the above
-*     copyright notice, this list of conditions and the
-*     following disclaimer.
-*   * Redistributions in binary form must reproduce the
-*     above copyright notice, this list of conditions and the
-*     following disclaimer in the documentation and/or other
-*     materials provided with the distribution.
-*   * Neither the name of X-ray Instrumentation Associates
-*     nor the names of its contributors may be used to endorse
-*     or promote products derived from this software without
-*     specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
-* CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
-* INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-* IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
-* FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-* PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-* ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
-* TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
-* THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-* SUCH DAMAGE.
-*
-* $Id: xia_plx.c 14816 2010-03-03 20:37:08Z patrick $
-*
-*/
+ * The PLX API (and all code from the SDK) is
+ * Copyright (c) 2003 PLX Technology Inc
+ *
+ * Copyright (c) 2004 X-ray Instrumentation Associates
+ *               2005-2010 XIA LLC
+ * All rights reserved
+ *
+ * Redistribution and use in source and binary forms,
+ * with or without modification, are permitted provided
+ * that the following conditions are met:
+ *
+ *   * Redistributions of source code must retain the above
+ *     copyright notice, this list of conditions and the
+ *     following disclaimer.
+ *   * Redistributions in binary form must reproduce the
+ *     above copyright notice, this list of conditions and the
+ *     following disclaimer in the documentation and/or other
+ *     materials provided with the distribution.
+ *   * Neither the name of XIA LLC
+ *     nor the names of its contributors may be used to endorse
+ *     or promote products derived from this software without
+ *     specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+ * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+ * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+ * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+ * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ * $Id: xia_plx.c 16573 2010-08-21 01:34:29Z patrick $
+ *
+ */
 
 #include <windows.h>
 
@@ -695,7 +695,7 @@ XIA_EXPORT int XIA_API plx_read_block(HANDLE h, unsigned long addr,
   dma_prop.ReadyInput       = 1;
   dma_prop.Burst            = 1;
   dma_prop.BurstInfinite    = 1;
-  dma_prop.LocalAddrConst   = 1;
+  dma_prop.ConstAddrLocal   = 1;
   dma_prop.LocalBusWidth    = 2;  // 32-bit bus 
 
   
@@ -715,7 +715,7 @@ XIA_EXPORT int XIA_API plx_read_block(HANDLE h, unsigned long addr,
     memset(&(V_MAP.intrs[idx]), 0, sizeof(PLX_INTERRUPT));
 
     // Setup to wait for DMA channel 0
-    V_MAP.intrs[idx].DmaChannel_0 = 1;
+    V_MAP.intrs[idx].DmaDone = 1;
 
     status = PlxPci_NotificationRegisterFor(&(V_MAP.device[idx]), 
                                         &(V_MAP.intrs[idx]), &(V_MAP.events[idx]));
@@ -756,10 +756,10 @@ XIA_EXPORT int XIA_API plx_read_block(HANDLE h, unsigned long addr,
     return PLX_MEM;
   }
 
-  dma_params.u.UserVa          = (U32)local;
+  dma_params.UserVa            = (U32)local;
   dma_params.LocalAddr         = EXTERNAL_MEMORY_LOCAL_ADDR;
   dma_params.ByteCount         = (len + n_dead) * 4;
-  dma_params.LocalToPciDma     = 1;
+  dma_params.Direction 				 = PLX_DMA_LOC_TO_PCI;
  
   status = PlxPci_DmaTransferUserBuffer(&(V_MAP.device[idx]), 0, &dma_params, 0);
 

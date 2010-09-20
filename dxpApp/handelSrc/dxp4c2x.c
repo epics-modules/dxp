@@ -1,8 +1,8 @@
 /*
  * Original author: Mark Rivers, University of Chicago
  *
- * Copyright (c) 2009, XIA LLC
- * All rights reserved.
+ * Copyright (c) 2009-2010 XIA LLC
+ * All rights reserved
  *
  * Redistribution and use in source and binary forms,
  * with or without modification, are permitted provided
@@ -15,7 +15,7 @@
  *     above copyright notice, this list of conditions and the
  *     following disclaimer in the documentation and/or other
  *     materials provided with the distribution.
- *   * Neither the name of X-ray Instrumentation Associates
+ *   * Neither the name of XIA LLC
  *     nor the names of its contributors may be used to endorse
  *     or promote products derived from this software without
  *     specific prior written permission.
@@ -34,7 +34,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: dxp4c2x.c 15956 2010-06-10 15:46:34Z patrick $
+ * $Id: dxp4c2x.c 16592 2010-08-25 17:53:01Z patrick $
  *
  */
 
@@ -47,6 +47,8 @@
 #include <math.h>
 
 #include "md_generic.h"
+
+#include "xerxesdef.h"
 #include "xerxes_structures.h"
 #include "xia_xerxes_structures.h"
 #include "dxp4c2x.h"
@@ -796,7 +798,7 @@ XERXES_STATIC int dxp_read_block(int* ioChan, int* modChan, unsigned short* addr
     status = dxp_read_data(ioChan, &readdata[maxblk*i], xlen);
     if (status!=DXP_SUCCESS) {
       status = DXP_READ_BLOCK;
-      sprintf(info_string,"Error reading %dth block transer",i);
+      sprintf(info_string,"Error reading %uth block transfer",i);
       dxp_log_error("dxp_read_block",info_string,status);
       return status;
     }
@@ -874,7 +876,7 @@ XERXES_STATIC int dxp_write_block(int* ioChan, int* modChan, unsigned short* add
     status = dxp_write_data(ioChan, &writedata[maxblk*i], xlen);
     if (status!=DXP_SUCCESS) {
       status = DXP_WRITE_BLOCK;
-      sprintf(info_string,"Error in %dth block transfer",i);
+      sprintf(info_string,"Error in %uth block transfer",i);
       dxp_log_error("dxp_write_block",info_string,status);
       return status;
     }
@@ -1062,7 +1064,7 @@ XERXES_STATIC int dxp_download_fpgaconfig(int* ioChan, int* modChan, char *name,
     status = dxp_write_fippi(ioChan, &(fippi->data[i]), 1);
     if (status!=DXP_SUCCESS) {
       status = DXP_WRITE_WORD;
-      sprintf(info_string,"Error in %dth 1-word transfer",i);
+      sprintf(info_string,"Error in %uth 1-word transfer",i);
       dxp_log_error("dxp_download_fpgaconfig",info_string,status);
       return status;
     }
@@ -1095,7 +1097,7 @@ XERXES_STATIC int dxp_download_fpgaconfig(int* ioChan, int* modChan, char *name,
     status = dxp_write_fippi(ioChan, &(fippi->data[j*maxblk+10]), xlen);
     if (status!=DXP_SUCCESS) {
       status = DXP_WRITE_BLOCK;
-      sprintf(info_string,"Error in %dth (last) block transfer",j);
+      sprintf(info_string,"Error in %uth (last) block transfer",j);
       dxp_log_error("dxp_download_fpgaconfig",info_string,status);
       return status;
     }
@@ -1359,7 +1361,7 @@ XERXES_STATIC int dxp_download_dspconfig(int* ioChan, int* modChan, Board *board
     status = dxp_write_block(ioChan, modChan, &start_addr, &xlen, &(dsp->data[j*maxblk+2]));
     if (status!=DXP_SUCCESS) {
       status = DXP_WRITE_BLOCK;
-      sprintf(info_string,"Error in  %dth block transfer",j);
+      sprintf(info_string,"Error in  %uth block transfer",j);
       dxp_log_error("dxp_download_dspconfig",info_string,status);
       return status;
     }
@@ -1469,7 +1471,7 @@ XERXES_STATIC int dxp_download_dsp_done(int* ioChan, int* modChan, int* mod,
 
   /* If here, then timeout period reached.  Report error. */
   status = DXP_DSPTIMEOUT;
-  sprintf(info_string,"Timeout waiting for DSP BUSY=%d from module %d channel %d",
+  sprintf(info_string,"Timeout waiting for DSP BUSY=%hu from module %d channel %d",
           *value, *mod, *modChan);
   dxp_log_error("dxp_download_dsp_done",info_string,status);
   return status;
@@ -1719,7 +1721,7 @@ XERXES_STATIC int dxp_load_dspconfig(FILE* fp, Dsp_Info* dsp)
   char line[LINE_LEN];
   int nchars;
 
-  unsigned int dsp0, dsp1;
+  unsigned short dsp0, dsp1;
 
   /* Check if we have some allocated memory space */
   if (dsp->data==NULL) {
@@ -1738,9 +1740,9 @@ XERXES_STATIC int dxp_load_dspconfig(FILE* fp, Dsp_Info* dsp)
       nchars--;
     }
     for (i=0;i<nchars;i+=6) {
-      sscanf(&line[i],"%4X%2X",&dsp0,&dsp1);
-      dsp->data[(dsp->proglen)++] = (unsigned short) dsp0;
-      dsp->data[(dsp->proglen)++] = (unsigned short) dsp1;
+      sscanf(&line[i],"%4hX%2hX",&dsp0,&dsp1);
+      dsp->data[(dsp->proglen)++] = dsp0;
+      dsp->data[(dsp->proglen)++] = dsp1;
     }
   }
 
@@ -2211,7 +2213,7 @@ XERXES_STATIC int dxp_test_mem(int* ioChan, int* modChan, int* pattern,
   } else {
     status=DXP_BAD_PARAM;
     sprintf(info_string,
-            "Attempting to test %d elements in DSP memory",*length);
+            "Attempting to test %u elements in DSP memory",*length);
     dxp_log_error("dxp_test_mem",info_string,status);
     return status;
   }
@@ -2277,7 +2279,7 @@ XERXES_STATIC int dxp_test_mem(int* ioChan, int* modChan, int* pattern,
       nerrors++;
       status = DXP_MEMERROR;
       if (nerrors<10) {
-        sprintf(info_string, "Error: word %d, wrote %x, read back %x",
+        sprintf(info_string, "Error: word %u, wrote %x, read back %x",
                 j,((unsigned int) writebuf[j]),((unsigned int) readbuf[j]));
         dxp_log_error("dxp_test_mem",info_string,status);
       }
@@ -2327,7 +2329,7 @@ XERXES_STATIC int dxp_modify_dspsymbol(int* ioChan, int* modChan, char* name,
 
   if (strlen(name)>dsp->params->maxsymlen) {
     status = DXP_NOSYMBOL;
-    sprintf(info_string, "Symbol name must be <%d characters", dsp->params->maxsymlen);
+    sprintf(info_string, "Symbol name must be <%hu characters", dsp->params->maxsymlen);
     dxp_log_error("dxp_modify_dspsymbol", info_string, status);
     return status;
   }
@@ -2423,7 +2425,7 @@ XERXES_STATIC int dxp_write_dsp_param_addr(int* ioChan, int* modChan,
   saddr = (unsigned short) (*addr + startp);
 
   if ((status=dxp_write_word(ioChan,modChan,&saddr,value))!=DXP_SUCCESS) {
-    sprintf(info_string, "Error writing parameter at %d", *addr);
+    sprintf(info_string, "Error writing parameter at %u", *addr);
     dxp_log_error("dxp_write_dsp_param_addr",info_string,status);
     return status;
   }
@@ -2471,7 +2473,7 @@ XERXES_STATIC int dxp_read_dspsymbol(int* ioChan, int* modChan, char* name,
 
   if (strlen(name) > (dsp->params->maxsymlen)) {
     status = DXP_NOSYMBOL;
-    sprintf(info_string, "Symbol Name must be <%i characters", dsp->params->maxsymlen);
+    sprintf(info_string, "Symbol Name must be <%hu characters", dsp->params->maxsymlen);
     dxp_log_error("dxp_read_dspsymbol", info_string, status);
     return status;
   }
@@ -2881,7 +2883,7 @@ XERXES_STATIC int dxp_read_baseline(int* ioChan, int* modChan, Board* board,
 
   if (!us_baseline) {
     sprintf(info_string, "Error allocating %d bytes for 'us_baseline'",
-            len * sizeof(unsigned short));
+            (int)(len * sizeof(unsigned short)));
     dxp_log_error("dxp_read_baseline", info_string, DXP_ALLOCMEM);
     return DXP_ALLOCMEM;
   }
@@ -3038,7 +3040,7 @@ XERXES_STATIC int dxp_begin_run(int* ioChan, int* modChan, unsigned short* gate,
     return status;
   }
 
-  sprintf(info_string, "resume = %d, gate = %d", *resume, *gate);
+  sprintf(info_string, "resume = %hu, gate = %hu", *resume, *gate);
   dxp_log_debug("dxp_begin_run",info_string);
 
   data |= MASK_RUNENABLE;
@@ -3554,7 +3556,7 @@ XERXES_STATIC int dxp_control_task_data(int* ioChan, int* modChan, short *type,
 
     if (!stemp) {
       sprintf(info_string, "Not enough memory to allocate temporary array "
-              "of length %d", lenh);
+              "of length %u", lenh);
       dxp_log_error("dxp_control_task_data", info_string, status);
       return status;
     }
@@ -5067,7 +5069,7 @@ XERXES_STATIC int dxp_read_external_memory(int *ioChan, int *modChan, Board *boa
 
     if (buf == NULL) {
       sprintf(info_string, "Out-of-memory allocating %d bytes for 'buf'",
-              current_len * sizeof(unsigned long));
+              (int)(current_len * sizeof(unsigned long)));
       dxp_log_error("dxp_read_external_memory", info_string, DXP_NOMEM);
       return DXP_NOMEM;
     }
@@ -5225,7 +5227,7 @@ XERXES_STATIC int dxp_read_spectrum_memory(int *ioChan, int *modChan,
 
   if (mca == NULL) {
     sprintf(info_string, "Unable to allocated %d bytes for 'mca'.",
-            n_mca_words * sizeof(unsigned short));
+            (int)(n_mca_words * sizeof(unsigned short)));
     dxp_log_error("dxp_read_spectrum_memory", info_string, DXP_NOMEM);
     return DXP_NOMEM;
   }
@@ -5278,7 +5280,7 @@ XERXES_STATIC int dxp_read_data_memory(int *ioChan, int *modChan,
 
     if (!mem) {
         sprintf(info_string, "Unable to allocate %d bytes for 'mem' array.",
-                offset * sizeof(unsigned short));
+                (int)(offset * sizeof(unsigned short)));
         dxp_log_error("dxp_read_data_memory", info_string, DXP_NOMEM);
         return DXP_NOMEM;
     }
@@ -5288,7 +5290,7 @@ XERXES_STATIC int dxp_read_data_memory(int *ioChan, int *modChan,
     if (status != DXP_SUCCESS) {
         dxp4c2x_md_free(mem);
         sprintf(info_string, "Error reading data memory block from %#hx - %#hx",
-                addr, (addr + n_params) - 1);
+                addr, (unsigned short)((addr + n_params) - 1));
         dxp_log_error("dxp_read_data_memory", info_string, status);
         return status;
     }

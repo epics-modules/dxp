@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998-2004, X-ray Instrumentation Associates
- *               2005-2010, XIA LLC   
+ * Copyright (c) 1998-2004 X-ray Instrumentation Associates
+ *               2005-2010 XIA LLC   
  * All rights reserved 
  *
  * Original implementation provided by Charles Fisher of 4pi Analysis, Inc.
@@ -16,7 +16,7 @@
  *     above copyright notice, this list of conditions and the 
  *     following disclaimer in the documentation and/or other 
  *     materials provided with the distribution.
- *   * Neither the name of X-ray Instrumentation Associates 
+ *   * Neither the name of XIA LLC 
  *     nor the names of its contributors may be used to endorse 
  *     or promote products derived from this software without 
  *     specific prior written permission.

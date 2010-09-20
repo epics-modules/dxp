@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2002-2004 X-ray Instrumentation Associates
  *               2005-2010 XIA LLC
- * All rights reserved.
+ * All rights reserved
  *
  * Redistribution and use in source and binary forms, 
  * with or without modification, are permitted provided 
@@ -14,7 +14,7 @@
  *     above copyright notice, this list of conditions and the 
  *     following disclaimer in the documentation and/or other 
  *     materials provided with the distribution.
- *   * Neither the name of X-ray Instrumentation Associates 
+ *   * Neither the name of XIA LLC 
  *     nor the names of its contributors may be used to endorse 
  *     or promote products derived from this software without 
  *     specific prior written permission.
@@ -33,7 +33,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: handel_run_params.c 16023 2010-06-16 21:04:42Z patrick $
+ * $Id: handel_run_params.c 16592 2010-08-25 17:53:01Z patrick $
  *
  */
 
@@ -501,7 +501,8 @@ HANDEL_EXPORT int HANDEL_API xiaRemoveAcquisitionValues(int detChan, char *name)
 
 	  if (status != XIA_SUCCESS) {
 
-		sprintf(info_string, "Error removing %s from detChan %d", name, detChanSetElem->channel);
+		sprintf(info_string, "Error removing %s from detChan %u", name,
+                detChanSetElem->channel);
 		xiaLogError("xiaRemoveAcquisitionValues", info_string, status);
 		return status;
 	  }
@@ -597,8 +598,8 @@ HANDEL_EXPORT int HANDEL_API xiaUpdateUserParams(int detChan)
 	  status = xiaUpdateUserParams(detChanSetElem->channel);
 
 	  if (status != XIA_SUCCESS) {
-
-		sprintf(info_string, "Error setting user params for detChan %d", detChanSetElem->channel);
+		sprintf(info_string, "Error setting user params for detChan %u",
+                detChanSetElem->channel);
 		xiaLogError("xiaUpdateUserParams", info_string, status);
 		return status;
 	  }
