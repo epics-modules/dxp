@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2004 X-ray Instrumentation Associates
  *               2005-2010 XIA LLC
- * All rights reserved.
+ * All rights reserved
  *
  * Redistribution and use in source and binary forms, 
  * with or without modification, are permitted provided 
@@ -14,7 +14,7 @@
  *     above copyright notice, this list of conditions and the 
  *     following disclaimer in the documentation and/or other 
  *     materials provided with the distribution.
- *   * Neither the name of X-ray Instrumentation Associates 
+ *   * Neither the name of XIA LLC 
  *     nor the names of its contributors may be used to endorse 
  *     or promote products derived from this software without 
  *     specific prior written permission.
@@ -33,7 +33,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xmap.c 15339 2010-04-13 19:02:10Z ann $
+ * $Id: xmap.c 16756 2010-09-17 22:23:33Z patrick $
  *
  */
 
@@ -189,13 +189,14 @@ static memory_accessor_t MEMORY_WRITERS[] = {
  * callers. Not every register needs to be included here.
  */
 static register_table_t REGISTER_TABLE[] = {
-  {"CVR",     0x10},
-  {"SVR",     0x44},
-  {"CSR",     0x48},
-  {"VAR",     0x4C},
-  {"MCR",     0x60},
-  {"MFR",     0x64},
-  {"SYNCCNT", 0x6C},
+  {"CVR",        0x10},
+  {"SVR",        0x44},
+  {"CSR",        0x48},
+  {"VAR",        0x4C},
+  {"MCR",        0x60},
+  {"MFR",        0x64},
+  {"SYNCCNT",    0x6C},
+  {"CLRBUFSIZE", 0x88}
 };
 
 
@@ -601,7 +602,7 @@ static int dxp_download_dspconfig(int* ioChan, int* modChan, Board *board)
   sprintf(info_string, "Downloaded %lu 16-bit words to System DSP", i);
   dxp_log_debug("dxp_download_dspconfig", info_string);
 
-  status = dxp_boot_dsp(*ioChan, *modChan, board);
+  status = dxp_boot_dsp(*ioChan, *modChan, board, TRUE_);
 
   if (status != DXP_SUCCESS) {
 	dxp_log_error("dxp_download_dspconfig", "Error booting DSP", status);
@@ -2860,17 +2861,38 @@ XERXES_STATIC int dxp_reset_dsp(int ioChan)
 
 /** @brief Instructs the hardware to boot the DSP code
  *
- * This routine should be called after the DSP code words have been downloaded
- * to the hardware.
+ * This routine should be called after the DSP code words have been
+ * downloaded to the hardware. @a first_time should be set to true if
+ * this is the first "cold" boot of the DSP.
  *
  */
-XERXES_STATIC int dxp_boot_dsp(int ioChan, int modChan, Board *b)
+XERXES_STATIC int dxp_boot_dsp(int ioChan, int modChan, Board *b,
+                               boolean_t first_time)
 {
   int status;
 
 
   ASSERT(b != NULL);
 
+  
+  /* The first cold boot must set INITIALIZE so that the DSP data
+   * memory is cleared and set to their initial default
+   * values. Subsequent boots of the DSP will leave the data memory
+   * values untouched.
+   */
+  if (first_time) {
+      parameter_t INITIALIZE = 1;
+
+      status = dxp_modify_dspsymbol(&ioChan, &modChan, "INITIALIZE",
+                                    &INITIALIZE, b);
+
+      if (status != DXP_SUCCESS) {
+          sprintf(info_string, "Error initializing data memory during "
+                  "the first boot of the DSP for ioChan = %d.", ioChan);
+          dxp_log_error("dxp_boot_dsp", info_string, status);
+          return status;
+      }
+  }
 
   sprintf(info_string, "Performing DSP boot for ioChan = %d", ioChan);
   dxp_log_debug("dxp_boot_dsp", info_string);
@@ -4350,34 +4372,12 @@ static int dxp_download_system_fpga(int ioChan, int modChan, Board *b)
 {
   int status;
 
-  parameter_t BUSY     = 0x23;
-  parameter_t RUNERROR = 0xFFFF;
+  parameter_t BUSY = 0x23;
 
 
   ASSERT(b != NULL);
   ASSERT(b->system_fpga != NULL);
 
-
-  /* Setting RUNERROR to -1 tells the DSP to leave the exisiting parameters
-   * alone. If we didn't do this, it would set all of the parameters to the
-   * default values upon boot.
-   */
-  status = dxp_modify_dspsymbol(&ioChan, &modChan, "RUNERROR", &RUNERROR, b);
-
-  if (status != DXP_SUCCESS) {
-    sprintf(info_string, "Error disabling parameter update for ioChan = %d",
-            ioChan);
-    dxp_log_error("dxp_download_system_fpga", info_string, status);
-    return status;
-  }
-
-  status = dxp_reset_dsp(ioChan);
-
-  if (status != DXP_SUCCESS) {
-    sprintf(info_string, "Error resetting DSP for ioChan = %d", ioChan);
-    dxp_log_error("dxp_download_system_fpga", info_string, status);
-    return status;
-  }
 
   status = dxp_download_fpga(ioChan, XMAP_CONTROL_SYS_FPGA, b->system_fpga);
 
@@ -4388,22 +4388,10 @@ static int dxp_download_system_fpga(int ioChan, int modChan, Board *b)
     return status;
   }
 
-  status = dxp_modify_dspsymbol(&ioChan, &modChan, "RUNERROR", &RUNERROR, b);
-
-  if (status != DXP_SUCCESS) {
-    sprintf(info_string, "Error disabling parameter update for ioChan = %d",
-            ioChan);
-    dxp_log_error("dxp_download_system_fpga", info_string, status);
-    return status;
-  }
-
-  /* This reset call stops the LEDs on the hardware from flashing due to 
-   * the System FPGA download.
-   */
   status = dxp_reset_dsp(ioChan);
 
   if (status != DXP_SUCCESS) {
-    sprintf(info_string, "Error clearing LEDs for ioChan = %d", ioChan);
+    sprintf(info_string, "Error clearing DSP reset for ioChan = %d", ioChan);
     dxp_log_error("dxp_download_system_fpga", info_string, status);
     return status;
   }
@@ -4417,7 +4405,7 @@ static int dxp_download_system_fpga(int ioChan, int modChan, Board *b)
     return status;
   }
 
-  status = dxp_boot_dsp(ioChan, modChan, b);
+  status = dxp_boot_dsp(ioChan, modChan, b, FALSE_);
 
   if (status != DXP_SUCCESS) {
     sprintf(info_string, "Error booting DSP  for ioChan = %d", ioChan);

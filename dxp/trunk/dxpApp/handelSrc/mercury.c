@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2007-2009, XIA LLC
- * All rights reserved.
+ * Copyright (c) 2007-2010 XIA LLC
+ * All rights reserved
  *
  * Redistribution and use in source and binary forms, 
  * with or without modification, are permitted provided 
@@ -13,7 +13,7 @@
  *     above copyright notice, this list of conditions and the 
  *     following disclaimer in the documentation and/or other 
  *     materials provided with the distribution.
- *   * Neither the name of X-ray Instrumentation Associates 
+ *   * Neither the name of XIA LLC 
  *     nor the names of its contributors may be used to endorse 
  *     or promote products derived from this software without 
  *     specific prior written permission.
@@ -32,7 +32,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: mercury.c 15339 2010-04-13 19:02:10Z ann $
+ * $Id: mercury.c 16592 2010-08-25 17:53:01Z patrick $
  *
  */
 
@@ -458,7 +458,7 @@ static int dxp_download_dspconfig(int* ioChan, int* modChan, Board *board)
 
   if (dsp_data == NULL) {
     sprintf(info_string, "Unable to allocate %d bytes for 'dsp_data'",
-            (sys_dsp->proglen / 2) * sizeof(unsigned long));
+            (int)((sys_dsp->proglen / 2) * sizeof(unsigned long)));
     dxp_log_error("dxp_download_dspconfig", info_string, DXP_NOMEM);
     return DXP_NOMEM;
   }

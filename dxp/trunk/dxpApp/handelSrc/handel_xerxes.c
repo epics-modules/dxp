@@ -1,14 +1,7 @@
 /*
- * handel_xerxes.c
- *
- * Created 10/25/01 -- PJF
- *
- *
- * This serves as an interface to all calls to XerXes routines.
- *
- * Copyright (c) 2002,2003,2004, X-ray Instrumentation Associates
- *               2005, XIA LLC
- * All rights reserved.
+ * Copyright (c) 2002-2004 X-ray Instrumentation Associates
+ *               2005-2010 XIA LLC
+ * All rights reserved
  *
  * Redistribution and use in source and binary forms, 
  * with or without modification, are permitted provided 
@@ -21,7 +14,7 @@
  *     above copyright notice, this list of conditions and the 
  *     following disclaimer in the documentation and/or other 
  *     materials provided with the distribution.
- *   * Neither the name of X-ray Instrumentation Associates 
+ *   * Neither the name of XIA LLC 
  *     nor the names of its contributors may be used to endorse 
  *     or promote products derived from this software without 
  *     specific prior written permission.
@@ -39,6 +32,8 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
+ *
+ * $Id: handel_xerxes.c 16592 2010-08-25 17:53:01Z patrick $
  *
  */
 
@@ -536,13 +531,13 @@ HANDEL_STATIC int xia__CopyInterfString(Module *m, char *interf)
 
 #ifndef EXCLUDE_USB
   case USB:
-	sprintf(interf, "%i", m->interface_info->info.usb->device_number);
+	sprintf(interf, "%u", m->interface_info->info.usb->device_number);
 	break;
 #endif /* EXCLUDE_USB */
 
 #ifndef EXCLUDE_USB2
   case USB2:
-    sprintf(interf, "%d", m->interface_info->info.usb2->device_number);
+    sprintf(interf, "%u", m->interface_info->info.usb2->device_number);
     break;
 #endif /* EXCLUDE_USB2 */
 
@@ -611,13 +606,13 @@ HANDEL_STATIC int xia__CopyMDString(Module *m, char *md)
 
 #ifndef EXCLUDE_USB
   case USB:
-	sprintf(md, "%i", m->interface_info->info.usb->device_number);
+	sprintf(md, "%u", m->interface_info->info.usb->device_number);
 	break;
 #endif /* EXCLUDE_USB */
 
 #ifndef EXCLUDE_USB2
   case USB2:
-    sprintf(md, "%d", m->interface_info->info.usb2->device_number);
+    sprintf(md, "%u", m->interface_info->info.usb2->device_number);
     break;
 #endif /* EXCLUDE_USB2 */
 
@@ -1334,7 +1329,7 @@ HANDEL_STATIC int xia__AddXerxesInterface(Module *m)
 
   strcpy(interf[0], INTERF_LIST[m->interface_info->type]);
 
-  sprintf(info_string, "type = %d, name = '%s'", m->interface_info->type,
+  sprintf(info_string, "type = %u, name = '%s'", m->interface_info->type,
           INTERF_LIST[m->interface_info->type]);
   xiaLogDebug("xia__AddXerxesInterface", info_string);
 
@@ -1440,7 +1435,7 @@ HANDEL_STATIC int xia__AddXerxesModule(Module *m)
 	  handel_md_free(modStr);
 
 	  sprintf(info_string, "Error allocating %d bytes for 'modStr[%d]'",
-			  MAX_CHAN_LEN, i + 2);
+			  MAX_CHAN_LEN, (int)(i + 2));
 	  xiaLogError("xia__AddXerxesModule", info_string, XIA_NOMEM);
 	  return XIA_NOMEM;
 	}
@@ -1786,7 +1781,7 @@ HANDEL_STATIC int xia__DoDSP(Module *m)
 	dspStr[0] = &(chan[0]);
 	dspStr[1] = &(dspName[0]);
 
-	sprintf(dspStr[0], "%d", i);
+	sprintf(dspStr[0], "%u", i);
 
 	statusX = dxp_add_board_item("dsp", (char **)dspStr);
 
@@ -1923,7 +1918,7 @@ HANDEL_STATIC int xia__DoFiPPI(Module *m)
 	fippiStr[0] = &(chan[0]);
 	fippiStr[1] = &(fippiName[0]);
 
-	sprintf(fippiStr[0], "%d", i);
+	sprintf(fippiStr[0], "%u", i);
 
 	statusX = dxp_add_board_item("fippi", (char **)fippiStr);
 

@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2004, X-ray Instrumentation Associates
- *               2005-2010, XIA LLC
- * All rights reserved.
+ * Copyright (c) 2004 X-ray Instrumentation Associates
+ *               2005-2010 XIA LLC
+ * All rights reserved
  *
  * Redistribution and use in source and binary forms,
  * with or without modification, are permitted provided
@@ -14,7 +14,7 @@
  *     above copyright notice, this list of conditions and the
  *     following disclaimer in the documentation and/or other
  *     materials provided with the distribution.
- *   * Neither the name of X-ray Instrumentation Associates
+ *   * Neither the name of XIA LLC
  *     nor the names of its contributors may be used to endorse
  *     or promote products derived from this software without
  *     specific prior written permission.
@@ -33,8 +33,8 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
+ * $Id: xmap_psl.c 16719 2010-09-10 20:22:37Z patrick $
  *
- * $Id: xmap_psl.c 16216 2010-06-30 17:07:36Z patrick $
  */
 
 #include <math.h>
@@ -451,6 +451,13 @@ PSL_STATIC int psl__SetListModeVariant(int detChan, int modChan, char *name,
                                        void *value, char *detType,
                                        XiaDefaults *defs, Module *m,
                                        Detector *det, FirmwareSet *fs);
+PSL_STATIC int psl__GetBufferClearSize(int detChan, void *value,
+                                       XiaDefaults *defs);
+PSL_STATIC int psl__SetBufferClearSize(int detChan, int modChan, char *name,
+                                       void *value, char *detType,
+                                       XiaDefaults *defs, Module *m,
+                                       Detector *det, FirmwareSet *fs);
+
 PSL_STATIC int psl__SetMaster(int detChan, enum master type, XiaDefaults *defs);
 PSL_STATIC int psl__ClearMaster(int detChan, enum master type,
                                 XiaDefaults *defs);
@@ -628,28 +635,28 @@ static AcquisitionValue_t ACQ_VALUES[] =
      psl__SetNumMapPixels,    psl__GetNumMapPixels, NULL},
 
     {"input_logic_polarity",  FALSE_, FALSE_, XMAP_UPDATE_MAPPING | XMAP_UPDATE_MCA, 
-     0.0, psl__SetInputLogicPolarity, psl__GetInputLogicPolarity},
+     0.0, psl__SetInputLogicPolarity, psl__GetInputLogicPolarity, NULL},
 
     {"gate_master", TRUE_, FALSE_, XMAP_UPDATE_MAPPING | XMAP_UPDATE_MCA, 0.0,
-     psl__SetGateMaster, psl__GetGateMaster},
+     psl__SetGateMaster, psl__GetGateMaster, NULL},
 
     {"sync_master", TRUE_, FALSE_, XMAP_UPDATE_MAPPING | XMAP_UPDATE_MCA, 0.0,
-     psl__SetSyncMaster,      psl__GetSyncMaster},
+     psl__SetSyncMaster,      psl__GetSyncMaster, NULL},
 
     {"sync_count",            TRUE_, FALSE_, XMAP_UPDATE_MAPPING, 0.0,
-     psl__SetSyncCount,       psl__GetSyncCount},
+     psl__SetSyncCount,       psl__GetSyncCount, NULL},
 
     {"gate_ignore",           TRUE_, FALSE_, XMAP_UPDATE_MAPPING | XMAP_UPDATE_MCA, 
-    0.0, psl__SetGateIgnore,      psl__GetGateIgnore},
+     0.0, psl__SetGateIgnore,      psl__GetGateIgnore, NULL},
 
     {"gate_mode",           TRUE_, FALSE_, XMAP_UPDATE_MAPPING | XMAP_UPDATE_MCA, 
-     0.0,                   psl__SetGateMode,      psl__GetGateMode},
+     0.0,                   psl__SetGateMode,      psl__GetGateMode, NULL},
 
     {"lbus_master", TRUE_, FALSE_, XMAP_UPDATE_MAPPING | XMAP_UPDATE_MCA, 0.0,
-     psl__SetLBusMaster,      psl__GetLBusMaster},
+     psl__SetLBusMaster,      psl__GetLBusMaster, NULL},
 
     {"pixel_advance_mode",    FALSE_, FALSE_, XMAP_UPDATE_MAPPING, 0.0,
-     psl__SetPixelAdvanceMode, psl__GetPixelAdvanceMode},
+     psl__SetPixelAdvanceMode, psl__GetPixelAdvanceMode, NULL},
 
     {"mapping_mode",          TRUE_, FALSE_, XMAP_UPDATE_NEVER, 0.0,
      psl__SetMappingMode,     psl__GetMappingMode, NULL},
@@ -680,7 +687,10 @@ static AcquisitionValue_t ACQ_VALUES[] =
     
     {"list_mode_variant", FALSE_, FALSE_, XMAP_UPDATE_MAPPING,
      XIA_LIST_MODE_CLOCK, psl__SetListModeVariant, psl__GetListModeVariant,
-     NULL}
+     NULL},
+
+    {"buffer_clear_size", TRUE_, FALSE_, XMAP_UPDATE_MAPPING, 0.0,
+     psl__SetBufferClearSize, psl__GetBufferClearSize, NULL }
   };
 
 
@@ -6565,7 +6575,7 @@ PSL_STATIC int psl__ClearBuffer(int detChan, char buf, boolean_t waitForEmpty)
   int done;
   int empty;
 
-  float interval = .010f;
+  float interval = .001f;
   float timeout = .1f;
 
   int n_polls = 0;
@@ -6716,17 +6726,6 @@ PSL_STATIC int psl__SetMappingMode(int detChan, int modChan, char *name,
   * more logic here.
   */
   if (enabled) {
-    MAPPINGMODE = (parameter_t)(*((double *)value));
-
-    status = pslSetParameter(detChan, "MAPPINGMODE", MAPPINGMODE);
-
-    if (status != XIA_SUCCESS) {
-      sprintf(info_string, "Error updating mode in the DSP for detChan %d",
-              detChan);
-      pslLogError("psl__SetMappingMode", info_string, status);
-      return status;
-    }
-
     status = psl__SwitchSystemFPGA(detChan, modChan, fs, detType, pt,
                                    N_ELEMS(mapKeywords), (char **)mapKeywords,
                                    rawFile, m, &updated);
@@ -6739,6 +6738,16 @@ PSL_STATIC int psl__SetMappingMode(int detChan, int modChan, char *name,
     }
 
     if (updated) {
+        MAPPINGMODE = (parameter_t)(*((double *)value));
+
+        status = pslSetParameter(detChan, "MAPPINGMODE", MAPPINGMODE);
+
+        if (status != XIA_SUCCESS) {
+            sprintf(info_string, "Error updating mode in the DSP for "
+                    "detChan %d", detChan);
+            pslLogError("psl__SetMappingMode", info_string, status);
+            return status;
+        }
 
       /* Download the mapping-specific acquisition values now. */
       status = psl__UpdateParams(detChan, XMAP_UPDATE_MAPPING, modChan, name,
@@ -6811,18 +6820,6 @@ PSL_STATIC int psl__SetMappingMode(int detChan, int modChan, char *name,
     }
 
   } else {
-    MAPPINGMODE = 0;
-
-    status = pslSetParameter(detChan, "MAPPINGMODE", MAPPINGMODE);
-
-    if (status != XIA_SUCCESS) {
-      sprintf(info_string, "Error updating mode in the DSP for detChan %d",
-              detChan);
-      pslLogError("psl__SetMappingMode", info_string, status);
-      return status;
-    }
-
-
     status = psl__SwitchSystemFPGA(detChan, modChan, fs, detType, pt, 0, NULL,
                                    rawFile, m, &updated);
 
@@ -6834,6 +6831,16 @@ PSL_STATIC int psl__SetMappingMode(int detChan, int modChan, char *name,
     }
 
     if (updated) {
+        MAPPINGMODE = 0;
+
+        status = pslSetParameter(detChan, "MAPPINGMODE", MAPPINGMODE);
+
+        if (status != XIA_SUCCESS) {
+            sprintf(info_string, "Error updating mode in the DSP for "
+                    "detChan %d", detChan);
+            pslLogError("psl__SetMappingMode", info_string, status);
+            return status;
+        }
 
       /* Download the mapping-specific acquisition values now. */
       status = psl__UpdateParams(detChan, XMAP_UPDATE_MCA, modChan, name,
@@ -9868,3 +9875,82 @@ PSL_STATIC int psl__SwitchBuffer(int detChan, char *name, XiaDefaults *defs,
     return XIA_SUCCESS;
 }
 
+
+PSL_STATIC int psl__GetBufferClearSize(int detChan, void *value,
+                                       XiaDefaults *defs)
+{
+    UNUSED(detChan);
+    UNUSED(value);
+    UNUSED(defs);
+
+
+    return XIA_SUCCESS;
+}
+
+
+PSL_STATIC int psl__SetBufferClearSize(int detChan, int modChan, char *name,
+                                       void *value, char *detType,
+                                       XiaDefaults *defs, Module *m,
+                                       Detector *det, FirmwareSet *fs)
+{
+    int status;
+    int statusX;
+
+    boolean_t isMapping;
+
+    unsigned long size;
+    
+    UNUSED(modChan);
+    UNUSED(name);
+    UNUSED(detType);
+    UNUSED(defs);
+    UNUSED(m);
+    UNUSED(det);
+    UNUSED(fs);
+
+    
+    ASSERT(value);
+
+
+    status = psl__IsMapping(detChan, MAPPING_ANY, &isMapping);
+
+    if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error checking firmware type for detChan %d.",
+                detChan);
+        pslLogError("psl__SetBufferClearSize", info_string, status);
+        return status;
+    }
+
+    if (!isMapping) {
+        sprintf(info_string, "Skipping setting the clear buffer size since "
+                "mapping mode is not currently enabled for detChan %d.",
+                detChan);
+        pslLogInfo("psl__SetBufferClearSize", info_string);
+        return XIA_SUCCESS;
+    }
+
+    size = (unsigned long)(*((double *)value));
+
+    if (size >= ((unsigned long)1 << 20)) {
+        sprintf(info_string, "The Clear Buffer Size register supports a "
+                "maximum of 20-bits. %#lx is too large.", size);
+        pslLogError("psl__SetBufferClearSize", info_string,
+                    XIA_CLRBUFSIZE_LENGTH);
+        return XIA_CLRBUFSIZE_LENGTH;
+    }
+
+    sprintf(info_string, "Clear Buffer Size set to %#lx for detChan %d.",
+            size, detChan);
+    pslLogDebug("psl__SetBufferClearSize", info_string);
+
+    statusX = dxp_write_register(&detChan, "CLRBUFSIZE", &size);
+
+    if (statusX != DXP_SUCCESS) {
+        sprintf(info_string, "Error writting the Clear Buffer Size register "
+                "for detChan %d", detChan);
+        pslLogError("psl__SetBufferClearSize", info_string, XIA_XERXES);
+        return XIA_XERXES;
+    }
+
+    return XIA_SUCCESS;
+}

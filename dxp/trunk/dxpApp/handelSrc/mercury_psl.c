@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2007-2010, XIA LLC
- * All rights reserved.
+ * Copyright (c) 2007-2010 XIA LLC
+ * All rights reserved
  *
  * Redistribution and use in source and binary forms,
  * with or without modification, are permitted provided
@@ -13,7 +13,7 @@
  *     above copyright notice, this list of conditions and the
  *     following disclaimer in the documentation and/or other
  *     materials provided with the distribution.
- *   * Neither the name of X-ray Instrumentation Associates
+ *   * Neither the name of XIA LLC
  *     nor the names of its contributors may be used to endorse
  *     or promote products derived from this software without
  *     specific prior written permission.
@@ -32,8 +32,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *
- * $Id: mercury_psl.c 16161 2010-06-25 19:56:37Z patrick $
+ * $Id: mercury_psl.c 16592 2010-08-25 17:53:01Z patrick $
  *
  */
 
@@ -667,18 +666,18 @@ static AcquisitionValue_t ACQ_VALUES[] =
       psl__SetMappingMode,     psl__GetMappingMode, NULL} ,
 
     { "pixel_advance_mode",    FALSE_, FALSE_, MERCURY_UPDATE_MAPPING, 0.0,
-      psl__SetPixelAdvanceMode, psl__GetPixelAdvanceMode },
+      psl__SetPixelAdvanceMode, psl__GetPixelAdvanceMode, NULL },
 
     { "input_logic_polarity",  FALSE_, FALSE_, 
                               MERCURY_UPDATE_MAPPING | MERCURY_UPDATE_MCA, 0.0,
-      psl__SetInputLogicPolarity, psl__GetInputLogicPolarity },
+      psl__SetInputLogicPolarity, psl__GetInputLogicPolarity, NULL },
 
     { "sync_count",            FALSE_, FALSE_, MERCURY_UPDATE_MAPPING, 0.0,
-      psl__SetSyncCount,       psl__GetSyncCount },
+      psl__SetSyncCount,       psl__GetSyncCount, NULL },
 
     { "gate_ignore",           FALSE_, FALSE_, 
                               MERCURY_UPDATE_MAPPING | MERCURY_UPDATE_MCA, 0.0,
-      psl__SetGateIgnore,      psl__GetGateIgnore },
+      psl__SetGateIgnore,      psl__GetGateIgnore, NULL },
 
     { "delta_temp",             TRUE_, FALSE_, MERCURY_UPDATE_NEVER, 0.5,
       psl__SetDeltaTemp,         psl__GetDeltaTemp,     NULL },
@@ -4592,8 +4591,8 @@ PSL_STATIC int psl__SetResetDelay(int detChan, int modChan, char *name, void *va
   status = pslSetParameter(detChan, "RESETINT", RESETINT);
 
   if (status != XIA_SUCCESS) {
-    sprintf(info_string, "Error setting reset delay to %f microseconds for "
-            "detChan %d", resetDelay, detChan);
+    sprintf(info_string, "Error setting reset delay to %0.6f microseconds for "
+            "detChan %d", *resetDelay, detChan);
     pslLogError("psl__SetResetDelay", info_string, status);
     return status;
   }
@@ -4901,9 +4900,9 @@ PSL_STATIC int psl__SetNumMCAChans(int detChan, int modChan, char *name, void *v
   }
   
   if ((nMCAChans > MAX_MCA_CHANNELS) || (nMCAChans < MIN_MCA_CHANNELS)) {
-    sprintf(info_string, "The number of MCA channels specified by the user '%f' "
-            "is not in the allowed range (%f, %f) for detChan %d", nMCAChans,
-            MIN_MCA_CHANNELS, MAX_MCA_CHANNELS, detChan);
+    sprintf(info_string, "The number of MCA channels specified by the user "
+            ",'%d', is not in the allowed range (%f, %f) for detChan %d",
+            nMCAChans, MIN_MCA_CHANNELS, MAX_MCA_CHANNELS, detChan);
     pslLogError("psl__SetNumMCAChans", info_string, XIA_BINS_OOR);
     return XIA_BINS_OOR;
   }
@@ -6915,8 +6914,8 @@ PSL_STATIC int psl__SetRegisterBit(int detChan, char *reg, int bit,
     statusX = dxp_read_register(&detChan, reg, &val);
 
     if (statusX != DXP_SUCCESS) {
-      sprintf(info_string, "Error reading the '%s' for detChan %d",
-              bit, reg, detChan);
+      sprintf(info_string, "Error reading the '%s' for detChan %d", reg,
+              detChan);
       pslLogError("psl__SetRegisterBit", info_string, XIA_XERXES);
       return XIA_XERXES;
     }

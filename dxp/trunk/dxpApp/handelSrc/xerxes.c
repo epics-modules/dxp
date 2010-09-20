@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2002-2004, X-ray Instrumentation Associates
- *               2005-2009, XIA LLC
- * All rights reserved.
+ * Copyright (c) 2002-2004 X-ray Instrumentation Associates
+ *               2005-2010 XIA LLC
+ * All rights reserved
  *
  * Redistribution and use in source and binary forms, 
  * with or without modification, are permitted provided 
@@ -14,7 +14,7 @@
  *     above copyright notice, this list of conditions and the 
  *     following disclaimer in the documentation and/or other 
  *     materials provided with the distribution.
- *   * Neither the name of X-ray Instrumentation Associates 
+ *   * Neither the name of XIA LLC 
  *     nor the names of its contributors may be used to endorse 
  *     or promote products derived from this software without 
  *     specific prior written permission.
@@ -33,7 +33,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE. 
  *
- * $Id: xerxes.c 15339 2010-04-13 19:02:10Z ann $
+ * $Id: xerxes.c 16719 2010-09-10 20:22:37Z patrick $
  *
  */
 
@@ -1959,7 +1959,7 @@ static int XERXES_API dxp_read_modules(FILE* fp)
 		values[2 + nchan] = strtok(NULL, delim);
 	  }
 
-	  sprintf(strtemp, "%i", nchan);
+	  sprintf(strtemp, "%u", nchan);
 	  values[1] = strtemp;
 
 	  status = dxp_add_board_item(entry_type, values);
@@ -2724,14 +2724,9 @@ int XERXES_API dxp_del_defaults(char* filename)
  * Routine to Load a new board into the linked list.  
  *
  ******************************************************************************/
-int XERXES_API dxp_add_board(char* type, char* iolib, char* ifacelib, char* iostring, 
-							 unsigned short* nchan, int* detChan)
-	 /* char *type;					Input: board type, must match btype entry	*/
-	 /* char *iolib;					Input: Tag specifying how to do IO w/ driver	*/
-	 /* char *ifacelib;				Input: Tag to specify what MD to use			*/
-	 /* char *iostring;				Input: string to pass to the iface library	*/
-	 /* unsigned short *nchan;		Input: Number of channels on board			*/
-	 /* int *detChan;				Input: Array of detector channel numbers		*/
+int XERXES_API dxp_add_board(char* type, char* iolib, char* ifacelib,
+                             char* iostring, unsigned short* nchan,
+                             int* detChan)
 {
   int status=DXP_SUCCESS;
   char info_string[INFO_LEN];
@@ -2765,7 +2760,8 @@ int XERXES_API dxp_add_board(char* type, char* iolib, char* ifacelib, char* iost
 
   /* Pack an information string for debugging purposes and error reporting */
   /* Make sure we haven't tried to allocate too many modules */
-  sprintf(info_string," mod %i: %s with %i channels",numDxpMod,PRINT_NON_NULL(iostring),*nchan);
+  sprintf(info_string," mod %d: %s with %hu channels", numDxpMod,
+          PRINT_NON_NULL(iostring), *nchan);
   if(numDxpMod == MAXDXP){
 	sprintf(info_string,"Too many modules in config:MAXDXP = %i",
 			MAXDXP);
@@ -3204,8 +3200,8 @@ XERXES_STATIC int dxp_add_dsp(char* filename, Board_Info* board,
 	if (!new_dsp->params->parameters[i].pname) {
 	  dxp_free_dsp(new_dsp);
 
-	  sprintf(info_string, "Error allocating %d bytes for 'new_dsp->params->"
-			  "parameters[%d].pname'", new_dsp->params->maxsymlen, i);
+	  sprintf(info_string, "Error allocating %hu bytes for 'new_dsp->params->"
+			  "parameters[%u].pname'", new_dsp->params->maxsymlen, i);
 	  dxp_log_error("dxp_add_dsp", info_string, DXP_NOMEM);
 	}
 
@@ -3220,8 +3216,8 @@ XERXES_STATIC int dxp_add_dsp(char* filename, Board_Info* board,
 	if (!new_dsp->params->per_chan_parameters[i].pname) {
 	  dxp_free_dsp(new_dsp);
 
-	  sprintf(info_string, "Error allocating %d bytes for 'new_dsp->params->"
-			  "parameters[%d].pname'", new_dsp->params->maxsymlen, i);
+	  sprintf(info_string, "Error allocating %hu bytes for 'new_dsp->params->"
+			  "parameters[%u].pname'", new_dsp->params->maxsymlen, i);
 	  dxp_log_error("dxp_add_dsp", info_string, DXP_NOMEM);
 	  return DXP_NOMEM;
 	}
@@ -3510,8 +3506,8 @@ XERXES_STATIC int dxp_add_system_fippi(char *filename, Board_Info *b,
 
     if ((*fippi)->params->parameters[i].pname == NULL) {
       dxp_free_system_fippi(*fippi);
-      sprintf(info_string, "Error allocating %d bytes for "
-              "'*fippi->params->parameters[%d].pname'",
+      sprintf(info_string, "Error allocating %hu bytes for "
+              "'*fippi->params->parameters[%u].pname'",
               (*fippi)->params->maxsymlen, i);
       dxp_log_error("dxp_add_system_fippi", info_string, DXP_NOMEM);
       return DXP_NOMEM;
@@ -6098,7 +6094,7 @@ static int dxp_do_readout(Board* board, int* modChan, unsigned short params[],
   int total_syms = 0;
   unsigned int i;
   char info_string[INFO_LEN];
-  int status, error;
+  int status;
   unsigned short runerror,errinfo; 
 
 
@@ -6153,22 +6149,19 @@ static int dxp_do_readout(Board* board, int* modChan, unsigned short params[],
 	  return status;
 	}
 
-  if(runerror!=0)
-	{
+  if (runerror != 0) {
 	  /* Continue */
-	  error = DXP_DSPRUNERROR;
-	  sprintf(info_string, "RUNERROR = %d ERRINFO = %d", runerror, errinfo);
-	  dxp_log_error("dxp_readout_run", info_string, error);
+	  sprintf(info_string, "RUNERROR = %hu ERRINFO = %hu", runerror, errinfo);
+	  dxp_log_error("dxp_readout_run", info_string, DXP_DSPRUNERROR);
 
 	  status = board->btype->funcs->dxp_clear_error(&(board->ioChan), modChan, 
 													board);
-	  if (status != DXP_SUCCESS)
-		{
+	  if (status != DXP_SUCCESS) {
 		  dxp_log_error("dxp_do_readout","Error clearing error",status);
 		  return status;
-		}
+      }
 
-	  return error;
+	  return DXP_DSPRUNERROR;
 	}
 
   /* Read out the spectrum memory now (also known as MCA memory) */
@@ -6277,13 +6270,13 @@ int XERXES_API dxp_save_dspparams(int* detChan, int* lun)
 	if((status=chosen->btype->funcs->dxp_symbolname(&i, chosen->dsp[modChan], symbolname))!=DXP_SUCCESS){
 	  xerxes_md_free(symbolname);
 	  symbolname = NULL;
-	  sprintf(info_string,"Error getting symbol #%d", i);
+	  sprintf(info_string,"Error getting symbol #%hu", i);
 	  dxp_log_error("dxp_save_dspparams",info_string,status);
 	  return status;
 	}
 	/* Write the symbolname-value pair to the file */
 	par = chosen->dsp[modChan]->data[i];
-	fprintf(fout,"%s\t\t%du\r\n", symbolname, par);
+	fprintf(fout,"%s\t\t%hu\r\n", symbolname, par);
   }
 
   /* Free memory */
@@ -6370,7 +6363,8 @@ int XERXES_API dxp_save_config(int* lun)
 	fprintf(fout, "default_fippi   %s\n", current->fippi[0]->filename);
 	for (i=1;i<current->nchan;i++) {
 	  if (current_fippi != current->fippi[i]) {
-		fprintf(fout, "fippi           %i %s\n", i, current->fippi[i]->filename);
+		fprintf(fout, "fippi           %hu %s\n", i,
+                current->fippi[i]->filename);
 	  }
 	}
 	/* Now do the DSP information */
@@ -6378,17 +6372,10 @@ int XERXES_API dxp_save_config(int* lun)
 	fprintf(fout, "default_dsp     %s\n", current->dsp[0]->filename);
 	for (i=1;i<current->nchan;i++) {
 	  if (current_dsp != current->dsp[i]) {
-		fprintf(fout, "dsp             %i %s\n", i, current->dsp[i]->filename);
+		fprintf(fout, "dsp             %hu %s\n", i, current->dsp[i]->filename);
 	  }
 	}
-	/* Now do the DSP information */
-	/*		current_defaults = current->defaults[0];
-			fprintf(fout, "default_param   %s\n", current->defaults[0]->filename);
-			for (i=1;i<current->nchan;i++) {
-			if (current_defaults != current->defaults[i]) {
-			fprintf(fout, "param           %i %s\n", i, current->defaults[i]->filename);
-			}
-			}*/
+
 	fprintf(fout, "default_param   NULL\n");
 	current = current->next;
   }
@@ -6404,7 +6391,7 @@ int XERXES_API dxp_save_config(int* lun)
 			  current->detChan[chan]);
 	  /* Now write all the symbols in the DSP memory to the file. */
 	  nsymbols = current->dsp[chan]->params->nsymbol;
-	  fprintf(fout,"Symbols = %d\n",nsymbols);
+	  fprintf(fout,"Symbols = %hu\n",nsymbols);
 	  nsymb = 0;
 	  for(i = 0;i < nsymbols;i++){
 		if (nsymb==0) {
@@ -6913,8 +6900,9 @@ int XERXES_API dxp_download_one_params(int* detChan, int* nparam, unsigned short
 	  if((status=chosen->btype->funcs->dxp_write_dsp_param_addr(&ioChan,&modChan,
 																&(chosen->dsp[modChan]->params->parameters[addr[i]].address),
 																&value[i]))!=DXP_SUCCESS){
-		sprintf(info_string,"error writing parameter %d to detector %d",i,*detChan);
-		dxp_log_error("dxp_download_one_params",info_string,status);
+		sprintf(info_string, "Error writing parameter %hu to detector %d", i,
+                *detChan);
+		dxp_log_error("dxp_download_one_params", info_string, status);
 		return status;
 	  }
 	}
@@ -6958,9 +6946,9 @@ int XERXES_API dxp_download_params(int* nparam, unsigned short addr[],
 		  if((status=current->btype->funcs->dxp_write_dsp_param_addr(&(current->ioChan), &j,
 																	 &(current->dsp[j]->params->parameters[addr[i]].address),
 																	 &value[i]))!=DXP_SUCCESS){
-			sprintf(info_string,"error writing parameter %d to module %d channel %d",
-					i,current->mod,j);
-			dxp_log_error("dxp_download_params",info_string,status);
+			sprintf(info_string, "Error writing parameter %hu to module %d "
+                    "channel %d", i, current->mod, j);
+			dxp_log_error("dxp_download_params", info_string, status);
 			return status;
 		  }
 		}
@@ -7011,12 +6999,12 @@ int XERXES_API dxp_upload_channel(int* detChan, unsigned short* nparam,
   for (i = *addr; i < (*addr + *nparam); i++) 
 	{
 	  status = chosen->btype->funcs->dxp_symbolname(&i, chosen->dsp[modChan], name);
-	  if (status != DXP_SUCCESS) 
-		{
-		  sprintf(info_string,"Error retrieving symbol name for address %d", i);
-		  dxp_log_error("dxp_upload_channel",info_string,status);
+	  if (status != DXP_SUCCESS) {
+		  sprintf(info_string, "Error retrieving symbol name for address %hu",
+                  i);
+		  dxp_log_error("dxp_upload_channel", info_string, status);
 		  return status;
-		}
+      }
 	  
 	  status = chosen->btype->funcs->dxp_read_dspsymbol(&ioChan, &modChan, name, chosen, &dtemp);
 	  if (status != DXP_SUCCESS)
@@ -7060,10 +7048,9 @@ int XERXES_API dxp_check_decimation(unsigned short* decimation, unsigned short* 
 	  ichan = (int) chan;
 	  if((status=current->btype->funcs->dxp_read_dspsymbol(&(current->ioChan),&ichan,
 														   "DECIMATION", current, &value))!=DXP_SUCCESS){
-		sprintf(info_string,
-				"Error reading decimation for module %d channel %d",
-				current->mod,chan);
-		dxp_log_error("dxp_check_decimation",info_string,status);
+		sprintf(info_string, "Error reading decimation for module %d "
+                "channel %u", current->mod, chan);
+		dxp_log_error("dxp_check_decimation", info_string, status);
 		return status;
 	  }
 	  if (((unsigned short) value) != *decimation) return status;
