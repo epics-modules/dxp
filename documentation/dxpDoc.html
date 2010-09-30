@@ -35,6 +35,7 @@
         <li><a href="#dxpXMAP">dxpXMAP.template</a></li>
       </ul>
     </li>
+    <li><a href="#Mapping_Mode">Using mapping modes with the xMAP and Mercury</a></li>
     <li><a href="#Using_EPICS_with_the_Saturn">Using EPICS with the Saturn</a>
       <ul>
         <li><a href="#Installing_EPICS_for_the_Saturn">Installing</a>
@@ -85,7 +86,7 @@
       to a Windows PC with a PCI/PXI fiber-optic bridge, but can also be controlled by
       a CPU processor card in the PXI crate itself.</li>
     <li>The Mercury, which is 1 or 4 channel standalone desktop unit that communicates
-        over the USB port.  It has similar mapping features to the xMAP.
+      over the USB port. It has similar mapping features to the xMAP.</li>
     <li>The Saturn, which is a standalone desktop unit that communicates over the PC Enhanced
       Parallel Port (EPP) or USB port. The Vortex detector from SII (formerly Radiant)
       is an OEM version of the Saturn, and it also works with this software.</li>
@@ -98,16 +99,17 @@
     <li>The xMAP with the EPICS IOC running on Windows, using the National Instruments
       PCI/PXI adapter, or with a PXI processor card running Windows. </li>
     <li>The Mercury with the EPICS IOC running on Windows or Linux using the USB 2.0 interface.
-      NOTE: This support is current untested because I have not yet been able to obtain a Mercury
-      to test with.</li>
-    <li>The Saturn with the EPICS IOC running on Windows or Linux, using the EPP parallel port,
-      USB 1.0, or USB 2.0 interfaces.</li>
+      NOTE: This support is current untested because I have not yet been able to obtain
+      a Mercury to test with.</li>
+    <li>The Saturn with the EPICS IOC running on Windows or Linux, using the EPP parallel
+      port, USB 1.0, or USB 2.0 interfaces.</li>
     <li>The DXP2X with the EPICS IOC running on vxWorks, using the Kinetic Systems 2917/3922
       VME to CAMAC interface. Other CAMAC interfaces that have software support for the
       ESONE standard CAMAC library calls should also work, but have not been tested.</li>
   </ul>
-  <p>On Windows both the EPICS win32-x86 (Microsoft VC++ compiler) and cygwin-x86 (gcc compiler) architectures
-      are supported.</p>
+  <p>
+    On Windows both the EPICS win32-x86 (Microsoft VC++ compiler) and cygwin-x86 (gcc
+    compiler) architectures are supported.</p>
   <p>
     The features of the EPICS software, compared with software available from XIA are:</p>
   <ul>
@@ -122,8 +124,8 @@
       and software. For example, a control software program can move a motor, command
       the DXP to acquire data, and write the data to disk.</li>
     <li>A single software package supports the xMAP, Mercury, Saturn, and DXP2X.</li>
-    <li>The Saturn and Mercury can be run from Windows and Linux, while the XIA control programs
-      only run on Windows.</li>
+    <li>The Saturn and Mercury can be run from Windows and Linux, while the XIA control
+      programs only run on Windows.</li>
     <li>The DXP2X support uses the standard XIA Handel library, while the XIA MESA package
       uses an old LabView interface</li>
   </ul>
@@ -135,23 +137,22 @@
     <li>An <a href="http://www.aps.anl.gov/epics/modules/soft/asyn/">asyn port driver</a>.
       This driver is derived from the <a href="http://cars.uchicago.edu/software/epics/areaDetectorDoc.html#asynNDArrayDriver">
         asynNDArrayDriver</a> and <a href="http://www.aps.anl.gov/epics/modules/soft/asyn/R4-14/asynPortDriver.html">
-          asynPortDriver</a> base C++ classes. The driver communicates with
-      the hardware using the <a href="Handel_API_012902_branch2.pdf">XIA Handel library</a>,
-      which in turn communicates with the <a href="http://www.xia.com/Manuals/XIA_Host_Software_Manual.pdf">
+          asynPortDriver</a> base C++ classes. The driver communicates with the hardware
+      using the <a href="Handel_API_012902_branch2.pdf">XIA Handel library</a>, which
+      in turn communicates with the <a href="http://www.xia.com/Manuals/XIA_Host_Software_Manual.pdf">
         XIA Xerxes library</a>. </li>
-    <li>An <a href="http://cars.uchicago.edu/software/epics/mcaRecord.html">
-       EPICS MCA record</a> for each detector.  This communicates with the driver via the asyn MCA device support. 
-      This support allows each detector to be treated identically with other supported MCA
-      hardware, such as the Canberra AIM. The MCA record is used for data acquisition
-      in the non-mapping modes, and to define regions of interest.</li>
+    <li>An <a href="http://cars.uchicago.edu/software/epics/mcaRecord.html">EPICS MCA
+      record</a> for each detector. This communicates with the driver via the asyn MCA
+      device support. This support allows each detector to be treated identically with
+      other supported MCA hardware, such as the Canberra AIM. The MCA record is used for
+      data acquisition in the non-mapping modes, and to define regions of interest.</li>
     <li>A set of standard EPICS records (ai, ao, bi, bo, waveform, etc.) that are used
       to set all of the many software selectable parameters for the DXP, including peaking
-      times, pileup rejection criteria, etc. These are also used for data acquisition in the mapping modes
-      and to acquire diagnostic
-      data, such as the baseline histogram and ADC trace.  These records
-      use the standard asyn device support.</li>
-    <li>A State Notation Language program for synchronizing acquisition, ROIs, and DXP parameters
-      in multi-element detector systems.</li>
+      times, pileup rejection criteria, etc. These are also used for data acquisition
+      in the mapping modes and to acquire diagnostic data, such as the baseline histogram
+      and ADC trace. These records use the standard asyn device support.</li>
+    <li>A State Notation Language program for synchronizing acquisition, ROIs, and DXP
+      parameters in multi-element detector systems.</li>
     <li>Support for the file-saving plugins from the <a href="http://cars.uchicago.edu/software/epics/areaDetector.html">
       areaDetector</a> package. These plugins are used to stream data to disk in the mappping
       modes on the xMAP.</li>
@@ -472,8 +473,8 @@
           longin</td>
         <td>
           The number of events to count for. Events are x-rays that were processed by the
-          energy filter, and includes underflow and overflow events that are not actually present
-          in the spectrum.</td>
+          energy filter, and includes underflow and overflow events that are not actually
+          present in the spectrum.</td>
       </tr>
       <tr valign="top">
         <td>
@@ -484,8 +485,8 @@
           longin</td>
         <td>
           The number of triggers to count for. Triggers are x-rays that were processed by
-          the trigger filter, and includes pileups and other events that are not actually present
-          in the spectrum.</td>
+          the trigger filter, and includes pileups and other events that are not actually
+          present in the spectrum.</td>
       </tr>
       <tr>
         <td align="center" colspan="3">
@@ -539,7 +540,8 @@
         <td>
           longin</td>
         <td>
-          The number of underflow events, which are events that would be in channels less than 0.</td>
+          The number of underflow events, which are events that would be in channels less
+          than 0.</td>
       </tr>
       <tr valign="top">
         <td>
@@ -547,8 +549,8 @@
         <td>
           longin</td>
         <td>
-          The number of overflow events, which are events that would be in channels greater than
-          the last channel in the spectrum.</td>
+          The number of overflow events, which are events that would be in channels greater
+          than the last channel in the spectrum.</td>
       </tr>
       <tr valign="top">
         <td>
@@ -615,8 +617,8 @@
         <td>
           waveform</td>
         <td>
-          The energy values for the baseline histogram.  This array is used to provide a
-          calibrated X-axis when plotting the BaselineHistogram.</td>
+          The energy values for the baseline histogram. This array is used to provide a calibrated
+          X-axis when plotting the BaselineHistogram.</td>
       </tr>
       <tr valign="top">
         <td>
@@ -670,8 +672,8 @@
         <td>
           waveform</td>
         <td>
-          The time values for the trace data.  This array is used to provide a
-          calibrated X-axis when plotting the TraceData.</td>
+          The time values for the trace data. This array is used to provide a calibrated X-axis
+          when plotting the TraceData.</td>
       </tr>
     </tbody>
   </table>
@@ -690,10 +692,10 @@
     The Saturn puts out a pulse on one of 16 TTL output lines when an x-ray falls within
     the channel range of that SCA. This allows very fast mapping with the Saturn, since
     there is no need to read the spectrum at each point in the scan. <i>Note: in normal
-    MCA spectra mode SCAs are permitted to overlap in channels. However in xMAP SCA
-    mapping mode and Saturn ROI pulse output mode, the SCA definitions must not overlap.
-    This is because, for performance reasons, each spectrum channel must be assigned
-    to at most one SCA.</i></p>
+      MCA spectra mode SCAs are permitted to overlap in channels. However in xMAP SCA
+      mapping mode and Saturn ROI pulse output mode, the SCA definitions must not overlap.
+      This is because, for performance reasons, each spectrum channel must be assigned
+      to at most one SCA.</i></p>
   <p>
     One instance of this database is loaded for each detector channel in the system.
     All of the record names in the template file are preceeded by the macro parameters
@@ -805,8 +807,8 @@
         <td>
           stringin</td>
         <td>
-          The firmware name for low-level parameter $(N), N=0 to NumLLParams-1. Actual record names are
-          LL0Name, LL1Name, etc.</td>
+          The firmware name for low-level parameter $(N), N=0 to NumLLParams-1. Actual record
+          names are LL0Name, LL1Name, etc.</td>
       </tr>
       <tr valign="top">
         <td>
@@ -814,8 +816,8 @@
         <td>
           longin</td>
         <td>
-          The readback value for low-level parameter $(N), N=0 to NumLLParams-1. Actual record names are
-          LL0Val_RBV, LL1Val_RBV, etc.</td>
+          The readback value for low-level parameter $(N), N=0 to NumLLParams-1. Actual record
+          names are LL0Val_RBV, LL1Val_RBV, etc.</td>
       </tr>
       <tr valign="top">
         <td>
@@ -823,8 +825,8 @@
         <td>
           longout</td>
         <td>
-          The output value for low-level parameter $(N), N=0 to NumLLParams-1. Actual record names are
-          LL0Val, LL1Val, etc.</td>
+          The output value for low-level parameter $(N), N=0 to NumLLParams-1. Actual record
+          names are LL0Val, LL1Val, etc.</td>
       </tr>
     </tbody>
   </table>
@@ -871,11 +873,11 @@
         <td>
           The name of a file in which to save the system information. This file is created
           by the XIA Handel software, and is the ".ini" file format used in the call to xiaInit()
-          in the startup script. This file can be used to transfer
-          settings between XIA's programs (xManager, ProSpect) and EPICS. This is a waveform record with
-          type DBF_UCHAR and length 256, rather than a stringout record, so that file paths/names
-          longer than 40 characters can be used. Client applications must convert the file
-          name to an unsigned char array when writing to this field.</td>
+          in the startup script. This file can be used to transfer settings between XIA's
+          programs (xManager, ProSpect) and EPICS. This is a waveform record with type DBF_UCHAR
+          and length 256, rather than a stringout record, so that file paths/names longer
+          than 40 characters can be used. Client applications must convert the file name to
+          an unsigned char array when writing to this field.</td>
       </tr>
       <tr valign="top">
         <td>
@@ -967,17 +969,17 @@
         <td>
           bo</td>
         <td>
-          Erases and starts acquisition all of the MCA records in this system. In the xMAP
-          mapping modes it starts a new mapping run.</td>
+          Erases and starts acquisition all of the MCA records in this system. In the mapping
+          modes it starts a new mapping run.</td>
       </tr>
       <tr valign="top">
-        <td>
+        <td style="height: 31px">
           StartAll</td>
-        <td>
+        <td style="height: 31px">
           bo</td>
-        <td>
+        <td style="height: 31px">
           Starts acquisition all of the MCA records in this system without first erasing any
-          existing spectra.</td>
+          existing spectra. In the mapping modes it starts a new mapping run.</td>
       </tr>
       <tr valign="top">
         <td>
@@ -997,7 +999,7 @@
         <td>
           mbbo</td>
         <td>
-          The preset counting mode. On the xMAP the choices are:
+          The preset counting mode. On the xMAP and Mercury the choices are:
           <ul>
             <li>"No preset" Count until acquisition is stopped manually.</li>
             <li>"Real time" Count for a preset real time. The real time is set by the PresetReal
@@ -1033,8 +1035,8 @@
         <td>
           longout</td>
         <td>
-          The number of events to count for. Note that on the xMAP counting on a module stops
-          whenever the first channel on that card reaches this value.</td>
+          The number of events to count for. Note that counting on a module stops whenever
+          any channel on that module reaches this value.</td>
       </tr>
       <tr valign="top">
         <td>
@@ -1042,8 +1044,8 @@
         <td>
           longout</td>
         <td>
-          The number of triggers to count for. Note that on the xMAP counting on a module
-          stops whenever the first channel on that card reaches this value.</td>
+          The number of triggers to count for. Note that counting on a module stops whenever
+          any channel on that module reaches this value.</td>
       </tr>
       <tr>
         <td align="center" colspan="3">
@@ -1069,8 +1071,8 @@
           Processing this record causes the MCA spectra to be read. For maximum performance
           with short count times this record should have .SCAN=Passive. When this record is
           Passive the MCA spectra will still be read once when acquisition completes in normal
-          MCA mode. However, in order for the MCA spectra update in the xMAP MCA mapping mode
-          this record must be set to periodically process (e.g. "2 second").</td>
+          MCA mode. However, in order for the MCA spectra update in the MCA mapping mode this
+          record must be set to periodically process (e.g. "2 second").</td>
       </tr>
       <tr valign="top">
         <td>
@@ -1104,7 +1106,18 @@
         <td>
           ai</td>
         <td>
-          The dead time. This value is the maximum of the dead time of all system channels.</td>
+          The dead time. This value is the average of the dead time of all system channels.
+          The dead time of each MCA is the cumulative dead time since the MCA was last erased.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          IDeadTime</td>
+        <td>
+          ai</td>
+        <td>
+          The instantaneous dead time. This value is the average of the intantaneous dead
+          time of all system channels. The instantaneous dead time of each MCA is the dead
+          time in the interval since the MCA status was last read.</td>
       </tr>
       <tr>
         <td align="center" colspan="3">
@@ -1208,7 +1221,31 @@
       </tr>
       <tr valign="top">
         <td>
-          CopyBaseMaxEnergy</td>
+          CopyDetectorPolarity</td>
+        <td>
+          bo</td>
+        <td>
+          Writing 1 to this record copies the DetectorPolarity from channel 1 to all channels.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          CopyResetDelay</td>
+        <td>
+          bo</td>
+        <td>
+          Writing 1 to this record copies the ResetDelay from channel 1 to all channels.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          CopyDecayTime</td>
+        <td>
+          bo</td>
+        <td>
+          Writing 1 to this record copies the DecayTime from channel 1 to all channels.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          CopyMaxEnergy</td>
         <td>
           bo</td>
         <td>
@@ -1256,7 +1293,8 @@
         <td>
           mbbo</td>
         <td>
-          This record sets the TraceMode for each channel. On the xMAP the choices are:
+          This record sets the TraceMode for each channel. On the xMAP and Mercury the choices
+          are:
           <ul>
             <li>"ADC" The equivalent of a digital scope trace of the pre-amp input to the module.</li>
             <li>"Baseline history" A history of the baseline samples.</li>
@@ -1319,6 +1357,28 @@
       </tr>
     </tbody>
   </table>
+  <h3 id="dxpSaturn">
+    dxpSaturn.template</h3>
+  <p>
+    The following records are defined in the database dxpSaturn.template. One instance
+    of this database is loaded for a Saturn system.</p>
+  <p>
+    All of the record names in the template file are preceeded by the macro parameters
+    $(P)$(R), where $(P) is the prefix for this detector system, and $(R) is the name
+    of this specific channel.
+  </p>
+  <ul>
+    <li>TraceMode. The choices for the TraceMode and TraceMode_RBV records are redefined
+      from those in dxpHighLevel.template to only include the first 2 choices, e.g. "ADC"
+      and "Baseline history".</li>
+    <li>PresetMode. The choices for the PresetMode and PresetMode_RBV records are defined
+      from those in dxpHighLevel.template to only include "None", "Real time" and "Live
+      time".</li>
+    <li>TraceData. The NELM field is redefined from the 4096 value in dxpHighLevel.template
+      to 4000, because that is the size of the trace array on the Saturn.</li>
+    <li>TraceTime. The NELM field is redefined from the 4096 value in dxpHighLevel.template
+      to 4000, because that is the size of the trace array on the Saturn.</li>
+  </ul>
   <h3 id="dxpXMAP">
     dxpXMAP.template</h3>
   <p>
@@ -1384,11 +1444,11 @@
           Selects the pixel advance mode for xMAP system. The choices are:
           <ul>
             <li>"Gate" Transitions on the Gate hardware input signal are used to drive the pixel
-              advance. One (and only one) xMAP module in the system must have "gate_master" set
-              to 1 in the system initialization (.ini) file to use this mode.</li>
+              advance. One (and only one) xMAP module in the system must be a "gate_master" to
+              use this mode.</li>
             <li>"Sync" Transitions on the Sync hardware input signal are used to drive the pixel
-              advance. One (and only one) xMAP module in the system must have "sync_master" set
-              to 1 in the system initialization (.ini) file to use this mode.</li>
+              advance. One (and only one) xMAP module in the system must be a "sync_master" to
+              use this mode.</li>
           </ul>
           For systems with more than 1 xMAP module, one module can be gate_master, another
           module can be sync_master, and PixelAdvanceMode can be changed between Gate and
@@ -1397,6 +1457,48 @@
             module is defined to be gate_master, and PixelAdvanceMode is defined to be Gate.
             This should be fixed in a future firmware release, but for now if a sync_master
             is defined in the system then only use Sync for PixelAdvanceMode.</i></td>
+      </tr>
+      <tr valign="top">
+        <td>
+          GateMasterChannel<br />
+          GateMasterChannel_RBV</td>
+        <td>
+          longout<br />
+          longin</td>
+        <td>
+          Selects the which module is used as the gate master. -1 means there is no gate master.
+          The value is specified in channel number, but is converted to the first channel
+          on that xMAP. For example, values between 0 and 3 are converted to 0 and mean the
+          first xMAP module, values between 4 and 7 are converted to 4 and mean the second
+          xMAP module, etc.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          SyncMasterChannel<br />
+          SyncMasterChannel_RBV</td>
+        <td>
+          longout<br />
+          longin</td>
+        <td>
+          Selects the which module is used as the sync master. -1 means there is no sync master.
+          The value is specified in channel number, but is converted to the first channel
+          on that xMAP. For example, values between 0 and 3 are converted to 0 and mean the
+          first xMAP module, values between 4 and 7 are converted to 4 and mean the second
+          xMAP module, etc.</td>
+      </tr>
+      <tr valign="top">
+        <td>
+          LBUSMasterChannel<br />
+          LBUSMasterChannel_RBV</td>
+        <td>
+          longout<br />
+          longin</td>
+        <td>
+          Selects the which module is used as the LBUS master. -1 means there is no LBUS master.
+          The value is specified in channel number, but is converted to the first channel
+          on that xMAP. For example, values between 0 and 3 are converted to 0 and mean the
+          first xMAP module, values between 4 and 7 are converted to 4 and mean the second
+          xMAP module, etc.</td>
       </tr>
       <tr valign="top">
         <td>
@@ -1510,6 +1612,25 @@
           in a pixel advance.
         </td>
       </tr>
+      <tr valign="top">
+        <td>
+          ReadRate_RBV</td>
+        <td>
+          ai</td>
+        <td>
+          The burst read rate in MBytes/s measured when reading the mapping data from each
+          xMAP module.
+        </td>
+      </tr>
+      <tr valign="top">
+        <td>
+          MBytesRead_RBV</td>
+        <td>
+          ai</td>
+        <td>
+          The total number of MBytes of mapping data read from all xMAPs since the IOC started.
+        </td>
+      </tr>
       <tr>
         <td align="center" colspan="3">
           <b>Parameter Download Control Records</b></td>
@@ -1572,6 +1693,144 @@
       </tr>
     </tbody>
   </table>
+  <h2 id="H2_1">
+    Using mapping modes with the xMAP and Mercury</h2>
+  <p>
+    In the mapping modes on the xMAP and Mercury data are collected into a double-buffered
+    memory on the module. When one half of the buffer memory is full the EPICS driver
+    reads the data from that buffer into an <a href="http://cars.uchicago.edu/software/epics/areaDetectorDoc.html#NDArray">
+      NDArray object.</a> It then calls any registered plugins with that NDArray. The
+    plugins will typically be one of the <a href="http://cars.uchicago.edu/software/epics/pluginDoc.html#NDPluginFile">
+      NDPluginFile</a> plugins which will write the data to disk. The useful file plugins
+    can write the data in netCDF, NeXus/HDF5, and TIFF formats. The JPEG plugin will
+    not be useful, because the data are not images. The data can also be passed to the
+    <a href="http://cars.uchicago.edu/software/epics/pluginDoc.html#NDPluginStdArrays">
+      NDPluginStdArrays</a> plugin which can make the data available to EPICS channel
+    access clients as waveform records.</p>
+  <p>
+    The data in each NDArray object is a 16-bit unsigned integer array with dimensions
+    [BufferSize, ModulesPerSystem]. BufferSize is the size of the double-buffered memory
+    in use, which is controlled by the AutoPixelsPerBuffer and PixelsPerBuffer records.
+    It has a maximum value of 2^20 (1048576) but can be smaller than this. ModulesPerSystem
+    is the total number of xMAP modules in the system, and is always 1 for the Mercury.
+    The buffer for each module in this array contains the data for each pixel, including
+    the elapsed live and real time, triggers and events, and the MCA or SCA data. The
+    details of the buffer structure are beyond the scope of this document, but the buffer
+    structure is thoroughly described in the section entitled "Mapping Mode Data" in
+    the <a href="XMAP_User_Manual.pdf">xMAP User's Manual</a>.
+  </p>
+  <p>
+    To collect mapping mode data one would typically execute the following steps:</p>
+  <ol>
+    <li>Select the mapping mode (CollectMode record)</li>
+    <li>Select the pixel advance mode (PixelAdvanceMode record)</li>
+    <li>Select the number of pixels per run (PixelsPerRun record)</li>
+    <li>In the netCDF plugin
+      <ul>
+        <li>Set the Enable record to Enable.</li>
+        <li>Set the FilePath, FileName, FileNumber, FileTemplate, AutoIncrement, FileWriteMode,
+          NumCapture, and Autosave records to the desired values. Typically AutoIncrement=Yes,
+          FileWriteMode=Stream, NumCapture= number of buffers to be captured = PixelsPerRun/PixelsPerBuffer.</li>
+        <li>If FileWriteMode is Stream or Capture then start capture/streaming with the Capture
+          record. <i>NOTE: Before stream or capture can be started there must have been at least
+            1 callback to the plugin in the current mapping mode with the same PixelsPerBuffer
+            currently in use. This is because stream and capture modes need to know the buffer
+            size that will be received at the time that capture/streaming is started. This can
+            be done by simply enabling the file plugin and doing a quick run. Just start a run,
+            advance a few pixels with the NextPixel record, and stop the run. Even though only
+            a few pixels have been collected the entire buffer is read out, so the size is correct.</i></li>
+      </ul>
+    </li>
+    <li>Start acquisition with the EraseStart record.</li>
+    <li>Do something that causes the pixels to advance. This could be using the NextPixel
+      record, or an external advance source such as a pulse generator, motor pulse train,
+      etc.</li>
+    <li>Each time a buffer fills up the netCDF plugin will be called, writing data to
+      disk.</li>
+    <li>In MCA mapping mode each time the buffer fills up the MCA spectra for the first
+      pixel in that buffer will be sent to the MCA records, so they can be displayed.
+      This provides a periodic visual feedback on the MCA data.</li>
+    <li>Once the requested number of pixels per run has occured acquisition will automatically
+      stop.</li>
+    <li>If the netCDF plugin is in stream or capture mode and NumCapture was specified
+      correctly, then it will also automatically stop capturing when the last buffer is
+      received. If NumCapture was 0 or was too large, then stream/capture should be manually
+      stopped by writing 0 to the Capture record.</li>
+  </ol>
+  <p>
+    Data acquisition in mapping mode is very flexible. When doing a 2-D map, for example,
+    one could stream the data for the entire map into a single large netCDF file. Alternatively,
+    one could save just a single scan row into each file, and restart the file plugin
+    for each row, using a new file name, or auto-increment on the file number. Data
+    can also be saved into NeXus or TIFF files, rather than netCDF files.</p>
+  <p>
+    There are IDL functions available (read_xmap_netcdf.pro, which calls read_nd_netcdf.pro
+    and decode_xmap_buffers.pro) in the <a href="http://cars.uchicago.edu/software/pub/idl_detectors.html">
+      CARS IDL detector package</a> to conveniently extract the MCA or SCA data from
+    netCDF files produced with the netCDF plugin. The following is a short demonstration
+    program that reads the data from a 400MB netCDF file collected using MCA mapping
+    mode at the Shanghai Synchrotron beamline BL15U1. It takes under 10 seconds to read
+    the file and generate the visualization.</p>
+  <pre>; This program tests read_xmap_netcdf on Fen's data set.
+; That data has multiple runs in a single netCDF file, and also has variable 
+; number of pixels per run, because of trigger problems.
+
+; Read in the data set
+d = read_xmap_netcdf('c:\temp\test0050.ac')
+help, /structure, d
+help, *d.prealTime
+help, *d.pData
+; Extract and ROI which is channels 700 to 800 for all detectors and all pixels
+roi = (*d.pdata)[700:800,*,*]
+; Sum the counts in first dimension of the ROI, e.g. between channels 700 and 800
+roi_total = total(roi, 1)
+; Sum the counts over all channels
+roi_total2 = total(roi_total, 1)
+; The array is 9700 pixels, but it is really a 97x100 pixel scan, reform it
+roi_total3 = reform(roi_total2, 97, 100)
+; Create X and Y axis arrays
+x_axis = 6.0 + findgen(97)/97.*.1
+y_axis = 4.0 + findgen(100)/100.*.1
+; Clip to 600 counts
+roi_total3 = roi_total3 < 600
+; Display with iTools
+iimage, roi_total3, x_axis, y_axis, xtitle='mm', ytitle='mm', /insert_colorbar
+end
+  </pre>
+  <p>
+    The following is the output of the "help, /structure, d" statement in this program.
+    Note that d, which was returned by read_xmap_netcdf, is a structure.&nbsp; It contains
+    the firstPixel and numPixels for the file read in, and pointers to the data, realTime,
+    liveTime, inputCounts (triggers), and outputCounts (events) arrays.</p>
+  <pre>** Structure XMAPDATA, 7 tags, length=28, data length=28:
+   FIRSTPIXEL      LONG                 0
+   NUMPIXELS       LONG              9528
+   PDATA           POINTER   &lt;ptrheapvar3&gt;
+   PREALTIME       POINTER   &lt;PtrHeapVar4&gt;
+   PLIVETIME       POINTER   &lt;PtrHeapVar5&gt;
+   PINPUTCOUNTS    POINTER   &lt;PtrHeapVar6&gt;
+   POUTPUTCOUNTS   POINTER   &lt;PtrHeapVar7&gt;
+</pre>
+  <p>
+    The following is the output of the "help, *d.prealTime" statement in this program.
+    The array is [numDetectors, numPixels].</p>
+  <pre>&lt;PtrHeapVar4>   FLOAT     = Array[8, 9700]
+</pre>
+  <p>
+    The following is the output of the "help, *d.pdata" statement in this program. The
+    array is [numMCAChannels, numDetectors, numPixels].</p>
+  <pre>&lt;PtrHeapVar3>   INT       = Array[2048, 8, 9700]
+   </pre>
+  <p>
+    The following image is the output of the above procedure, after some minor manual
+    formatting using iImage. Note that this was a very early test image at the Shanghai
+    synchrotron, and there were some problems with the trigger signal. The point is
+    to illustrate that it is easy to extract the data from the netCDF file using the
+    IDL read_xmap_netcdf.pro function.</p>
+  <p style="text-align: center">
+    <img id="IMG1" alt="Ni_grid.png" src="Ni_grid.png" /></p>
+  <p>
+  </p>
   <h2 id="Using_EPICS_with_the_Saturn">
     Using EPICS with the Saturn</h2>
   <h3 id="Installing_EPICS_for_the_Saturn">
@@ -1621,20 +1880,18 @@
       DLL.</li>
     <li>To use the USB 1.0 interface:
       <ul>
-        <li>Install the <a href="http://www.xia.com/DXP_Saturn_Software.html">ProSpect or
-          Kepler software</a> from XIA. This will install the required Windows driver for
-          the USB 1.0 Saturn. The driver can also be found in the Handel source code distribution
-          which is available through the <a href="http://www.xia.com/Software/downloads">XIA
-            software downloads</a> Web site. The driver is found in the redist/drivers/usb1
-          directory.</li>
+        <li>Install the <a href="http://www.xia.com/DXP_Saturn_Software.html">ProSpect</a>
+          from XIA. This will install the required Windows driver for the USB 1.0 Saturn.
+          The driver can also be found in the Handel source code distribution which is available
+          through the <a href="http://www.xia.com/Software/downloads">XIA software downloads</a>
+          Web site. The driver is found in the redist/drivers/usb1 directory.</li>
       </ul>
     </li>
     <li>To use the USB 2.0 interface:
       <ul>
-        <li>Install the PI-SPEC software from <a href="http://www.siintusa.com/vortex.html">
-          SII NanoTechnology USA</a>. This software is supplied with their Vortex detectors.
-          This will install the required Windows EZ-USB driver for the USB 2.0 Saturn. The
-          driver can also be found in the Handel source code distribution which is available
+        <li>Install the <a href="http://www.xia.com/DXP_Saturn_Software.html">ProSpect</a>
+          from XIA. This will install the required Windows EZ-USB driver for the USB 2.0 Saturn.
+          The driver can also be found in the Handel source code distribution which is available
           through the <a href="http://www.xia.com/Software/downloads">XIA software downloads</a>
           Web site. The driver is found in the redist/drivers/usb2 directory.</li>
       </ul>
@@ -1654,29 +1911,26 @@
         EPICS Win32 Extensions</a>, which contain medm. Note that medm may work with non-commercial
       versions of X windows servers for Windows, but Exceed is the only package that is
       guaranteed to work.</li>
-    <li>Download <a href="http://cars.uchicago.edu/software/pub/">the latest standalone
-      release (e.g. dxpStandalone_XXX.tgz)</a>, of the EPICS DXP software, containing
-      Cygwin and native Windows binaries.</li>
+    <li>Download <a href="http://cars.uchicago.edu/software/epics/dxp.html">the latest
+      standalone release</a>, of the EPICS DXP software, containing Cygwin and native
+      Windows binaries.</li>
     <li>Unpack that distribution into a directory such as C:\EPICS or C:\Program Files\EPICS.
       The distribution file, dxpStandlone.tgz can be unpacked using WinZip, or with the
       gunzip and tar utilities that come with Cygwin. To use the Cygwin tools:
-      <pre>
-      $ cd /cygdrive/c/epics         # Or wherever you have chosen to put the EPICS software
+      <pre>      $ cd /cygdrive/c/epics         # Or wherever you have chosen to put the EPICS software
       $ tar xzvf dxpStandalone_2-10.tgz    # Unpack the tar file.
       </pre>
     </li>
     <li>Make sure that the .fdd and .ini files in iocBoot/iocSaturn/ have DOS-type line
       terminators. This can be done by running the Cygwin bash shell and typing
-      <pre>
-      $ cd iocBoot/iocSaturn
+      <pre>      $ cd iocBoot/iocSaturn
       $ unix2dos *.fdd *ini
       </pre>
       This is necessary because these files may have Unix line terminators, depending
       on how they were unpacked from the distribution.</li>
     <li>Make sure that the .bat files in iocBoot/iocSaturn/ have execute permission. This
       can be done by running the Cygwin bash shell and typing
-      <pre>
-      $ cd iocBoot/iocSaturn
+      <pre>      $ cd iocBoot/iocSaturn
       $ chmod +x *.bat
       </pre>
       This is necessary because these files may not have this permission, depending on
@@ -1686,8 +1940,7 @@
       if you decide to put the .adl files in C:\epics_adl, and if you unpacked the dxp
       tar file distribution into C:\epics, then type the following commands at the Cygwin
       bash shell prompt:
-      <pre>
-      $ mkdir /cygdrive/c/epics_adls
+      <pre>      $ mkdir /cygdrive/c/epics_adls
       $ find /cygdrive/c/epics -name '*.adl' -exec cp -f -p -v {} /cygdrive/c/epics_adls \;
       </pre>
       Define the environment variable EPICS_DISPLAY_PATH to point to C:\epics_adls. For
@@ -1713,23 +1966,20 @@
       <ul>
         <li>Install the latest version (0.1.12 or later) of <a href="http://libusb.sourceforge.net">
           libusb from SourceForge</a>. This software must be installed using the root account.
-          The version of libusb that comes with most Linux systems is older, and often will
+          The version of libusb that comes with some Linux systems is older, and often will
           not work, so install this more recent version.</li>
       </ul>
     </li>
-    <li>Download <a href="http://cars.uchicago.edu/software/pub/">the latest standalone
-      release (e.g. dxpStandalone_XXX.tgz)</a>, of the EPICS DXP software, containing
-      Linux binaries.</li>
+    <li>Download <a href="http://cars.uchicago.edu/software/epics/dxp.html">the latest
+      standalone release</a>, of the EPICS DXP software, containing Linux binaries.</li>
     <li>Unpack that distribution into a directory such as /usr/local/epics. The distribution
       file, dxpStandalone_XXX.tgz can be unpacked using the Linux tar utility, e.g.:
-      <pre>
-      tar xvzf dxpStandalone_2-10.tgz
+      <pre>      tar xvzf dxpStandalone_2-10.tgz
       </pre>
     </li>
     <li>Make sure that the .fdd and .ini files in iocBoot/iocSaturn/ have Unix-type line
       terminators. This can be done by typing
-      <pre>
-      > cd iocBoot/iocSaturn
+      <pre>      > cd iocBoot/iocSaturn
       > dos2unix *.fdd *.ini
       </pre>
       This is necessary because these files may have Windows line terminators, depending
@@ -1739,8 +1989,7 @@
       if you decide to put the .adl files in /home/epics/epics_adls, and if you unpacked
       the dxp tar file distribution into /home/epics/epics, then type the following commands
       at the shell prompt:
-      <pre>
-      $ mkdir /home/epics/epics_adls
+      <pre>      $ mkdir /home/epics/epics_adls
       $ find /home/epics/epics -name '*.adl' -exec cp -f -p -v {} /home/epics/epics_adls \;
       </pre>
       Define the environment variable EPICS_DISPLAY_PATH to point to /home/epics/epics_adls.
@@ -1754,37 +2003,32 @@
           because of SELinux protections that prevent processes started with execv() from
           inheriting the iopl(3) permissions. To use this method the application startWithIopl3
           must be installed as suid root. Do this as follows:
-          <pre>
-          > cd bin/linux-x86
+          <pre>          > cd bin/linux-x86
           > su root
           (password)
           > chmod +s startWithIopl3
           > exit
           </pre>
           The dxpApp application can then be run without root privilege as follows:
-          <pre>
-          > cd iocBoot/iocSaturn
+          <pre>          > cd iocBoot/iocSaturn
           > ../../bin/linux-x86/startWithIopl3 ../../bin/linux-x86/dxpApp st.cmd
           </pre>
           You can also copy startWithIopl3 to a directory like /usr/local/bin or ~/bin that
           is in your PATH. That way it can be run without having to specify the path. </li>
         <li>Not as good. Install the dxpApp application as suid root. Do this as follows:
-          <pre>
-          > cd bin/linux-x86
+          <pre>          > cd bin/linux-x86
           > su root
           (password)
           > chmod +s /bin/linux-x86/dxpApp
           > exit
           </pre>
           The dxpApp application can then be run without root priviledge as follows:
-          <pre>
-          > cd iocBoot/iocSaturn
+          <pre>          > cd iocBoot/iocSaturn
           > ../../bin/linux-x86/dxpApp st.cmd
           </pre>
         </li>
         <li>Least desirable method. Run dxpApp as root:
-          <pre>
-          > cd iocBoot/iocSaturn
+          <pre>          > cd iocBoot/iocSaturn
           > su root
           (password)
           > ../../bin/linux-x86/dxpApp st.cmd
@@ -1809,8 +2053,7 @@
       Here is a recipe for older systems using hotplug.
       <ol>
         <li>Add the following 3 lines to the file /etc/hotplug/usb.usermap
-          <pre>
-          # XIA Saturn
+          <pre>          # XIA Saturn
           usbsaturn            0x0003      0x10e9   0x0700    0x0000       0x0000      0x00         0x00            0x00            0x00            0x00               0x00               0x00000000
           usbsaturn            0x0003      0x10e9   0x0701    0x0000       0x0000      0x00         0x00            0x00            0x00            0x00               0x00               0x00000000
         </pre>
@@ -1819,8 +2062,7 @@
           and 0700 and 0701 are the product IDs for the USB 1.1 and USB 2.0 versions of the
           Saturn.</li>
         <li>Create the file /etc/hotplug/usb/usbsaturn containing the following lines:
-          <pre>
-          #!/bin/bash
+          <pre>          #!/bin/bash
 
           if [ "${ACTION}" = "add" ] &amp;&amp; [ -f "${DEVICE}" ]
           then
@@ -1832,8 +2074,7 @@
     </li>
     <li>This script tells hotplug to set the permissions on the Saturn USB device to 666
       (owner, group, and world read/write):
-      <pre>
-         [root@vincent usb]# ls -lt /proc/bus/usb/001/021
+      <pre>         [root@vincent usb]# ls -lt /proc/bus/usb/001/021
          -rw-rw-rw-  1 root root 134 Jan  8 12:20 /proc/bus/usb/001/021
        </pre>
       <br />
@@ -1841,35 +2082,31 @@
       <ol>
         <li>Create a file in /etc/udev/rules.d called, for example, "80-saturn.rules". Put
           the following 2 lines in this file.
-          <pre>
-           SUBSYSTEM=="usb",ACTION=="add",ATTRS{idVendor}=="10e9",ATTRS{idProduct}=="0700",MODE="0666"
+          <pre>           SUBSYSTEM=="usb",ACTION=="add",ATTRS{idVendor}=="10e9",ATTRS{idProduct}=="0700",MODE="0666"
            SUBSYSTEM=="usb",ACTION=="add",ATTRS{idVendor}=="10e9",ATTRS{idProduct}=="0701",MODE="0666"
          </pre>
           These rules instruct the udev facility to set the permissions on the USB device
           to 666 (owner, group and world read/write) for the Saturn whenever it is added to
           the system. 10e9 is the vendor ID for the Saturn, and 0700 and 0701 are the product
           IDs for the USB 1.1 and USB 2.0 versions of the Saturn. Note that the 10e9 ID is
-          case sensitive!<br/>
-          Note that the Linux "udev" facility has been evolving quite rapidly.  The above lines work on a 
-          relatively recent Linux kernel (2.6.27).  On older kernels the following syntax was required:
-          <pre>
-           SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}=="0700",MODE="0666"
+          case sensitive!<br />
+          Note that the Linux "udev" facility has been evolving quite rapidly. The above lines
+          work on a relatively recent Linux kernel (2.6.27). On older kernels the following
+          syntax was required:
+          <pre>           SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}=="0700",MODE="0666"
            SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}=="0701",MODE="0666"
          </pre>
-          In the older version the SUBSYSTEM is "usb_device" rather than "usb", and the SYSFS keyword rather
-          than ATTRS is used.
-          </li>
+          In the older version the SUBSYSTEM is "usb_device" rather than "usb", and the SYSFS
+          keyword rather than ATTRS is used. </li>
         <li>Force the udevd daemon to reload its rules:
-          <pre>
-           $ /sbin/udevcontrol reload_rules
+          <pre>           $ /sbin/udevcontrol reload_rules
          </pre>
         </li>
       </ol>
     </li>
     <li>These changes for udev should cause the Saturn USB device to have the correct
       permissions:
-      <pre>
-         baja:/etc/udev/rules.d>ls -lt /dev/bus/usb/005/021
+      <pre>         baja:/etc/udev/rules.d>ls -lt /dev/bus/usb/005/021
          crw-rw-rw- 1 root root 189, 532 2008-01-07 16:08 /dev/bus/usb/005/021
        </pre>
       However, on some Linux versions libusb uses /proc/bus/usb by default, rather than
@@ -1877,8 +2114,7 @@
       can be fixed by defining the environment variable USB_DEVFS_PATH to be /dev/bus/usb.
       In fact I now add the following command to the EPICS IOC startup script (st.cmd)
       on Linux when using USB, just before the xiaInit command:
-      <pre>
-        # On Linux execute the following command so that libusb uses /dev/bus/usb
+      <pre>        # On Linux execute the following command so that libusb uses /dev/bus/usb
         # as the file system for the USB device.  
         # On some Linux systems it uses /proc/bus/usb instead, but udev
         # sets the permissions on /dev, not /proc.
@@ -1887,8 +2123,7 @@
       This could obviously be done in the shell startup script instead if desired.</li>
     <li>Make sure that the script files in iocBoot/iocSaturn/ have execute permission.
       This can be done by running the Cygwin bash shell and typing
-      <pre>
-      $ cd iocBoot/iocSaturn
+      <pre>      $ cd iocBoot/iocSaturn
       $ chmod +x START_IOC*
       </pre>
       This is necessary because these files may not have this permission, depending on
@@ -1921,8 +2156,7 @@
       display spectra.</li>
     <li>Under Linux start the EPICS IOC and medm by running the script iocBoot/iocSaturn/START_IOC.
       This can be done by typing:
-      <pre>
-      > cd iocBoot/iocSaturn
+      <pre>      > cd iocBoot/iocSaturn
       > ./START_IOC
       </pre>
       You may need to edit the START_IOC script depending on how you chose to solve the
@@ -1938,8 +2172,7 @@
       Saturn User's Manual</a> for information on how to determine and set these parameters.</p>
   <p>
     The saturn.ini file will contain lines like the following:</p>
-  <pre>
-  type_value = 10.
+  <pre>  type_value = 10.
   channel0_gain = 1.7
   channel0_polarity = +
   </pre>
@@ -1993,8 +2226,7 @@
     Saturn startup script</h3>
   <p>
     The following is a typical startup script for the Saturn.</p>
-  <pre>
-#########################################
+  <pre>#########################################
 &lt; envPaths
 
 # Tell EPICS all about the record types, device-support modules, drivers,
@@ -2066,8 +2298,7 @@ saveData_Init("saveData.req", "P=dxpSaturn:")
 </pre>
   <p>
     Here are some comments on the commands in this file.</p>
-  <pre>
-#########################################
+  <pre>#########################################
 &lt; envPaths
 #########################################
 </pre>
@@ -2075,16 +2306,14 @@ saveData_Init("saveData.req", "P=dxpSaturn:")
     This command loads the envPaths file that defines the paths to other EPICS modules.
     You will need to edit this file if you installed the pre-built binaries rather than
     building from source code.</p>
-  <pre>
-#########################################
+  <pre>#########################################
 dbLoadDatabase("../../dbd/dxp.dbd")
 dxp_registerRecordDeviceDriver(pdbbase)
 #########################################
 </pre>
   <p>
     These commands load the EPICS database definition files.</p>
-  <pre>
-# On Linux execute the following command so that libusb uses /dev/bus/usb
+  <pre># On Linux execute the following command so that libusb uses /dev/bus/usb
 # as the file system for the USB device.  
 # On some Linux systems it uses /proc/bus/usb instead, but udev
 # sets the permissions on /dev, not /proc.
@@ -2094,8 +2323,7 @@ epicsEnvSet USB_DEVFS_PATH /dev/bus/usb
     This command forces libusb to use the /dev/bus/usb filesystem, rather than /proc/bus/usb,
     which some kernels use by default. This is needed because udev sets permissions
     on /dev/bus/usb, not /proc/bus/usb.</p>
-  <pre>
-#########################################
+  <pre>#########################################
 # Initialize the XIA software
 # Set logging level (1=ERROR, 2=WARNING, 3=XXX, 4=DEBUG)
 xiaSetLogLevel(2)
@@ -2110,8 +2338,7 @@ xiaStartSystem
     initializes the XIA software with the appropriate .ini file, and then starts the
     XIA software. You will hear clicking in the Saturn box when the xiaStartSystem command
     is executing.</p>
-  <pre>
-#########################################
+  <pre>#########################################
 # DXPConfig(serverName, ndetectors, ngroups, pollFrequency)
 DXPConfig("DXP1",  1, 1, 100)
 #########################################
@@ -2124,8 +2351,7 @@ DXPConfig("DXP1",  1, 1, 100)
     the poller thread will check for acquisition complete. 100 Hz is typical, it does
     not put a significant load on the system, but reduces the average latency in determining
     when the run is complete to 5ms.</p>
-  <pre>
-#########################################
+  <pre>#########################################
 # DXP record
 # Execute the following line if you have a Vortex detector or
 # another detector with a reset pre-amplifier
@@ -2147,8 +2373,7 @@ dbLoadTemplate("roi_to_sca.substitutions")
     the PV, the number of MCA channels, and the type of detector pre-amp are all chosen
     in these commands. The mcaCallback.db file is used with the poller to cause the
     MCA records to read data when acquisition completes.</p>
-  <pre>
-#########################################
+  <pre>#########################################
 # Setup for save_restore
 &lt; ../save_restore.cmd
 save_restoreSet_status_prefix("dxpSaturn:")
@@ -2168,8 +2393,7 @@ dbLoadRecords("$(SSCAN)/sscanApp/Db/scan.db","P=dxpSaturn:,MAXPTS1=2000,MAXPTS2=
     to be done in the IOC. The maximum number of points in each nested scan is defined
     here, as is the maximum number of channels of MCA data that can be stored in the
     scanH record.</p>
-  <pre>
-#########################################
+  <pre>#########################################
 # Debugging flags
 #xiaSetLogLevel(4)
 #asynSetTraceMask DXP1 0 255
@@ -2183,8 +2407,7 @@ dbLoadRecords("$(SSCAN)/sscanApp/Db/scan.db","P=dxpSaturn:,MAXPTS1=2000,MAXPTS2=
     bits turning on different types of output. 1 turns on only error reporting, 255
     turns on all messages. mcaRecordDebug and dxpRecordDebug turn on messages from the
     mcaRecord and dxpRecord respectively. 0 turns off messages, 10 turns on all messages.</p>
-  <pre>
-#########################################
+  <pre>#########################################
 iocInit
 
 ### Start up the autosave task and tell it what to do.
@@ -2222,7 +2445,7 @@ saveData_Init("saveData.req", "P=dxpSaturn:")
   <p>
     Main control screen for Saturn.</p>
   <p style="text-align: center">
-    <img alt="single_dxp_top.png" src="single_dxp_top.png" /></p>
+    <img alt="single_dxp_top.png" src="dxpSaturn.png" /></p>
   <p>
   </p>
   <hr />
@@ -2231,7 +2454,7 @@ saveData_Init("saveData.req", "P=dxpSaturn:")
   <p>
     Complete screen for low-level DXP parameters and control.</p>
   <p style="text-align: center">
-    <img alt="dxp.png" src="dxp.png" /></p>
+    <img alt="dxp.png" src="dxpLowLevelSaturn.png" /></p>
   <p>
   </p>
   <hr />
@@ -2259,15 +2482,6 @@ saveData_Init("saveData.req", "P=dxpSaturn:")
     Screen to display the baseline histogram and control its update rate.</p>
   <p style="text-align: center">
     <img alt="dxp_baseline.png" src="dxp_baseline.png" /></p>
-  <p>
-  </p>
-  <hr />
-  <h3 style="text-align: center">
-    dxp_baseline_history.adl</h3>
-  <p>
-    Screen to display the baseline history and control its update rate.</p>
-  <p style="text-align: center">
-    <img alt="dxp_baseline_history.png" src="dxp_baseline_history.png" /></p>
   <p>
   </p>
   <hr />
@@ -2334,8 +2548,7 @@ saveData_Init("saveData.req", "P=dxpSaturn:")
       you will need to create new files.</li>
     <li>You can manually start the software by doing the following in the Cygwin bash
       shell:
-      <pre>
-        cd iocBoot/iocXMAP  # Or the new directory you created
+      <pre>        cd iocBoot/iocXMAP  # Or the new directory you created
         ../../bin/cygin-x86/dxpApp.exe 16element.cmd  # Or 4element.cmd, etc.
      </pre>
     </li>
@@ -2350,8 +2563,7 @@ saveData_Init("saveData.req", "P=dxpSaturn:")
     xMAP startup script</h3>
   <p>
     The following is a typical startup script for the xMAP.</p>
-  <pre>
-#########################################
+  <pre>#########################################
 &lt; envPaths
 
 # Tell EPICS all about the record types, device-support modules, drivers,
@@ -2399,16 +2611,14 @@ saveData_Init("saveData.req", "P=dxpXMAP:")
 </pre>
   <p>
     Here are some comments on the commands in this file.</p>
-  <pre>
-&lt; envPaths
+  <pre>&lt; envPaths
 #########################################
 </pre>
   <p>
     This command loads the envPaths file that defines the paths to other EPICS modules.
     You will need to edit this file if you installed the pre-built binaries rather than
     building from source code.</p>
-  <pre>
-#########################################
+  <pre>#########################################
 # Tell EPICS all about the record types, device-support modules, drivers,
 # etc. in this build from dxpApp
 dbLoadDatabase("$(DXP)/dbd/dxp.dbd")
@@ -2417,8 +2627,7 @@ dxp_registerRecordDeviceDriver(pdbbase)
 </pre>
   <p>
     These commands load the EPICS database definition files.</p>
-  <pre>
-#########################################
+  <pre>#########################################
 # Setup for save_restore
 &lt; ../save_restore.cmd
 save_restoreSet_status_prefix("dxpXMAP:")
@@ -2430,8 +2639,7 @@ set_pass1_restoreFile("auto_settings16.sav")
   <p>
     These commands initialize the save/restore system that remembers changes in parameter
     settings when the IOC is rebooted.</p>
-  <pre>
-#########################################
+  <pre>#########################################
 # Set logging level (1=ERROR, 2=WARNING, 3=INFO, 4=DEBUG)
 xiaSetLogLevel(2)
 xiaInit("xmap16.ini")
@@ -2446,8 +2654,7 @@ xiaStartSystem
     requires. If you have xManager running on your system you can just copy that .ini
     file to your IOC directory for EPICS. This file must be edited from the one that
     is distributed with the EPICS software to define the PCI bus slots in your PXI crate.</p>
-  <pre>
-#########################################
+  <pre>#########################################
 # DXPConfig(serverName, ndetectors, ngroups, pollFrequency)
 DXPConfig("DXP1",  16, 1, 100)
 #########################################
@@ -2460,16 +2667,14 @@ DXPConfig("DXP1",  16, 1, 100)
     the poller thread will check for acquisition complete. 100 Hz is typical, it does
     not put a significant load on the system, but reduces the average latency in determining
     when the run is complete to 5ms.</p>
-  <pre>
-#########################################
+  <pre>#########################################
 dbLoadTemplate("16element.template")
 #########################################
 </pre>
   <p>
     This command loads the template file that in turns loads the databases for the MCA
     and DXP records. The content of the template file is discussed below.</p>
-  <pre>
-#########################################
+  <pre>#########################################
 # Debugging flags
 #xiaSetLogLevel(4)
 #asynSetTraceMask DXP1 0 255
@@ -2483,8 +2688,7 @@ dbLoadTemplate("16element.template")
     bits turning on different types of output. 1 turns on only error reporting, 255
     turns on all messages. mcaRecordDebug and dxpRecordDebug turn on messages from the
     mcaRecord and dxpRecord respectively. 0 turns off messages, 10 turns on all messages.</p>
-  <pre>
-#########################################
+  <pre>#########################################
 ### Scan-support software
 # crate-resident scan.  This executes 1D, 2D, 3D, and 4D scans, and caches
 # 1D data, but it doesn't store anything to disk.  (See 'saveData' below for that.)
@@ -2495,8 +2699,7 @@ dbLoadRecords("$(SSCAN)/sscanApp/Db/scan.db","P=dxpXMAP:,MAXPTS1=2000,MAXPTS2=10
     These commands load the databases for general purpose scanning to be done in the
     IOC. The maximum number of points in each nested scan is defined here, as is the
     maximum number of channels of MCA data that can be stored in the scanH record.</p>
-  <pre>
-#########################################
+  <pre>#########################################
 iocInit
 
 seq dxpMED, "P=dxpXMAP:, DXP=dxp, MCA=mca, N_DETECTORS=16"
@@ -2519,8 +2722,7 @@ saveData_Init("saveData.req", "P=dxpXMAP:")
     calibration fields, etc.</p>
   <p>
     The 16element.template file looks like this:</p>
-  <pre>
-#########################################
+  <pre>#########################################
 file "$(DXP)/dxpApp/Db/dxpMED.db"
 {
 pattern
@@ -2613,7 +2815,7 @@ pattern
   <p>
     Complete screen for low-level DXP parameters and control.</p>
   <p style="text-align: center">
-    <img alt="16element_dxp_all.png" src="16element_dxp_all.png" /></p>
+    <img alt="16element_dxp_all.png" src="16elementFilters.png" /></p>
   <p>
   </p>
   <hr />
@@ -2645,11 +2847,20 @@ pattern
   </p>
   <hr />
   <h3 style="text-align: center">
-    16element_time.adl</h3>
+    16element_dxp_presets.adl</h3>
   <p>
-    Screen to display preset and elapsed times for each detector.</p>
+    Screen to display presets for each detector.</p>
   <p style="text-align: center">
-    <img alt="16element_time.png" src="16element_time.png" /></p>
+    <img alt="16element_dxp_presets.png" src="16element_dxp_presets.png" /></p>
+  <p>
+  </p>
+  <hr />
+  <h3 style="text-align: center">
+    16element_dxp_statistics.adl</h3>
+  <p>
+    Screen to display the elapsed statistics for each detector.</p>
+  <p style="text-align: center">
+    <img alt="16element_dxp_statistics.png" src="16element_dxp_statistics.png" /></p>
   <p>
   </p>
   <hr />
@@ -2668,15 +2879,6 @@ pattern
     Screen to display the baseline histograms and control the update rate.</p>
   <p style="text-align: center">
     <img alt="16element_baseline.png" src="16element_baseline.png" /></p>
-  <p>
-  </p>
-  <hr />
-  <h3 style="text-align: center">
-    16element_history.adl</h3>
-  <p>
-    Screen to display the baseline histories and control the update rate.</p>
-  <p style="text-align: center">
-    <img alt="16element_history.png" src="16element_history.png" /></p>
   <p>
   </p>
   <hr />
