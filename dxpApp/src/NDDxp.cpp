@@ -1456,7 +1456,7 @@ asynStatus NDDxp::setNumChannels(asynUser* pasynUser, epicsInt32 value, epicsInt
     callParamCallbacks(this->nChannels);
 
     /* If in mapping mode we need to modify the Y size as well in order to fit in the 2MB buffer!
-     * We also need to read out the new lenght of the mapping buffer because that can possibly change... */
+     * We also need to read out the new length of the mapping buffer because that can possibly change... */
     getIntegerParam(NDDxpCollectMode, &mode);
     if (mode != NDDxpModeMCA) configureCollectMode();
     this->apply(DXP_ALL);
@@ -1501,6 +1501,7 @@ asynStatus NDDxp::configureCollectMode()
     xiastatus = xiaSetAcquisitionValues(DXP_ALL, "mapping_mode", &dTmp);
     status = this->xia_checkError(pasynUserSelf, xiastatus, "mapping_mode");
     if (status == asynError) return status;
+    this->apply(DXP_ALL);
 
     switch(collectMode)
     {
