@@ -19,21 +19,19 @@ int main(int argc, char **argv)
     double dvalue;
     unsigned short paramValue;
 
-    printf("Initializing ...\n");
+    if (argc > 1) {
+        debugLevel = atoi(argv[1]);
+    }
+    printf("Setting log level %d...\n", debugLevel);
     status = xiaSetLogLevel(debugLevel);
     CHECK_STATUS(status);
+    printf("Calling xiaInit ...\n");
     status = xiaInit("xmap_test.ini");
     CHECK_STATUS(status);
+    printf("Calling xiaStartSystem ...\n");
     status = xiaStartSystem();
     CHECK_STATUS(status);
     
-    if (argc > 1) {
-        debugLevel = atoi(argv[1]);
-        printf("Debug level = %d\n", debugLevel);
-    }
-    status = xiaSetLogLevel(debugLevel);
-    CHECK_STATUS(status);
-
     for (iter=0; iter<MAX_ITERATIONS; iter++) {
         for (mode=0; mode<3; mode++) {
             printf("Iter=%d, setting mapping mode %d\n", iter, mode);
