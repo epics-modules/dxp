@@ -27,7 +27,7 @@ int main(int argc, char **argv)
     status = xiaStartSystem();
     CHECK_STATUS(status);
     
-    if (argc > 0) {
+    if (argc > 1) {
         debugLevel = atoi(argv[1]);
         printf("Debug level = %d\n", debugLevel);
     }
@@ -51,5 +51,8 @@ int main(int argc, char **argv)
             }
         }
     }
+    status = xiaExit();
+    CHECK_STATUS(status);
+    printf("Called xiaExit(), done\n");
     return(0);
 }
