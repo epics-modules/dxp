@@ -464,6 +464,7 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     char tmpStr[MAX_DSP_PARAM_NAME_LEN + 10];
     int xiastatus = 0;
     unsigned short runTasks;
+    unsigned long ulongTmp;
     const char *functionName = "NDDxp";
 
     this->nChannels = nChannels;
@@ -672,7 +673,8 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     /* Allocate a buffer for the trace time array */
     this->traceTimeBuffer = (epicsFloat64 *)malloc(this->traceLength * sizeof(epicsFloat64));
 
-    xiastatus = xiaGetRunData(0, "baseline_length",  &(this->baselineLength));
+    xiastatus = xiaGetRunData(0, "baseline_length", &ulongTmp);
+    this->baselineLength = ulongTmp;
     if (xiastatus != XIA_SUCCESS) printf("Error calling xiaGetRunData for baseline_length");
 
     /* Allocate a buffer for the baseline histogram data */
@@ -1071,7 +1073,7 @@ asynStatus NDDxp::setPresets(asynUser *pasynUser, int addr)
     int presetTriggers;
     double presetValue;
     double presetType;
-    int runActive=0;
+    unsigned long runActive=0;
     int channel=addr;
     int channel0;
     char presetString[40];
@@ -1153,7 +1155,7 @@ asynStatus NDDxp::setDxpParam(asynUser *pasynUser, int addr, int function, doubl
 {
     int channel = addr;
     int channel0;
-    int runActive=0;
+    unsigned long runActive=0;
     double dvalue=value;
     int numMcaChannels;
     int xiastatus;
@@ -1293,7 +1295,7 @@ asynStatus NDDxp::setSCAs(asynUser *pasynUser, int addr)
 {
     int channel = addr;
     int channel0;
-    int runActive=0;
+    unsigned long runActive=0;
     int xiastatus;
     int i;
     int numSCAs;
@@ -1648,7 +1650,8 @@ asynStatus NDDxp::configureMasterModes()
 
 asynStatus NDDxp::getAcquisitionStatus(asynUser *pasynUser, int addr)
 {
-    int acquiring=0, run_active;
+    int acquiring=0;
+    unsigned long run_active;
     int ivalue;
     int channel=addr;
     asynStatus status;
@@ -1692,8 +1695,7 @@ asynStatus NDDxp::getModuleStatistics(asynUser *pasynUser, int addr, moduleStati
 {
     /* This function returns the module statistics with a single block read.
      * It is more than 30 times faster on the USB Saturn than reading individual
-     * parameters.  This is a temporary fix until Handel adds a "module_statistics"
-     * acquisition parameter on the Saturn and DXP2X */
+     * parameters. */
     int i;
     int status;
      
@@ -1831,7 +1833,7 @@ asynStatus NDDxp::getDxpParams(asynUser *pasynUser, int addr)
     int channel=addr;
     asynStatus status = asynSuccess;
     int xiastatus;
-    int bufLen;
+    unsigned long bufLen;
     double dTmp;
     int collectMode;
     int pixelsPerBuffer;
@@ -2525,8 +2527,9 @@ asynStatus NDDxp::pollMappingMode()
     asynStatus status = asynSuccess;
     asynUser *pasynUser = this->pasynUserSelf;
     int xiastatus;
-    int ch, buf, isfull, allFull=1;
-    int currentPixel = 0;
+    int ch, buf, allFull=1;
+    unsigned short isfull;
+    unsigned long currentPixel = 0;
     const char* functionName = "pollMappingMode";
 
     for (ch=0; ch<this->nChannels; ch+=this->channelsPerCard)
