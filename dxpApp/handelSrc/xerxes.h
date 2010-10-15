@@ -33,7 +33,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xerxes.h 16573 2010-08-21 01:34:29Z patrick $
+ * $Id: xerxes.h 16952 2010-10-12 18:04:40Z patrick $
  *
  */
 
@@ -108,7 +108,6 @@ XERXES_IMPORT int XERXES_API dxp_readout_detector_run(int *detChan,
   XERXES_IMPORT int XERXES_API dxp_readout_sca(int *detChan, unsigned long *sca);
 XERXES_IMPORT int XERXES_API dxp_dspdefaults(int *);
 XERXES_IMPORT int XERXES_API dxp_dspconfig(void);
-XERXES_IMPORT int XERXES_API dxp_fipconfig(void);
 XERXES_IMPORT int XERXES_API dxp_replace_fpgaconfig(int *detChan, char *name, char *filename);
 XERXES_IMPORT int XERXES_API dxp_replace_dspconfig(int *, char *);
 XERXES_IMPORT int XERXES_API dxp_put_dspparams(void);
@@ -233,7 +232,6 @@ XERXES_IMPORT int XERXES_API dxp_readout_detector_run();
 XERXES_IMPORT int XERXES_API dxp_readout_sca();
 XERXES_IMPORT int XERXES_API dxp_dspconfig();
 XERXES_IMPORT int XERXES_API dxp_dspdefaults();
-XERXES_IMPORT int XERXES_API dxp_fipconfig();
 XERXES_IMPORT int XERXES_API dxp_replace_fpgaconfig();
 XERXES_IMPORT int XERXES_API dxp_replace_dspconfig();
 XERXES_IMPORT int XERXES_API dxp_put_dspparams();

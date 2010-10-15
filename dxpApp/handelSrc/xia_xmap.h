@@ -33,7 +33,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xia_xmap.h 16756 2010-09-17 22:23:33Z patrick $
+ * $Id: xia_xmap.h 16952 2010-10-12 18:04:40Z patrick $
  *
  */
 
@@ -158,8 +158,7 @@ XERXES_STATIC int dxp_read_global_register(int ioChan, unsigned long reg,
 XERXES_STATIC int dxp_load_symbols_from_file(char *file, Dsp_Params *params);
 XERXES_STATIC int dxp_load_dsp_code_from_file(char *file, Dsp_Info *dsp);
 XERXES_STATIC int dxp_reset_dsp(int ioChan);
-XERXES_STATIC int dxp_boot_dsp(int ioChan, int modChan, Board *b,
-                               boolean_t first_time);
+XERXES_STATIC int dxp_boot_dsp(int ioChan, int modChan, Board *b);
 
 XERXES_STATIC int dxp_get_symbol_by_index(int modChan, unsigned short index,
                                           Board *board, char *name);

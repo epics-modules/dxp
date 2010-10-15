@@ -33,7 +33,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE. 
  *
- * $Id: xerxes.c 16719 2010-09-10 20:22:37Z patrick $
+ * $Id: xerxes.c 16952 2010-10-12 18:04:40Z patrick $
  *
  */
 
@@ -92,6 +92,7 @@ XERXES_STATIC int dxp_do_readout(Board *board, int *modchan,
                                  unsigned long baseline[],
                                  unsigned long spectrum[]);
 XERXES_STATIC int dxp_parse_memory_str(char *name, char *type, unsigned long *base, unsigned long *offset);
+XERXES_STATIC int dxp_fipconfig(void);
 
 static FILE* dxp_find_file(const char *, const char *, char [MAXFILENAME_LEN]);
 
@@ -960,6 +961,7 @@ int dxp_add_board_item(char *ltoken, char **values)
 	working_board->nchan   = nchan;
 	working_board->btype   = working_btype;
 	working_board->iface   = working_iface;
+    working_board->is_full_reboot = FALSE_;
 
 	/* Allocate memory for the iostring containing slot information, etc... */
 	working_board->iostring = (char *)xerxes_md_alloc(strlen(values[0]) + 1);
@@ -2845,6 +2847,7 @@ int XERXES_API dxp_add_board(char* type, char* iolib, char* ifacelib,
    * this feature though...
    */
   current->btype->funcs->dxp_init_driver(iface);
+  current->is_full_reboot = FALSE_;
   current->next	= NULL;
 
   for (j=0;j<*nchan;j++) {
@@ -3848,6 +3851,12 @@ XERXES_EXPORT int XERXES_API dxp_user_setup(void)
 
   Board *current = system_head;
 
+
+  while (current != NULL) {
+      current->is_full_reboot = TRUE_;
+      current = current->next;
+  }
+
   dxp_log_info("dxp_user_setup", "Preparing to download FPGAs");
 
   status = dxp_fipconfig();
@@ -3866,12 +3875,12 @@ XERXES_EXPORT int XERXES_API dxp_user_setup(void)
 	return status;
   }
 
+  current = system_head;
   /* The per-module configurations are done here. Only configurations that
    * are applicable to every module should be done here. Hardware specific
    * procedures should be farmed out to the individual device driver.
    */
   while (current != NULL) {
-	  
 	/* Loop over the current->nchan channels */
 	for (chan = 0; chan < (int)current->nchan; chan++) {
 	  detChan = current->detChan[chan];
@@ -3907,6 +3916,7 @@ XERXES_EXPORT int XERXES_API dxp_user_setup(void)
 	  }
 	}
 
+    current->is_full_reboot = FALSE_;
 	current = current->next;
   }
 
@@ -3972,8 +3982,9 @@ int XERXES_API dxp_dspdefaults(int* detChan)
  * delegates the responsibility for determining the exact methodology to use
  * to the Device Driver layer and, as a consequence, dxp_fipconfig() can remain
  * hardware agnostic.
+ *
  */
-XERXES_EXPORT int XERXES_API dxp_fipconfig(void)
+XERXES_STATIC int dxp_fipconfig(void)
 {
   int status;
 
@@ -3983,7 +3994,6 @@ XERXES_EXPORT int XERXES_API dxp_fipconfig(void)
 
 
   while (current != NULL) {
-
 	status = current->btype->funcs->dxp_download_fpgaconfig(&(current->ioChan),
 															&allChan, "all",
 															current);

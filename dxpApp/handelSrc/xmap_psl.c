@@ -33,7 +33,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: xmap_psl.c 16719 2010-09-10 20:22:37Z patrick $
+ * $Id: xmap_psl.c 16986 2010-10-14 16:22:51Z patrick $
  *
  */
 
@@ -461,8 +461,9 @@ PSL_STATIC int psl__SetBufferClearSize(int detChan, int modChan, char *name,
 PSL_STATIC int psl__SetMaster(int detChan, enum master type, XiaDefaults *defs);
 PSL_STATIC int psl__ClearMaster(int detChan, enum master type,
                                 XiaDefaults *defs);
-PSL_STATIC void psl__WhichMasters(XiaDefaults *defs, boolean_t *isGate,
-                                  boolean_t *isSync, boolean_t *isLbus);
+PSL_STATIC void psl__WhichMasters(int detChan, XiaDefaults *defs,
+                                  boolean_t *isGate, boolean_t *isSync,
+                                  boolean_t *isLbus);
 
 
 /* These are the DSP parameter data types for pslGetParamData(). */
@@ -1488,6 +1489,9 @@ PSL_STATIC int pslUserSetup(int detChan, XiaDefaults *defaults,
   
   
   if (!m->isSetup) {
+      sprintf(info_string, "Setting input to NC for detChan %d.", detChan);
+      pslLogDebug("pslUserSetup", info_string);
+
       status = psl__SetInputNC(detChan);
 
       if (status != XIA_SUCCESS) {
@@ -6254,6 +6258,17 @@ PSL_STATIC int psl__SetGateMaster(int detChan, int modChan, char *name,
   ASSERT(value);
   ASSERT(defs);
 
+  
+  /* Only the first channel in a module is allowed to modify the
+   * master setting.
+   */
+  if (modChan != 0) {
+      sprintf(info_string, "Attempted to set GATE master to %0.1f for module "
+              "channel %d. Only module channel 0 is allowed to modify this "
+              "setting.", *((double *)value), modChan);
+      pslLogWarning("psl__SetGateMaster", info_string);
+      return XIA_SUCCESS;
+  }
 
   if (*((double *)value) == 1.0) {
       status = psl__SetMaster(detChan, XMAP_GATE_MASTER, defs);
@@ -6325,6 +6340,17 @@ PSL_STATIC int psl__SetSyncMaster(int detChan, int modChan, char *name,
   ASSERT(value);
   ASSERT(defs);
 
+
+  /* Only the first channel in a module is allowed to modify the
+   * master setting.
+   */
+  if (modChan != 0) {
+      sprintf(info_string, "Attempted to set SYNC master to %0.1f for module "
+              "channel %d. Only module channel 0 is allowed to modify this "
+              "setting.", *((double *)value), modChan);
+      pslLogWarning("psl__SetSyncMaster", info_string);
+      return XIA_SUCCESS;
+  }
 
   if (*((double *)value) == 1.0) {
       status = psl__SetMaster(detChan, XMAP_SYNC_MASTER, defs);
@@ -6969,6 +6995,17 @@ PSL_STATIC int psl__SetLBusMaster(int detChan, int modChan, char *name,
   ASSERT(value);
   ASSERT(defs);
 
+
+  /* Only the first channel in a module is allowed to modify the
+   * master setting.
+   */
+  if (modChan != 0) {
+      sprintf(info_string, "Attempted to set LBUS master to %0.1f for module "
+              "channel %d. Only module channel 0 is allowed to modify this "
+              "setting.", *((double *)value), modChan);
+      pslLogWarning("psl__SetLBusMaster", info_string);
+      return XIA_SUCCESS;
+  }
 
   if (*((double *)value) == 1.0) {
       status = psl__SetMaster(detChan, XMAP_LBUS_MASTER, defs);
@@ -9308,31 +9345,40 @@ PSL_STATIC int psl__UpdateRawParamAcqValue(int detChan, char *name,
 
     return XIA_SUCCESS;
 }
-PSL_STATIC void psl__WhichMasters(XiaDefaults *defs, boolean_t *isGate,
-                                  boolean_t *isSync, boolean_t *isLbus)
+
+
+PSL_STATIC void psl__WhichMasters(int detChan, XiaDefaults *defs,
+                                  boolean_t *isGate, boolean_t *isSync,
+                                  boolean_t *isLbus)
 {
     int status;
-    
-    double v;
+
+    boolean_t bit0 = FALSE_;
+    boolean_t bit1 = FALSE_;
 
 
     ASSERT(defs);
 
 
-    status = pslGetDefault("gate_master", &v, defs);
+    status = psl__CheckRegisterBit(detChan, "MCR", 0, &bit0);
     ASSERT(status == XIA_SUCCESS);
 
-    *isGate = (boolean_t)(v == 1.0);
-
-    status = pslGetDefault("sync_master", &v, defs);
-    ASSERT(status == XIA_SUCCESS);
-    
-    *isSync = (boolean_t)(v == 1.0);
-
-    status = pslGetDefault("lbus_master", &v, defs);
+    status = psl__CheckRegisterBit(detChan, "MCR", 1, &bit1);
     ASSERT(status == XIA_SUCCESS);
 
-    *isLbus = (boolean_t)(v == 1.0);
+    *isLbus = FALSE_;
+    *isGate = FALSE_;
+    *isSync = FALSE_;
+
+    if (bit0 && bit1) {
+        *isLbus = TRUE_;
+
+    } else if (bit0) {
+        *isGate = TRUE_;
+
+    } else if (bit1) {
+        *isSync = TRUE_;
+    }
 }
 
 
@@ -9354,7 +9400,7 @@ PSL_STATIC int psl__SetMaster(int detChan, enum master type, XiaDefaults *defs)
     ASSERT(defs);
 
 
-    psl__WhichMasters(defs, &isGate, &isSync, &isLbus);
+    psl__WhichMasters(detChan, defs, &isGate, &isSync, &isLbus);
 
     switch (type) {
     case XMAP_GATE_MASTER:
@@ -9508,7 +9554,7 @@ PSL_STATIC int psl__ClearMaster(int detChan, enum master type,
     ASSERT(defs);
 
 
-    psl__WhichMasters(defs, &isGate, &isSync, &isLbus);
+    psl__WhichMasters(detChan, defs, &isGate, &isSync, &isLbus);
 
     switch (type) {
     case XMAP_GATE_MASTER:

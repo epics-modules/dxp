@@ -33,7 +33,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xia_xerxes_structures.h 16573 2010-08-21 01:34:29Z patrick $
+ * $Id: xia_xerxes_structures.h 16952 2010-10-12 18:04:40Z patrick $
  *
  */
 
@@ -263,8 +263,9 @@ struct Board {
   struct Preamp_Info *preamp;
   /* Pointer to the structure of function calls */
   struct Board_Info *btype;
-  /* Pointer to the array of structures of Firmware Deifinitions */
-  /*struct FirmwareSet **firmware;*/
+
+    boolean_t is_full_reboot;
+
   /* Pointer to next board in the linked list */
   struct Board *next;
 };

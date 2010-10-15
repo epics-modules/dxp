@@ -33,7 +33,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: xia_xerxes.h 16573 2010-08-21 01:34:29Z patrick $
+ * $Id: xia_xerxes.h 16952 2010-10-12 18:04:40Z patrick $
  *
  */
 
@@ -119,7 +119,6 @@ extern "C"
   XERXES_EXPORT int XERXES_API dxp_readout_sca(int *detChan, unsigned long *sca);
   XERXES_EXPORT int XERXES_API dxp_dspdefaults(int *);
   XERXES_EXPORT int XERXES_API dxp_dspconfig(void);
-  XERXES_EXPORT int XERXES_API dxp_fipconfig(void);
   XERXES_EXPORT int XERXES_API dxp_replace_fpgaconfig(int *detChan, char *name, char *filename);
   XERXES_EXPORT int XERXES_API dxp_replace_dspconfig(int *detChan, char *filename);
   XERXES_EXPORT int XERXES_API dxp_put_dspparams(void);
@@ -265,7 +264,6 @@ extern "C"
   XERXES_EXPORT int XERXES_API dxp_readout_sca();
   XERXES_EXPORT int XERXES_API dxp_dspconfig();
   XERXES_EXPORT int XERXES_API dxp_dspdefaults();
-  XERXES_EXPORT int XERXES_API dxp_fipconfig();
   XERXES_EXPORT int XERXES_API dxp_replace_fpgaconfig();
   XERXES_EXPORT int XERXES_API dxp_replace_dspconfig();
   XERXES_EXPORT int XERXES_API dxp_put_dspparams();
