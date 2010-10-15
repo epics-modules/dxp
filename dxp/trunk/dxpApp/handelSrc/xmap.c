@@ -33,7 +33,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xmap.c 16756 2010-09-17 22:23:33Z patrick $
+ * $Id: xmap.c 16952 2010-10-12 18:04:40Z patrick $
  *
  */
 
@@ -198,6 +198,9 @@ static register_table_t REGISTER_TABLE[] = {
   {"SYNCCNT",    0x6C},
   {"CLRBUFSIZE", 0x88}
 };
+
+
+#define XMAP_DSP_BOOT_ACTIVE_TIMEOUT 1.0f
 
 
 /** @brief Initialize the function table for the xMAP product.
@@ -602,7 +605,7 @@ static int dxp_download_dspconfig(int* ioChan, int* modChan, Board *board)
   sprintf(info_string, "Downloaded %lu 16-bit words to System DSP", i);
   dxp_log_debug("dxp_download_dspconfig", info_string);
 
-  status = dxp_boot_dsp(*ioChan, *modChan, board, TRUE_);
+  status = dxp_boot_dsp(*ioChan, *modChan, board);
 
   if (status != DXP_SUCCESS) {
 	dxp_log_error("dxp_download_dspconfig", "Error booting DSP", status);
@@ -2866,33 +2869,18 @@ XERXES_STATIC int dxp_reset_dsp(int ioChan)
  * this is the first "cold" boot of the DSP.
  *
  */
-XERXES_STATIC int dxp_boot_dsp(int ioChan, int modChan, Board *b,
-                               boolean_t first_time)
+XERXES_STATIC int dxp_boot_dsp(int ioChan, int modChan, Board *b)
 {
   int status;
+  
+  unsigned long dsp_active;
+
+  float wait = 0.001f;
+  float elapsed = 0.0;
 
 
   ASSERT(b != NULL);
-
   
-  /* The first cold boot must set INITIALIZE so that the DSP data
-   * memory is cleared and set to their initial default
-   * values. Subsequent boots of the DSP will leave the data memory
-   * values untouched.
-   */
-  if (first_time) {
-      parameter_t INITIALIZE = 1;
-
-      status = dxp_modify_dspsymbol(&ioChan, &modChan, "INITIALIZE",
-                                    &INITIALIZE, b);
-
-      if (status != DXP_SUCCESS) {
-          sprintf(info_string, "Error initializing data memory during "
-                  "the first boot of the DSP for ioChan = %d.", ioChan);
-          dxp_log_error("dxp_boot_dsp", info_string, status);
-          return status;
-      }
-  }
 
   sprintf(info_string, "Performing DSP boot for ioChan = %d", ioChan);
   dxp_log_debug("dxp_boot_dsp", info_string);
@@ -2906,6 +2894,35 @@ XERXES_STATIC int dxp_boot_dsp(int ioChan, int modChan, Board *b,
 	return status;
   }
 
+  do {
+      unsigned long csr;
+
+      xmap_md_wait(&wait);
+      elapsed += wait;
+
+      status = dxp_read_global_register(ioChan, XMAP_REG_CSR, &csr);
+
+      if (status != DXP_SUCCESS) {
+          sprintf(info_string, "Error waiting for DSP to signal that it is "
+                  "active for ioChan = %d.", ioChan);
+          dxp_log_error("dxp_boot_dsp", info_string, status);
+          return status;
+      }
+
+      dsp_active = csr & (1 << XMAP_CSR_DSP_ACT_BIT);
+
+  } while (!dsp_active && elapsed < XMAP_DSP_BOOT_ACTIVE_TIMEOUT);
+
+  if (elapsed >= XMAP_DSP_BOOT_ACTIVE_TIMEOUT) {
+      sprintf(info_string, "Timeout (%0.1f s) waiting for DSP Active bit in "
+              "the CSR to be set for ioChan = %d.", elapsed, ioChan);
+      dxp_log_error("dxp_boot_dsp", info_string, DXP_TIMEOUT);
+      return DXP_TIMEOUT;
+  }
+
+  /* Once we have established that the DSP is active, it is safe to
+   * poll waiting for busy.
+   */
   status = dxp_wait_for_busy(ioChan, modChan, 0, 1.0, b);
 
   if (status != DXP_SUCCESS) {
@@ -2914,6 +2931,33 @@ XERXES_STATIC int dxp_boot_dsp(int ioChan, int modChan, Board *b,
 	dxp_log_error("dxp_boot_dsp", info_string, status);
 	return status;
   }
+
+  /* If this is a full system reboot (all firmware updated), then we
+   * need to initialize the data memory.
+   */
+  if (b->is_full_reboot) {
+      parameter_t INITIALIZE = 1;
+
+      status = dxp_modify_dspsymbol(&ioChan, &modChan, "INITIALIZE",
+                                    &INITIALIZE, b);
+
+      if (status != DXP_SUCCESS) {
+          sprintf(info_string, "Error initializing data memory during "
+                  "the first boot of the DSP for ioChan = %d.", ioChan);
+          dxp_log_error("dxp_boot_dsp", info_string, status);
+          return status;
+      }
+
+      status = dxp_do_apply(ioChan, modChan, b);
+
+      if (status != DXP_SUCCESS) {
+          sprintf(info_string, "Error doing apply run to initialize the data "
+                  "memory for the DSP, ioChan = %d.", ioChan);
+          dxp_log_error("dxp_boot_dsp", info_string, status);
+          return status;
+      }
+  }
+
 
   return DXP_SUCCESS;
 }
@@ -3270,7 +3314,7 @@ static int dxp_do_apply(int ioChan, int modChan, Board *board)
   }
 
   if (i == n_polls) {
-    status = dxp_end_run(&ioChan, &modChan, board);
+   status = dxp_end_run(&ioChan, &modChan, board);
     sprintf(info_string, "Timeout waiting %0.1f second(s) for the apply run "
             "to complete on ioChan = %d", (double)timeout, ioChan);
     dxp_log_error("dxp_do_apply", info_string, DXP_TIMEOUT);
@@ -4284,12 +4328,15 @@ static int dxp_download_fippis(int ioChan, int modChan, Board *b)
   ASSERT(b != NULL);
 
 
-  status = dxp__put_dsp_to_sleep(ioChan, modChan, b);
+  if (!b->is_full_reboot) {
+      status = dxp__put_dsp_to_sleep(ioChan, modChan, b);
 
-  if (status != DXP_SUCCESS) {
-	sprintf(info_string, "Error putting DSP to sleep for ioChan = %d", ioChan);
-	dxp_log_error("dxp_download_fippis", info_string, status);
-	return status;
+      if (status != DXP_SUCCESS) {
+          sprintf(info_string, "Error putting DSP to sleep for ioChan = %d",
+                  ioChan);
+          dxp_log_error("dxp_download_fippis", info_string, status);
+          return status;
+      }
   }
 
   for (i = 0; i < MAX_NUM_FPGA_ATTEMPTS; i++) {
@@ -4318,12 +4365,14 @@ static int dxp_download_fippis(int ioChan, int modChan, Board *b)
     }
   }
 
-  status = dxp__wake_dsp_up(ioChan, modChan, b);
+  if (!b->is_full_reboot) {
+      status = dxp__wake_dsp_up(ioChan, modChan, b);
 
-  if (status != DXP_SUCCESS) {
-	sprintf(info_string, "Error waking DSP up for ioChan = %d", ioChan);
-	dxp_log_error("dxp_download_fippis", info_string, status);
-	return status;
+      if (status != DXP_SUCCESS) {
+          sprintf(info_string, "Error waking DSP up for ioChan = %d", ioChan);
+          dxp_log_error("dxp_download_fippis", info_string, status);
+          return status;
+      }
   }
 
   return DXP_SUCCESS;
@@ -4405,7 +4454,7 @@ static int dxp_download_system_fpga(int ioChan, int modChan, Board *b)
     return status;
   }
 
-  status = dxp_boot_dsp(ioChan, modChan, b, FALSE_);
+  status = dxp_boot_dsp(ioChan, modChan, b);
 
   if (status != DXP_SUCCESS) {
     sprintf(info_string, "Error booting DSP  for ioChan = %d", ioChan);
@@ -4467,12 +4516,15 @@ static int dxp_download_fippis_dsp_no_wake(int ioChan, int modChan, Board *b)
   ASSERT(b != NULL);
 
 
-  status = dxp__put_dsp_to_sleep(ioChan, modChan, b);
+  if (!b->is_full_reboot) {
+      status = dxp__put_dsp_to_sleep(ioChan, modChan, b);
 
-  if (status != DXP_SUCCESS) {
-	sprintf(info_string, "Error putting DSP to sleep for ioChan = %d", ioChan);
-	dxp_log_error("dxp_download_fippis", info_string, status);
-	return status;
+      if (status != DXP_SUCCESS) {
+          sprintf(info_string, "Error putting DSP to sleep for ioChan = %d",
+                  ioChan);
+          dxp_log_error("dxp_download_fippis", info_string, status);
+          return status;
+      }
   }
 
   for (i = 0; i < MAX_NUM_FPGA_ATTEMPTS; i++) {
