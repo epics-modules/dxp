@@ -2,10 +2,11 @@ include "base.dbd"
 include "asyn.dbd"
 include "mcaSupport.dbd"
 include "dxpSupport.dbd"
-# Import the netCDF and TIFF file writers from areaDetector
+# Import file writers from areaDetector
 include "NDFileNetCDF.dbd"
 include "NDFileNexus.dbd"
 include "NDFileTIFF.dbd"
+include "NDFileMagick.dbd"
 
 # The following are needed only to support the ioc
 include "calcSupport.dbd"
