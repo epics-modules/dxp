@@ -1,6 +1,7 @@
 find . -name 'auto_settings*.sav_*' -exec rm -fv {} \;
 find . -name 'core.*' -exec rm -fv {} \;
-tar czvf /home/epics/public_html/pub/dxpStandalone_3-0_handel_1_1_3.tgz  --exclude '.svn*' -C .. \
+pushd ..
+tar czvf /home/epics/public_html/pub/dxpStandalone_3-0_handel_1_1_4.tgz  --exclude '.svn*' \
 asyn-4-14/db \
 asyn-4-14/medm \
 mca-6-12-1/mcaApp/Db/ \
@@ -9,16 +10,17 @@ autosave-4-7/asApp/Db/ \
 autosave-4-7/asApp/op/adl/ \
 sscan-2-6-6/sscanApp/Db/ \
 sscan-2-6-6/sscanApp/op/adl/ \
-areaDetector-1-6/bin/cygwin-x86 \
-areaDetector-1-6/bin/win32-x86 \
+areaDetector-1-6/bin/cygwin-x86/*.dll \
+areaDetector-1-6/bin/win32-x86/*.dll \
 areaDetector-1-6/ADApp/Db/ \
 areaDetector-1-6/ADApp/op/adl/ \
-dxp-3-0_handel_1_1_3/documentation \
-dxp-3-0_handel_1_1_3/dxpApp/Db \
-dxp-3-0_handel_1_1_3/dxpApp/firmware \
-dxp-3-0_handel_1_1_3/dxpApp/op/adl \
-dxp-3-0_handel_1_1_3/bin/cygwin-x86 \
-dxp-3-0_handel_1_1_3/bin/win32-x86 \
-dxp-3-0_handel_1_1_3/bin/linux-x86 \
-dxp-3-0_handel_1_1_3/dbd/ \
-dxp-3-0_handel_1_1_3/iocBoot
+dxp-3-0_handel_1_1_4/documentation \
+dxp-3-0_handel_1_1_4/dxpApp/Db \
+dxp-3-0_handel_1_1_4/dxpApp/firmware \
+dxp-3-0_handel_1_1_4/dxpApp/op/adl \
+dxp-3-0_handel_1_1_4/bin/cygwin-x86 \
+dxp-3-0_handel_1_1_4/bin/win32-x86 \
+dxp-3-0_handel_1_1_4/bin/linux-x86 \
+dxp-3-0_handel_1_1_4/dbd/ \
+dxp-3-0_handel_1_1_4/iocBoot
+popd
