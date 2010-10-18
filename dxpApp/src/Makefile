@@ -30,9 +30,6 @@ dxp_SRCS += dxpMED.st
 
 dxp_LIBS += handel
 dxp_LIBS += asyn
-dxp_LIBS += ADBase NDPlugin netCDF
-dxp_LIBS_Linux += PvAPI ImageLib
-dxp_LIBS_WIN32 += PvAPI ImageLib
 dxp_LIBS += mca 
 dxp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
@@ -57,33 +54,23 @@ dxpApp_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary
 dxpApp_LIBS += dxp handel
 dxpApp_LIBS += mca
 dxpApp_LIBS += asyn
-dxpApp_LIBS += ADBase NDPlugin netCDF
-#dxpApp_LIBS_Linux += PvAPI ImageLib
-#dxpApp_LIBS_WIN32 += PvAPI ImageLib
 dxpApp_LIBS += calc sscan autosave
 dxpApp_LIBS += busy
 dxpApp_LIBS_vxWorks += camac
 dxpApp_LIBS += seq pv
+
+include $(AREA_DETECTOR)/ADApp/commonDriverMakefile
+
 dxpApp_LIBS += $(EPICS_BASE_IOC_LIBS)
+
 dxpApp_LIBS_WIN32 += DLPORTIO PlxApi
 ifeq ($(LINUX_USB_INSTALLED), YES)
 dxpApp_SYS_LIBS_Linux += usb
 endif
 dxpApp_SYS_LIBS_cygwin32 += DLPORTIO PlxApi
 dxpApp_SYS_LIBS_cygwin32 += setupapi
-dxpApp_SYS_LIBS_cygwin32 += rpc
-dxpApp_SYS_LIBS_WIN32 += setupapi
-dxpApp_LIBS_WIN32        += libtiff libNeXus.dll
-dxpApp_LIBS_cygwin32     += libtiff jpeg libNeXus.dll
-# To use versions of these libraries supplied with areaDetector use this line
-dxpApp_LIBS_Linux        += NeXus mfhdf df hdf5 mxml
-# To use system versions of these libraries use this line
-#dxpApp_SYS_LIBS_Linux    += NeXus mfhdf df hdf5 mxml
-
-# To use versions of these libraries supplied with areaDetector use this line
-dxpApp_LIBS_Linux        += tiff jpeg z
-# To use system versions of these libraries use this line
-#dxpApp_SYS_LIBS_Linux    += tiff jpeg z
+dxpApp_SYS_LIBS_cygwin32 += $(CYGWIN_RPC_LIB)
+dxpApp_SYS_LIBS_WIN32    += setupapi
 
 # Test applications
 PROD_IOC_Linux += saturn_benchmark1
@@ -97,7 +84,7 @@ saturn_benchmark1_LIBS += $(EPICS_BASE_IOC_LIBS)
 saturn_benchmark1_LIBS_WIN32 += DLPORTIO PlxApi
 saturn_benchmark1_SYS_LIBS_cygwin32 += DLPORTIO PlxApi
 saturn_benchmark1_SYS_LIBS_cygwin32 += setupapi
-saturn_benchmark1_SYS_LIBS_cygwin32 += rpc
+saturn_benchmark1_SYS_LIBS_cygwin32 += $(CYGWIN_RPC_LIB)
 saturn_benchmark1_SYS_LIBS_WIN32 += setupapi
 
 PROD_IOC+= test_xmap_mode_switch
@@ -108,7 +95,7 @@ test_xmap_mode_switch_LIBS += $(EPICS_BASE_IOC_LIBS)
 test_xmap_mode_switch_LIBS_WIN32 += DLPORTIO PlxApi
 test_xmap_mode_switch_SYS_LIBS_cygwin32 += DLPORTIO PlxApi
 test_xmap_mode_switch_SYS_LIBS_cygwin32 += setupapi
-test_xmap_mode_switch_SYS_LIBS_cygwin32 += rpc
+test_xmap_mode_switch_SYS_LIBS_cygwin32 += $(CYGWIN_RPC_LIB)
 test_xmap_mode_switch_SYS_LIBS_WIN32 += setupapi
 test_xmap_mode_switch_SYS_LIBS_Linux += usb
 
