@@ -22,7 +22,6 @@
 #include <epicsExit.h>
 #include <envDefs.h>
 #include <iocsh.h>
-#include <epicsExport.h>
 
 /* Handel includes */
 #include <handel.h>
@@ -38,7 +37,9 @@
 /* Area Detector includes */
 #include <asynNDArrayDriver.h>
 
+#define epicsExportSharedSymbols
 #include "NDDxp.h"
+#include <epicsExport.h>
 
 #define MAX_CHANNELS_PER_CARD      4
 #define DXP_ALL                   -1
