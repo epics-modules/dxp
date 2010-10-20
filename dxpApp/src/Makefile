@@ -30,7 +30,9 @@ dxp_SRCS += dxpMED.st
 
 dxp_LIBS += handel
 dxp_LIBS += asyn
-dxp_LIBS += mca 
+dxp_LIBS += mca
+dxp_LIBS += ADBase
+dxp_LIBS += seq pv
 dxp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #=============================
