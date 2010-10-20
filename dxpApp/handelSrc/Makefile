@@ -64,10 +64,11 @@ handel_SRCS += xia_file.c
 handel_SRCS += xia_mem.c
 handel_SRCS += xia_mem_point.c
 
+handel_LIBS_WIN32        += DLPORTIO PlxApi
+handel_LIBS_cygwin32     += DLPORTIO PlxApi
+handel_SYS_LIBS_WIN32    += setupapi User32
+handel_SYS_LIBS_cygwin32 += setupapi User32
 handel_LIBS += $(EPICS_BASE_IOC_LIBS)
-handel_LIBS += $(EPICS_BASE_IOC_LIBS)
-handel_LIBS += $(EPICS_BASE_IOC_LIBS)
-handel_LIBS_WIN32  += DLPORTIO
 LIB_INSTALLS_WIN32    += ../DLPORTIO.lib ../PlxApi.lib
 LIB_INSTALLS_cygwin32 += ../DLPORTIO.lib ../PlxApi.lib
 BIN_INSTALLS_WIN32    += ../PlxApi631.dll ../Plx9054.sys  ../xmap9054.inf ../port95nt.exe ../dlportio.dll ../dlportio.sys
