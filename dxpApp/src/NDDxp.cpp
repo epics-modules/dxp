@@ -1603,6 +1603,9 @@ asynStatus NDDxp::configureMasterModes()
     double dTmp;
     const char* functionName = "configureMasterModes";
 
+    /* Master modes are only defined on the xMAP */
+    if (this->deviceType != NDDxpModelXMAP) return(asynSuccess);
+    
     for (masterChan=0; masterChan<this->nChannels; masterChan+=this->channelsPerCard) {
         dTmp = 0;
         /* Clear all master settings.  This may not be needed when Handel 1.1 is released. */
@@ -2002,28 +2005,30 @@ asynStatus NDDxp::getDxpParams(asynUser *pasynUser, int addr)
                     driverName, functionName, channel, bufLen);
                 setIntegerParam(channel, NDArraySize, (int)bufLen);
                 
-                setIntegerParam(NDDxpSyncMasterChannel, -1);
-                setIntegerParam(NDDxpGateMasterChannel, -1);
-                setIntegerParam(NDDxpLBUSMasterChannel, -1);
-                for (masterChan=0; masterChan<this->nChannels; masterChan++) {
-                    xiastatus = xiaGetAcquisitionValues(masterChan, "sync_master", &dTmp);
-                    status = this->xia_checkError(pasynUserSelf, xiastatus, "sync_master");
-                    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-                        "%s::%s [%d] Got sync_master = %f\n", 
-                        driverName, functionName, masterChan, dTmp);
-                    if (dTmp) setIntegerParam(NDDxpSyncMasterChannel, masterChan);
-                    xiastatus = xiaGetAcquisitionValues(masterChan, "gate_master", &dTmp);
-                    status = this->xia_checkError(pasynUserSelf, xiastatus, "gate_master");
-                    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-                        "%s::%s [%d] Got gate_master = %f\n", 
-                        driverName, functionName, masterChan, dTmp);
-                    if (dTmp) setIntegerParam(NDDxpGateMasterChannel, masterChan);
-                    xiastatus = xiaGetAcquisitionValues(masterChan, "lbus_master", &dTmp);
-                    status = this->xia_checkError(pasynUserSelf, xiastatus, "lbus_master");
-                    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-                        "%s::%s [%d] Got lbus_master = %f\n", 
-                        driverName, functionName, masterChan, dTmp);
-                    if (dTmp) setIntegerParam(NDDxpLBUSMasterChannel, masterChan);
+                if (this->deviceType == NDDxpModelXMAP) {
+                    setIntegerParam(NDDxpSyncMasterChannel, -1);
+                    setIntegerParam(NDDxpGateMasterChannel, -1);
+                    setIntegerParam(NDDxpLBUSMasterChannel, -1);
+                    for (masterChan=0; masterChan<this->nChannels; masterChan++) {
+                        xiastatus = xiaGetAcquisitionValues(masterChan, "sync_master", &dTmp);
+                        status = this->xia_checkError(pasynUserSelf, xiastatus, "sync_master");
+                        asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                            "%s::%s [%d] Got sync_master = %f\n", 
+                            driverName, functionName, masterChan, dTmp);
+                        if (dTmp) setIntegerParam(NDDxpSyncMasterChannel, masterChan);
+                        xiastatus = xiaGetAcquisitionValues(masterChan, "gate_master", &dTmp);
+                        status = this->xia_checkError(pasynUserSelf, xiastatus, "gate_master");
+                        asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                            "%s::%s [%d] Got gate_master = %f\n", 
+                            driverName, functionName, masterChan, dTmp);
+                        if (dTmp) setIntegerParam(NDDxpGateMasterChannel, masterChan);
+                        xiastatus = xiaGetAcquisitionValues(masterChan, "lbus_master", &dTmp);
+                        status = this->xia_checkError(pasynUserSelf, xiastatus, "lbus_master");
+                        asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                            "%s::%s [%d] Got lbus_master = %f\n", 
+                            driverName, functionName, masterChan, dTmp);
+                        if (dTmp) setIntegerParam(NDDxpLBUSMasterChannel, masterChan);
+                    }
                 }                
             }
         }
