@@ -1,6 +1,6 @@
 file "dxpSystem_settings.req"           P=$(P)
 file "dxpMED_settings.req"              P=$(P)
-file "dxpXMAP_settings.req",            P=$(P)
+file "dxpMapping_settings.req",         P=$(P)
 file "dxpHighLevel_settings.req",       P=$(P), R=dxp1:
 file "dxpHighLevel_settings.req",       P=$(P), R=dxp2:
 file "dxpHighLevel_settings.req",       P=$(P), R=dxp3:

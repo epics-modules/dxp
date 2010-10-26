@@ -6,7 +6,7 @@ file "$(DXP)/dxpApp/Db/dxpMED.template" {
 {P=dxpXMAP:, DETALL="@asyn(DXP1,4,1)"} 
 }
 
-file "$(DXP)/dxpApp/Db/dxpXMAP.template" {
+file "$(DXP)/dxpApp/Db/dxpMapping.template" {
 {P=dxpXMAP:, IO="@asyn(DXP1,0)"}
 }
 
