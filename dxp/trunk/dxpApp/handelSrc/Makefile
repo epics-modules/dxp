@@ -15,15 +15,15 @@ LIBRARY_IOC_cygwin32 += handel
 LIBRARY_IOC_WIN32    += handel
 
 ifeq ($(LINUX_USB_INSTALLED), YES)
-USR_CFLAGS_Linux    += -DEXCLUDE_CAMAC -DEXCLUDE_DXP4C -DEXCLUDE_DXP4C2X -DEXCLUDE_XMAP -DEXCLUDE_PLX -DLINUX
+USR_CFLAGS_Linux    += -DEXCLUDE_CAMAC -DEXCLUDE_DXP4C2X -DEXCLUDE_XMAP -DEXCLUDE_PLX -DLINUX
 else
-USR_CFLAGS_Linux    += -DEXCLUDE_CAMAC -DEXCLUDE_DXP4C -DEXCLUDE_DXP4C2X -DEXCLUDE_USB -DEXCLUDE_USB2 -DEXCLUDE_XMAP -DEXCLUDE_PLX -DLINUX
+USR_CFLAGS_Linux    += -DEXCLUDE_CAMAC -DEXCLUDE_DXP4C2X -DEXCLUDE_USB -DEXCLUDE_USB2 -DEXCLUDE_XMAP -DEXCLUDE_PLX -DEXCLUDE_MERCURY -DLINUX
 endif
-USR_CFLAGS_cygwin32 += -DEXCLUDE_CAMAC -DEXCLUDE_DXP4C -DEXCLUDE_DXP4C2X
-USR_CFLAGS_WIN32    += -DEXCLUDE_CAMAC -DEXCLUDE_DXP4C -DEXCLUDE_DXP4C2X
-USR_CFLAGS_vxWorks  += -DEXCLUDE_SATURN -DEXCLUDE_USB -DEXCLUDE_XMAP -DEXCLUDE_PLX
-USR_CFLAGS +=          -DEXCLUDE_UDXP -DEXCLUDE_UDXPS -DEXCLUDE_DGF200 -DEXCLUDE_POLARIS  -DEXCLUDE_MERCURY
-USR_CFLAGS +=          -DEXCLUDE_SERIAL -DEXCLUDE_ARCNET -DEXCLUDE_VEGA
+USR_CFLAGS_cygwin32 += -DEXCLUDE_CAMAC -DEXCLUDE_DXP4C2X
+USR_CFLAGS_WIN32    += -DEXCLUDE_CAMAC -DEXCLUDE_DXP4C2X
+USR_CFLAGS_vxWorks  += -DEXCLUDE_SATURN -DEXCLUDE_USB -DEXCLUDE_XMAP -DEXCLUDE_MERCURY -DEXCLUDE_PLX
+USR_CFLAGS +=          -DEXCLUDE_UDXP -DEXCLUDE_UDXPS
+USR_CFLAGS +=          -DEXCLUDE_SERIAL -DEXCLUDE_VEGA
 USR_CFLAGS_WIN32    += -DHANDEL_USE_DLL -DHANDEL_MAKE_DLL -DWIN32
 ifeq ($(STATIC_BUILD), YES)
 USR_CFLAGS          += -DXIA_STATIC_BUILD
@@ -35,10 +35,18 @@ handel_SRCS_vxWorks  += dxp4c2x.c dxp4c2x_psl.c md_vxWorks.c
 ifeq ($(LINUX_USB_INSTALLED), YES)
 handel_SRCS_Linux    += xia_usb_linux.c
 endif
-handel_SRCS_Linux    += saturn.c saturn_psl.c md_linux.c xia_epp_linux.c
+handel_SRCS_Linux    += saturn.c saturn_psl.c 
+handel_SRCS_cygwin32 += saturn.c saturn_psl.c 
+handel_SRCS_WIN32    += saturn.c saturn_psl.c 
+handel_SRCS_cygwin32 += xmap.c xmap_psl.c 
+handel_SRCS_WIN32    += xmap.c xmap_psl.c 
+handel_SRCS_Linux    += mercury.c mercury_psl.c 
+handel_SRCS_cygwin32 += mercury.c mercury_psl.c 
+handel_SRCS_WIN32    += mercury.c mercury_psl.c 
+handel_SRCS_cygwin32 += xia_epp.c xia_plx.c xia_usb.c xia_usb2.c md_win32.c
+handel_SRCS_WIN32    += xia_epp.c xia_plx.c xia_usb.c xia_usb2.c md_win32.c 
+handel_SRCS_Linux    += xia_epp_linux.c md_linux.c
 
-handel_SRCS_cygwin32 += saturn.c saturn_psl.c xmap.c xmap_psl.c md_win32.c xia_usb2.c xia_epp.c xia_plx.c xia_usb.c
-handel_SRCS_WIN32    += saturn.c saturn_psl.c xmap.c xmap_psl.c md_win32.c xia_usb2.c xia_epp.c xia_plx.c xia_usb.c
 handel_SRCS += xerxes.c
 handel_SRCS += xerxes_log.c
 handel_SRCS += md_log.c
