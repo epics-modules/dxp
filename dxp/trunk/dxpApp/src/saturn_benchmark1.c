@@ -4,14 +4,10 @@
 #include "handel_generic.h"
 #include "handel_constants.h"
 #include <epicsTime.h>
-#include <asynDriver.h>
-
 #define NUM_MCA_CHANNELS 2048
 #define COUNT_TIME 10.0
 /* Clock speed of Saturn for real time and live time */
 #define CHECK_STATUS(status) if (status) {printf("Error %d\n", status); exit(status);}
-asynUser *pasynUser;
-
 static int lookupParam(char **paramNames, unsigned short numParams, char *name) 
 {
     int i;
@@ -39,9 +35,6 @@ int main(int argc, char **argv)
     double dvalue;
     epicsTimeStamp t[12];
     
-    pasynUser = pasynManager->createAsynUser(0,0);
-    
-
     printf("Initializing ...\n");
     status = xiaSetLogLevel(2);
     CHECK_STATUS(status);
