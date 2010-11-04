@@ -69,7 +69,7 @@
 
 #define XIA_USB2_SMALL_READ_PACKET_SIZE 512
 
-static int xia_usb2__send_setup_packet(HANDLE h, unsigned short addr,
+static int xia_usb2__send_setup_packet(HANDLE h, unsigned long addr,
                                        unsigned long n_bytes, byte_t rw_flag);
 static struct usb_dev_handle        *xia_usb_handle = NULL;
 static struct usb_device            *xia_usb_device = NULL;
@@ -163,7 +163,10 @@ XIA_EXPORT int XIA_API xia_usb2_open(int device_number, HANDLE *hDevice)
         while ((p != NULL) && (xia_usb_handle == NULL) && (rv == 0)) {
             q = p->devices;
             while ((q != NULL) && (xia_usb_handle == NULL) && (rv == 0)) {
-                if ((q->descriptor.idVendor == 0x10e9) && (q->descriptor.idProduct == 0x0701)) {
+                if ((q->descriptor.idVendor == 0x10e9) && 
+                    ((q->descriptor.idProduct == 0x0701) ||
+                     (q->descriptor.idProduct == 0x0702) ||
+                     (q->descriptor.idProduct == 0x0703))) {
                     found++;
                     if (found == device_number) {
                         xia_usb_device = q;
@@ -176,7 +179,7 @@ XIA_EXPORT int XIA_API xia_usb2_open(int device_number, HANDLE *hDevice)
                             if (rv == 0) {
                                 rv = usb_claim_interface(xia_usb_handle, 0);
                                 rv = usb_reset(xia_usb_handle);
-                                sprintf(info_string, "Found USB 2.0 board");
+                                sprintf(info_string, "Found USB 2.0 board, product=0x%x", q->descriptor.idProduct);
                                 xiaLogInfo("xia_usb2_open", info_string);
                             }
                         }
@@ -420,7 +423,7 @@ XIA_EXPORT int XIA_API xia_usb2_write(HANDLE h, unsigned long addr,
  * is the first stage of our two-part process for transferring data to
  * and from the board.
  */
-static int xia_usb2__send_setup_packet(HANDLE h, unsigned short addr,
+static int xia_usb2__send_setup_packet(HANDLE h, unsigned long addr,
                                        unsigned long n_bytes, byte_t rw_flag)
 {
     int             status;
@@ -434,6 +437,8 @@ static int xia_usb2__send_setup_packet(HANDLE h, unsigned short addr,
     pkt[4] = (byte_t)((n_bytes >> 16) & 0xFF);
     pkt[5] = (byte_t)((n_bytes >> 24) & 0xFF);
     pkt[6] = rw_flag;
+    pkt[7] = (byte_t)((addr >> 16) & 0xFF);
+    pkt[8] = (byte_t)((addr >> 24) & 0xFF);
 
     status = usb_bulk_write(xia_usb_handle, XIA_USB2_SETUP_EP | USB_ENDPOINT_OUT, (char*)pkt, XIA_USB2_SETUP_PACKET_SIZE, 10000);
     if (status != XIA_USB2_SETUP_PACKET_SIZE) {
