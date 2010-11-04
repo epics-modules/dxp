@@ -36,7 +36,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: xia_plx.c 16573 2010-08-21 01:34:29Z patrick $
+ * $Id: xia_plx.c 17115 2010-11-03 20:23:25Z patrick $
  *
  */
 
@@ -215,8 +215,17 @@ XIA_EXPORT int XIA_API plx_open_slot(unsigned short id, byte_t bus, byte_t slot,
 
   dev.bus       = bus;
   dev.slot      = slot;
-  dev.DeviceId  = 0x9054;
-  dev.VendorId  = PLX_VENDOR_ID;
+
+  /* Per the PLX SDK docs, we are not supposed to futz with the
+   * members of the PLX_DEVICE_OBJECT structure, which makes sense
+   * except for the assumptions they made about new instances of
+   * PLX_DEVICE_OBJECT on the stack. In some build configurations, the
+   * memory will be reused between subsequent calls as-is, leading to
+   * the IsValidTag value being incorrectly set to "valid". We need to
+   * override that here since we are promising to pass in
+   * uninitialized device objects.
+   */
+  device_object.IsValidTag = 0;
 
   status = PlxPci_DeviceOpen(&dev, &device_object);
 
@@ -436,8 +445,7 @@ static int _plx_add_slot_to_map(PLX_DEVICE_OBJECT *device)
 
   }
 
-  V_MAP.device[V_MAP.n - 1] = *device;
-  device = &(V_MAP.device[V_MAP.n - 1]);
+  memcpy(&(V_MAP.device[V_MAP.n - 1]), device, sizeof(*device));
 
   status = PlxPci_PciBarMap(&(V_MAP.device[V_MAP.n - 1]), PLX_PCI_SPACE_0, 
                             (VOID **)&(V_MAP.addr[V_MAP.n - 1]));
