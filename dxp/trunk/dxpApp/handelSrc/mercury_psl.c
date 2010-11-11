@@ -32,7 +32,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: mercury_psl.c 16592 2010-08-25 17:53:01Z patrick $
+ * $Id: mercury_psl.c 17119 2010-11-04 18:14:54Z patrick $
  *
  */
 
@@ -1580,6 +1580,16 @@ PSL_STATIC int pslUserSetup(int detChan, XiaDefaults *defaults,
 
   while (entry != NULL) {
 
+      /* Skip read-only acquisition values so we don't generate
+       * warnings during startup.
+       */
+      if (STREQ(entry->name, "calibrated_gain") ||
+          STREQ(entry->name, "calibrated_dac") ||
+          STREQ(entry->name, "calibrated_checksum") ||
+          STREQ(entry->name, "gain_slope")) {
+          goto nextEntry;
+      }
+
     status = pslSetAcquisitionValues(detChan, entry->name, (void *)&entry->data,
                                      defaults, firmwareSet, currentFirmware,
                                      detectorType, detector, detector_chan, m,
@@ -1592,6 +1602,7 @@ PSL_STATIC int pslUserSetup(int detChan, XiaDefaults *defaults,
       return status;
     }
 
+  nextEntry:
     entry = entry->next;
   }
 

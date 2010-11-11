@@ -33,7 +33,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: xmap_psl.c 16986 2010-10-14 16:22:51Z patrick $
+ * $Id: xmap_psl.c 17126 2010-11-04 23:33:59Z patrick $
  *
  */
 
@@ -6266,7 +6266,7 @@ PSL_STATIC int psl__SetGateMaster(int detChan, int modChan, char *name,
       sprintf(info_string, "Attempted to set GATE master to %0.1f for module "
               "channel %d. Only module channel 0 is allowed to modify this "
               "setting.", *((double *)value), modChan);
-      pslLogWarning("psl__SetGateMaster", info_string);
+      pslLogInfo("psl__SetGateMaster", info_string);
       return XIA_SUCCESS;
   }
 
@@ -6348,7 +6348,7 @@ PSL_STATIC int psl__SetSyncMaster(int detChan, int modChan, char *name,
       sprintf(info_string, "Attempted to set SYNC master to %0.1f for module "
               "channel %d. Only module channel 0 is allowed to modify this "
               "setting.", *((double *)value), modChan);
-      pslLogWarning("psl__SetSyncMaster", info_string);
+      pslLogInfo("psl__SetSyncMaster", info_string);
       return XIA_SUCCESS;
   }
 
@@ -6763,28 +6763,26 @@ PSL_STATIC int psl__SetMappingMode(int detChan, int modChan, char *name,
       return status;
     }
 
-    if (updated) {
-        MAPPINGMODE = (parameter_t)(*((double *)value));
+    MAPPINGMODE = (parameter_t)(*((double *)value));
 
-        status = pslSetParameter(detChan, "MAPPINGMODE", MAPPINGMODE);
+    status = pslSetParameter(detChan, "MAPPINGMODE", MAPPINGMODE);
 
-        if (status != XIA_SUCCESS) {
-            sprintf(info_string, "Error updating mode in the DSP for "
-                    "detChan %d", detChan);
-            pslLogError("psl__SetMappingMode", info_string, status);
-            return status;
-        }
+    if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error updating mode in the DSP for "
+                "detChan %d", detChan);
+        pslLogError("psl__SetMappingMode", info_string, status);
+        return status;
+    }
 
-      /* Download the mapping-specific acquisition values now. */
-      status = psl__UpdateParams(detChan, XMAP_UPDATE_MAPPING, modChan, name,
-                                 value, detType, defs, m, det, fs);
+    /* Download the mapping-specific acquisition values now. */
+    status = psl__UpdateParams(detChan, XMAP_UPDATE_MAPPING, modChan, name,
+                               value, detType, defs, m, det, fs);
 
-      if (status != XIA_SUCCESS) {
+    if (status != XIA_SUCCESS) {
         sprintf(info_string, "Error updating mapping parameters after firmware "
                 "switched to mapping mode for detChan %d", detChan);
         pslLogError("psl__SetMappingMode", info_string, status);
         return status;
-      }
     }
 
     /* Write the DSP parameters that are used to fill the mapping buffers. */
@@ -6808,9 +6806,9 @@ PSL_STATIC int psl__SetMappingMode(int detChan, int modChan, char *name,
           }          
         }
 
-        /* Make SCAMAPMODE default to 1 so that different SCA regions can be
-           defined for each channel, this may become an acquisition value in the 
-           future.           
+        /* Make SCAMAPMODE default to 1 so that different SCA regions
+         * can be defined for each channel, this may become an
+         * acquisition value in the future.
          */
         if (i == 0 && sca_mapping) {
           status = pslSetParameter(m->channels[i], "SCAMAPMODE", 1);
@@ -7003,7 +7001,7 @@ PSL_STATIC int psl__SetLBusMaster(int detChan, int modChan, char *name,
       sprintf(info_string, "Attempted to set LBUS master to %0.1f for module "
               "channel %d. Only module channel 0 is allowed to modify this "
               "setting.", *((double *)value), modChan);
-      pslLogWarning("psl__SetLBusMaster", info_string);
+      pslLogInfo("psl__SetLBusMaster", info_string);
       return XIA_SUCCESS;
   }
 

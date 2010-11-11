@@ -36,7 +36,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: xia_plx.c 17115 2010-11-03 20:23:25Z patrick $
+ * $Id: xia_plx.c 17127 2010-11-05 01:01:21Z patrick $
  *
  */
 
@@ -734,10 +734,6 @@ XIA_EXPORT int XIA_API plx_read_block(HANDLE h, unsigned long addr,
                      "HANDLE %p\n", h);
       _plx_print_more(status);
       return PLX_API;
-    } else {
-      /* Print some message here to make sure that the event is registerd */
-      _plx_log_DEBUG("Registered for notification of PCI DMA channel 0: "
-                     "HANDLE %p\n", h);    
     }
 
     V_MAP.registered[idx] = TRUE_;
