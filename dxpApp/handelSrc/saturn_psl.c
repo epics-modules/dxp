@@ -33,7 +33,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: saturn_psl.c 16573 2010-08-21 01:34:29Z patrick $
+ * $Id: saturn_psl.c 17091 2010-10-29 16:57:48Z patrick $
  *
  */
 
@@ -351,7 +351,7 @@ double defaultValues[] =
   {
     8.0, 20.0, 4096.0, 0.0, 0.0, 5.0, 5900.0,
     .150, .200, 0.0, 1000.0, 0.0, 1.0, 50., 50., 1.0,
-    2.0, 5.0, 128., .150, 0.0, 0.0, 1000.0, 0.400, 0.060, 0
+    2.0, 5.0, 128., .150, 0.0, 0.0, 1000.0, 0.400, 0.060, 0.0
   };
 
 
@@ -4173,6 +4173,12 @@ PSL_STATIC int PSL_API pslUserSetup(int detChan, XiaDefaults *defaults,
   }
 
   while (entry != NULL) {
+      
+      /* Do no attempt to set read-only acquisition values. */
+      if (STREQ(entry->name, "actual_gap_time") ||
+          STREQ(entry->name, "mca_start_address")) {
+          goto nextEntry;
+      }
 
     status = pslSetAcquisitionValues(detChan, entry->name, (void *)&entry->data,
                                      defaults, firmwareSet, currentFirmware,
@@ -4186,6 +4192,7 @@ PSL_STATIC int PSL_API pslUserSetup(int detChan, XiaDefaults *defaults,
       return status;
     }
 
+  nextEntry:
     entry = entry->next;
   }
 
