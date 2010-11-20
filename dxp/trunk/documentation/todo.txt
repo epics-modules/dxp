@@ -5,14 +5,16 @@
 
 - Add support for list-mode mapping on the xMAP - need documentation
 
-- Get win32-x86 version working - it has problems switching modes on the xMAP
+- Initial value of pixels per buffer is wrong if it boots in mapping mode
+
+- Value of pixels per buffer is wrong if automatic when changing from MCA Mapping to SCA Mapping or vise-versa
 
 - Add SNL health PV to diagnose problems with SNL not connecting.
 
 - 4 element medm screens from 16-element - just before release.
 
 - Documentation of all the changes
-  - Dapping modes
+  - Mapping modes
   - IDL file reading codes
   - How initial values of parameters get set (.template, .ini, save/restore)
 
@@ -28,13 +30,8 @@
 
 - Test saving TIFF and NeXus files
 
-- Test support for the Mercury?
+- Test support for the Mercury
 
-- When using the EPICS sscan record to do rapid data collection, the scan occasionally
-  hangs up (every few hunded points) because the MCA record did not complete processing (?). 
-  There are also occasional data dropouts (elapsed times and spectra are 0).
-  Check this on Saturn and xMAP: still happening?
-  
 - Test performance when doing rapid scanning on all models, make at least as good as 2-11 corrected for small additional 
   overhead to read extra parameters to do accurate live time correction.
 
@@ -44,8 +41,6 @@
   - Measure improvement in iocInit compared to 2-10 release with 16 channel
     system
     
-- EPP and USB1 not working on new Linux system.  Works on old Linux system?  Is this kernel, 64-bit, or what?
-
 - Test new version on:
   xMAP: win32-x86, cygwin-x86
   Saturn (EPP, USB 1, USB 2): win32-x86, cygwin-x86, linux-x86, linux-x86_64
