@@ -45,7 +45,7 @@
 #define DXP_ALL                   -1
 #define MAX_MCA_BINS           16384
 #define MCA_BIN_RES              256
-#define DXP_MAX_SCAS              16
+#define DXP_MAX_SCAS              64
 #define LEN_SCA_NAME              10
 #define MAPPING_CLOCK_PERIOD     320e-9
 
@@ -399,6 +399,7 @@ private:
     int nChannels;
     int supportsMapping;
     int channelsPerCard;
+    int maxSCAs;
 
     epicsEvent *cmdStartEvent;
     epicsEvent *cmdStopEvent;
@@ -628,13 +629,17 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     {
     case NDDxpModelXMAP:
         this->supportsMapping = 1;
+        this->maxSCAs = 64;
     case NDDxpModelMercury:
         this->supportsMapping = 1;
+        this->maxSCAs = 64;
     case NDDxpModel4C2X:
         this->supportsMapping = 0;
+        this->maxSCAs = 16;
         break;
     case NDDxpModelSaturn:
         this->supportsMapping = 0;
+        this->maxSCAs = 16;
         break;
     }
     /* TODO: this solution is a bit crude and not always correct... */
@@ -864,7 +869,7 @@ asynStatus NDDxp::writeInt32( asynUser *pasynUser, epicsInt32 value)
     }
     else if ((function == NDDxpNumSCAs)    ||
              ((function >= NDDxpSCALow[0]) &&
-              (function <= NDDxpSCAHigh[DXP_MAX_SCAS-1]))) 
+              (function <= NDDxpSCAHigh[this->maxSCAs-1]))) 
     {
         this->setSCAs(pasynUser, addr);
     }
@@ -1311,6 +1316,10 @@ asynStatus NDDxp::setSCAs(asynUser *pasynUser, int addr)
     xiaStopRun(channel);
 
     getIntegerParam(addr, NDDxpNumSCAs, &numSCAs);
+    if (numSCAs > this->maxSCAs) {
+        numSCAs = this->maxSCAs;
+        setIntegerParam(addr, this->maxSCAs);
+    }
     dTmp = numSCAs;
     CALLHANDEL(xiaSetAcquisitionValues(channel, "number_of_scas", &dTmp), "number_of_scas");
     for (i=0; i<numSCAs; i++) {
@@ -2102,7 +2111,7 @@ asynStatus NDDxp::getMcaData(asynUser *pasynUser, int addr)
     int channel=addr;
     int spectrumCounter;
     int i;
-    NDArray *pArray;
+    //NDArray *pArray;
     NDDataType_t dataType;
     epicsTimeStamp now;
     const char* functionName = "getMcaData";
@@ -2134,18 +2143,19 @@ asynStatus NDDxp::getMcaData(asynUser *pasynUser, int addr)
             "%s::%s Got MCA spectrum channel:%d ptr:%p\n",
             driverName, functionName, channel, pMcaRaw[addr]);
 
-        if (arrayCallbacks)
-        {
-            /* Allocate a buffer for callback */
-            pArray = this->pNDArrayPool->alloc(1, &nChannels, dataType, 0, NULL);
-            pArray->timeStamp = now.secPastEpoch + now.nsec / 1.e9;
-            pArray->uniqueId = spectrumCounter;
-            /* TODO: Need to copy the data here */
-            //this->unlock();
-            doCallbacksGenericPointer(pArray, NDArrayData, addr);
-            //this->lock();
-            pArray->release();
-        }
+// In the future we may want to do array callbacks with the MCA data.  For now we are not doing this.
+//        if (arrayCallbacks)
+//       {
+//            /* Allocate a buffer for callback */
+//            pArray = this->pNDArrayPool->alloc(1, &nChannels, dataType, 0, NULL);
+//            pArray->timeStamp = now.secPastEpoch + now.nsec / 1.e9;
+//            pArray->uniqueId = spectrumCounter;
+//            /* TODO: Need to copy the data here */
+//            //this->unlock();
+//            doCallbacksGenericPointer(pArray, NDArrayData, addr);
+//            //this->lock();
+//            pArray->release();
+//       }
     }
     return status;
 }
