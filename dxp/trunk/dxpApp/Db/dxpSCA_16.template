@@ -1,9 +1,24 @@
+record(longout, "$(P)$(R)NumSCAs") {
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT,  "$(IO)DxpNumSCAs")
+    field(DESC, "Number of SCAs")
+    field(VAL,  "16")
+}
+
+record(longin, "$(P)$(R)NumSCAs_RBV") {
+    field(DTYP, "asynInt32")
+    field(INP,  "$(IO)DxpNumSCAs")
+    field(DESC, "Number of SCAs")
+    field(SCAN, "I/O Intr")
+}
+
 record(longout, "$(P)$(R)SCA0Low") {
     field(PINI, "YES")
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA0Low")
     field(DESC, "SCA 0 low channel")
-    field(VAL,  "0")
+    field(VAL,  "1")
 }
 
 record(longin, "$(P)$(R)SCA0Low_RBV") {
@@ -18,7 +33,7 @@ record(longout, "$(P)$(R)SCA0High") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA0High")
     field(DESC, "SCA 0 high channel")
-    field(VAL,  "0")
+    field(VAL,  "2")
 }
 
 record(longin, "$(P)$(R)SCA0High_RBV") {
@@ -40,7 +55,7 @@ record(longout, "$(P)$(R)SCA1Low") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA1Low")
     field(DESC, "SCA 1 low channel")
-    field(VAL,  "1")
+    field(VAL,  "3")
 }
 
 record(longin, "$(P)$(R)SCA1Low_RBV") {
@@ -55,7 +70,7 @@ record(longout, "$(P)$(R)SCA1High") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA1High")
     field(DESC, "SCA 1 high channel")
-    field(VAL,  "1")
+    field(VAL,  "4")
 }
 
 record(longin, "$(P)$(R)SCA1High_RBV") {
@@ -77,7 +92,7 @@ record(longout, "$(P)$(R)SCA2Low") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA2Low")
     field(DESC, "SCA 2 low channel")
-    field(VAL,  "2")
+    field(VAL,  "5")
 }
 
 record(longin, "$(P)$(R)SCA2Low_RBV") {
@@ -92,7 +107,7 @@ record(longout, "$(P)$(R)SCA2High") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA2High")
     field(DESC, "SCA 2 high channel")
-    field(VAL,  "2")
+    field(VAL,  "6")
 }
 
 record(longin, "$(P)$(R)SCA2High_RBV") {
@@ -114,7 +129,7 @@ record(longout, "$(P)$(R)SCA3Low") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA3Low")
     field(DESC, "SCA 3 low channel")
-    field(VAL,  "3")
+    field(VAL,  "7")
 }
 
 record(longin, "$(P)$(R)SCA3Low_RBV") {
@@ -129,7 +144,7 @@ record(longout, "$(P)$(R)SCA3High") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA3High")
     field(DESC, "SCA 3 high channel")
-    field(VAL,  "3")
+    field(VAL,  "8")
 }
 
 record(longin, "$(P)$(R)SCA3High_RBV") {
@@ -151,7 +166,7 @@ record(longout, "$(P)$(R)SCA4Low") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA4Low")
     field(DESC, "SCA 4 low channel")
-    field(VAL,  "4")
+    field(VAL,  "9")
 }
 
 record(longin, "$(P)$(R)SCA4Low_RBV") {
@@ -166,7 +181,7 @@ record(longout, "$(P)$(R)SCA4High") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA4High")
     field(DESC, "SCA 4 high channel")
-    field(VAL,  "4")
+    field(VAL,  "10")
 }
 
 record(longin, "$(P)$(R)SCA4High_RBV") {
@@ -188,7 +203,7 @@ record(longout, "$(P)$(R)SCA5Low") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA5Low")
     field(DESC, "SCA 5 low channel")
-    field(VAL,  "5")
+    field(VAL,  "11")
 }
 
 record(longin, "$(P)$(R)SCA5Low_RBV") {
@@ -203,7 +218,7 @@ record(longout, "$(P)$(R)SCA5High") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA5High")
     field(DESC, "SCA 5 high channel")
-    field(VAL,  "5")
+    field(VAL,  "12")
 }
 
 record(longin, "$(P)$(R)SCA5High_RBV") {
@@ -225,7 +240,7 @@ record(longout, "$(P)$(R)SCA6Low") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA6Low")
     field(DESC, "SCA 6 low channel")
-    field(VAL,  "6")
+    field(VAL,  "13")
 }
 
 record(longin, "$(P)$(R)SCA6Low_RBV") {
@@ -240,7 +255,7 @@ record(longout, "$(P)$(R)SCA6High") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA6High")
     field(DESC, "SCA 6 high channel")
-    field(VAL,  "6")
+    field(VAL,  "14")
 }
 
 record(longin, "$(P)$(R)SCA6High_RBV") {
@@ -262,7 +277,7 @@ record(longout, "$(P)$(R)SCA7Low") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA7Low")
     field(DESC, "SCA 7 low channel")
-    field(VAL,  "7")
+    field(VAL,  "15")
 }
 
 record(longin, "$(P)$(R)SCA7Low_RBV") {
@@ -277,7 +292,7 @@ record(longout, "$(P)$(R)SCA7High") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA7High")
     field(DESC, "SCA 7 high channel")
-    field(VAL,  "7")
+    field(VAL,  "16")
 }
 
 record(longin, "$(P)$(R)SCA7High_RBV") {
@@ -299,7 +314,7 @@ record(longout, "$(P)$(R)SCA8Low") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA8Low")
     field(DESC, "SCA 8 low channel")
-    field(VAL,  "8")
+    field(VAL,  "17")
 }
 
 record(longin, "$(P)$(R)SCA8Low_RBV") {
@@ -314,7 +329,7 @@ record(longout, "$(P)$(R)SCA8High") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA8High")
     field(DESC, "SCA 8 high channel")
-    field(VAL,  "8")
+    field(VAL,  "18")
 }
 
 record(longin, "$(P)$(R)SCA8High_RBV") {
@@ -336,7 +351,7 @@ record(longout, "$(P)$(R)SCA9Low") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA9Low")
     field(DESC, "SCA 9 low channel")
-    field(VAL,  "9")
+    field(VAL,  "19")
 }
 
 record(longin, "$(P)$(R)SCA9Low_RBV") {
@@ -351,7 +366,7 @@ record(longout, "$(P)$(R)SCA9High") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA9High")
     field(DESC, "SCA 9 high channel")
-    field(VAL,  "9")
+    field(VAL,  "20")
 }
 
 record(longin, "$(P)$(R)SCA9High_RBV") {
@@ -373,7 +388,7 @@ record(longout, "$(P)$(R)SCA10Low") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA10Low")
     field(DESC, "SCA 10 low channel")
-    field(VAL,  "0")
+    field(VAL,  "21")
 }
 
 record(longin, "$(P)$(R)SCA10Low_RBV") {
@@ -388,7 +403,7 @@ record(longout, "$(P)$(R)SCA10High") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA10High")
     field(DESC, "SCA 10 high channel")
-    field(VAL,  "0")
+    field(VAL,  "22")
 }
 
 record(longin, "$(P)$(R)SCA10High_RBV") {
@@ -410,7 +425,7 @@ record(longout, "$(P)$(R)SCA11Low") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA11Low")
     field(DESC, "SCA 11 low channel")
-    field(VAL,  "1")
+    field(VAL,  "23")
 }
 
 record(longin, "$(P)$(R)SCA11Low_RBV") {
@@ -425,7 +440,7 @@ record(longout, "$(P)$(R)SCA11High") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA11High")
     field(DESC, "SCA 11 high channel")
-    field(VAL,  "1")
+    field(VAL,  "24")
 }
 
 record(longin, "$(P)$(R)SCA11High_RBV") {
@@ -447,7 +462,7 @@ record(longout, "$(P)$(R)SCA12Low") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA12Low")
     field(DESC, "SCA 12 low channel")
-    field(VAL,  "2")
+    field(VAL,  "25")
 }
 
 record(longin, "$(P)$(R)SCA12Low_RBV") {
@@ -462,7 +477,7 @@ record(longout, "$(P)$(R)SCA12High") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA12High")
     field(DESC, "SCA 12 high channel")
-    field(VAL,  "2")
+    field(VAL,  "26")
 }
 
 record(longin, "$(P)$(R)SCA12High_RBV") {
@@ -484,7 +499,7 @@ record(longout, "$(P)$(R)SCA13Low") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA13Low")
     field(DESC, "SCA 13 low channel")
-    field(VAL,  "3")
+    field(VAL,  "27")
 }
 
 record(longin, "$(P)$(R)SCA13Low_RBV") {
@@ -499,7 +514,7 @@ record(longout, "$(P)$(R)SCA13High") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA13High")
     field(DESC, "SCA 13 high channel")
-    field(VAL,  "3")
+    field(VAL,  "28")
 }
 
 record(longin, "$(P)$(R)SCA13High_RBV") {
@@ -521,7 +536,7 @@ record(longout, "$(P)$(R)SCA14Low") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA14Low")
     field(DESC, "SCA 14 low channel")
-    field(VAL,  "4")
+    field(VAL,  "29")
 }
 
 record(longin, "$(P)$(R)SCA14Low_RBV") {
@@ -536,7 +551,7 @@ record(longout, "$(P)$(R)SCA14High") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA14High")
     field(DESC, "SCA 14 high channel")
-    field(VAL,  "4")
+    field(VAL,  "30")
 }
 
 record(longin, "$(P)$(R)SCA14High_RBV") {
@@ -558,7 +573,7 @@ record(longout, "$(P)$(R)SCA15Low") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA15Low")
     field(DESC, "SCA 15 low channel")
-    field(VAL,  "5")
+    field(VAL,  "31")
 }
 
 record(longin, "$(P)$(R)SCA15Low_RBV") {
@@ -573,7 +588,7 @@ record(longout, "$(P)$(R)SCA15High") {
     field(DTYP, "asynInt32")
     field(OUT,  "$(IO)DxpSCA15High")
     field(DESC, "SCA 15 high channel")
-    field(VAL,  "5")
+    field(VAL,  "32")
 }
 
 record(longin, "$(P)$(R)SCA15High_RBV") {
