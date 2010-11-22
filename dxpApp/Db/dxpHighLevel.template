@@ -586,18 +586,3 @@ record(longin, "$(P)$(R)CurrentPixel") {
     field(DESC, "Current pixel #")
     field(SCAN, "I/O Intr")
 }
-
-record(longout, "$(P)$(R)NumSCAs") {
-    field(PINI, "YES")
-    field(DTYP, "asynInt32")
-    field(OUT,  "$(IO)DxpNumSCAs")
-    field(DESC, "Number of SCAs")
-    field(VAL,  "0")
-}
-
-record(longin, "$(P)$(R)NumSCAs_RBV") {
-    field(DTYP, "asynInt32")
-    field(INP,  "$(IO)DxpNumSCAs")
-    field(DESC, "Number of SCAs")
-    field(SCAN, "I/O Intr")
-}
