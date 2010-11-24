@@ -1,4 +1,5 @@
 $(P)CollectMode
+$(P)ListMode
 $(P)PixelAdvanceMode
 $(P)PixelsPerRun
 $(P)AutoPixelsPerBuffer
