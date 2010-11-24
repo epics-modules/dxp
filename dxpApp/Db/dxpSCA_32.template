@@ -1,18 +1,3 @@
-record(longout, "$(P)$(R)NumSCAs") {
-    field(PINI, "YES")
-    field(DTYP, "asynInt32")
-    field(OUT,  "$(IO)DxpNumSCAs")
-    field(DESC, "Number of SCAs")
-    field(VAL,  "16")
-}
-
-record(longin, "$(P)$(R)NumSCAs_RBV") {
-    field(DTYP, "asynInt32")
-    field(INP,  "$(IO)DxpNumSCAs")
-    field(DESC, "Number of SCAs")
-    field(SCAN, "I/O Intr")
-}
-
 record(longout, "$(P)$(R)SCA0Low") {
     field(PINI, "YES")
     field(DTYP, "asynInt32")
