@@ -42,6 +42,26 @@ record(waveform, "$(P)SaveSystemFile")
     field(NELM, "256")
 }
 
+record(longout, "$(P)NumSCAs") {
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT, "$(IO)DxpNumSCAs")
+    field(VAL, "16")
+}
+
+record(longin, "$(P)NumSCAs_RBV") {
+    field(DTYP, "asynInt32")
+    field(INP, "$(IO)DxpNumSCAs")
+    field(VAL, "16")
+    field(SCAN, "I/O Intr")
+}
+
+record(longin, "$(P)MaxSCAs") {
+    field(DTYP, "asynInt32")
+    field(INP, "$(IO)DxpMaxSCAs")
+    field(SCAN, "I/O Intr")
+}
+
 # These records are for waiting for IDL or other clients
 record(bo,"$(P)EnableClientWait") {
     field(ZNAM,"Disable")
