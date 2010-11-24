@@ -58,7 +58,7 @@ dbLoadRecords("$(SSCAN)/sscanApp/Db/scan.db","P=dxpXMAP:,MAXPTS1=2000,MAXPTS2=10
 
 iocInit
 
-seq dxpMED, "P=dxpXMAP:, DXP=dxp, MCA=mca, N_DETECTORS=16, N_SCAS=16"
+seq dxpMED, "P=dxpXMAP:, DXP=dxp, MCA=mca, N_DETECTORS=16, N_SCAS=32"
 
 ### Start up the autosave task and tell it what to do.
 # Save settings every thirty seconds
