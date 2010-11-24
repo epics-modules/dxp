@@ -348,12 +348,6 @@ assign  mcaCalSlope to
              "","","","","","","","","","","","","","","","","","","","","","","","","",
              "","","","","","","","","","","","","","","","","","","","","","","","",""};
 
-double  numSCAs[MAX_DETECTORS]; 
-assign  numSCAs to
-            {"","","","","","","","","","","","","","","","","","","","","","","","","",
-             "","","","","","","","","","","","","","","","","","","","","","","","","",
-             "","","","","","","","","","","","","","","","","","","","","","","","","",
-             "","","","","","","","","","","","","","","","","","","","","","","","",""};
 int     mcaROILow[TOTAL_ROIS]; 
 assign  mcaROILow to
             {"","","","","","","","","","","","","","","","","","","","","","","","","",
@@ -1113,9 +1107,6 @@ ss dxp_control {
                 sprintf(temp, "%s%s%d:TraceMode", prefix, dxp, det);
                 pvAssign(TraceMode[i], temp);
 
-                sprintf(temp, "%s%s%d:NumSCAs", prefix, dxp, det);
-                pvAssign(numSCAs[i], temp);
-
                 sprintf(temp, "%s%s%d:PresetMode", prefix, dxp, det);
                 pvAssign(dxpPresetMode[i], temp);
 
@@ -1190,10 +1181,6 @@ ss dxp_control {
 
         when (pvAssignCount () == pvConnectCount ()) {
           printf ("dxpMED: All channels connected.\n");
-          for (i=0; i<nDetectors; i++) {
-              numSCAs[i] = nSCAs;
-              pvPut(numSCAs[i]);
-          }
         } state monitor_changes
 
     }
