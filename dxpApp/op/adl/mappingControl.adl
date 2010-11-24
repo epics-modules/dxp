@@ -1,14 +1,14 @@
 
 file {
-	name="/home/epics/devel/dxp/dxpApp/op/adl/mappingControl.adl"
+	name="/home/epics/devel/dxp-3-0/dxpApp/op/adl/mappingControl.adl"
 	version=030102
 }
 display {
 	object {
-		x=273
-		y=68
+		x=399
+		y=61
 		width=340
-		height=730
+		height=755
 	}
 	clr=14
 	bclr=4
@@ -113,397 +113,8 @@ text {
 }
 composite {
 	object {
-		x=10
-		y=425
-		width=320
-		height=135
-	}
-	"composite name"=""
-	children {
-		rectangle {
-			object {
-				x=10
-				y=425
-				width=320
-				height=135
-			}
-			"basic attribute" {
-				clr=54
-				fill="outline"
-				width=2
-			}
-		}
-		text {
-			object {
-				x=122
-				y=504
-				width=180
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Manually set value"
-		}
-		text {
-			object {
-				x=122
-				y=454
-				width=190
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Auto-set to maximum"
-		}
-		text {
-			object {
-				x=122
-				y=479
-				width=120
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Actual value"
-		}
-		text {
-			object {
-				x=78
-				y=430
-				width=170
-				height=20
-			}
-			"basic attribute" {
-				clr=53
-			}
-			textix="Pixels per buffer"
-		}
-		text {
-			object {
-				x=122
-				y=529
-				width=110
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Buffer size"
-		}
-		"text entry" {
-			object {
-				x=20
-				y=504
-				width=97
-				height=22
-			}
-			control {
-				chan="$(P)PixelsPerBuffer"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=20
-				y=479
-				width=97
-				height=20
-			}
-			monitor {
-				chan="$(P)PixelsPerBuffer_RBV"
-				clr=54
-				bclr=4
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		menu {
-			object {
-				x=20
-				y=454
-				width=97
-				height=20
-			}
-			control {
-				chan="$(P)AutoPixelsPerBuffer"
-				clr=14
-				bclr=51
-			}
-		}
-		"text update" {
-			object {
-				x=20
-				y=529
-				width=97
-				height=20
-			}
-			monitor {
-				chan="$(P)BufferSize_RBV"
-				clr=54
-				bclr=4
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-	}
-}
-composite {
-	object {
-		x=10
-		y=45
-		width=320
-		height=235
-	}
-	"composite name"=""
-	children {
-		rectangle {
-			object {
-				x=10
-				y=45
-				width=320
-				height=235
-			}
-			"basic attribute" {
-				clr=54
-				fill="outline"
-				width=2
-			}
-		}
-		text {
-			object {
-				x=125
-				y=75
-				width=150
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Collection mode"
-		}
-		text {
-			object {
-				x=84
-				y=50
-				width=160
-				height=20
-			}
-			"basic attribute" {
-				clr=53
-			}
-			textix="Mapping settings"
-		}
-		text {
-			object {
-				x=125
-				y=100
-				width=180
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Pixel advance mode"
-		}
-		text {
-			object {
-				x=125
-				y=125
-				width=100
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Sync count"
-		}
-		text {
-			object {
-				x=125
-				y=150
-				width=110
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Ignore gate"
-		}
-		text {
-			object {
-				x=125
-				y=175
-				width=200
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Input logic polarity"
-		}
-		text {
-			object {
-				x=125
-				y=225
-				width=130
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Current pixel"
-		}
-		text {
-			object {
-				x=125
-				y=200
-				width=200
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Manual pixel advance"
-		}
-		menu {
-			object {
-				x=23
-				y=75
-				width=97
-				height=20
-			}
-			control {
-				chan="$(P)CollectMode"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=23
-				y=100
-				width=97
-				height=20
-			}
-			control {
-				chan="$(P)PixelAdvanceMode"
-				clr=14
-				bclr=51
-			}
-		}
-		"text entry" {
-			object {
-				x=23
-				y=125
-				width=97
-				height=22
-			}
-			control {
-				chan="$(P)SyncCount"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		menu {
-			object {
-				x=23
-				y=150
-				width=97
-				height=20
-			}
-			control {
-				chan="$(P)IgnoreGate"
-				clr=14
-				bclr=51
-			}
-		}
-		menu {
-			object {
-				x=23
-				y=175
-				width=97
-				height=20
-			}
-			control {
-				chan="$(P)InputLogicPolarity"
-				clr=14
-				bclr=51
-			}
-		}
-		"text update" {
-			object {
-				x=23
-				y=225
-				width=97
-				height=20
-			}
-			monitor {
-				chan="$(P)dxp1:CurrentPixel"
-				clr=54
-				bclr=4
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		"message button" {
-			object {
-				x=23
-				y=200
-				width=97
-				height=20
-			}
-			control {
-				chan="$(P)NextPixel"
-				clr=14
-				bclr=51
-			}
-			label="Next pixel"
-			press_msg="1"
-		}
-		text {
-			object {
-				x=125
-				y=250
-				width=140
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Pixels per run"
-		}
-		"text entry" {
-			object {
-				x=23
-				y=250
-				width=97
-				height=22
-			}
-			control {
-				chan="$(P)PixelsPerRun"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-	}
-}
-composite {
-	object {
 		x=23
-		y=650
+		y=675
 		width=292
 		height=71
 	}
@@ -512,7 +123,7 @@ composite {
 		composite {
 			object {
 				x=23
-				y=676
+				y=701
 				width=292
 				height=45
 			}
@@ -521,7 +132,7 @@ composite {
 				menu {
 					object {
 						x=23
-						y=676
+						y=701
 						width=97
 						height=20
 					}
@@ -534,7 +145,7 @@ composite {
 				text {
 					object {
 						x=125
-						y=676
+						y=701
 						width=190
 						height=20
 					}
@@ -546,7 +157,7 @@ composite {
 				"message button" {
 					object {
 						x=23
-						y=701
+						y=726
 						width=97
 						height=20
 					}
@@ -561,7 +172,7 @@ composite {
 				text {
 					object {
 						x=125
-						y=701
+						y=726
 						width=140
 						height=20
 					}
@@ -575,7 +186,7 @@ composite {
 		composite {
 			object {
 				x=23
-				y=650
+				y=675
 				width=282
 				height=21
 			}
@@ -584,7 +195,7 @@ composite {
 				text {
 					object {
 						x=125
-						y=650
+						y=675
 						width=180
 						height=20
 					}
@@ -596,7 +207,7 @@ composite {
 				"related display" {
 					object {
 						x=23
-						y=650
+						y=675
 						width=97
 						height=21
 					}
@@ -626,7 +237,7 @@ composite {
 composite {
 	object {
 		x=10
-		y=565
+		y=590
 		width=320
 		height=80
 	}
@@ -635,7 +246,7 @@ composite {
 		rectangle {
 			object {
 				x=10
-				y=565
+				y=590
 				width=320
 				height=80
 			}
@@ -648,7 +259,7 @@ composite {
 		text {
 			object {
 				x=120
-				y=570
+				y=595
 				width=100
 				height=20
 			}
@@ -660,7 +271,7 @@ composite {
 		composite {
 			object {
 				x=20
-				y=595
+				y=620
 				width=222
 				height=20
 			}
@@ -669,7 +280,7 @@ composite {
 				text {
 					object {
 						x=122
-						y=595
+						y=620
 						width=120
 						height=20
 					}
@@ -681,7 +292,7 @@ composite {
 				"text update" {
 					object {
 						x=20
-						y=595
+						y=620
 						width=97
 						height=20
 					}
@@ -699,7 +310,7 @@ composite {
 		composite {
 			object {
 				x=20
-				y=620
+				y=645
 				width=212
 				height=20
 			}
@@ -708,7 +319,7 @@ composite {
 				text {
 					object {
 						x=122
-						y=620
+						y=645
 						width=110
 						height=20
 					}
@@ -720,7 +331,7 @@ composite {
 				"text update" {
 					object {
 						x=20
-						y=620
+						y=645
 						width=97
 						height=20
 					}
@@ -740,7 +351,151 @@ composite {
 composite {
 	object {
 		x=10
-		y=285
+		y=450
+		width=320
+		height=135
+	}
+	"composite name"=""
+	children {
+		rectangle {
+			object {
+				x=10
+				y=450
+				width=320
+				height=135
+			}
+			"basic attribute" {
+				clr=54
+				fill="outline"
+				width=2
+			}
+		}
+		text {
+			object {
+				x=122
+				y=529
+				width=180
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Manually set value"
+		}
+		text {
+			object {
+				x=122
+				y=479
+				width=190
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Auto-set to maximum"
+		}
+		text {
+			object {
+				x=122
+				y=504
+				width=120
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Actual value"
+		}
+		text {
+			object {
+				x=78
+				y=455
+				width=170
+				height=20
+			}
+			"basic attribute" {
+				clr=53
+			}
+			textix="Pixels per buffer"
+		}
+		text {
+			object {
+				x=122
+				y=554
+				width=110
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Buffer size"
+		}
+		"text entry" {
+			object {
+				x=20
+				y=529
+				width=97
+				height=22
+			}
+			control {
+				chan="$(P)PixelsPerBuffer"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=20
+				y=504
+				width=97
+				height=20
+			}
+			monitor {
+				chan="$(P)PixelsPerBuffer_RBV"
+				clr=54
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		menu {
+			object {
+				x=20
+				y=479
+				width=97
+				height=20
+			}
+			control {
+				chan="$(P)AutoPixelsPerBuffer"
+				clr=14
+				bclr=51
+			}
+		}
+		"text update" {
+			object {
+				x=20
+				y=554
+				width=97
+				height=20
+			}
+			monitor {
+				chan="$(P)BufferSize_RBV"
+				clr=54
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+	}
+}
+composite {
+	object {
+		x=10
+		y=310
 		width=320
 		height=135
 	}
@@ -749,7 +504,7 @@ composite {
 		text {
 			object {
 				x=125
-				y=311
+				y=336
 				width=190
 				height=20
 			}
@@ -761,7 +516,7 @@ composite {
 		"text entry" {
 			object {
 				x=23
-				y=311
+				y=336
 				width=97
 				height=22
 			}
@@ -776,7 +531,7 @@ composite {
 		text {
 			object {
 				x=125
-				y=338
+				y=363
 				width=190
 				height=20
 			}
@@ -788,7 +543,7 @@ composite {
 		"text entry" {
 			object {
 				x=23
-				y=338
+				y=363
 				width=97
 				height=22
 			}
@@ -803,7 +558,7 @@ composite {
 		text {
 			object {
 				x=125
-				y=365
+				y=390
 				width=190
 				height=20
 			}
@@ -815,7 +570,7 @@ composite {
 		"text entry" {
 			object {
 				x=23
-				y=365
+				y=390
 				width=97
 				height=22
 			}
@@ -830,7 +585,7 @@ composite {
 		text {
 			object {
 				x=84
-				y=288
+				y=313
 				width=150
 				height=20
 			}
@@ -842,7 +597,7 @@ composite {
 		rectangle {
 			object {
 				x=10
-				y=285
+				y=310
 				width=320
 				height=135
 			}
@@ -855,7 +610,7 @@ composite {
 		text {
 			object {
 				x=23
-				y=393
+				y=418
 				width=250
 				height=20
 			}
@@ -863,6 +618,276 @@ composite {
 				clr=14
 			}
 			textix="Use channel=-1 to disable"
+		}
+	}
+}
+composite {
+	object {
+		x=10
+		y=45
+		width=320
+		height=260
+	}
+	"composite name"=""
+	children {
+		rectangle {
+			object {
+				x=10
+				y=45
+				width=320
+				height=260
+			}
+			"basic attribute" {
+				clr=54
+				fill="outline"
+				width=2
+			}
+		}
+		text {
+			object {
+				x=84
+				y=50
+				width=160
+				height=20
+			}
+			"basic attribute" {
+				clr=53
+			}
+			textix="Mapping settings"
+		}
+		text {
+			object {
+				x=125
+				y=125
+				width=180
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Pixel advance mode"
+		}
+		text {
+			object {
+				x=125
+				y=150
+				width=100
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Sync count"
+		}
+		text {
+			object {
+				x=125
+				y=175
+				width=110
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Ignore gate"
+		}
+		text {
+			object {
+				x=125
+				y=200
+				width=200
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Input logic polarity"
+		}
+		text {
+			object {
+				x=125
+				y=250
+				width=130
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Current pixel"
+		}
+		text {
+			object {
+				x=125
+				y=225
+				width=200
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Manual pixel advance"
+		}
+		menu {
+			object {
+				x=23
+				y=125
+				width=97
+				height=20
+			}
+			control {
+				chan="$(P)PixelAdvanceMode"
+				clr=14
+				bclr=51
+			}
+		}
+		"text entry" {
+			object {
+				x=23
+				y=150
+				width=97
+				height=22
+			}
+			control {
+				chan="$(P)SyncCount"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		menu {
+			object {
+				x=23
+				y=175
+				width=97
+				height=20
+			}
+			control {
+				chan="$(P)IgnoreGate"
+				clr=14
+				bclr=51
+			}
+		}
+		menu {
+			object {
+				x=23
+				y=200
+				width=97
+				height=20
+			}
+			control {
+				chan="$(P)InputLogicPolarity"
+				clr=14
+				bclr=51
+			}
+		}
+		"text update" {
+			object {
+				x=23
+				y=250
+				width=97
+				height=20
+			}
+			monitor {
+				chan="$(P)dxp1:CurrentPixel"
+				clr=54
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"message button" {
+			object {
+				x=23
+				y=225
+				width=97
+				height=20
+			}
+			control {
+				chan="$(P)NextPixel"
+				clr=14
+				bclr=51
+			}
+			label="Next pixel"
+			press_msg="1"
+		}
+		text {
+			object {
+				x=125
+				y=275
+				width=140
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Pixels per run"
+		}
+		"text entry" {
+			object {
+				x=23
+				y=275
+				width=97
+				height=22
+			}
+			control {
+				chan="$(P)PixelsPerRun"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		menu {
+			object {
+				x=23
+				y=75
+				width=97
+				height=20
+			}
+			control {
+				chan="$(P)CollectMode"
+				clr=14
+				bclr=51
+			}
+		}
+		text {
+			object {
+				x=125
+				y=75
+				width=150
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Collection mode"
+		}
+		menu {
+			object {
+				x=23
+				y=100
+				width=97
+				height=20
+			}
+			control {
+				chan="$(P)ListMode"
+				clr=14
+				bclr=51
+			}
+		}
+		text {
+			object {
+				x=125
+				y=100
+				width=150
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="List mode variant"
 		}
 	}
 }
