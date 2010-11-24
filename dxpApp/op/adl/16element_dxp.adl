@@ -469,6 +469,46 @@ text {
 		name="16element_ROI_SCA.adl"
 		args="P=$(P),M=$(M),D=$(D),R=7"
 	}
+	display[8] {
+		label="ROI/SCA 8"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=8"
+	}
+	display[9] {
+		label="ROI/SCA 9"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=9"
+	}
+	display[10] {
+		label="ROI/SCA 10"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=10"
+	}
+	display[11] {
+		label="ROI/SCA 11"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=11"
+	}
+	display[12] {
+		label="ROI/SCA 12"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=12"
+	}
+	display[13] {
+		label="ROI/SCA 13"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=13"
+	}
+	display[14] {
+		label="ROI/SCA 14"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=14"
+	}
+	display[15] {
+		label="ROI/SCA 15"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=15"
+	}
 	clr=14
 	bclr=51
 }
@@ -482,7 +522,7 @@ text {
 	"basic attribute" {
 		clr=14
 	}
-	textix="ROI/SCA 0-7"
+	textix="ROI/SCA 0-15"
 }
 "related display" {
 	object {
@@ -519,44 +559,84 @@ text {
 		height=20
 	}
 	display[0] {
-		label="ROI/SCA 8"
+		label="ROI/SCA 16"
 		name="16element_ROI_SCA.adl"
-		args="P=$(P),M=$(M),D=$(D),R=8"
+		args="P=$(P),M=$(M),D=$(D),R=16"
 	}
 	display[1] {
-		label="ROI/SCA 9"
+		label="ROI/SCA 17"
 		name="16element_ROI_SCA.adl"
-		args="P=$(P),M=$(M),D=$(D),R=9"
+		args="P=$(P),M=$(M),D=$(D),R=17"
 	}
 	display[2] {
-		label="ROI/SCA 10"
+		label="ROI/SCA 18"
 		name="16element_ROI_SCA.adl"
-		args="P=$(P),M=$(M),D=$(D),R=10"
+		args="P=$(P),M=$(M),D=$(D),R=18"
 	}
 	display[3] {
-		label="ROI/SCA 11"
+		label="ROI/SCA 19"
 		name="16element_ROI_SCA.adl"
-		args="P=$(P),M=$(M),D=$(D),R=11"
+		args="P=$(P),M=$(M),D=$(D),R=19"
 	}
 	display[4] {
-		label="ROI/SCA 12"
+		label="ROI/SCA 20"
 		name="16element_ROI_SCA.adl"
-		args="P=$(P),M=$(M),D=$(D),R=12"
+		args="P=$(P),M=$(M),D=$(D),R=20"
 	}
 	display[5] {
-		label="ROI/SCA 13"
+		label="ROI/SCA 21"
 		name="16element_ROI_SCA.adl"
-		args="P=$(P),M=$(M),D=$(D),R=13"
+		args="P=$(P),M=$(M),D=$(D),R=21"
 	}
 	display[6] {
-		label="ROI/SCA 14"
+		label="ROI/SCA 22"
 		name="16element_ROI_SCA.adl"
-		args="P=$(P),M=$(M),D=$(D),R=14"
+		args="P=$(P),M=$(M),D=$(D),R=22"
 	}
 	display[7] {
-		label="ROI/SCA 15"
+		label="ROI/SCA 23"
 		name="16element_ROI_SCA.adl"
-		args="P=$(P),M=$(M),D=$(D),R=15"
+		args="P=$(P),M=$(M),D=$(D),R=23"
+	}
+	display[8] {
+		label="ROI/SCA 24"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=24"
+	}
+	display[9] {
+		label="ROI/SCA 25"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=25"
+	}
+	display[10] {
+		label="ROI/SCA 26"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=26"
+	}
+	display[11] {
+		label="ROI/SCA 27"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=27"
+	}
+	display[12] {
+		label="ROI/SCA 28"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=28"
+	}
+	display[13] {
+		label="ROI/SCA 29"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=29"
+	}
+	display[14] {
+		label="ROI/SCA 30"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=30"
+	}
+	display[15] {
+		label="ROI/SCA 31"
+		name="16element_ROI_SCA.adl"
+		args="P=$(P),M=$(M),D=$(D),R=31"
 	}
 	clr=14
 	bclr=51
@@ -571,7 +651,7 @@ text {
 	"basic attribute" {
 		clr=14
 	}
-	textix="ROI/SCA 8-15"
+	textix="ROI/SCA 16-31"
 }
 text {
 	object {
