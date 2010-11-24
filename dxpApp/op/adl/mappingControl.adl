@@ -1,6 +1,6 @@
 
 file {
-	name="/home/epics/devel/dxp-3-0/dxpApp/op/adl/mappingControl.adl"
+	name="/home/epics/devel/dxp/dxpApp/op/adl/mappingControl.adl"
 	version=030102
 }
 display {
@@ -8,7 +8,7 @@ display {
 		x=399
 		y=61
 		width=340
-		height=755
+		height=620
 	}
 	clr=14
 	bclr=4
@@ -108,13 +108,13 @@ text {
 	"basic attribute" {
 		clr=0
 	}
-	textix="xMAP System Control"
+	textix="Mapping Control"
 	align="horiz. centered"
 }
 composite {
 	object {
 		x=23
-		y=675
+		y=535
 		width=292
 		height=71
 	}
@@ -123,7 +123,7 @@ composite {
 		composite {
 			object {
 				x=23
-				y=701
+				y=561
 				width=292
 				height=45
 			}
@@ -132,7 +132,7 @@ composite {
 				menu {
 					object {
 						x=23
-						y=701
+						y=561
 						width=97
 						height=20
 					}
@@ -145,7 +145,7 @@ composite {
 				text {
 					object {
 						x=125
-						y=701
+						y=561
 						width=190
 						height=20
 					}
@@ -157,7 +157,7 @@ composite {
 				"message button" {
 					object {
 						x=23
-						y=726
+						y=586
 						width=97
 						height=20
 					}
@@ -172,7 +172,7 @@ composite {
 				text {
 					object {
 						x=125
-						y=726
+						y=586
 						width=140
 						height=20
 					}
@@ -186,7 +186,7 @@ composite {
 		composite {
 			object {
 				x=23
-				y=675
+				y=535
 				width=282
 				height=21
 			}
@@ -195,7 +195,7 @@ composite {
 				text {
 					object {
 						x=125
-						y=675
+						y=535
 						width=180
 						height=20
 					}
@@ -207,7 +207,7 @@ composite {
 				"related display" {
 					object {
 						x=23
-						y=675
+						y=535
 						width=97
 						height=21
 					}
@@ -237,7 +237,7 @@ composite {
 composite {
 	object {
 		x=10
-		y=590
+		y=450
 		width=320
 		height=80
 	}
@@ -246,7 +246,7 @@ composite {
 		rectangle {
 			object {
 				x=10
-				y=590
+				y=450
 				width=320
 				height=80
 			}
@@ -259,7 +259,7 @@ composite {
 		text {
 			object {
 				x=120
-				y=595
+				y=455
 				width=100
 				height=20
 			}
@@ -271,7 +271,7 @@ composite {
 		composite {
 			object {
 				x=20
-				y=620
+				y=480
 				width=222
 				height=20
 			}
@@ -280,7 +280,7 @@ composite {
 				text {
 					object {
 						x=122
-						y=620
+						y=480
 						width=120
 						height=20
 					}
@@ -292,7 +292,7 @@ composite {
 				"text update" {
 					object {
 						x=20
-						y=620
+						y=480
 						width=97
 						height=20
 					}
@@ -310,7 +310,7 @@ composite {
 		composite {
 			object {
 				x=20
-				y=645
+				y=505
 				width=212
 				height=20
 			}
@@ -319,7 +319,7 @@ composite {
 				text {
 					object {
 						x=122
-						y=645
+						y=505
 						width=110
 						height=20
 					}
@@ -331,7 +331,7 @@ composite {
 				"text update" {
 					object {
 						x=20
-						y=645
+						y=505
 						width=97
 						height=20
 					}
@@ -351,249 +351,12 @@ composite {
 composite {
 	object {
 		x=10
-		y=450
-		width=320
-		height=135
-	}
-	"composite name"=""
-	children {
-		rectangle {
-			object {
-				x=10
-				y=450
-				width=320
-				height=135
-			}
-			"basic attribute" {
-				clr=54
-				fill="outline"
-				width=2
-			}
-		}
-		text {
-			object {
-				x=122
-				y=529
-				width=180
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Manually set value"
-		}
-		text {
-			object {
-				x=122
-				y=479
-				width=190
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Auto-set to maximum"
-		}
-		text {
-			object {
-				x=122
-				y=504
-				width=120
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Actual value"
-		}
-		text {
-			object {
-				x=78
-				y=455
-				width=170
-				height=20
-			}
-			"basic attribute" {
-				clr=53
-			}
-			textix="Pixels per buffer"
-		}
-		text {
-			object {
-				x=122
-				y=554
-				width=110
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Buffer size"
-		}
-		"text entry" {
-			object {
-				x=20
-				y=529
-				width=97
-				height=22
-			}
-			control {
-				chan="$(P)PixelsPerBuffer"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=20
-				y=504
-				width=97
-				height=20
-			}
-			monitor {
-				chan="$(P)PixelsPerBuffer_RBV"
-				clr=54
-				bclr=4
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		menu {
-			object {
-				x=20
-				y=479
-				width=97
-				height=20
-			}
-			control {
-				chan="$(P)AutoPixelsPerBuffer"
-				clr=14
-				bclr=51
-			}
-		}
-		"text update" {
-			object {
-				x=20
-				y=554
-				width=97
-				height=20
-			}
-			monitor {
-				chan="$(P)BufferSize_RBV"
-				clr=54
-				bclr=4
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-	}
-}
-composite {
-	object {
-		x=10
 		y=310
 		width=320
 		height=135
 	}
 	"composite name"=""
 	children {
-		text {
-			object {
-				x=125
-				y=336
-				width=190
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Sync master channel"
-		}
-		"text entry" {
-			object {
-				x=23
-				y=336
-				width=97
-				height=22
-			}
-			control {
-				chan="$(P)SyncMasterChannel"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		text {
-			object {
-				x=125
-				y=363
-				width=190
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Gate master channel"
-		}
-		"text entry" {
-			object {
-				x=23
-				y=363
-				width=97
-				height=22
-			}
-			control {
-				chan="$(P)GateMasterChannel"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		text {
-			object {
-				x=125
-				y=390
-				width=190
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="LBUS master channel"
-		}
-		"text entry" {
-			object {
-				x=23
-				y=390
-				width=97
-				height=22
-			}
-			control {
-				chan="$(P)LBUSMasterChannel"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		text {
-			object {
-				x=84
-				y=313
-				width=150
-				height=20
-			}
-			"basic attribute" {
-				clr=53
-			}
-			textix="Master settings"
-		}
 		rectangle {
 			object {
 				x=10
@@ -609,15 +372,123 @@ composite {
 		}
 		text {
 			object {
-				x=23
-				y=418
-				width=250
+				x=122
+				y=389
+				width=180
 				height=20
 			}
 			"basic attribute" {
 				clr=14
 			}
-			textix="Use channel=-1 to disable"
+			textix="Manually set value"
+		}
+		text {
+			object {
+				x=122
+				y=339
+				width=190
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Auto-set to maximum"
+		}
+		text {
+			object {
+				x=122
+				y=364
+				width=120
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Actual value"
+		}
+		text {
+			object {
+				x=78
+				y=315
+				width=170
+				height=20
+			}
+			"basic attribute" {
+				clr=53
+			}
+			textix="Pixels per buffer"
+		}
+		text {
+			object {
+				x=122
+				y=414
+				width=110
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Buffer size"
+		}
+		"text entry" {
+			object {
+				x=20
+				y=389
+				width=97
+				height=22
+			}
+			control {
+				chan="$(P)PixelsPerBuffer"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=20
+				y=364
+				width=97
+				height=20
+			}
+			monitor {
+				chan="$(P)PixelsPerBuffer_RBV"
+				clr=54
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		menu {
+			object {
+				x=20
+				y=339
+				width=97
+				height=20
+			}
+			control {
+				chan="$(P)AutoPixelsPerBuffer"
+				clr=14
+				bclr=51
+			}
+		}
+		"text update" {
+			object {
+				x=20
+				y=414
+				width=97
+				height=20
+			}
+			monitor {
+				chan="$(P)BufferSize_RBV"
+				clr=54
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
 		}
 	}
 }
