@@ -240,51 +240,6 @@ record(longout, "$(P)Apply") {
   field(OUT,  "$(IO)DxpApply")
 }
 
-record(longout, "$(P)SyncMasterChannel") {
-  field(DESC, "Sync master channel")
-  field(VAL,  "-1")
-  field(PINI, "YES")
-  field(DTYP, "asynInt32")
-  field(OUT,  "$(IO)DxpSyncMasterChannel")
-}
-
-record(longin, "$(P)SyncMasterChannel_RBV") {
-  field(DESC, "Sync master channel")
-  field(DTYP, "asynInt32")
-  field(INP,  "$(IO)DxpSyncMasterChannel")
-  field(SCAN, "I/O Intr")
-}
-
-record(longout, "$(P)GateMasterChannel") {
-  field(DESC, "Gate master channel")
-  field(VAL,  "-1")
-  field(PINI, "YES")
-  field(DTYP, "asynInt32")
-  field(OUT,  "$(IO)DxpGateMasterChannel")
-}
-
-record(longin, "$(P)GateMasterChannel_RBV") {
-  field(DESC, "Gate master channel")
-  field(DTYP, "asynInt32")
-  field(INP,  "$(IO)DxpGateMasterChannel")
-  field(SCAN, "I/O Intr")
-}
-
-record(longout, "$(P)LBUSMasterChannel") {
-  field(DESC, "LBUS master channel")
-  field(VAL,  "-1")
-  field(PINI, "YES")
-  field(DTYP, "asynInt32")
-  field(OUT,  "$(IO)DxpLBUSMasterChannel")
-}
-
-record(longin, "$(P)LBUSMasterChannel_RBV") {
-  field(DESC, "LBUS master channel")
-  field(DTYP, "asynInt32")
-  field(INP,  "$(IO)DxpLBUSMasterChannel")
-  field(SCAN, "I/O Intr")
-}
-
 record(ai, "$(P)ReadRate_RBV") {
   field(DESC, "Mapping mode read rate")
   field(DTYP, "asynFloat64")
