@@ -5,10 +5,10 @@ file {
 }
 display {
 	object {
-		x=121
-		y=60
+		x=169
+		y=63
 		width=950
-		height=620
+		height=645
 	}
 	clr=14
 	bclr=4
@@ -3436,90 +3436,157 @@ composite {
 		}
 	}
 }
+composite {
+	object {
+		x=47
+		y=565
+		width=647
+		height=70
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=174
+				y=565
+				width=520
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+				fill="outline"
+			}
+			textix="Copy all detector 1 ROIs to all detectors by channel"
+			align="horiz. centered"
+		}
+		text {
+			object {
+				x=174
+				y=590
+				width=510
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+				fill="outline"
+			}
+			textix="Copy all detector 1 ROIs to all detectors by energy"
+			align="horiz. centered"
+		}
+		text {
+			object {
+				x=174
+				y=615
+				width=390
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+				fill="outline"
+			}
+			textix="Copy all ROIs to SCAs for all detectors"
+			align="horiz. centered"
+		}
+		"message button" {
+			object {
+				x=47
+				y=566
+				width=120
+				height=18
+			}
+			control {
+				chan="$(P)CopyROIChannel"
+				clr=14
+				bclr=51
+			}
+			label="Copy 1->All"
+			press_msg="1"
+		}
+		"message button" {
+			object {
+				x=47
+				y=591
+				width=120
+				height=18
+			}
+			control {
+				chan="$(P)CopyROIEnergy"
+				clr=14
+				bclr=51
+			}
+			label="Copy 1->All"
+			press_msg="1"
+		}
+		"message button" {
+			object {
+				x=47
+				y=616
+				width=120
+				height=18
+			}
+			control {
+				chan="$(P)CopyROI_SCA"
+				clr=14
+				bclr=51
+			}
+			label="Copy ROIs to SCAs"
+			press_msg="1"
+		}
+	}
+}
 text {
 	object {
-		x=174
+		x=132
 		y=542
-		width=520
+		width=220
 		height=20
 	}
 	"basic attribute" {
 		clr=14
 		fill="outline"
 	}
-	textix="Copy all detector 1 ROIs to all detectors by channel"
-	align="horiz. centered"
+	textix="Maximum number of SCAs"
+}
+"text entry" {
+	object {
+		x=372
+		y=542
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)NumSCAs"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
 }
 text {
 	object {
-		x=174
-		y=567
-		width=510
+		x=457
+		y=542
+		width=210
 		height=20
 	}
 	"basic attribute" {
 		clr=14
 		fill="outline"
 	}
-	textix="Copy all detector 1 ROIs to all detectors by energy"
-	align="horiz. centered"
+	textix="Number of SCAs to use"
 }
-text {
+"text update" {
 	object {
-		x=174
-		y=592
-		width=390
+		x=47
+		y=542
+		width=80
 		height=20
 	}
-	"basic attribute" {
-		clr=14
-		fill="outline"
+	monitor {
+		chan="$(P)MaxSCAs"
+		clr=54
+		bclr=0
 	}
-	textix="Copy all ROIs to SCAs for all detectors"
-	align="horiz. centered"
-}
-"message button" {
-	object {
-		x=47
-		y=543
-		width=120
-		height=18
+	limits {
 	}
-	control {
-		chan="$(P)CopyROIChannel"
-		clr=14
-		bclr=51
-	}
-	label="Copy 1->All"
-	press_msg="1"
-}
-"message button" {
-	object {
-		x=47
-		y=568
-		width=120
-		height=18
-	}
-	control {
-		chan="$(P)CopyROIEnergy"
-		clr=14
-		bclr=51
-	}
-	label="Copy 1->All"
-	press_msg="1"
-}
-"message button" {
-	object {
-		x=47
-		y=593
-		width=120
-		height=18
-	}
-	control {
-		chan="$(P)CopyROI_SCA"
-		clr=14
-		bclr=51
-	}
-	label="Copy ROIs to SCAs"
-	press_msg="1"
 }
