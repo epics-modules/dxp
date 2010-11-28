@@ -1,6 +1,14 @@
 # Author:  Mark Rivers
 # Database for DXP multi-element detector (e.g. xMAP or DXP4C2X)
 
+record(bi,"$(P)SNL_Connected") {
+    field(ZNAM,"Not connected")
+    field(ZSV, "MAJOR")
+    field(ONAM,"Connected")
+    field(OSV, "NO_ALARM")
+    field(VAL, "0")
+}
+
 record(bo,"$(P)EraseAll") {
     field(VAL,"1")
     field(DTYP, "asynInt32")
