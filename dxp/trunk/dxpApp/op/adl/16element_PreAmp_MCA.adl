@@ -118,13 +118,13 @@ text {
 		height=20
 	}
 	display[0] {
-		label="All DXP parameters"
+		label="Low-level DXP parameters"
 		name="dxpLowLevel.adl"
 		args="P=$(P)$(D), R=14:"
 	}
 	display[1] {
 		label="MCA plot"
-		name="mca.adl"
+		name="simple_mca.adl"
 		args="P=$(P)$(M), M=14"
 	}
 	display[2] {
@@ -175,13 +175,13 @@ composite {
 				height=20
 			}
 			display[0] {
-				label="All DXP parameters"
+				label="Low-level DXP parameters"
 				name="dxpLowLevel.adl"
 				args="P=$(P)$(D), R=2:"
 			}
 			display[1] {
 				label="MCA plot"
-				name="mca.adl"
+				name="simple_mca.adl"
 				args="P=$(P)$(M), M=2"
 			}
 			display[2] {
@@ -210,13 +210,13 @@ composite {
 				height=20
 			}
 			display[0] {
-				label="All DXP parameters"
+				label="Low-level DXP parameters"
 				name="dxpLowLevel.adl"
 				args="P=$(P)$(D), R=1:"
 			}
 			display[1] {
 				label="MCA plot"
-				name="mca.adl"
+				name="simple_mca.adl"
 				args="P=$(P)$(M), M=1"
 			}
 			display[2] {
@@ -245,13 +245,13 @@ composite {
 				height=20
 			}
 			display[0] {
-				label="All DXP parameters"
+				label="Low-level DXP parameters"
 				name="dxpLowLevel.adl"
 				args="P=$(P)$(D), R=3:"
 			}
 			display[1] {
 				label="MCA plot"
-				name="mca.adl"
+				name="simple_mca.adl"
 				args="P=$(P)$(M), M=3"
 			}
 			display[2] {
@@ -280,13 +280,13 @@ composite {
 				height=20
 			}
 			display[0] {
-				label="All DXP parameters"
+				label="Low-level DXP parameters"
 				name="dxpLowLevel.adl"
 				args="P=$(P)$(D), R=4:"
 			}
 			display[1] {
 				label="MCA plot"
-				name="mca.adl"
+				name="simple_mca.adl"
 				args="P=$(P)$(M), M=4"
 			}
 			display[2] {
@@ -315,13 +315,13 @@ composite {
 				height=20
 			}
 			display[0] {
-				label="All DXP parameters"
+				label="Low-level DXP parameters"
 				name="dxpLowLevel.adl"
 				args="P=$(P)$(D), R=5:"
 			}
 			display[1] {
 				label="MCA plot"
-				name="mca.adl"
+				name="simple_mca.adl"
 				args="P=$(P)$(M), M=5"
 			}
 			display[2] {
@@ -350,13 +350,13 @@ composite {
 				height=20
 			}
 			display[0] {
-				label="All DXP parameters"
+				label="Low-level DXP parameters"
 				name="dxpLowLevel.adl"
 				args="P=$(P)$(D), R=6:"
 			}
 			display[1] {
 				label="MCA plot"
-				name="mca.adl"
+				name="simple_mca.adl"
 				args="P=$(P)$(M), M=6"
 			}
 			display[2] {
@@ -385,13 +385,13 @@ composite {
 				height=20
 			}
 			display[0] {
-				label="All DXP parameters"
+				label="Low-level DXP parameters"
 				name="dxpLowLevel.adl"
 				args="P=$(P)$(D), R=7:"
 			}
 			display[1] {
 				label="MCA plot"
-				name="mca.adl"
+				name="simple_mca.adl"
 				args="P=$(P)$(M), M=7"
 			}
 			display[2] {
@@ -420,13 +420,13 @@ composite {
 				height=20
 			}
 			display[0] {
-				label="All DXP parameters"
+				label="Low-level DXP parameters"
 				name="dxpLowLevel.adl"
 				args="P=$(P)$(D), R=8:"
 			}
 			display[1] {
 				label="MCA plot"
-				name="mca.adl"
+				name="simple_mca.adl"
 				args="P=$(P)$(M), M=8"
 			}
 			display[2] {
@@ -455,13 +455,13 @@ composite {
 				height=20
 			}
 			display[0] {
-				label="All DXP parameters"
+				label="Low-level DXP parameters"
 				name="dxpLowLevel.adl"
 				args="P=$(P)$(D), R=9:"
 			}
 			display[1] {
 				label="MCA plot"
-				name="mca.adl"
+				name="simple_mca.adl"
 				args="P=$(P)$(M), M=9"
 			}
 			display[2] {
@@ -490,13 +490,13 @@ composite {
 				height=20
 			}
 			display[0] {
-				label="All DXP parameters"
+				label="Low-level DXP parameters"
 				name="dxpLowLevel.adl"
 				args="P=$(P)$(D), R=10:"
 			}
 			display[1] {
 				label="MCA plot"
-				name="mca.adl"
+				name="simple_mca.adl"
 				args="P=$(P)$(M), M=10"
 			}
 			display[2] {
@@ -525,13 +525,13 @@ composite {
 				height=20
 			}
 			display[0] {
-				label="All DXP parameters"
+				label="Low-level DXP parameters"
 				name="dxpLowLevel.adl"
 				args="P=$(P)$(D), R=11:"
 			}
 			display[1] {
 				label="MCA plot"
-				name="mca.adl"
+				name="simple_mca.adl"
 				args="P=$(P)$(M), M=11"
 			}
 			display[2] {
@@ -560,13 +560,13 @@ composite {
 				height=20
 			}
 			display[0] {
-				label="All DXP parameters"
+				label="Low-level DXP parameters"
 				name="dxpLowLevel.adl"
 				args="P=$(P)$(D), R=12:"
 			}
 			display[1] {
 				label="MCA plot"
-				name="mca.adl"
+				name="simple_mca.adl"
 				args="P=$(P)$(M), M=12"
 			}
 			display[2] {
@@ -595,13 +595,13 @@ composite {
 				height=20
 			}
 			display[0] {
-				label="All DXP parameters"
+				label="Low-level DXP parameters"
 				name="dxpLowLevel.adl"
 				args="P=$(P)$(D), R=13:"
 			}
 			display[1] {
 				label="MCA plot"
-				name="mca.adl"
+				name="simple_mca.adl"
 				args="P=$(P)$(M), M=13"
 			}
 			display[2] {
@@ -630,13 +630,13 @@ composite {
 				height=20
 			}
 			display[0] {
-				label="All DXP parameters"
+				label="Low-level DXP parameters"
 				name="dxpLowLevel.adl"
 				args="P=$(P)$(D), R=14:"
 			}
 			display[1] {
 				label="MCA plot"
-				name="mca.adl"
+				name="simple_mca.adl"
 				args="P=$(P)$(M), M=14"
 			}
 			display[2] {
@@ -665,13 +665,13 @@ composite {
 				height=20
 			}
 			display[0] {
-				label="All DXP parameters"
+				label="Low-level DXP parameters"
 				name="dxpLowLevel.adl"
 				args="P=$(P)$(D), R=15:"
 			}
 			display[1] {
 				label="MCA plot"
-				name="mca.adl"
+				name="simple_mca.adl"
 				args="P=$(P)$(M), M=15"
 			}
 			display[2] {
@@ -700,13 +700,13 @@ composite {
 				height=20
 			}
 			display[0] {
-				label="All DXP parameters"
+				label="Low-level DXP parameters"
 				name="dxpLowLevel.adl"
 				args="P=$(P)$(D), R=16:"
 			}
 			display[1] {
 				label="MCA plot"
-				name="mca.adl"
+				name="simple_mca.adl"
 				args="P=$(P)$(M), M=16"
 			}
 			display[2] {
