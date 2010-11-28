@@ -8,7 +8,7 @@ display {
 		x=124
 		y=101
 		width=580
-		height=505
+		height=530
 	}
 	clr=14
 	bclr=4
@@ -115,7 +115,7 @@ rectangle {
 		x=4
 		y=37
 		width=310
-		height=465
+		height=490
 	}
 	"basic attribute" {
 		clr=54
@@ -128,7 +128,7 @@ rectangle {
 		x=319
 		y=37
 		width=250
-		height=465
+		height=490
 	}
 	"basic attribute" {
 		clr=54
@@ -1306,4 +1306,34 @@ text {
 		clr=14
 	}
 	textix="Asyn record"
+}
+"text update" {
+	object {
+		x=17
+		y=498
+		width=120
+		height=20
+	}
+	monitor {
+		chan="$(P)SNL_Connected"
+		clr=54
+		bclr=4
+	}
+	clrmod="alarm"
+	align="horiz. right"
+	format="string"
+	limits {
+	}
+}
+text {
+	object {
+		x=147
+		y=498
+		width=90
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="SNL Status"
 }
