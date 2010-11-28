@@ -1009,6 +1009,7 @@ int     CopyROIEnergy;  assign CopyROIEnergy      to "{P}CopyROIEnergy";
 monitor CopyROIEnergy;  evflag CopyROIEnergyMon;  sync CopyROIEnergy CopyROIEnergyMon;
 int     CopyROI_SCA;    assign CopyROI_SCA        to "{P}CopyROI_SCA";
 monitor CopyROI_SCA;    evflag CopyROI_SCAMon;    sync CopyROI_SCA CopyROI_SCAMon;
+int     SNL_Connected;  assign SNL_Connected      to "{P}SNL_Connected";
 int     AsynDebug;      assign AsynDebug          to "{P}Asyn.TB1";
 monitor AsynDebug;
 
@@ -1181,6 +1182,8 @@ ss dxp_control {
 
         when (pvAssignCount () == pvConnectCount ()) {
           printf ("dxpMED: All channels connected.\n");
+          SNL_Connected = 1;
+          pvPut(SNL_Connected);
         } state monitor_changes
 
     }
