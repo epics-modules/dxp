@@ -5,7 +5,6 @@
 dbLoadDatabase("$(DXP)/dbd/dxp.dbd")
 dxp_registerRecordDeviceDriver(pdbbase)
 
-
 # The default callback queue in EPICS base is only 2000 bytes. 
 # The dxp detector system needs this to be larger to avoid the error message: 
 # "callbackRequest: cbLow ring buffer full" 
@@ -35,8 +34,22 @@ dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=dxpXMAP:,R=ne
 dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFile.template",      "P=dxpXMAP:,R=netCDF1:,PORT=DXP1NetCDF,ADDR=0,TIMEOUT=1")
 dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFileNetCDF.template","P=dxpXMAP:,R=netCDF1:,PORT=DXP1NetCDF,ADDR=0,TIMEOUT=1")
 
-#asynSetTraceMask DXP1 0 255
-asynSetTraceIOMask DXP1 0 2
+# Create a TIFF file saving plugin
+NDFileTIFFConfigure("DXP1TIFF", 20, 0, "DXP1", 0)
+dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=dxpXMAP:,R=TIFF1:,PORT=DXP1TIFF,ADDR=0,TIMEOUT=1,NDARRAY_PORT=DXP1,NDARRAY_ADDR=0")
+dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFile.template",      "P=dxpXMAP:,R=TIFF1:,PORT=DXP1TIFF,ADDR=0,TIMEOUT=1")
+dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFileTIFF.template",  "P=dxpXMAP:,R=TIFF1:,PORT=DXP1TIFF,ADDR=0,TIMEOUT=1")
+
+# Create a NeXus file saving plugin
+NDFileNexusConfigure("DXP1Nexus", 20, 0, "DXP1", 0, 0, 80000)
+dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=dxpXMAP:,R=Nexus1:,PORT=DXP1Nexus,ADDR=0,TIMEOUT=1,NDARRAY_PORT=DXP1,NDARRAY_ADDR=0")
+dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFile.template",      "P=dxpXMAP:,R=Nexus1:,PORT=DXP1Nexus,ADDR=0,TIMEOUT=1")
+dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFileNexus.template", "P=dxpXMAP:,R=Nexus1:,PORT=DXP1Nexus,ADDR=0,TIMEOUT=1")
+
+
+#xiaSetLogLevel(4)
+#asynSetTraceMask DXP1 0 0x11
+#asynSetTraceIOMask DXP1 0 2
 
 ### Scan-support software
 # crate-resident scan.  This executes 1D, 2D, 3D, and 4D scans, and caches
@@ -45,7 +58,7 @@ dbLoadRecords("$(SSCAN)/sscanApp/Db/scan.db","P=dxpXMAP:,MAXPTS1=2000,MAXPTS2=10
 
 iocInit
 
-seq dxpMED, "P=dxpXMAP:, DXP=dxp, MCA=mca, N_DETECTORS=4, N_SCAS=16"
+seq dxpMED, "P=dxpXMAP:, DXP=dxp, MCA=mca, N_DETECTORS=4, N_SCAS=32"
 
 ### Start up the autosave task and tell it what to do.
 # Save settings every thirty seconds
@@ -54,7 +67,11 @@ create_monitor_set("auto_settings4.req", 30, "P=dxpXMAP:")
 ### Start the saveData task.
 saveData_Init("saveData.req", "P=dxpXMAP:")
 
-# Sleep for 10 seconds to let initialization complete and then turn on AutoApply and do Apply manually once
+# Sleep for 5 seconds to let initialization complete and then turn on AutoApply and do Apply manually once
 epicsThreadSleep(10.)
+# Turn on AutoApply
 dbpf("dxpXMAP:AutoApply", "Yes")
+# Manually do Apply once
 dbpf("dxpXMAP:Apply", "1")
+# Seems to be necessary to resend AutoPixelsPerBuffer to read back correctly from Handel
+dbpf("dxpXMAP:AutoPixelsPerBuffer.PROC", "1")

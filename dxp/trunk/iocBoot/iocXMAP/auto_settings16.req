@@ -52,6 +52,11 @@ file "simple_mca_settings.req",         P=$(P), M=mca16
 
 file "NDPluginBase_settings.req",       P=$(P), R=netCDF1:
 file "NDFile_settings.req",             P=$(P), R=netCDF1:
+file "NDPluginBase_settings.req",       P=$(P), R=TIFF1:
+file "NDFile_settings.req",             P=$(P), R=TIFF1:
+file "NDPluginBase_settings.req",       P=$(P), R=Nexus1:
+file "NDFile_settings.req",             P=$(P), R=Nexus1:
+file "NDFileNexus_settings.req",        P=$(P), R=Nexus1:
 
 file scan_settings.req                  P=$(P), S=scan1
 file scan_settings.req                  P=$(P), S=scan2

@@ -48,7 +48,7 @@ dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFileNexus.template", "P=dxpXMAP:,R=Ne
 
 
 #xiaSetLogLevel(4)
-#asynSetTraceMask DXP1 0 255
+#asynSetTraceMask DXP1 0 0x11
 #asynSetTraceIOMask DXP1 0 2
 
 ### Scan-support software
@@ -67,7 +67,11 @@ create_monitor_set("auto_settings16.req", 30, "P=dxpXMAP:")
 ### Start the saveData task.
 saveData_Init("saveData.req", "P=dxpXMAP:")
 
-# Sleep for 30 seconds to let initialization complete and then turn on AutoApply and do Apply manually once
-epicsThreadSleep(30.)
+# Sleep for 10 seconds to let initialization complete and then turn on AutoApply and do Apply manually once
+epicsThreadSleep(10.)
+# Turn on AutoApply
 dbpf("dxpXMAP:AutoApply", "Yes")
+# Manually do Apply once
 dbpf("dxpXMAP:Apply", "1")
+# Seems to be necessary to resend AutoPixelsPerBuffer to read back correctly from Handel
+dbpf("dxpXMAP:AutoPixelsPerBuffer.PROC", "1")
