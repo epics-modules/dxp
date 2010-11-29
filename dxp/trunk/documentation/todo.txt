@@ -1,36 +1,21 @@
                        DXP 3-0 Things to do
 
 
-- Does not read MCA when acquisition stops
-
-- Add support for list-mode mapping on the xMAP - need documentation
-
 - Initial value of pixels per buffer is wrong if it boots in mapping mode
-
-- Value of pixels per buffer is wrong if automatic when changing from MCA Mapping to SCA Mapping or vise-versa
-
-- Add SNL health PV to diagnose problems with SNL not connecting.
 
 - 4 element medm screens from 16-element - just before release.
 
-- Documentation of all the changes
-  - Mapping modes
-  - IDL file reading codes
-  - How initial values of parameters get set (.template, .ini, save/restore)
+- Make 4 and 16 element screens take $N macros so they can be used for 32,
+  etc.?
 
-- Make sure all parameters have corresponding PVs, and eliminate any unneeded parameters
+- Document performance
 
-- Need to copy data to NDArray for callbacks to work in MCA mode.  Do we care
-  about this?
-  
 
                        DXP 3-0 Things to test
   
 - Test gate and sync modes together - HAS PROBLEMS, DOCUMENT
 
 - Test saving TIFF and NeXus files
-
-- Test support for the Mercury
 
 - Test performance when doing rapid scanning on all models, make at least as good as 2-11 corrected for small additional 
   overhead to read extra parameters to do accurate live time correction.
