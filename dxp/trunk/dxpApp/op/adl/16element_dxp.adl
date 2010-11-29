@@ -8,7 +8,7 @@ display {
 		x=124
 		y=101
 		width=580
-		height=530
+		height=555
 	}
 	clr=14
 	bclr=4
@@ -115,7 +115,7 @@ rectangle {
 		x=4
 		y=37
 		width=310
-		height=490
+		height=515
 	}
 	"basic attribute" {
 		clr=54
@@ -128,7 +128,7 @@ rectangle {
 		x=319
 		y=37
 		width=250
-		height=490
+		height=515
 	}
 	"basic attribute" {
 		clr=54
@@ -253,74 +253,6 @@ text {
 	}
 	textix="DXP parameters"
 }
-composite {
-	object {
-		x=20
-		y=108
-		width=156
-		height=21
-	}
-	"composite name"=""
-	children {
-		text {
-			object {
-				x=116
-				y=109
-				width=60
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Status"
-		}
-		text {
-			object {
-				x=70
-				y=108
-				width=40
-				height=20
-			}
-			"basic attribute" {
-				clr=21
-			}
-			"dynamic attribute" {
-				vis="if zero"
-				chan="$(P)Acquiring"
-			}
-			textix="Done"
-			align="horiz. right"
-		}
-		text {
-			object {
-				x=20
-				y=108
-				width=90
-				height=20
-			}
-			"basic attribute" {
-				clr=18
-			}
-			"dynamic attribute" {
-				vis="if not zero"
-				chan="$(P)Acquiring"
-			}
-			textix="Acquiring"
-		}
-	}
-}
-text {
-	object {
-		x=116
-		y=132
-		width=60
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Preset"
-}
 text {
 	object {
 		x=403
@@ -405,7 +337,7 @@ text {
 	"basic attribute" {
 		clr=14
 	}
-	textix="Mapping params"
+	textix="Mapping control"
 }
 "related display" {
 	object {
@@ -744,542 +676,6 @@ text {
 	}
 	textix="Statistics"
 }
-composite {
-	object {
-		x=61
-		y=446
-		width=236
-		height=21
-	}
-	"composite name"=""
-	children {
-		menu {
-			object {
-				x=61
-				y=446
-				width=80
-				height=20
-			}
-			control {
-				chan="$(P)EnableClientWait"
-				clr=14
-				bclr=51
-			}
-		}
-		text {
-			object {
-				x=147
-				y=447
-				width=150
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Wait for client"
-		}
-	}
-}
-composite {
-	object {
-		x=61
-		y=472
-		width=196
-		height=21
-	}
-	"composite name"=""
-	children {
-		menu {
-			object {
-				x=61
-				y=472
-				width=80
-				height=20
-			}
-			control {
-				chan="$(P)ClientWait"
-				clr=14
-				bclr=51
-			}
-		}
-		text {
-			object {
-				x=147
-				y=473
-				width=110
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Client Wait"
-		}
-	}
-}
-"message button" {
-	object {
-		x=10
-		y=368
-		width=50
-		height=20
-	}
-	control {
-		chan="$(P)StatusAllOnce.PROC"
-		clr=14
-		bclr=51
-	}
-	label="Read"
-	press_msg="1"
-}
-menu {
-	object {
-		x=61
-		y=368
-		width=80
-		height=20
-	}
-	control {
-		chan="$(P)StatusAll.SCAN"
-		clr=14
-		bclr=51
-	}
-}
-text {
-	object {
-		x=147
-		y=369
-		width=110
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="MCA Status rate"
-}
-menu {
-	object {
-		x=61
-		y=394
-		width=80
-		height=20
-	}
-	control {
-		chan="$(P)ReadAll.SCAN"
-		clr=14
-		bclr=51
-	}
-}
-"message button" {
-	object {
-		x=10
-		y=394
-		width=50
-		height=20
-	}
-	control {
-		chan="$(P)ReadAllOnce.PROC"
-		clr=14
-		bclr=51
-	}
-	label="Read"
-	press_msg="1"
-}
-text {
-	object {
-		x=147
-		y=395
-		width=130
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="MCA Read rate"
-}
-"message button" {
-	object {
-		x=10
-		y=420
-		width=50
-		height=20
-	}
-	control {
-		chan="$(P)ReadLLParams.PROC"
-		clr=14
-		bclr=51
-	}
-	label="Read"
-	press_msg="1"
-}
-menu {
-	object {
-		x=61
-		y=420
-		width=80
-		height=20
-	}
-	control {
-		chan="$(P)ReadLLParams.SCAN"
-		clr=14
-		bclr=51
-	}
-}
-text {
-	object {
-		x=147
-		y=421
-		width=130
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Low-level params"
-}
-composite {
-	object {
-		x=17
-		y=158
-		width=222
-		height=20
-	}
-	"composite name"=""
-	children {
-		menu {
-			object {
-				x=95
-				y=158
-				width=95
-				height=20
-			}
-			control {
-				chan="$(P)PresetMode"
-				clr=14
-				bclr=51
-			}
-		}
-		text {
-			object {
-				x=199
-				y=158
-				width=40
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Mode"
-		}
-		text {
-			object {
-				x=17
-				y=158
-				width=70
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Elapsed"
-		}
-	}
-}
-composite {
-	object {
-		x=17
-		y=183
-		width=272
-		height=22
-	}
-	"composite name"=""
-	children {
-		"text update" {
-			object {
-				x=17
-				y=184
-				width=70
-				height=20
-			}
-			monitor {
-				chan="$(P)ElapsedReal"
-				clr=54
-				bclr=4
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=95
-				y=183
-				width=95
-				height=22
-			}
-			control {
-				chan="$(P)PresetReal"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		text {
-			object {
-				x=199
-				y=184
-				width=90
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Real time"
-		}
-	}
-}
-composite {
-	object {
-		x=17
-		y=210
-		width=272
-		height=22
-	}
-	"composite name"=""
-	children {
-		"text update" {
-			object {
-				x=17
-				y=211
-				width=70
-				height=20
-			}
-			monitor {
-				chan="$(P)ElapsedLive"
-				clr=54
-				bclr=4
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=95
-				y=210
-				width=95
-				height=22
-			}
-			control {
-				chan="$(P)PresetLive"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		text {
-			object {
-				x=199
-				y=211
-				width=90
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Live time"
-		}
-	}
-}
-composite {
-	object {
-		x=95
-		y=237
-		width=194
-		height=22
-	}
-	"composite name"=""
-	children {
-		"text entry" {
-			object {
-				x=95
-				y=237
-				width=95
-				height=22
-			}
-			control {
-				chan="$(P)PresetEvents"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		text {
-			object {
-				x=199
-				y=238
-				width=90
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Events"
-		}
-	}
-}
-composite {
-	object {
-		x=95
-		y=264
-		width=194
-		height=22
-	}
-	"composite name"=""
-	children {
-		"text entry" {
-			object {
-				x=95
-				y=264
-				width=95
-				height=22
-			}
-			control {
-				chan="$(P)PresetTriggers"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		text {
-			object {
-				x=199
-				y=265
-				width=90
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Triggers"
-		}
-	}
-}
-"text update" {
-	object {
-		x=17
-		y=291
-		width=70
-		height=20
-	}
-	monitor {
-		chan="$(P)IDeadTime"
-		clr=15
-		bclr=14
-	}
-	clrmod="alarm"
-	align="horiz. right"
-	limits {
-	}
-}
-text {
-	object {
-		x=97
-		y=291
-		width=210
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Instant dead time (%)"
-}
-"text update" {
-	object {
-		x=17
-		y=316
-		width=70
-		height=20
-	}
-	monitor {
-		chan="$(P)DeadTime"
-		clr=15
-		bclr=14
-	}
-	clrmod="alarm"
-	align="horiz. right"
-	limits {
-	}
-}
-text {
-	object {
-		x=96
-		y=316
-		width=210
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Average dead time (%)"
-}
-composite {
-	object {
-		x=17
-		y=341
-		width=272
-		height=22
-	}
-	"composite name"=""
-	children {
-		"text update" {
-			object {
-				x=17
-				y=342
-				width=70
-				height=20
-			}
-			monitor {
-				chan="$(P)PollTime_RBV"
-				clr=54
-				bclr=4
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=95
-				y=341
-				width=95
-				height=22
-			}
-			control {
-				chan="$(P)PollTime"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
-		text {
-			object {
-				x=199
-				y=342
-				width=90
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Poll time"
-		}
-	}
-}
 "related display" {
 	object {
 		x=328
@@ -1307,28 +703,488 @@ text {
 	}
 	textix="Asyn record"
 }
+text {
+	object {
+		x=195
+		y=162
+		width=60
+		height=20
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="Presets"
+}
+menu {
+	object {
+		x=65
+		y=471
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)EnableClientWait"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=150
+		y=472
+		width=150
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Wait for client"
+}
+menu {
+	object {
+		x=65
+		y=497
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)ClientWait"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=150
+		y=498
+		width=110
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Client Wait"
+}
+"message button" {
+	object {
+		x=10
+		y=393
+		width=50
+		height=20
+	}
+	control {
+		chan="$(P)StatusAllOnce.PROC"
+		clr=14
+		bclr=51
+	}
+	label="Read"
+	press_msg="1"
+}
+menu {
+	object {
+		x=65
+		y=393
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)StatusAll.SCAN"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=150
+		y=394
+		width=110
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="MCA Status rate"
+}
+menu {
+	object {
+		x=65
+		y=419
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)ReadAll.SCAN"
+		clr=14
+		bclr=51
+	}
+}
+"message button" {
+	object {
+		x=10
+		y=419
+		width=50
+		height=20
+	}
+	control {
+		chan="$(P)ReadAllOnce.PROC"
+		clr=14
+		bclr=51
+	}
+	label="Read"
+	press_msg="1"
+}
+text {
+	object {
+		x=150
+		y=420
+		width=130
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="MCA Read rate"
+}
+"message button" {
+	object {
+		x=10
+		y=445
+		width=50
+		height=20
+	}
+	control {
+		chan="$(P)ReadLLParams.PROC"
+		clr=14
+		bclr=51
+	}
+	label="Read"
+	press_msg="1"
+}
+menu {
+	object {
+		x=65
+		y=445
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)ReadLLParams.SCAN"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=150
+		y=446
+		width=130
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Low-level params"
+}
+menu {
+	object {
+		x=95
+		y=183
+		width=95
+		height=20
+	}
+	control {
+		chan="$(P)PresetMode"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=195
+		y=183
+		width=40
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Mode"
+}
+text {
+	object {
+		x=15
+		y=162
+		width=70
+		height=20
+	}
+	"basic attribute" {
+		clr=54
+	}
+	textix="Elapsed"
+}
 "text update" {
 	object {
-		x=17
-		y=498
-		width=120
+		x=15
+		y=209
+		width=70
+		height=20
+	}
+	monitor {
+		chan="$(P)ElapsedReal"
+		clr=54
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=95
+		y=208
+		width=95
+		height=22
+	}
+	control {
+		chan="$(P)PresetReal"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=195
+		y=209
+		width=90
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Real time"
+}
+"text update" {
+	object {
+		x=15
+		y=236
+		width=70
+		height=20
+	}
+	monitor {
+		chan="$(P)ElapsedLive"
+		clr=54
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=95
+		y=235
+		width=95
+		height=22
+	}
+	control {
+		chan="$(P)PresetLive"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=195
+		y=236
+		width=90
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Live time"
+}
+"text entry" {
+	object {
+		x=95
+		y=262
+		width=95
+		height=22
+	}
+	control {
+		chan="$(P)PresetEvents"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=195
+		y=263
+		width=90
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Events"
+}
+"text entry" {
+	object {
+		x=95
+		y=289
+		width=95
+		height=22
+	}
+	control {
+		chan="$(P)PresetTriggers"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=195
+		y=290
+		width=90
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Triggers"
+}
+"text update" {
+	object {
+		x=15
+		y=316
+		width=70
+		height=20
+	}
+	monitor {
+		chan="$(P)IDeadTime"
+		clr=15
+		bclr=14
+	}
+	clrmod="alarm"
+	align="horiz. right"
+	limits {
+	}
+}
+text {
+	object {
+		x=95
+		y=316
+		width=210
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Instant dead time (%)"
+}
+"text update" {
+	object {
+		x=15
+		y=341
+		width=70
+		height=20
+	}
+	monitor {
+		chan="$(P)DeadTime"
+		clr=15
+		bclr=14
+	}
+	clrmod="alarm"
+	align="horiz. right"
+	limits {
+	}
+}
+text {
+	object {
+		x=94
+		y=341
+		width=210
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Average dead time (%)"
+}
+"text update" {
+	object {
+		x=15
+		y=367
+		width=70
+		height=20
+	}
+	monitor {
+		chan="$(P)PollTime_RBV"
+		clr=54
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=95
+		y=366
+		width=95
+		height=22
+	}
+	control {
+		chan="$(P)PollTime"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=200
+		y=367
+		width=90
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Poll time"
+}
+"text update" {
+	object {
+		x=15
+		y=523
+		width=130
 		height=20
 	}
 	monitor {
 		chan="$(P)SNL_Connected"
-		clr=54
-		bclr=4
+		clr=0
+		bclr=14
 	}
 	clrmod="alarm"
-	align="horiz. right"
+	align="horiz. centered"
 	format="string"
 	limits {
 	}
 }
 text {
 	object {
-		x=147
-		y=498
+		x=150
+		y=523
 		width=90
 		height=20
 	}
@@ -1336,4 +1192,85 @@ text {
 		clr=14
 	}
 	textix="SNL Status"
+}
+menu {
+	object {
+		x=15
+		y=133
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)CollectMode"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=120
+		y=133
+		width=150
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Collection mode"
+}
+composite {
+	object {
+		x=20
+		y=108
+		width=156
+		height=20
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=116
+				y=108
+				width=60
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Status"
+		}
+		text {
+			object {
+				x=70
+				y=108
+				width=40
+				height=20
+			}
+			"basic attribute" {
+				clr=21
+			}
+			"dynamic attribute" {
+				vis="if zero"
+				chan="$(P)Acquiring"
+			}
+			textix="Done"
+			align="horiz. right"
+		}
+		text {
+			object {
+				x=20
+				y=108
+				width=90
+				height=20
+			}
+			"basic attribute" {
+				clr=18
+			}
+			"dynamic attribute" {
+				vis="if not zero"
+				chan="$(P)Acquiring"
+			}
+			textix="Acquiring"
+		}
+	}
 }
