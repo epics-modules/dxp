@@ -75,3 +75,4 @@ dbpf("dxpXMAP:AutoApply", "Yes")
 dbpf("dxpXMAP:Apply", "1")
 # Seems to be necessary to resend AutoPixelsPerBuffer to read back correctly from Handel
 dbpf("dxpXMAP:AutoPixelsPerBuffer.PROC", "1")
+
