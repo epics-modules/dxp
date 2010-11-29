@@ -1,4 +1,4 @@
-HTMLFLAGS = --book --duplex --no-numbered --format pdf14 --title --size letter
+HTMLFLAGS = --book --duplex --no-numbered --format pdf14 --title --size letter --browserwidth 800 
 
 %.pdf: %.html
 	-htmldoc $(HTMLFLAGS) --outfile $@ $<
@@ -19,6 +19,7 @@ install:
 
 clean:
 	rm -rf dxpDoxygenHTML/*
+	rm -f dxpDoc.pdf
 
 
 realclean: clean
