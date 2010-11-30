@@ -139,7 +139,7 @@ text {
 	}
 	display[4] {
 		label="ROIs/SCAs"
-		name="dxpROI_SCA.adl"
+		name="dxpROI_SCA32.adl"
 		args="P=$(P),M=$(M),D=$(D),R=14"
 	}
 	clr=14
@@ -187,7 +187,7 @@ text {
 	}
 	display[4] {
 		label="ROIs/SCAs"
-		name="dxpROI_SCA.adl"
+		name="dxpROI_SCA32.adl"
 		args="P=$(P),M=$(M),D=$(D),R=2"
 	}
 	clr=14
@@ -222,7 +222,7 @@ text {
 	}
 	display[4] {
 		label="ROIs/SCAs"
-		name="dxpROI_SCA.adl"
+		name="dxpROI_SCA32.adl"
 		args="P=$(P),M=$(M),D=$(D),R=1"
 	}
 	clr=14
@@ -257,7 +257,7 @@ text {
 	}
 	display[4] {
 		label="ROIs/SCAs"
-		name="dxpROI_SCA.adl"
+		name="dxpROI_SCA32.adl"
 		args="P=$(P),M=$(M),D=$(D),R=4"
 	}
 	clr=14
@@ -292,7 +292,7 @@ text {
 	}
 	display[4] {
 		label="ROIs/SCAs"
-		name="dxpROI_SCA.adl"
+		name="dxpROI_SCA32.adl"
 		args="P=$(P),M=$(M),D=$(D),R=4"
 	}
 	clr=14
