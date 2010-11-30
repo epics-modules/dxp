@@ -1,14 +1,14 @@
 
 file {
-	name="/home/epics/devel/dxp/2-6beta/dxpApp/op/adl/4element_ROI_SCA.adl"
-	version=030000
+	name="/home/epics/devel/dxp/dxpApp/op/adl/4element_ROI_SCA.adl"
+	version=030102
 }
 display {
 	object {
-		x=177
-		y=62
+		x=169
+		y=63
 		width=950
-		height=225
+		height=330
 	}
 	clr=14
 	bclr=4
@@ -108,7 +108,7 @@ text {
 	"basic attribute" {
 		clr=0
 	}
-	textix="16 Element Detector - ROI/SCA $(R)"
+	textix="4 Element Detector - ROI/SCA $(R)"
 }
 text {
 	object {
@@ -249,6 +249,30 @@ text {
 	}
 	textix="Counts"
 	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=48
+		y=45
+		width=484
+		height=170
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+}
+rectangle {
+	object {
+		x=537
+		y=45
+		width=405
+		height=170
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
 }
 text {
 	object {
@@ -400,7 +424,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)1.SCA$(R)_LO"
+				chan="$(P)$(D)1:SCA$(R)Low"
 				clr=14
 				bclr=51
 			}
@@ -415,7 +439,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)1.SCA$(R)_HI"
+				chan="$(P)$(D)1:SCA$(R)High"
 				clr=14
 				bclr=51
 			}
@@ -430,7 +454,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)1.SCA$(R)_CTS"
+				chan="$(P)$(D)1:SCA$(R)Counts"
 				clr=54
 				bclr=1
 			}
@@ -446,7 +470,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)1.SCA$(R)_LO_RBV"
+				chan="$(P)$(D)1:SCA$(R)Low_RBV"
 				clr=54
 				bclr=1
 			}
@@ -462,7 +486,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)1.SCA$(R)_HI_RBV"
+				chan="$(P)$(D)1:SCA$(R)High_RBV"
 				clr=54
 				bclr=1
 			}
@@ -596,7 +620,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)2.SCA$(R)_LO"
+				chan="$(P)$(D)2:SCA$(R)Low"
 				clr=14
 				bclr=51
 			}
@@ -611,7 +635,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)2.SCA$(R)_HI"
+				chan="$(P)$(D)2:SCA$(R)High"
 				clr=14
 				bclr=51
 			}
@@ -626,7 +650,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)2.SCA$(R)_CTS"
+				chan="$(P)$(D)2:SCA$(R)Counts"
 				clr=54
 				bclr=1
 			}
@@ -642,7 +666,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)2.SCA$(R)_LO_RBV"
+				chan="$(P)$(D)2:SCA$(R)Low_RBV"
 				clr=54
 				bclr=1
 			}
@@ -658,7 +682,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)2.SCA$(R)_HI_RBV"
+				chan="$(P)$(D)2:SCA$(R)High_RBV"
 				clr=54
 				bclr=1
 			}
@@ -792,7 +816,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)3.SCA$(R)_LO"
+				chan="$(P)$(D)3:SCA$(R)Low"
 				clr=14
 				bclr=51
 			}
@@ -807,7 +831,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)3.SCA$(R)_HI"
+				chan="$(P)$(D)3:SCA$(R)High"
 				clr=14
 				bclr=51
 			}
@@ -822,7 +846,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)3.SCA$(R)_CTS"
+				chan="$(P)$(D)3:SCA$(R)Counts"
 				clr=54
 				bclr=1
 			}
@@ -838,7 +862,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)3.SCA$(R)_LO_RBV"
+				chan="$(P)$(D)3:SCA$(R)Low_RBV"
 				clr=54
 				bclr=1
 			}
@@ -854,7 +878,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)3.SCA$(R)_HI_RBV"
+				chan="$(P)$(D)3:SCA$(R)High_RBV"
 				clr=54
 				bclr=1
 			}
@@ -988,7 +1012,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)4.SCA$(R)_LO"
+				chan="$(P)$(D)4:SCA$(R)Low"
 				clr=14
 				bclr=51
 			}
@@ -1003,7 +1027,7 @@ composite {
 				height=22
 			}
 			control {
-				chan="$(P)$(D)4.SCA$(R)_HI"
+				chan="$(P)$(D)4:SCA$(R)High"
 				clr=14
 				bclr=51
 			}
@@ -1018,7 +1042,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)4.SCA$(R)_CTS"
+				chan="$(P)$(D)4:SCA$(R)Counts"
 				clr=54
 				bclr=1
 			}
@@ -1034,7 +1058,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)4.SCA$(R)_LO_RBV"
+				chan="$(P)$(D)4:SCA$(R)Low_RBV"
 				clr=54
 				bclr=1
 			}
@@ -1050,7 +1074,7 @@ composite {
 				height=20
 			}
 			monitor {
-				chan="$(P)$(D)4.SCA$(R)_HI_RBV"
+				chan="$(P)$(D)4:SCA$(R)High_RBV"
 				clr=54
 				bclr=1
 			}
@@ -1062,35 +1086,165 @@ composite {
 }
 composite {
 	object {
-		x=48
-		y=45
-		width=894
-		height=170
+		x=47
+		y=225
+		width=647
+		height=93
 	}
 	"composite name"=""
 	children {
-		rectangle {
+		composite {
 			object {
-				x=537
-				y=45
-				width=405
-				height=170
+				x=47
+				y=248
+				width=647
+				height=70
 			}
-			"basic attribute" {
-				clr=14
-				fill="outline"
+			"composite name"=""
+			children {
+				text {
+					object {
+						x=174
+						y=248
+						width=520
+						height=20
+					}
+					"basic attribute" {
+						clr=14
+						fill="outline"
+					}
+					textix="Copy all detector 1 ROIs to all detectors by channel"
+					align="horiz. centered"
+				}
+				text {
+					object {
+						x=174
+						y=273
+						width=510
+						height=20
+					}
+					"basic attribute" {
+						clr=14
+						fill="outline"
+					}
+					textix="Copy all detector 1 ROIs to all detectors by energy"
+					align="horiz. centered"
+				}
+				text {
+					object {
+						x=174
+						y=298
+						width=390
+						height=20
+					}
+					"basic attribute" {
+						clr=14
+						fill="outline"
+					}
+					textix="Copy all ROIs to SCAs for all detectors"
+					align="horiz. centered"
+				}
+				"message button" {
+					object {
+						x=47
+						y=249
+						width=120
+						height=18
+					}
+					control {
+						chan="$(P)CopyROIChannel"
+						clr=14
+						bclr=51
+					}
+					label="Copy 1->All"
+					press_msg="1"
+				}
+				"message button" {
+					object {
+						x=47
+						y=274
+						width=120
+						height=18
+					}
+					control {
+						chan="$(P)CopyROIEnergy"
+						clr=14
+						bclr=51
+					}
+					label="Copy 1->All"
+					press_msg="1"
+				}
+				"message button" {
+					object {
+						x=47
+						y=299
+						width=120
+						height=18
+					}
+					control {
+						chan="$(P)CopyROI_SCA"
+						clr=14
+						bclr=51
+					}
+					label="Copy ROIs to SCAs"
+					press_msg="1"
+				}
 			}
 		}
-		rectangle {
+		text {
 			object {
-				x=48
-				y=45
-				width=484
-				height=170
+				x=132
+				y=225
+				width=220
+				height=20
 			}
 			"basic attribute" {
 				clr=14
 				fill="outline"
+			}
+			textix="Maximum number of SCAs"
+		}
+		"text entry" {
+			object {
+				x=372
+				y=225
+				width=80
+				height=20
+			}
+			control {
+				chan="$(P)NumSCAs"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		text {
+			object {
+				x=457
+				y=225
+				width=210
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+				fill="outline"
+			}
+			textix="Number of SCAs to use"
+		}
+		"text update" {
+			object {
+				x=47
+				y=225
+				width=80
+				height=20
+			}
+			monitor {
+				chan="$(P)MaxSCAs"
+				clr=54
+				bclr=0
+			}
+			limits {
 			}
 		}
 	}

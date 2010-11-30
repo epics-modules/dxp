@@ -1,7 +1,7 @@
 
 file {
-	name="/home/epics/devel/dxp/2-6beta/dxpApp/op/adl/4element_baseline.adl"
-	version=030000
+	name="/home/epics/devel/dxp/dxpApp/op/adl/4element_baseline.adl"
+	version=030102
 }
 display {
 	object {
@@ -87,47 +87,10 @@ display {
 		1a7309,
 	}
 }
-"cartesian plot" {
-	object {
-		x=403
-		y=94
-		width=387
-		height=222
-	}
-	plotcom {
-		title="$(P)$(D)4"
-		xlabel="Energy (keV)"
-		ylabel="counts"
-		clr=14
-		bclr=2
-	}
-	style="line"
-	erase_oldest="plot last n pts"
-	trace[0] {
-		xdata="$(P)$(D)4.BASE_X"
-		ydata="$(P)$(D)4.BASE"
-		data_clr=27
-	}
-	trace[1] {
-		xdata="$(P)$(D)4.BASE_X"
-		ydata="$(P)$(D)4.BASE_CUT"
-		data_clr=20
-	}
-	x_axis {
-		rangeStyle="auto-scale"
-	}
-	y1_axis {
-		axisStyle="log10"
-		rangeStyle="auto-scale"
-	}
-	y2_axis {
-		rangeStyle="auto-scale"
-	}
-}
 text {
 	object {
 		x=591
-		y=68
+		y=70
 		width=10
 		height=25
 	}
@@ -171,79 +134,41 @@ composite {
 		}
 	}
 }
-"cartesian plot" {
+text {
 	object {
-		x=10
-		y=94
-		width=387
-		height=222
+		x=198
+		y=70
+		width=10
+		height=25
 	}
-	plotcom {
-		title="$(P)$(D)1"
-		xlabel="Energy (keV)"
-		ylabel="counts"
-		clr=14
-		bclr=2
+	"basic attribute" {
+		clr=54
 	}
-	style="line"
-	erase_oldest="plot last n pts"
-	trace[0] {
-		xdata="$(P)$(D)1.BASE_X"
-		ydata="$(P)$(D)1.BASE"
-		data_clr=27
-	}
-	trace[1] {
-		xdata="$(P)$(D)1.BASE_X"
-		ydata="$(P)$(D)1.BASE_CUT"
-		data_clr=20
-	}
-	x_axis {
-		rangeStyle="auto-scale"
-	}
-	y1_axis {
-		axisStyle="log10"
-		rangeStyle="auto-scale"
-	}
-	y2_axis {
-		rangeStyle="auto-scale"
-	}
+	textix="1"
 }
-"cartesian plot" {
+text {
 	object {
-		x=10
-		y=348
-		width=387
-		height=222
+		x=198
+		y=320
+		width=10
+		height=25
 	}
-	plotcom {
-		title="$(P)$(D)2"
-		xlabel="Energy (keV)"
-		ylabel="counts"
-		clr=14
-		bclr=2
+	"basic attribute" {
+		clr=54
 	}
-	style="line"
-	erase_oldest="plot last n pts"
-	trace[0] {
-		xdata="$(P)$(D)2.BASE_X"
-		ydata="$(P)$(D)2.BASE"
-		data_clr=27
+	textix="2"
+}
+text {
+	object {
+		x=591
+		y=320
+		width=10
+		height=25
 	}
-	trace[1] {
-		xdata="$(P)$(D)2.BASE_X"
-		ydata="$(P)$(D)2.BASE_CUT"
-		data_clr=20
+	"basic attribute" {
+		clr=54
 	}
-	x_axis {
-		rangeStyle="auto-scale"
-	}
-	y1_axis {
-		axisStyle="log10"
-		rangeStyle="auto-scale"
-	}
-	y2_axis {
-		rangeStyle="auto-scale"
-	}
+	textix="3"
 }
 composite {
 	object {
@@ -262,7 +187,7 @@ composite {
 				height=20
 			}
 			control {
-				chan="$(P)ReadDXPBaselines.PROC"
+				chan="$(P)ReadBaselineHistograms.PROC"
 				clr=14
 				bclr=51
 			}
@@ -289,46 +214,22 @@ composite {
 				height=18
 			}
 			control {
-				chan="$(P)ReadDXPBaselines.SCAN"
+				chan="$(P)ReadBaselineHistograms.SCAN"
 				clr=14
 				bclr=51
 			}
 		}
 	}
 }
-text {
-	object {
-		x=198
-		y=68
-		width=10
-		height=25
-	}
-	"basic attribute" {
-		clr=54
-	}
-	textix="1"
-}
-text {
-	object {
-		x=198
-		y=322
-		width=10
-		height=25
-	}
-	"basic attribute" {
-		clr=54
-	}
-	textix="2"
-}
 "cartesian plot" {
 	object {
-		x=403
-		y=348
-		width=387
-		height=222
+		x=10
+		y=100
+		width=380
+		height=200
 	}
 	plotcom {
-		title="$(P)$(D)3"
+		title="$(P)$(D)1"
 		xlabel="Energy (keV)"
 		ylabel="counts"
 		clr=14
@@ -337,14 +238,9 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)3.BASE_X"
-		ydata="$(P)$(D)3.BASE"
+		xdata="$(P)$(D)1:BaselineEnergyArray"
+		ydata="$(P)$(D)1:BaselineHistogram"
 		data_clr=27
-	}
-	trace[1] {
-		xdata="$(P)$(D)3.BASE_X"
-		ydata="$(P)$(D)3.BASE_CUT"
-		data_clr=20
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -357,15 +253,99 @@ text {
 		rangeStyle="auto-scale"
 	}
 }
-text {
+"cartesian plot" {
 	object {
-		x=591
-		y=322
-		width=10
-		height=25
+		x=10
+		y=350
+		width=380
+		height=200
 	}
-	"basic attribute" {
-		clr=54
+	plotcom {
+		title="$(P)$(D)2"
+		xlabel="Energy (keV)"
+		ylabel="counts"
+		clr=14
+		bclr=2
 	}
-	textix="3"
+	style="line"
+	erase_oldest="plot last n pts"
+	trace[0] {
+		xdata="$(P)$(D)2:BaselineEnergyArray"
+		ydata="$(P)$(D)2:BaselineHistogram"
+		data_clr=27
+	}
+	x_axis {
+		rangeStyle="auto-scale"
+	}
+	y1_axis {
+		axisStyle="log10"
+		rangeStyle="auto-scale"
+	}
+	y2_axis {
+		rangeStyle="auto-scale"
+	}
+}
+"cartesian plot" {
+	object {
+		x=400
+		y=350
+		width=380
+		height=200
+	}
+	plotcom {
+		title="$(P)$(D)3"
+		xlabel="Energy (keV)"
+		ylabel="counts"
+		clr=14
+		bclr=2
+	}
+	style="line"
+	erase_oldest="plot last n pts"
+	trace[0] {
+		xdata="$(P)$(D)3:BaselineEnergyArray"
+		ydata="$(P)$(D)3:BaselineHistogram"
+		data_clr=27
+	}
+	x_axis {
+		rangeStyle="auto-scale"
+	}
+	y1_axis {
+		axisStyle="log10"
+		rangeStyle="auto-scale"
+	}
+	y2_axis {
+		rangeStyle="auto-scale"
+	}
+}
+"cartesian plot" {
+	object {
+		x=399
+		y=100
+		width=380
+		height=200
+	}
+	plotcom {
+		title="$(P)$(D)4"
+		xlabel="Energy (keV)"
+		ylabel="counts"
+		clr=14
+		bclr=2
+	}
+	style="line"
+	erase_oldest="plot last n pts"
+	trace[0] {
+		xdata="$(P)$(D)4:BaselineEnergyArray"
+		ydata="$(P)$(D)4:BaselineHistogram"
+		data_clr=27
+	}
+	x_axis {
+		rangeStyle="auto-scale"
+	}
+	y1_axis {
+		axisStyle="log10"
+		rangeStyle="auto-scale"
+	}
+	y2_axis {
+		rangeStyle="auto-scale"
+	}
 }
