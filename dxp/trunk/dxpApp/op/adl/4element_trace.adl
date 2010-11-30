@@ -1,14 +1,14 @@
 
 file {
-	name="/home/epics/devel/dxp/2-6beta/dxpApp/op/adl/4element_trace.adl"
-	version=030000
+	name="/home/epics/devel/dxp/dxpApp/op/adl/4element_trace.adl"
+	version=030102
 }
 display {
 	object {
-		x=682
-		y=72
+		x=66
+		y=50
 		width=800
-		height=610
+		height=635
 	}
 	clr=14
 	bclr=4
@@ -120,7 +120,7 @@ text {
 	"basic attribute" {
 		clr=0
 	}
-	textix="4 Element ADC Trace"
+	textix="4 Element Trace"
 	align="horiz. centered"
 }
 text {
@@ -162,9 +162,9 @@ text {
 "cartesian plot" {
 	object {
 		x=10
-		y=94
-		width=387
-		height=222
+		y=100
+		width=380
+		height=200
 	}
 	plotcom {
 		title="$(P)$(D)1"
@@ -176,8 +176,8 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)1.TRACE_X"
-		ydata="$(P)$(D)1.TRACE"
+		xdata="$(P)$(D)1:TraceTimeArray"
+		ydata="$(P)$(D)1:TraceData"
 		data_clr=27
 	}
 	x_axis {
@@ -193,9 +193,9 @@ text {
 "cartesian plot" {
 	object {
 		x=10
-		y=348
-		width=387
-		height=222
+		y=350
+		width=380
+		height=200
 	}
 	plotcom {
 		title="$(P)$(D)2"
@@ -207,8 +207,8 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)2.TRACE_X"
-		ydata="$(P)$(D)2.TRACE"
+		xdata="$(P)$(D)2:TraceTimeArray"
+		ydata="$(P)$(D)2:TraceData"
 		data_clr=27
 	}
 	x_axis {
@@ -221,43 +221,115 @@ text {
 		rangeStyle="auto-scale"
 	}
 }
-"cartesian plot" {
+composite {
 	object {
-		x=403
-		y=348
-		width=387
-		height=222
+		x=50
+		y=560
+		width=279
+		height=70
 	}
-	plotcom {
-		title="$(P)$(D)3"
-		xlabel="Time (usec)"
-		ylabel="ADC units"
-		clr=14
-		bclr=2
-	}
-	style="line"
-	erase_oldest="plot last n pts"
-	trace[0] {
-		xdata="$(P)$(D)3.TRACE_X"
-		ydata="$(P)$(D)3.TRACE"
-		data_clr=27
-	}
-	x_axis {
-		rangeStyle="auto-scale"
-	}
-	y1_axis {
-		rangeStyle="auto-scale"
-	}
-	y2_axis {
-		rangeStyle="auto-scale"
+	"composite name"=""
+	children {
+		"message button" {
+			object {
+				x=245
+				y=560
+				width=80
+				height=20
+			}
+			control {
+				chan="$(P)ReadTraces.PROC"
+				clr=14
+				bclr=51
+			}
+			label="Read Once"
+			press_msg="1"
+		}
+		text {
+			object {
+				x=50
+				y=560
+				width=105
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Read Rate:"
+		}
+		menu {
+			object {
+				x=158
+				y=561
+				width=80
+				height=18
+			}
+			control {
+				chan="$(P)ReadTraces.SCAN"
+				clr=14
+				bclr=51
+			}
+		}
+		text {
+			object {
+				x=50
+				y=585
+				width=210
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Time per point (usec):"
+		}
+		"text entry" {
+			object {
+				x=269
+				y=585
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)TraceTimes"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		text {
+			object {
+				x=50
+				y=610
+				width=100
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Trace mode"
+		}
+		menu {
+			object {
+				x=158
+				y=611
+				width=120
+				height=18
+			}
+			control {
+				chan="$(P)TraceModes"
+				clr=14
+				bclr=51
+			}
+		}
 	}
 }
 "cartesian plot" {
 	object {
-		x=403
-		y=94
+		x=400
+		y=100
 		width=380
-		height=222
+		height=200
 	}
 	plotcom {
 		title="$(P)$(D)4"
@@ -269,8 +341,8 @@ text {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		xdata="$(P)$(D)4.TRACE_X"
-		ydata="$(P)$(D)4.TRACE"
+		xdata="$(P)$(D)4:TraceTimeArray"
+		ydata="$(P)$(D)4:TraceData"
 		data_clr=27
 	}
 	x_axis {
@@ -283,92 +355,34 @@ text {
 		rangeStyle="auto-scale"
 	}
 }
-composite {
+"cartesian plot" {
 	object {
-		x=10
-		y=580
-		width=275
-		height=20
+		x=400
+		y=350
+		width=380
+		height=200
 	}
-	"composite name"=""
-	children {
-		"message button" {
-			object {
-				x=205
-				y=580
-				width=80
-				height=20
-			}
-			control {
-				chan="$(P)ReadDXPTraces.PROC"
-				clr=14
-				bclr=51
-			}
-			label="Read Once"
-			press_msg="1"
-		}
-		text {
-			object {
-				x=10
-				y=580
-				width=105
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Read Rate:"
-		}
-		menu {
-			object {
-				x=118
-				y=581
-				width=80
-				height=18
-			}
-			control {
-				chan="$(P)ReadDXPTraces.SCAN"
-				clr=14
-				bclr=51
-			}
-		}
+	plotcom {
+		title="$(P)$(D)3"
+		xlabel="Time (usec)"
+		ylabel="ADC units"
+		clr=14
+		bclr=2
 	}
-}
-composite {
-	object {
-		x=300
-		y=580
-		width=279
-		height=20
+	style="line"
+	erase_oldest="plot last n pts"
+	trace[0] {
+		xdata="$(P)$(D)3:TraceTimeArray"
+		ydata="$(P)$(D)3:TraceData"
+		data_clr=27
 	}
-	"composite name"=""
-	children {
-		text {
-			object {
-				x=300
-				y=580
-				width=210
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Time per point (usec):"
-		}
-		"text entry" {
-			object {
-				x=519
-				y=580
-				width=60
-				height=20
-			}
-			control {
-				chan="$(P)TraceWaits"
-				clr=14
-				bclr=51
-			}
-			limits {
-			}
-		}
+	x_axis {
+		rangeStyle="auto-scale"
+	}
+	y1_axis {
+		rangeStyle="auto-scale"
+	}
+	y2_axis {
+		rangeStyle="auto-scale"
 	}
 }
