@@ -68,7 +68,7 @@ create_monitor_set("auto_settings4.req", 30, "P=dxpXMAP:")
 saveData_Init("saveData.req", "P=dxpXMAP:")
 
 # Sleep for 5 seconds to let initialization complete and then turn on AutoApply and do Apply manually once
-epicsThreadSleep(10.)
+epicsThreadSleep(5.)
 # Turn on AutoApply
 dbpf("dxpXMAP:AutoApply", "Yes")
 # Manually do Apply once
