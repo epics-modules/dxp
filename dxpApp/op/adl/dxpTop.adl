@@ -1,14 +1,14 @@
 
 file {
-	name="/home/epics/devel/dxp-3-0_handel_1_1_4/dxpApp/op/adl/dxpTop.adl"
+	name="/home/epics/devel/dxp/dxpApp/op/adl/dxpTop.adl"
 	version=030102
 }
 display {
 	object {
 		x=82
 		y=41
-		width=159
-		height=41
+		width=250
+		height=150
 	}
 	clr=14
 	bclr=4
@@ -89,56 +89,131 @@ display {
 }
 text {
 	object {
-		x=9
-		y=10
+		x=130
+		y=37
+		width=60
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Saturn"
+}
+"related display" {
+	object {
+		x=59
+		y=37
+		width=66
+		height=20
+	}
+	display[0] {
+		label="Saturn"
+		name="dxpSaturn.adl"
+		args="P=dxpSaturn:, M=mca1, D=dxp1:"
+	}
+	clr=14
+	bclr=4
+}
+"related display" {
+	object {
+		x=59
+		y=62
+		width=66
+		height=20
+	}
+	display[0] {
+		label="xMAP 4-element MED"
+		name="4element_dxp.adl"
+		args="P=dxpXMAP:, M=mca, D=dxp"
+	}
+	display[1] {
+		label="xMAP 16-element MED"
+		name="16element_dxp.adl"
+		args="P=dxpXMAP:, M=mca, D=dxp"
+	}
+	clr=14
+	bclr=4
+}
+"related display" {
+	object {
+		x=59
+		y=87
+		width=66
+		height=20
+	}
+	display[0] {
+		label="Mercury 4-element"
+		name="4element_dxp.adl"
+		args="P=dxpMercury:, M=mca, D=dxp"
+	}
+	clr=14
+	bclr=4
+}
+"related display" {
+	object {
+		x=59
+		y=112
+		width=66
+		height=20
+	}
+	display[0] {
+		label="DXP2X 4-element MED"
+		name="4element_dxp.adl"
+		args="P=dxp2X:, M=mca, D=dxp"
+	}
+	display[1] {
+		label="DXP2X 16-element MED"
+		name="16element_dxp.adl"
+		args="P=dxp2X:, M=mca, D=dxp"
+	}
+	clr=14
+	bclr=4
+}
+text {
+	object {
+		x=130
+		y=62
+		width=40
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="xMAP"
+}
+text {
+	object {
+		x=130
+		y=87
+		width=70
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Mercury"
+}
+text {
+	object {
+		x=130
+		y=112
 		width=50
 		height=20
 	}
 	"basic attribute" {
 		clr=14
 	}
-	textix="Start"
+	textix="DXP2X"
 }
-"related display" {
+text {
 	object {
-		x=66
-		y=11
-		width=66
+		x=18
+		y=9
+		width=210
 		height=20
 	}
-	display[0] {
-		label="Single Saturn"
-		name="dxpSaturn.adl"
-		args="P=dxpSaturn:, M=mca1, D=dxp1:"
+	"basic attribute" {
+		clr=14
 	}
-	display[1] {
-		label="xMAP 4-element MED"
-		name="4element_dxp.adl"
-		args="P=dxpXMAP:, M=mca, D=dxp"
-	}
-	display[2] {
-		label="xMAP 16-element MED"
-		name="16element_dxp.adl"
-		args="P=dxpXMAP:, M=mca, D=dxp"
-	}
-	display[3] {
-		label="DXP2X 4-element MED"
-		name="4element_dxp.adl"
-		args="P=dxp2X:, M=mca, D=dxp"
-	}
-	display[4] {
-		label="DXP2X 16-element MED"
-		name="16element_dxp.adl"
-		args="P=dxp2X:, M=mca, D=dxp"
-	}
-	display[5] {
-		label="Mercury 1-element"
-	}
-	display[6] {
-		label="Mercury 4-element"
-		name="16element_dxp.adl"
-		args="P=dxpMercury:, M=mca, D=dxp"
-	}
-	clr=14
-	bclr=4
+	textix="DXP Top Level Control"
 }
