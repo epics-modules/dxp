@@ -1427,13 +1427,13 @@ ss dxp_control {
             if (Acquiring) {
                 for (i=0; i<nDetectors; i++) {
                     statusMCA[i] = 1;
-                    pvPut(statusMCA[i]);
+                    /* pvPut(statusMCA[i]); */
                 }
             } else {
                 /* If the detector is done then force each MCA record to read data */
                 for (i=0; i<nDetectors; i++) {
                     ReadMCA[i] = 1;
-                    pvPut(ReadMCA[i]);
+                    pvPut(ReadMCA[i], SYNC);
                 }
                 /* Clear the AcquireBusy record */
                 AcquireBusy = 0;
