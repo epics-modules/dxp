@@ -830,6 +830,14 @@ asynStatus NDDxp::writeInt32( asynUser *pasynUser, epicsInt32 value)
     else if (function == mcaStopAcquire) 
     {
         CALLHANDEL(xiaStopRun(channel), "xiaStopRun(detChan)");
+        /* Wait for the acquisition task to realize the run has stopped and do the callbacks */
+        while (1) {
+            getIntegerParam(addr, mcaAcquiring, &acquiring);
+            if (!acquiring) break;
+            this->unlock();
+            epicsThreadSleep(epicsThreadSleepQuantum());
+            this->lock();
+        }
     } 
     else if (function == mcaNumChannels) 
     {
@@ -2457,6 +2465,7 @@ void NDDxp::acquisitionTask()
                 driverName, functionName);
             this->cmdStartEvent->wait();
             this->lock();
+            getIntegerParam(NDDxpCollectMode, &mode);
             asynPrint(this->pasynUserSelf, ASYN_TRACEIO_DRIVER,
                 "%s::%s [%s]: started! (mode=%d)\n", 
                 driverName, functionName, this->portName, mode);
@@ -2468,7 +2477,6 @@ void NDDxp::acquisitionTask()
          * and the data. */
         this->getAcquisitionStatus(this->pasynUserSelf, DXP_ALL);
         getIntegerParam(this->nChannels, NDDxpAcquiring, &acquiring);
-        getIntegerParam(NDDxpCollectMode, &mode);
         if (mode == NDDxpModeMCA && (!acquiring))
         {
             /* There must have just been a transition from acquiring to not acquiring */
