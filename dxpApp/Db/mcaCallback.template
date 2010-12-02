@@ -6,9 +6,10 @@ record(ai,"$(P)$(R)ReadCallback") {
        field(FLNK, "$(P)$(R)ReadStatusOnce PP MS")
 }
 
+# Note: the link in this record must be CA to force the record to process again if it is current processing
 record(bo,"$(P)$(R)ReadStatusOnce") {
        field(VAL, "1")
-       field(OUT, "$(P)$(R).PROC PP MS")
+       field(OUT, "$(P)$(R).PROC CA MS")
 }
 
 record(ai, "$(P)$(R)CollectData") {
