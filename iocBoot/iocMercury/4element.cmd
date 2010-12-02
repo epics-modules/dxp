@@ -25,7 +25,7 @@ xiaInit("mercury4.ini")
 xiaStartSystem
 
 # DXPConfig(serverName, ndetectors, maxBuffers, maxMemory)
-NDDxpConfig(DXP1,  4, -1, -1)
+NDDxpConfig("DXP1",  4, -1, -1)
 
 dbLoadTemplate("4element.substitutions")
 
@@ -35,8 +35,21 @@ dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=dxpMercury:,R
 dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFile.template",      "P=dxpMercury:,R=netCDF1:,PORT=DXP1NetCDF,ADDR=0,TIMEOUT=1")
 dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFileNetCDF.template","P=dxpMercury:,R=netCDF1:,PORT=DXP1NetCDF,ADDR=0,TIMEOUT=1")
 
-#asynSetTraceMask DXP1 0 255
-asynSetTraceIOMask DXP1 0 2
+# Create a TIFF file saving plugin
+NDFileTIFFConfigure("DXP1TIFF", 20, 0, "DXP1", 0)
+dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=dxpMercury:,R=TIFF1:,PORT=DXP1TIFF,ADDR=0,TIMEOUT=1,NDARRAY_PORT=DXP1,NDARRAY_ADDR=0")
+dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFile.template",      "P=dxpMercury:,R=TIFF1:,PORT=DXP1TIFF,ADDR=0,TIMEOUT=1")
+dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFileTIFF.template",  "P=dxpMercury:,R=TIFF1:,PORT=DXP1TIFF,ADDR=0,TIMEOUT=1")
+
+# Create a NeXus file saving plugin
+NDFileNexusConfigure("DXP1Nexus", 20, 0, "DXP1", 0, 0, 80000)
+dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDPluginBase.template","P=dxpMercury:,R=Nexus1:,PORT=DXP1Nexus,ADDR=0,TIMEOUT=1,NDARRAY_PORT=DXP1,NDARRAY_ADDR=0")
+dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFile.template",      "P=dxpMercury:,R=Nexus1:,PORT=DXP1Nexus,ADDR=0,TIMEOUT=1")
+dbLoadRecords("$(AREA_DETECTOR)/ADApp/Db/NDFileNexus.template", "P=dxpMercury:,R=Nexus1:,PORT=DXP1Nexus,ADDR=0,TIMEOUT=1")
+
+#xiaSetLogLevel(4)
+#asynSetTraceMask DXP1 0 0x11
+#asynSetTraceIOMask DXP1 0 2
 
 ### Scan-support software
 # crate-resident scan.  This executes 1D, 2D, 3D, and 4D scans, and caches
@@ -45,7 +58,7 @@ dbLoadRecords("$(SSCAN)/sscanApp/Db/scan.db","P=dxpMercury:,MAXPTS1=2000,MAXPTS2
 
 iocInit
 
-seq dxpMED, "P=dxpMercury:, DXP=dxp, MCA=mca, N_DETECTORS=4, N_SCAS=16"
+seq dxpMED, "P=dxpMercury:, DXP=dxp, MCA=mca, N_DETECTORS=4, N_SCAS=32"
 
 ### Start up the autosave task and tell it what to do.
 # Save settings every thirty seconds
@@ -54,7 +67,12 @@ create_monitor_set("auto_settings4.req", 30, "P=dxpMercury:")
 ### Start the saveData task.
 saveData_Init("saveData.req", "P=dxpMercury:")
 
-# Sleep for 10 seconds to let initialization complete and then turn on AutoApply and do Apply manually once
-epicsThreadSleep(10.)
+# Sleep for 15 seconds to let initialization complete and then turn on AutoApply and do Apply manually once
+epicsThreadSleep(15.)
+# Turn on AutoApply
 dbpf("dxpMercury:AutoApply", "Yes")
+# Manually do Apply once
 dbpf("dxpMercury:Apply", "1")
+# Seems to be necessary to resend AutoPixelsPerBuffer to read back correctly from Handel
+dbpf("dxpMercury:AutoPixelsPerBuffer.PROC", "1")
+
