@@ -7,3 +7,5 @@ start medm -x -macro "P=dxpXMAP:, D=dxp, M=mca" 16element_dxp.adl
 REM Put areaDetector\bin\win32-x86 in the path so the file plugin DLLs can be found
 PATH=J:\epics\devel\areaDetector\bin\win32-x86
 ..\..\bin\win32-x86\dxpApp.exe 16element.cmd
+REM Put a pause so user can see any error messages when IOC closes
+pause
