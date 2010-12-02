@@ -7,3 +7,5 @@ REM Put Cygwin in the path so the EPICS application can find cygwin1.dll
 REM Put areaDetector\bin\win32-x86 in the path so the file plugin DLLs can be found
 PATH=C:\cygwin\bin;J:\epics\devel\areaDetector\bin\cygwin-x86
 ..\..\bin\cygwin-x86\dxpApp.exe st.cmd
+REM Put a pause so user can see any error messages when IOC closes
+pause
