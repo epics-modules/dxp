@@ -33,7 +33,7 @@ pattern
 }
 
 # SCA parameters
-file "$(DXP)/dxpApp/Db/dxpSCA_16.template"
+file "$(DXP)/dxpApp/Db/dxpSCA_32.template"
 {
 pattern
 {       P,       R,          IO}
