@@ -12,7 +12,7 @@
     <h2>
       Release 3-0</h2>
     <h2>
-      November XXX, 2010</h2>
+      December 3, 2010</h2>
     <h2>
       Mark Rivers</h2>
     <h2>
@@ -976,6 +976,16 @@
   </ul>
   <h3 id="Saturn_medm">
     Saturn medm screens</h3>
+  <p>
+    The following is the top-level medm screen for the DXP software. It loads the screens
+    for each of the example IOCs.</p>
+  <hr />
+  <h3 style="text-align: center">
+    dxpTop.adl</h3>
+  <p>
+    Top-level DXP control screen.</p>
+  <p style="text-align: center">
+    <img alt="dxpTop.png" src="dxpTop.png" /></p>
   <p>
     The following are screen shots of the medm screens provided for the Saturn.</p>
   <hr />
@@ -2094,8 +2104,7 @@
     Ni mesh. It extracts the Ni Ka peak (channels 716 to 776) from the data. It sums
     over all the channels in this region, normalizes by live time, sums over all 7 detectors,
     and finally displays the image with the IDL iTools iimage procedure.</p>
-  <pre>
-    ; Read data, only channels 716 to 776
+  <pre>    ; Read data, only channels 716 to 776
     d = read_xmap_2d('Scan4_', 501, live_time=live_time, real_time=real_time, $
                      events=events, triggers=triggers, channel=[716,776])
     ; Sum over channels 716 to 776 (first dimension)
@@ -2148,8 +2157,7 @@ end
   <p>
     This is an example of decoding the buffers in IDL for List Sync mode data. It computes
     and plots the histogram (spectrum) of all of the events.</p>
-  <pre>
-IDL> buff = read_nd_netcdf('list_mapping_sync_001.nc')
+  <pre>IDL> buff = read_nd_netcdf('list_mapping_sync_001.nc')
 IDL> help, buff                                       
 BUFF            INT       = Array[1048576, 4]
 IDL> d = decode_xmap_buffers(buff)                    
@@ -2234,6 +2242,17 @@ IDL> iplot, h, yrange=[1,1e3], /ylog
     are called auto_settings4.sav, or auto_settings16.sav, etc. It is a good idea to
     make copies of this file from time to time so that you can get back to old settings
     if the file is lost or corrupted.</p>
+  <p>
+    The DXP IOC application and EPICS clients both need to be able to start the EPICS
+    caRepeater application. This application is built as part of EPICS base. If you
+    are installing the Linux or Windows prebuilt versions of the DXP software you can
+    obtain caRepeater as part of the <a href="http://cars.uchicago.edu/software/pub/EPICS_WIN32_binaries.zip">
+      EPICS WIN32 binaries</a> or <a href="http://cars.uchicago.edu/software/pub/EPICS_Linux_binaries.tar">
+        EPICS Linux binaries</a> from our Web site. Unpack these directories into a
+    directory on your computer, and put that directory into your PATH environment variable.
+    That way EPICS will be able to find caRepeater. It will also provide many useful
+    EPICS shell utilities, such as caput, caget, camonitor, etc. The IDL ezcaIDL.dll
+    and ezcaIDL.so shareable libraries are also in that distribution.</p>
   <h3 id="Installing_Windows">
     Installing the DXP software on Windows</h3>
   <p>
@@ -2351,6 +2370,28 @@ IDL> iplot, h, yrange=[1,1e3], /ylog
       directories on your system. Don't worry about the path for directories that don't
       exist, like SNCSEQ, EPICS_BASE, etc.</li>
   </ul>
+  <p>
+    The DXP software uses the EPICS areaDetector module for the file-saving plugins
+    that are used in mapping modes. Some of these plugins use Windows DLLs. These DLLs
+    are provided with the prebuilt version of the DXP software, in the areaDetector/bin/win32-x86
+    or cygwin-x86 directories. Windows needs to be able to find these DLLs when you
+    run the DXP software. The easiest way to do this is to put the path to the DLLs
+    in your Windows PATH environment variable. This is done in the example startup scripts
+    in the iocBoot directories.</p>
+  <p>
+    The XIA software is very slow when downloading the firmware files (.fdd files) to
+    the hardware when the files reside on a remote file system. It is best to put the
+    FDD files on a local file system, particularly when using an xMAP system with multiple
+    xMAP modules.</p>
+  <p>
+    There is a known problem with EPICS clients losing connections to a Cygwin IOC when
+    they subscribe to a large number of array callbacks. This can happen with DXP application,
+    since clients may subscribe to callbacks from many MCA records. This can affect
+    any client, such as IDL, medm, the EPICS sscan record, Python, etc. It is a serious
+    problem that appears to be a bug in Cygwin itself. Hopefully it will be tracked
+    down and fixed in the future. If you do not need to use the saveData function in
+    the DXP IOC itself, then you can work around this problem by using the win32-x86
+    version of the DXP software.</p>
   <h3 id="Installing_Linux">
     Installing the DXP software on Linux</h3>
   <p>
@@ -2391,8 +2432,7 @@ IDL> iplot, h, yrange=[1,1e3], /ylog
           because of SELinux protections that prevent processes started with execv() from
           inheriting the iopl(3) permissions. To use this method the application startWithIopl3
           must be installed as suid root. Do this as follows:
-          <pre>
-> cd bin/linux-x86
+          <pre>> cd bin/linux-x86
 > su root
  (password)
 > chmod +s startWithIopl3
@@ -2442,8 +2482,7 @@ IDL> iplot, h, yrange=[1,1e3], /ylog
       Here is a recipe for older systems using hotplug.
       <ol>
         <li>Add the following lines to the file /etc/hotplug/usb.usermap
-          <pre>
-# XIA Saturn
+          <pre># XIA Saturn
 usbsaturn  0x0003  0x10e9  0x0700  0x0000  0x0000  0x00  0x00  0x00  0x00  0x00  0x00  0x00000000
 usbsaturn  0x0003  0x10e9  0x0701  0x0000  0x0000  0x00  0x00  0x00  0x00  0x00  0x00  0x00000000
 usbsaturn  0x0003  0x10e9  0x0702  0x0000  0x0000  0x00  0x00  0x00  0x00  0x00  0x00  0x00000000
@@ -2486,8 +2525,7 @@ SUBSYSTEM=="usb",ACTION=="add",ATTRS{idVendor}=="10e9",ATTRS{idProduct}=="0703",
           Note that the Linux "udev" facility has been evolving quite rapidly. The above lines
           work on a relatively recent Linux kernel (2.6.27). On older kernels the following
           syntax was required:
-          <pre>
-SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}=="0700",MODE="0666"
+          <pre>SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}=="0700",MODE="0666"
 SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}=="0701",MODE="0666"
 SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}=="0702",MODE="0666"
 SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}=="0703",MODE="0666"
@@ -2550,8 +2588,7 @@ SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}==
       <a href="Saturn_User_Manual.pdf">Saturn User's Manual</a> for information on how
       to determine and set these parameters. The saturn.ini file will contain lines like
       the following:
-      <pre>
-      type_value = 10.
+      <pre>      type_value = 10.
       channel0_gain = 1.7
       channel0_polarity = +
       </pre>
@@ -2595,72 +2632,86 @@ SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}==
     There are several things that should be done to run xMAP system under the EPICS
     software.</p>
   <ul>
-    <li>There are startup scripts and template files for systems with 4, 8, 12, or 16
-      channels (1, 2, 3, or 4 xMAP modules). If you have a different number of channels
-      you will need to create new files.</li>
+    <li>There are startup scripts and template files for systems with 4 or 16 channels
+      (1 or 4 xMAP modules). If you have a different number of channels you will need
+      to create new files.</li>
     <li>You can manually start the software by doing the following in the Cygwin bash
       shell:
       <pre>        cd iocBoot/iocXMAP  # Or the new directory you created
         ../../bin/cygin-x86/dxpApp.exe 16element.cmd  # Or 4element.cmd, etc.
      </pre>
     </li>
-    <li>You can also start the EPICS IOC and medm by running the batch file iocBoot/iocXMAP/START_IOC.bat.
-      This can be done by double clicking on the icon for this file. You should see the
-      EPICS IOC commands in a Windows command shell, and you should hear clicking sounds
-      from the xMAPS. If everything works correctly, you can then begin to collect and
-      display spectra.</li>
+    <li>You can also start the EPICS IOC and medm by running the batch file iocBoot/iocXMAP/START_IOC_Cygwin.bat
+      or START_IOC_WIN32.bat. This can be done by double clicking on the icon for this
+      file. You should see the EPICS IOC commands in a Windows command shell, and you
+      should hear clicking sounds from the xMAPS. If everything works correctly, you can
+      then begin to collect and display spectra. You may need to edit these batch files
+      to set the prefix for your IOC, the location of your medm adl files, etc.</li>
     <li>You can do scans and save complete spectra with the EPICS sscan and saveData facilities.</li>
   </ul>
+  <h3 id="Running_Mercury">
+    Running the Mercury</h3>
+  <p>
+    The Mercury can be run under Linux (linux-x86 or linux-x86_64) or Windows (cygwin-x86
+    or win32). As with the Saturn and xMAP described above there is an example mercury4.ini,
+    and there are example startup scripts (START_IOC for Linux, and START_IOC_Cygwin
+    and START_IOC_WIN32 for Windows).</p>
+  <h3 id="Running_DXP2X">
+    Running the DXP2X</h3>
+  <p>
+    The DXP2X is run under vxWorks. There is an example IOC for the DXP2X with startup
+    ini files and scripts for 4 and 16 element systems. The ini file will need to be
+    edited for the CAMAC address of the modules in your system.</p>
   <h2 id="Performance">
     Performance</h2>
+  <h3>
+    Normal MCA Spectra Mapping Mode</h3>
   <p>
-    Tests were done with R3-0 of the dxp module to measure the performance of the Saturn
-    and xMAP systems in rapidly collecting complete spectra in a scan. The tests were
-    done with the following conditions:</p>
+    The following measurements were done in normal MCA Spectra mode with R3-0 of the
+    dxp module to determine the performance of the DXP software in rapidly collecting
+    complete spectra in a scan. The tests were done with the following conditions:</p>
   <ul>
-    <li>Cygwin architecture on Windows. This is currently required for the saveData software.</li>
+    <li>Both cygwin-x86 and win32-x86 architectures on Windows. However, spectra were
+      only saved to disk when testing with the cygwin-x86 architecture, because win32-x86
+      does not currently support the saveData software.</li>
     <li>2048 channel spectra</li>
     <li>0.01 second acquisition time, in order to attain real data but with minimal overhead.</li>
     <li>EPICS scan records.
       <ul>
         <li>The inner scan was the scanH record, which had its detector trigger configured
-          to .mca.ERST (Saturn) or EraseStart (xMAP) in the mca/dxp database. Its detectors
-          were configured to collect spectra from the MCA records. The Saturn collected 1
-          MCA spectrum at each scan point, the xMAP collected 4, 8, 12 or 16 spectra at each
-          scan point.</li>
+          to the EraseStart record. Its detectors were configured to collect spectra from
+          the MCA records. The Saturn collected 1 MCA spectrum at each scan point, the xMAP,
+          Mercury, and DXP2X collected 4 or 16 spectra at each scan point.</li>
         <li>The outer scan was the scan1 record. It had no positioner drive PV to minimize
-          overhead. The detector trigger was scanH.EXSC. Its detectors were ElapsedReal, ElapsedLive,
-          and the first ROI, mca1.R0.</li>
+          overhead. The detector trigger was scanH.EXSC. Its positioner readback was "time",
+          which is how the time to execute the scan was measured.</li>
       </ul>
     </li>
     <li>The scan fields of the MCA status, MCA read, and DXP read records were Passive
-      to minimize overhead. The poller thread was running at 100 Hz, and caused the MCA
-      records to be processed when acquisition was complete.</li>
+      to minimize overhead. The poller thread time was .01 seconds on the Saturn and DXP2X,
+      .005 seconds on the Mercury, and .001 seconds on the xMAP. Callbacks caused the
+      MCA records to be processed when acquisition was complete.</li>
     <li>saveData was used to save the scan data to a local hard disk, not across the network.</li>
     <li>1000 scan points were collected. There were no positioner or detector delays in
       the scan records.</li>
     <li>The scan records were running on the same IOC as the DXP software.</li>
-    <li>The system configuration is shown in the screen shot below.</li>
+    <li>The system configuration for the xMAP is shown in this screen shot.</li>
   </ul>
-  <p>
-    Note that these measurements were made using the simple unbuffered mode on the xMAP.
-    The xMAP has 4MB of onboard memory per channel, and the release 0.9.1 firmware allows
-    one to use this memory to buffer many spectra, in response to a software or hardware
-    trigger signal. This can be used to rapidly acquire many spectra, and then read
-    them out quickly at the end. The EPICS software does not yet support this feature,
-    but will in a future release.
-  </p>
+  <p style="text-align: center">
+    <img alt="dxpScanSetup.png" src="dxpScanSetup.png" width="100%" /></p>
   <div style="text-align: center">
     <hr />
     <h3>
-      Performance Measurements</h3>
+      Normal MCA Spectra Mode Scanning Performance Measurements</h3>
     <p>
     </p>
-    <table border="1" summary="Performance Measurements">
+    <table border="1" summary="Normal MCA Spectra Mode Scanning Performance Measurements">
       <tbody>
         <tr style="text-align: center">
           <th>
             XIA system</th>
+          <th>
+            EPICS arch</th>
           <th>
             Number of detectors</th>
           <th>
@@ -2676,13 +2727,47 @@ SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}==
           <td>
             Saturn (EPP)</td>
           <td>
+            cygwin-x86</td>
+          <td>
             1</td>
           <td>
-            30.1</td>
+            32.5</td>
           <td>
-            33.2</td>
+            30.8</td>
           <td>
-            33.2</td>
+            30.8</td>
+          <td>
+            0.25</td>
+        </tr>
+        <tr valign="top">
+          <td>
+            Saturn (EPP)</td>
+          <td>
+            win32-x86</td>
+          <td>
+            1</td>
+          <td>
+            28.0</td>
+          <td>
+            35.7</td>
+          <td>
+            35.7</td>
+          <td>
+            0.29</td>
+        </tr>
+        <tr valign="top">
+          <td>
+            Saturn (EPP)</td>
+          <td>
+            linux-x86</td>
+          <td>
+            1</td>
+          <td>
+            29.8</td>
+          <td>
+            33.6</td>
+          <td>
+            33.6</td>
           <td>
             0.27</td>
         </tr>
@@ -2690,91 +2775,468 @@ SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}==
           <td>
             Saturn (USB 1.0)</td>
           <td>
+            cygwin-x86</td>
+          <td>
             1</td>
           <td>
-            80.5</td>
+            65.1</td>
           <td>
-            12.4</td>
+            15.4</td>
           <td>
-            12.4</td>
+            15.4</td>
           <td>
-            0.10</td>
+            0.13</td>
+        </tr>
+        <tr valign="top">
+          <td>
+            Saturn (USB 1.0)</td>
+          <td>
+            win32-x86</td>
+          <td>
+            1</td>
+          <td>
+            67.1</td>
+          <td>
+            14.9</td>
+          <td>
+            14.9</td>
+          <td>
+            0.12</td>
+        </tr>
+        <tr valign="top">
+          <td>
+            Saturn (USB 1.0)</td>
+          <td>
+            linux-x86</td>
+          <td>
+            1</td>
+          <td>
+            49.2</td>
+          <td>
+            20.3</td>
+          <td>
+            20.3</td>
+          <td>
+            0.17</td>
         </tr>
         <tr valign="top">
           <td>
             Saturn (USB 2.0)</td>
           <td>
+            cygwin-x86</td>
+          <td>
             1</td>
           <td>
-            23.5</td>
+            27.3</td>
           <td>
-            42.6</td>
+            36.6</td>
           <td>
-            42.6</td>
+            36.6</td>
           <td>
-            0.35</td>
+            0.30</td>
         </tr>
         <tr valign="top">
           <td>
-            xMAP</td>
+            Saturn (USB 2.0)</td>
           <td>
-            4 (1 xMAP)</td>
+            win32-x86</td>
+          <td>
+            1</td>
+          <td>
+            22.8</td>
+          <td>
+            43.9</td>
+          <td>
+            43.9</td>
+          <td>
+            0.36</td>
+        </tr>
+        <tr valign="top">
+          <td>
+            Saturn (USB 2.0)</td>
+          <td>
+            linux-x86</td>
+          <td>
+            1</td>
+          <td>
+            21.9
+          </td>
           <td>
             45.7</td>
           <td>
-            21.9</td>
+            45.7</td>
           <td>
-            87.5</td>
+            0.37</td>
+        </tr>
+        <tr valign="top">
           <td>
-            0.72</td>
+            Mercury</td>
+          <td>
+            cygwin-x86</td>
+          <td>
+            4</td>
+          <td>
+            56.1
+          </td>
+          <td>
+            17.8</td>
+          <td>
+            71.3</td>
+          <td>
+            0.58</td>
+        </tr>
+        <tr valign="top">
+          <td>
+            Mercury</td>
+          <td>
+            win32-x86</td>
+          <td>
+            4</td>
+          <td>
+            52.2
+          </td>
+          <td>
+            19.2</td>
+          <td>
+            76.6</td>
+          <td>
+            0.63</td>
+        </tr>
+        <tr valign="top">
+          <td>
+            Mercury</td>
+          <td>
+            linux-x86</td>
+          <td>
+            4</td>
+          <td>
+            53.5
+          </td>
+          <td>
+            18.7</td>
+          <td>
+            74.8</td>
+          <td>
+            0.61</td>
         </tr>
         <tr valign="top">
           <td>
             xMAP</td>
           <td>
-            8 (2 xMAPs)</td>
+            cygwin-x86</td>
           <td>
-            50.8</td>
+            4 (1 xMAP)</td>
           <td>
-            19.7</td>
+            31.2</td>
           <td>
-            157.5</td>
+            32.0</td>
           <td>
-            1.29</td>
+            128.2</td>
+          <td>
+            1.05</td>
         </tr>
         <tr valign="top">
           <td>
             xMAP</td>
           <td>
-            12 (3 xMAPs)</td>
+            win32-x86</td>
           <td>
-            61.7</td>
+            4 (1 xMAP)</td>
           <td>
-            16.2</td>
+            27.2</td>
           <td>
-            194.5</td>
+            36.5</td>
           <td>
-            1.59</td>
+            146.0</td>
+          <td>
+            1.20</td>
         </tr>
         <tr valign="top">
           <td>
             xMAP</td>
+          <td>
+            cygwin-x86</td>
           <td>
             16 (4 xMAPs)</td>
           <td>
-            78.1</td>
+            122.2</td>
           <td>
-            12.8</td>
+            8.2</td>
           <td>
-            204.9</td>
+            130.9</td>
           <td>
-            1.68</td>
+            1.07</td>
+        </tr>
+        <tr valign="top">
+          <td>
+            xMAP</td>
+          <td>
+            win32-x86</td>
+          <td>
+            16 (4 xMAPs)</td>
+          <td>
+            86.1</td>
+          <td>
+            11.6</td>
+          <td>
+            185.8</td>
+          <td>
+            1.52</td>
         </tr>
       </tbody>
     </table>
   </div>
+  <h3>
+    Mapping Mode</h3>
+  <p>
+    The following measurements were done in using the MCA Mapping and MCA Mapping modes
+    with R3-0 of the dxp module to determine the performance of the DXP software in
+    rapidly collecting data in a scan. The tests were done with the following conditions:</p>
+  <ul>
+    <li>Both cygwin-x86 and win32-x86 architectures on Windows.</li>
+    <li>2048 channel spectra in MCA Mapping mode</li>
+    <li>32 SCAs (ROIs) in SCA Mapping mode</li>
+    <li>External Sync pixel advance mode</li>
+    <li>The external sync signal was generated with an SIS3801 multichannel scaler. The
+      SIS3801 was operated in internal channel advance mode. The dwell time was set to
+      be the fastest that would work before errors began, with 100 microsecond resolution,
+      e.g. 3.6 ms per pixel worked and 3.5 ms per point failed.</li>
+    <li>netCDF file saving plugin used to stream the data to a local disk.</li>
+    <li>2000 points were collected.</li>
+    <li>The system configuration for the Mercury test is shown in this screen shot.</li>
+  </ul>
   <p style="text-align: center">
-    <img alt="16channel_scan.png" src="16channel_scan.png" width="100%" /></p>
+    <img alt="dxpMappingSetup.png" src="dxpMappingSetup.png" width="100%" /></p>
+  <div style="text-align: center">
+    <hr />
+    <h3>
+      Mapping Modes Performance Measurements</h3>
+    <p>
+    </p>
+    <table border="1" summary="Normal MCA Spectra Mode Scanning Performance Measurements">
+      <tbody>
+        <tr style="text-align: center">
+          <th>
+            XIA system</th>
+          <th>
+            EPICS arch</th>
+          <th>
+            Mapping mode</th>
+          <th>
+            Number of detectors</th>
+          <th>
+            Seconds/2000 scan points</th>
+          <th>
+            Scan points/second</th>
+          <th>
+            Total spectra or SCAs/second</th>
+          <th>
+            Data rate (MB/second)</th>
+        </tr>
+        <tr valign="top">
+          <td>
+            Mercury</td>
+          <td>
+            cygwin-x86</td>
+          <td>
+            MCA</td>
+          <td>
+            4</td>
+          <td>
+            7.4
+          </td>
+          <td>
+            270.2</td>
+          <td>
+            1081.1</td>
+          <td>
+            4.59</td>
+        </tr>
+        <tr valign="top">
+          <td>
+            Mercury</td>
+          <td>
+            win32-x86</td>
+          <td>
+            MCA</td>
+          <td>
+            4</td>
+          <td>
+            7.4
+          </td>
+          <td>
+            270.2</td>
+          <td>
+            1081.1</td>
+          <td>
+            4.59</td>
+        </tr>
+        <tr valign="top">
+          <td>
+            Mercury</td>
+          <td>
+            linux-x86</td>
+          <td>
+            MCA</td>
+          <td>
+            4</td>
+          <td>
+            5.2
+          </td>
+          <td>
+            384.6</td>
+          <td>
+            1538.5</td>
+          <td>
+            6.54</td>
+        </tr>
+        <tr valign="top">
+          <td>
+            xMAP</td>
+          <td>
+            cygwin-x86</td>
+          <td>
+            MCA</td>
+          <td>
+            4 (1 xMAP)</td>
+          <td>
+            1.8</td>
+          <td>
+            1111.1</td>
+          <td>
+            4444.4</td>
+          <td>
+            18.9</td>
+        </tr>
+        <tr valign="top">
+          <td>
+            xMAP</td>
+          <td>
+            win32-x86</td>
+          <td>
+            MCA</td>
+          <td>
+            4 (1 xMAP)</td>
+          <td>
+            1.8</td>
+          <td>
+            1111.1</td>
+          <td>
+            4444.4</td>
+          <td>
+            18.9</td>
+        </tr>
+        <tr valign="top">
+          <td>
+            xMAP</td>
+          <td>
+            cygwin-x86</td>
+          <td>
+            MCA</td>
+          <td>
+            16 (4 xMAPs)</td>
+          <td>
+            7.4</td>
+          <td>
+            270.3</td>
+          <td>
+            4324.3</td>
+          <td>
+            18.2</td>
+        </tr>
+        <tr valign="top">
+          <td>
+            xMAP</td>
+          <td>
+            win32-x86</td>
+          <td>
+            MCA</td>
+          <td>
+            16 (4 xMAPs)</td>
+          <td>
+            7.0</td>
+          <td>
+            285.7</td>
+          <td>
+            4571.4</td>
+          <td>
+            19.3</td>
+        </tr>
+        <tr valign="top">
+          <td>
+            xMAP</td>
+          <td>
+            cygwin-x86</td>
+          <td>
+            SCA</td>
+          <td>
+            4 (1 xMAP)</td>
+          <td>
+            0.2</td>
+          <td>
+            10000</td>
+          <td>
+            1,280,000</td>
+          <td>
+            5.0</td>
+        </tr>
+        <tr valign="top">
+          <td>
+            xMAP</td>
+          <td>
+            win32-x86</td>
+          <td>
+            SCA</td>
+          <td>
+            4 (1 xMAP)</td>
+          <td>
+            0.2</td>
+          <td>
+            10000</td>
+          <td>
+            1,280,000</td>
+          <td>
+            5.0</td>
+        </tr>
+        <tr valign="top">
+          <td>
+            xMAP</td>
+          <td>
+            cygwin-x86</td>
+          <td>
+            SCA</td>
+          <td>
+            16 (4 xMAPs)</td>
+          <td>
+            0.2</td>
+          <td>
+            10000</td>
+          <td>
+            5,120,000</td>
+          <td>
+            20.0</td>
+        </tr>
+        <tr valign="top">
+          <td>
+            xMAP</td>
+          <td>
+            win32-x86</td>
+          <td>
+            SCA</td>
+          <td>
+            16 (4 xMAPs)</td>
+          <td>
+            0.2</td>
+          <td>
+            10000</td>
+          <td>
+            5,120,000</td>
+          <td>
+            20.0</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
   <p>
   </p>
   <hr />
