@@ -1,6 +1,6 @@
 
 file {
-	name="/home/epics/devel/dxp/3-0/dxpApp/op/adl/dxp_sca.adl"
+	name="/home/epics/devel/dxp/dxpApp/op/adl/dxp_sca.adl"
 	version=030102
 }
 display {
@@ -8,7 +8,7 @@ display {
 		x=58
 		y=46
 		width=305
-		height=530
+		height=555
 	}
 	clr=14
 	bclr=4
@@ -87,62 +87,6 @@ display {
 		1a7309,
 	}
 }
-text {
-	object {
-		x=8
-		y=71
-		width=40
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-		fill="outline"
-	}
-	textix="SCA"
-	align="horiz. centered"
-}
-text {
-	object {
-		x=80
-		y=71
-		width=30
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-		fill="outline"
-	}
-	textix="Low"
-	align="horiz. centered"
-}
-text {
-	object {
-		x=156
-		y=71
-		width=40
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-		fill="outline"
-	}
-	textix="High"
-	align="horiz. centered"
-}
-text {
-	object {
-		x=242
-		y=71
-		width=30
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-		fill="outline"
-	}
-	textix="CTS"
-	align="horiz. centered"
-}
 composite {
 	object {
 		x=97
@@ -179,8 +123,8 @@ composite {
 }
 text {
 	object {
-		x=38
-		y=44
+		x=60
+		y=69
 		width=140
 		height=20
 	}
@@ -192,13 +136,13 @@ text {
 }
 "text entry" {
 	object {
-		x=183
-		y=44
+		x=210
+		y=69
 		width=83
 		height=20
 	}
 	control {
-		chan="$(P)$(R)NumSCAs"
+		chan="$(P)NumSCAs"
 		clr=14
 		bclr=51
 	}
@@ -207,8 +151,77 @@ text {
 }
 text {
 	object {
+		x=10
+		y=44
+		width=190
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Max. number of SCAs"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=8
+		y=96
+		width=40
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="SCA"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=80
+		y=96
+		width=30
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="Low"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=156
+		y=96
+		width=40
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="High"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=242
+		y=96
+		width=30
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="CTS"
+	align="horiz. centered"
+}
+text {
+	object {
 		x=13
-		y=444
+		y=469
 		width=10
 		height=20
 	}
@@ -222,7 +235,7 @@ text {
 text {
 	object {
 		x=13
-		y=417
+		y=442
 		width=10
 		height=20
 	}
@@ -236,7 +249,7 @@ text {
 text {
 	object {
 		x=13
-		y=390
+		y=415
 		width=10
 		height=20
 	}
@@ -250,7 +263,7 @@ text {
 text {
 	object {
 		x=13
-		y=363
+		y=388
 		width=10
 		height=20
 	}
@@ -264,7 +277,7 @@ text {
 text {
 	object {
 		x=18
-		y=336
+		y=361
 		width=10
 		height=20
 	}
@@ -278,7 +291,7 @@ text {
 text {
 	object {
 		x=18
-		y=309
+		y=334
 		width=10
 		height=20
 	}
@@ -292,7 +305,7 @@ text {
 text {
 	object {
 		x=18
-		y=282
+		y=307
 		width=10
 		height=20
 	}
@@ -306,7 +319,7 @@ text {
 text {
 	object {
 		x=18
-		y=255
+		y=280
 		width=10
 		height=20
 	}
@@ -320,7 +333,7 @@ text {
 text {
 	object {
 		x=18
-		y=228
+		y=253
 		width=10
 		height=20
 	}
@@ -334,7 +347,7 @@ text {
 text {
 	object {
 		x=18
-		y=201
+		y=226
 		width=10
 		height=20
 	}
@@ -348,7 +361,7 @@ text {
 text {
 	object {
 		x=18
-		y=174
+		y=199
 		width=10
 		height=20
 	}
@@ -362,7 +375,7 @@ text {
 text {
 	object {
 		x=18
-		y=147
+		y=172
 		width=10
 		height=20
 	}
@@ -376,7 +389,7 @@ text {
 text {
 	object {
 		x=18
-		y=120
+		y=145
 		width=10
 		height=20
 	}
@@ -390,7 +403,7 @@ text {
 text {
 	object {
 		x=13
-		y=471
+		y=496
 		width=10
 		height=20
 	}
@@ -404,7 +417,7 @@ text {
 text {
 	object {
 		x=13
-		y=498
+		y=523
 		width=10
 		height=20
 	}
@@ -418,7 +431,7 @@ text {
 "text entry" {
 	object {
 		x=53
-		y=443
+		y=468
 		width=76
 		height=22
 	}
@@ -433,7 +446,7 @@ text {
 "text entry" {
 	object {
 		x=53
-		y=416
+		y=441
 		width=76
 		height=22
 	}
@@ -448,7 +461,7 @@ text {
 "text entry" {
 	object {
 		x=53
-		y=389
+		y=414
 		width=76
 		height=22
 	}
@@ -463,7 +476,7 @@ text {
 "text entry" {
 	object {
 		x=53
-		y=362
+		y=387
 		width=76
 		height=22
 	}
@@ -478,7 +491,7 @@ text {
 "text entry" {
 	object {
 		x=53
-		y=335
+		y=360
 		width=76
 		height=22
 	}
@@ -493,7 +506,7 @@ text {
 "text entry" {
 	object {
 		x=53
-		y=308
+		y=333
 		width=76
 		height=22
 	}
@@ -508,7 +521,7 @@ text {
 "text entry" {
 	object {
 		x=53
-		y=281
+		y=306
 		width=76
 		height=22
 	}
@@ -523,7 +536,7 @@ text {
 "text entry" {
 	object {
 		x=53
-		y=254
+		y=279
 		width=76
 		height=22
 	}
@@ -538,7 +551,7 @@ text {
 "text entry" {
 	object {
 		x=53
-		y=227
+		y=252
 		width=76
 		height=22
 	}
@@ -553,7 +566,7 @@ text {
 "text entry" {
 	object {
 		x=53
-		y=200
+		y=225
 		width=76
 		height=22
 	}
@@ -568,7 +581,7 @@ text {
 "text entry" {
 	object {
 		x=53
-		y=173
+		y=198
 		width=76
 		height=22
 	}
@@ -583,7 +596,7 @@ text {
 "text entry" {
 	object {
 		x=53
-		y=146
+		y=171
 		width=76
 		height=22
 	}
@@ -598,7 +611,7 @@ text {
 "text entry" {
 	object {
 		x=53
-		y=119
+		y=144
 		width=76
 		height=22
 	}
@@ -613,7 +626,7 @@ text {
 "text entry" {
 	object {
 		x=53
-		y=470
+		y=495
 		width=76
 		height=22
 	}
@@ -628,7 +641,7 @@ text {
 "text entry" {
 	object {
 		x=53
-		y=497
+		y=522
 		width=76
 		height=22
 	}
@@ -643,7 +656,7 @@ text {
 "text entry" {
 	object {
 		x=134
-		y=443
+		y=468
 		width=76
 		height=22
 	}
@@ -658,7 +671,7 @@ text {
 "text entry" {
 	object {
 		x=134
-		y=416
+		y=441
 		width=76
 		height=22
 	}
@@ -673,7 +686,7 @@ text {
 "text entry" {
 	object {
 		x=134
-		y=389
+		y=414
 		width=76
 		height=22
 	}
@@ -688,7 +701,7 @@ text {
 "text entry" {
 	object {
 		x=134
-		y=362
+		y=387
 		width=76
 		height=22
 	}
@@ -703,7 +716,7 @@ text {
 "text entry" {
 	object {
 		x=134
-		y=335
+		y=360
 		width=76
 		height=22
 	}
@@ -718,7 +731,7 @@ text {
 "text entry" {
 	object {
 		x=134
-		y=308
+		y=333
 		width=76
 		height=22
 	}
@@ -733,7 +746,7 @@ text {
 "text entry" {
 	object {
 		x=134
-		y=281
+		y=306
 		width=76
 		height=22
 	}
@@ -748,7 +761,7 @@ text {
 "text entry" {
 	object {
 		x=134
-		y=254
+		y=279
 		width=76
 		height=22
 	}
@@ -763,7 +776,7 @@ text {
 "text entry" {
 	object {
 		x=134
-		y=227
+		y=252
 		width=76
 		height=22
 	}
@@ -778,7 +791,7 @@ text {
 "text entry" {
 	object {
 		x=134
-		y=200
+		y=225
 		width=76
 		height=22
 	}
@@ -793,7 +806,7 @@ text {
 "text entry" {
 	object {
 		x=134
-		y=173
+		y=198
 		width=76
 		height=22
 	}
@@ -808,7 +821,7 @@ text {
 "text entry" {
 	object {
 		x=134
-		y=146
+		y=171
 		width=76
 		height=22
 	}
@@ -823,7 +836,7 @@ text {
 "text entry" {
 	object {
 		x=134
-		y=119
+		y=144
 		width=76
 		height=22
 	}
@@ -838,7 +851,7 @@ text {
 "text entry" {
 	object {
 		x=134
-		y=470
+		y=495
 		width=76
 		height=22
 	}
@@ -853,7 +866,7 @@ text {
 "text entry" {
 	object {
 		x=134
-		y=497
+		y=522
 		width=76
 		height=22
 	}
@@ -868,7 +881,7 @@ text {
 "text update" {
 	object {
 		x=215
-		y=444
+		y=469
 		width=76
 		height=20
 	}
@@ -884,7 +897,7 @@ text {
 "text update" {
 	object {
 		x=215
-		y=417
+		y=442
 		width=76
 		height=20
 	}
@@ -900,7 +913,7 @@ text {
 "text update" {
 	object {
 		x=215
-		y=390
+		y=415
 		width=76
 		height=20
 	}
@@ -916,7 +929,7 @@ text {
 "text update" {
 	object {
 		x=215
-		y=363
+		y=388
 		width=76
 		height=20
 	}
@@ -932,7 +945,7 @@ text {
 "text update" {
 	object {
 		x=215
-		y=336
+		y=361
 		width=76
 		height=20
 	}
@@ -948,7 +961,7 @@ text {
 "text update" {
 	object {
 		x=215
-		y=309
+		y=334
 		width=76
 		height=20
 	}
@@ -964,7 +977,7 @@ text {
 "text update" {
 	object {
 		x=215
-		y=282
+		y=307
 		width=76
 		height=20
 	}
@@ -980,7 +993,7 @@ text {
 "text update" {
 	object {
 		x=215
-		y=255
+		y=280
 		width=76
 		height=20
 	}
@@ -996,7 +1009,7 @@ text {
 "text update" {
 	object {
 		x=215
-		y=228
+		y=253
 		width=76
 		height=20
 	}
@@ -1012,7 +1025,7 @@ text {
 "text update" {
 	object {
 		x=215
-		y=201
+		y=226
 		width=76
 		height=20
 	}
@@ -1028,7 +1041,7 @@ text {
 "text update" {
 	object {
 		x=215
-		y=174
+		y=199
 		width=76
 		height=20
 	}
@@ -1044,7 +1057,7 @@ text {
 "text update" {
 	object {
 		x=215
-		y=147
+		y=172
 		width=76
 		height=20
 	}
@@ -1060,7 +1073,7 @@ text {
 "text update" {
 	object {
 		x=215
-		y=120
+		y=145
 		width=76
 		height=20
 	}
@@ -1076,7 +1089,7 @@ text {
 "text update" {
 	object {
 		x=215
-		y=471
+		y=496
 		width=76
 		height=20
 	}
@@ -1092,7 +1105,7 @@ text {
 "text update" {
 	object {
 		x=215
-		y=498
+		y=523
 		width=76
 		height=20
 	}
@@ -1108,7 +1121,7 @@ text {
 text {
 	object {
 		x=18
-		y=98
+		y=123
 		width=10
 		height=20
 	}
@@ -1122,7 +1135,7 @@ text {
 "text entry" {
 	object {
 		x=53
-		y=97
+		y=122
 		width=76
 		height=22
 	}
@@ -1137,7 +1150,7 @@ text {
 "text entry" {
 	object {
 		x=134
-		y=97
+		y=122
 		width=76
 		height=22
 	}
@@ -1152,12 +1165,28 @@ text {
 "text update" {
 	object {
 		x=215
-		y=98
+		y=123
 		width=76
 		height=20
 	}
 	monitor {
 		chan="$(P)$(R)SCA0Counts"
+		clr=54
+		bclr=3
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=210
+		y=44
+		width=76
+		height=20
+	}
+	monitor {
+		chan="$(P)MaxSCAs"
 		clr=54
 		bclr=3
 	}
