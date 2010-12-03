@@ -449,7 +449,7 @@ static int paramCompare(const void *p1, const void *p2)
     return(strcmp(LLParamNames[ip1], LLParamNames[ip2]));
 }
 
-extern "C" int NDDxp_config(const char *portName, int nChannels,
+extern "C" int NDDxpConfig(const char *portName, int nChannels,
                             int maxBuffers, size_t maxMemory)
 {
     NDDxp *dummy = new NDDxp(portName, nChannels, maxBuffers, maxMemory);
@@ -2655,7 +2655,7 @@ static const iocshArg * const NDDxpConfigArgs[] =  {&NDDxpConfigArg0,
 static const iocshFuncDef configNDDxp = {"NDDxpConfig", 4, NDDxpConfigArgs};
 static void configNDDxpCallFunc(const iocshArgBuf *args)
 {
-    NDDxp_config(args[0].sval, args[1].ival, args[2].ival, args[3].ival);
+    NDDxpConfig(args[0].sval, args[1].ival, args[2].ival, args[3].ival);
 }
 
 static const iocshArg xiaLogLevelArg0 = { "logging level",iocshArgInt};
