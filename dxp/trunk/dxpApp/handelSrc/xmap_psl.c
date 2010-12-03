@@ -33,7 +33,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: xmap_psl.c 17126 2010-11-04 23:33:59Z patrick $
+ * $Id: xmap_psl.c 17311 2010-11-23 18:55:25Z patrick $
  *
  */
 
@@ -686,7 +686,7 @@ static AcquisitionValue_t ACQ_VALUES[] =
     {"peak_mode",           TRUE_, FALSE_, XMAP_UPDATE_NEVER,  1.0,                   
      psl__SetPeakMode,      psl__GetPeakMode, NULL},
     
-    {"list_mode_variant", FALSE_, FALSE_, XMAP_UPDATE_MAPPING,
+    {"list_mode_variant", TRUE_, FALSE_, XMAP_UPDATE_MAPPING,
      XIA_LIST_MODE_CLOCK, psl__SetListModeVariant, psl__GetListModeVariant,
      NULL},
 
@@ -9827,7 +9827,6 @@ PSL_STATIC int psl__SetListModeVariant(int detChan, int modChan, char *name,
     UNUSED(det);
     UNUSED(m);
     UNUSED(detType);
-    UNUSED(name);
     UNUSED(modChan);
     UNUSED(defs);
 
@@ -9844,10 +9843,10 @@ PSL_STATIC int psl__SetListModeVariant(int detChan, int modChan, char *name,
     }
 
     if (!isMapping) {
-        sprintf(info_string, "Mapping mode not enabled for detChan %d.",
-                detChan);
-        pslLogError("psl__SetListModeVariant", info_string, XIA_NO_MAPPING);
-        return XIA_NO_MAPPING;
+        sprintf(info_string, "Skipping '%s' since mapping mode is disabled "
+                "for detChan %d.", name, detChan);
+        pslLogInfo("psl__SetListModeVariant", info_string);
+        return XIA_SUCCESS;
     }
 
     LISTMODEVARIANT = (parameter_t)(*((double *)value));
