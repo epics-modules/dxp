@@ -21,6 +21,7 @@ dxp-3-0/dxpApp/op/adl \
 dxp-3-0/bin/cygwin-x86 \
 dxp-3-0/bin/win32-x86 \
 dxp-3-0/bin/linux-x86 \
+dxp-3-0/bin/linux-x86_64 \
 dxp-3-0/dbd/ \
 dxp-3-0/iocBoot
 popd
