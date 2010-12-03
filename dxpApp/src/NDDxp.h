@@ -6,7 +6,7 @@ extern "C"
 {
 #endif
 
-int NDDxp_config(const char *portName, int nChannels, int maxBuffers, size_t maxMemory);
+int NDDxpConfig(const char *portName, int nChannels, int maxBuffers, size_t maxMemory);
 
 #ifdef __cplusplus
 }
