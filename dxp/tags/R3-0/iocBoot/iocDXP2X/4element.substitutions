@@ -1,0 +1,69 @@
+file "$(DXP)/dxpApp/Db/dxpSystem.template" {
+{P=dxp2X:, IO="@asyn(DXP1,0)"}
+}
+
+file "$(DXP)/dxpApp/Db/dxpMED.template" {
+{P=dxp2X:, DETALL="@asyn(DXP1,4,1)"} 
+}
+
+# DXP parameters
+file "$(DXP)/dxpApp/Db/dxpHighLevel.template"
+{
+pattern
+{       P,       R,           IO}
+{dxp2X:,    dxp1:,  "@asyn(DXP1,0,1)"}
+{dxp2X:,    dxp2:,  "@asyn(DXP1,1,1)"}
+{dxp2X:,    dxp3:,  "@asyn(DXP1,2,1)"}
+{dxp2X:,    dxp4:,  "@asyn(DXP1,3,1)"}
+}
+
+# DXP2X specific parameters
+file "$(DXP)/dxpApp/Db/dxpDXP2X.template"
+{
+pattern
+{       P,       R,           IO}
+{dxp2X:,    dxp1:,  "@asyn(DXP1,0,1)"}
+{dxp2X:,    dxp2:,  "@asyn(DXP1,1,1)"}
+{dxp2X:,    dxp3:,  "@asyn(DXP1,2,1)"}
+{dxp2X:,    dxp4:,  "@asyn(DXP1,3,1)"}
+}
+
+# Low-level parameters
+file "$(DXP)/dxpApp/Db/dxpLowLevel.template"
+{
+pattern
+{       P,       R,        IO}
+{dxp2X:,    dxp1:,  "@asyn(DXP1,0,1)"}
+{dxp2X:,    dxp2:,  "@asyn(DXP1,1,1)"}
+{dxp2X:,    dxp3:,  "@asyn(DXP1,2,1)"}
+{dxp2X:,    dxp4:,  "@asyn(DXP1,3,1)"}
+}
+
+# SCA parameters
+file "$(DXP)/dxpApp/Db/dxpSCA_16.template"
+{
+pattern
+{       P,       R,          IO}
+{dxp2X:,    dxp1:,  "@asyn(DXP1,0,1)"}
+{dxp2X:,    dxp2:,  "@asyn(DXP1,1,1)"}
+{dxp2X:,    dxp3:,  "@asyn(DXP1,2,1)"}
+{dxp2X:,    dxp4:,  "@asyn(DXP1,3,1)"}
+}
+
+
+file "$(MCA)/mcaApp/Db/simple_mca.db"
+{
+pattern
+{       P,      M,       DTYP,               INP,  PREC,    CHANS}
+{dxp2X:,   mca1,  "asynMCA",   "@asyn(DXP1,0)",     2,     2048}
+{dxp2X:,   mca2,  "asynMCA",   "@asyn(DXP1,1)",     2,     2048}
+{dxp2X:,   mca3,  "asynMCA",   "@asyn(DXP1,2)",     2,     2048}
+{dxp2X:,   mca4,  "asynMCA",   "@asyn(DXP1,3)",     2,     2048}
+}
+
+file "$(ASYN)/db/asynRecord.db"
+{
+pattern
+{       P,    R,  PORT,   ADDR,  IMAX,  OMAX}
+{dxp2X:, Asyn,  DXP1,      0,    80,    80}
+}
