@@ -29,6 +29,29 @@ pattern
 {dxp2X:,   dxp16:,  "@asyn(DXP1,15,1)"}
 }
 
+# DXP2X specific parameters
+file "$(DXP)/dxpApp/Db/dxpDXP2X.template"
+{
+pattern
+{       P,       R,           IO}
+{dxp2X:,    dxp1:,  "@asyn(DXP1,0,1)"}
+{dxp2X:,    dxp2:,  "@asyn(DXP1,1,1)"}
+{dxp2X:,    dxp3:,  "@asyn(DXP1,2,1)"}
+{dxp2X:,    dxp4:,  "@asyn(DXP1,3,1)"}
+{dxp2X:,    dxp5:,  "@asyn(DXP1,4,1)"}
+{dxp2X:,    dxp6:,  "@asyn(DXP1,5,1)"}
+{dxp2X:,    dxp7:,  "@asyn(DXP1,6,1)"}
+{dxp2X:,    dxp8:,  "@asyn(DXP1,7,1)"}
+{dxp2X:,    dxp9:,  "@asyn(DXP1,8,1)"}
+{dxp2X:,   dxp10:,  "@asyn(DXP1,9,1)"}
+{dxp2X:,   dxp11:,  "@asyn(DXP1,10,1)"}
+{dxp2X:,   dxp12:,  "@asyn(DXP1,11,1)"}
+{dxp2X:,   dxp13:,  "@asyn(DXP1,12,1)"}
+{dxp2X:,   dxp14:,  "@asyn(DXP1,13,1)"}
+{dxp2X:,   dxp15:,  "@asyn(DXP1,14,1)"}
+{dxp2X:,   dxp16:,  "@asyn(DXP1,15,1)"}
+}
+
 # Low-level parameters
 file "$(DXP)/dxpApp/Db/dxpLowLevel.template"
 {
