@@ -12,8 +12,8 @@ TEMPLATE_TOP=$(EPICS_BASE)/templates/makeBaseApp/top
 SNCSEQ=J:/epics/devel/seq-2-0-12
 
 ASYN=J:/epics/devel/asyn-4-14
-AREA_DETECTOR=J:/epics/devel/areaDetector-1-6
-MCA=J:/epics/devel/mca-6-12-1
+AREA_DETECTOR=J:/epics/devel/areaDetector-1-7beta1
+MCA=J:/epics/devel/mca-6-12-3
 CAMAC=J:/epics/devel/camac-2-5
 DXP=J:/epics/devel/dxp-3-0
 
