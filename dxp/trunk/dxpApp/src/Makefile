@@ -89,17 +89,15 @@ saturn_benchmark1_SYS_LIBS_cygwin32 += setupapi
 saturn_benchmark1_SYS_LIBS_cygwin32 += $(CYGWIN_RPC_LIB)
 saturn_benchmark1_SYS_LIBS_WIN32 += setupapi
 
-PROD_IOC+= test_xmap_mode_switch
-test_xmap_mode_switch_SRCS += test_xmap_mode_switch.c
-test_xmap_mode_switch_LIBS += dxp
-test_xmap_mode_switch_LIBS += handel asyn
-test_xmap_mode_switch_LIBS += $(EPICS_BASE_IOC_LIBS)
-test_xmap_mode_switch_LIBS_WIN32 += DLPORTIO PlxApi
-test_xmap_mode_switch_SYS_LIBS_cygwin32 += DLPORTIO PlxApi
-test_xmap_mode_switch_SYS_LIBS_cygwin32 += setupapi
-test_xmap_mode_switch_SYS_LIBS_cygwin32 += $(CYGWIN_RPC_LIB)
-test_xmap_mode_switch_SYS_LIBS_WIN32 += setupapi
-test_xmap_mode_switch_SYS_LIBS_Linux += usb
+PROD_IOC+= test_trace
+test_trace_SRCS += test_trace.c
+test_trace_LIBS += handel
+test_trace_LIBS_WIN32 += DLPORTIO PlxApi
+test_trace_SYS_LIBS_cygwin32 += DLPORTIO PlxApi
+test_trace_SYS_LIBS_cygwin32 += setupapi
+test_trace_SYS_LIBS_cygwin32 += $(CYGWIN_RPC_LIB)
+test_trace_SYS_LIBS_WIN32 += setupapi
+test_trace_SYS_LIBS_Linux += usb
 
 #===========================
 #===========================
