@@ -2306,7 +2306,8 @@ asynStatus NDDxp::getTrace(asynUser* pasynUser, int addr,
 
         xiastatus = xiaDoSpecialRun(channel, NDDxpTraceCommands[traceMode], info);
         status = this->xia_checkError(pasynUser, xiastatus, NDDxpTraceCommands[traceMode]);
-        if (status == asynError) return asynError;
+        // Don't return error, read it out or we get stuck permanently with module busy
+        // if (status == asynError) return asynError;
 
         *actualLen = this->traceLength;
         if (maxLen < *actualLen) *actualLen = maxLen;
