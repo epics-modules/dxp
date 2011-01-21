@@ -213,6 +213,7 @@ typedef struct moduleStatistics {
 #define NDDxpPresetModeString               "DxpPresetMode"
 #define NDDxpPresetEventsString             "DxpPresetEvents"
 #define NDDxpPresetTriggersString           "DxpPresetTriggers"
+#define NDDxpSpectrumXAxisString            "DxpSpectrumXAxis"
 
 /* SCA parameters */
 #define NDDxpNumSCAsString                  "DxpNumSCAs"
@@ -348,6 +349,7 @@ protected:
     int NDDxpPresetMode;
     int NDDxpPresetEvents;
     int NDDxpPresetTriggers;
+    int NDDxpSpectrumXAxis;
 
     /* SCA parameters */
     int NDDxpMaxSCAs;
@@ -416,6 +418,7 @@ private:
     epicsFloat64 *traceTimeBuffer;
     epicsInt32 *baselineBuffer;
     epicsFloat64 *baselineEnergyBuffer;
+    epicsFloat64 *spectrumXAxisBuffer;
     
     moduleStatistics moduleStats[MAX_CHANNELS_PER_CARD];
 
@@ -545,6 +548,7 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     createParam(NDDxpPresetModeString,             asynParamInt32,   &NDDxpPresetMode);
     createParam(NDDxpPresetEventsString,           asynParamInt32,   &NDDxpPresetEvents);
     createParam(NDDxpPresetTriggersString,         asynParamInt32,   &NDDxpPresetTriggers);
+    createParam(NDDxpSpectrumXAxisString,          asynParamFloat64Array, &NDDxpSpectrumXAxis);
 
     /* SCA parameters */
     createParam(NDDxpNumSCAsString,                asynParamInt32,   &NDDxpNumSCAs);
@@ -695,6 +699,9 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
 
     /* Allocating a temporary buffer for use in mapping mode. */
     this->pMapRaw = (epicsUInt32*)malloc(XMAP_BUFFER_READ_SIZE);
+    
+    /* Allocate an internal buffer long enough to hold all the energy values in a spectrum */
+    this->spectrumXAxisBuffer = (epicsFloat64*)calloc(MAX_MCA_BINS, sizeof(epicsFloat64));
 
     /* On the Saturn enable special timing mode in RUNTASKS so we can use ROI pulse output
      * Hardcoding this here should be TEMPORARY until low-level parameters can be controlled by EPICS? */
@@ -1172,6 +1179,8 @@ asynStatus NDDxp::setDxpParam(asynUser *pasynUser, int addr, int function, doubl
     double dvalue=value;
     int numMcaChannels;
     int xiastatus;
+    int bin;
+    double binEnergyEV;
     asynStatus status=asynSuccess;
     //static const char *functionName = "setDxpParam";
 
@@ -1297,6 +1306,14 @@ asynStatus NDDxp::setDxpParam(asynUser *pasynUser, int addr, int function, doubl
         getDoubleParam(addr, NDDxpADCPercentRule, &dvalue);
         xiastatus = xiaSetAcquisitionValues(channel, "adc_percent_rule", &dvalue);
         status = this->xia_checkError(pasynUser, xiastatus, "setting adc_percent_rule");
+        
+        /* create a waveform which contain the value (in keV) of all the energy bins in the spectrum */
+        binEnergyEV = value / numMcaChannels;
+        for(bin=0; bin<numMcaChannels; bin++)
+        {
+        	*(this->spectrumXAxisBuffer+bin) = (bin+1) * binEnergyEV;
+        }
+        doCallbacksFloat64Array(this->spectrumXAxisBuffer, numMcaChannels, NDDxpSpectrumXAxis, addr); 
     }
     this->apply(channel);
     this->getDxpParams(pasynUser, addr);
@@ -2527,7 +2544,7 @@ asynStatus NDDxp::pollMappingMode()
     asynUser *pasynUser = this->pasynUserSelf;
     int xiastatus;
     int ignored;
-    int ch, buf, allFull=1, anyFull=0;
+    int ch, buf=0, allFull=1, anyFull=0;
     unsigned short isFull;
     unsigned long currentPixel = 0;
     const char* functionName = "pollMappingMode";
