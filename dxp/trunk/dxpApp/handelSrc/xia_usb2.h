@@ -32,7 +32,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xia_usb2.h 16630 2010-08-30 21:53:39Z patrick $
+ * $Id$
  *
  */
 

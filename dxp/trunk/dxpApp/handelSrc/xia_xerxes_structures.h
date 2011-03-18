@@ -33,7 +33,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xia_xerxes_structures.h 16952 2010-10-12 18:04:40Z patrick $
+ * $Id$
  *
  */
 
