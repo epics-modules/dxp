@@ -34,7 +34,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: dxp4c2x_psl.c 16573 2010-08-21 01:34:29Z patrick $
+ * $Id$
  *
  */
 

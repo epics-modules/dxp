@@ -33,7 +33,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: handel_dyn_module.c 16573 2010-08-21 01:34:29Z patrick $
+ * $Id$
  *
  */
 

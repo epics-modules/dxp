@@ -34,7 +34,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: xia_usb_linux.c 17120 2010-11-04 18:19:57Z patrick $
+ * $Id$
  *
  */
 

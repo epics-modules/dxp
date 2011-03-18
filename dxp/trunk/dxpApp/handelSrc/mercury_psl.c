@@ -32,7 +32,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: mercury_psl.c 17119 2010-11-04 18:14:54Z patrick $
+ * $Id$
  *
  */
 

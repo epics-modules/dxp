@@ -33,7 +33,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: fdd.c 16592 2010-08-25 17:53:01Z patrick $
+ * $Id$
  *
  */
 

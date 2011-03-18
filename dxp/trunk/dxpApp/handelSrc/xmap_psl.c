@@ -33,7 +33,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: xmap_psl.c 17311 2010-11-23 18:55:25Z patrick $
+ * $Id$
  *
  */
 
@@ -1838,20 +1838,19 @@ PSL_STATIC int pslGetADCTrace(int detChan, void *value, XiaDefaults *defs)
 
   ASSERT(value != NULL);
 
-
-  statusX = dxp_get_control_task_data(&detChan, &type, value);
-
-  if (statusX != DXP_SUCCESS) {
-    sprintf(info_string, "Error reading ADC trace data for detChan %d", detChan);
-    pslLogError("pslGetADCTrace", info_string, XIA_XERXES);
-    return XIA_XERXES;
-  }
-
   statusX = dxp_stop_control_task(&detChan);
 
   if (statusX != DXP_SUCCESS) {
     sprintf(info_string, "Error stopping control task run on detChan %d",
             detChan);
+    pslLogError("pslGetADCTrace", info_string, XIA_XERXES);
+    return XIA_XERXES;
+  }
+
+  statusX = dxp_get_control_task_data(&detChan, &type, value);
+
+  if (statusX != DXP_SUCCESS) {
+    sprintf(info_string, "Error reading ADC trace data for detChan %d", detChan);
     pslLogError("pslGetADCTrace", info_string, XIA_XERXES);
     return XIA_XERXES;
   }
