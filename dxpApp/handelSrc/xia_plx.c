@@ -36,7 +36,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: xia_plx.c 17127 2010-11-05 01:01:21Z patrick $
+ * $Id$
  *
  */
 

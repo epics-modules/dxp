@@ -33,7 +33,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: saturn_psl.c 17091 2010-10-29 16:57:48Z patrick $
+ * $Id$
  *
  */
 
