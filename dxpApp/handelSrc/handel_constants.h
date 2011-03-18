@@ -33,7 +33,7 @@
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
  *
- * $Id: handel_constants.h 16607 2010-08-26 15:56:19Z patrick $
+ * $Id$
  *
  */
 
