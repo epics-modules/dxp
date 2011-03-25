@@ -1,4 +1,4 @@
-$Id$
+$Id: saturn_rc_revc_40MHz_roi.fdd 15743 2010-05-20 02:37:30Z ann $
 $$$NEW SECTION$$$
 \61f0071e0d89c0f6d64e646e2b37f7435a802eec
 dsp
@@ -7,7 +7,7 @@ RC
 0.010
 40.000
 0
-* $Id$ 
+* $Id: saturn_rc_revc_40MHz_roi.fdd 15743 2010-05-20 02:37:30Z ann $ 
 **********************************************************
 *  ADSP2181 software for XIA pulse processor
 *  created Mon Feb 08 14:56:32 2010
