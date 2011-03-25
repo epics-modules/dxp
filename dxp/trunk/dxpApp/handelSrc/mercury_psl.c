@@ -7234,20 +7234,28 @@ PSL_STATIC int psl__SetMappingMode(int detChan, int modChan, char *name,
       return status;
     }
 
-    if (updated) {
+    MAPPINGMODE = (parameter_t)(*((double *)value));
 
-      /* Download the mapping-specific acquisition values now. */
-      status = psl__UpdateParams(detChan, MERCURY_UPDATE_MAPPING, modChan, name,
-                                 value, detType, defs, m, det, fs);
+    status = pslSetParameter(detChan, "MAPPINGMODE", MAPPINGMODE);
 
-      if (status != XIA_SUCCESS) {
+    if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error updating mode in the DSP for "
+                "detChan %d", detChan);
+        pslLogError("psl__SetMappingMode", info_string, status);
+        return status;
+    }
+
+    /* Download the mapping-specific acquisition values now. */
+    status = psl__UpdateParams(detChan, MERCURY_UPDATE_MAPPING, modChan, name,
+                               value, detType, defs, m, det, fs);
+
+    if (status != XIA_SUCCESS) {
         sprintf(info_string, "Error updating mapping parameters after firmware "
                 "switched to mapping mode for detChan %d", detChan);
         pslLogError("psl__SetMappingMode", info_string, status);
         return status;
-      }
-    }
-
+    }    
+    
     /* Write the DSP parameters that are used to fill the mapping buffers. */
     for (i = 0; i < m->number_of_channels; i++) {
 
