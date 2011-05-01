@@ -368,12 +368,9 @@ protected:
     int mcaStopAcquire;            /* int32, write */
     int mcaErase;                  /* int32, write */
     int mcaReadStatus;             /* int32, write */
-    int mcaChannelAdvanceInternal; /* int32, write */
-    int mcaChannelAdvanceExternal; /* int32, write */
+    int mcaChannelAdvanceSource;   /* int32, write */
     int mcaNumChannels;            /* int32, write */
-    int mcaModePHA;                /* int32, write */
-    int mcaModeMCS;                /* int32, write */
-    int mcaModeList;               /* int32, write */
+    int mcaAcquireMode;            /* int32, write */
     int mcaSequence;               /* int32, write */
     int mcaPrescale;               /* int32, write */
     int mcaPresetSweeps;           /* int32, write */
@@ -576,12 +573,9 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     createParam(mcaStopAcquireString,              asynParamInt32,   &mcaStopAcquire);
     createParam(mcaEraseString,                    asynParamInt32,   &mcaErase);
     createParam(mcaReadStatusString,               asynParamInt32,   &mcaReadStatus);
-    createParam(mcaChannelAdvanceInternalString,   asynParamInt32,   &mcaChannelAdvanceInternal);
-    createParam(mcaChannelAdvanceExternalString,   asynParamInt32,   &mcaChannelAdvanceExternal);
+    createParam(mcaChannelAdvanceSourceString,     asynParamInt32,   &mcaChannelAdvanceSource);
     createParam(mcaNumChannelsString,              asynParamInt32,   &mcaNumChannels);
-    createParam(mcaModePHAString,                  asynParamInt32,   &mcaModePHA);
-    createParam(mcaModeMCSString,                  asynParamInt32,   &mcaModeMCS);
-    createParam(mcaModeListString,                 asynParamInt32,   &mcaModeList);
+    createParam(mcaAcquireModeString,              asynParamInt32,   &mcaAcquireMode);
     createParam(mcaSequenceString,                 asynParamInt32,   &mcaSequence);
     createParam(mcaPrescaleString,                 asynParamInt32,   &mcaPrescale);
     createParam(mcaPresetSweepsString,             asynParamInt32,   &mcaPresetSweeps);
