@@ -384,7 +384,7 @@ $(pv_value)</tooltip>
         <y>0</y>
         <actions hook="false">
           <action type="OPEN_OPI_IN_VIEW">
-            <path>NDFileNetCDF.opi</path>
+            <path>../areaDetector/NDFileNetCDF.opi</path>
             <macros>
               <include_parent_macros>true</include_parent_macros>
               <R>netCDF1:</R>
@@ -393,7 +393,7 @@ $(pv_value)</tooltip>
             <description>netCDF file plugin</description>
           </action>
           <action type="OPEN_OPI_IN_VIEW">
-            <path>NDFileTIFF.opi</path>
+            <path>../areaDetector/NDFileTIFF.opi</path>
             <macros>
               <include_parent_macros>true</include_parent_macros>
               <R>TIFF1:</R>
@@ -402,7 +402,7 @@ $(pv_value)</tooltip>
             <description>TIFF file plugin</description>
           </action>
           <action type="OPEN_OPI_IN_VIEW">
-            <path>NDFileNexus.opi</path>
+            <path>../areaDetector/NDFileNexus.opi</path>
             <macros>
               <include_parent_macros>true</include_parent_macros>
               <R>Nexus1:</R>

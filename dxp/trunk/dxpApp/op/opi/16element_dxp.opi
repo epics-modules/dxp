@@ -753,7 +753,7 @@ $(pv_value)</tooltip>
     <y>244</y>
     <actions hook="false">
       <action type="OPEN_OPI_IN_VIEW">
-        <path>scan_more.opi</path>
+        <path>../sscan/scan_more.opi</path>
         <macros>
           <include_parent_macros>true</include_parent_macros>
           <S>scan1</S>
@@ -765,7 +765,7 @@ $(pv_value)</tooltip>
         <description>Scan 1</description>
       </action>
       <action type="OPEN_OPI_IN_VIEW">
-        <path>scan_more.opi</path>
+        <path>../sscan/scan_more.opi</path>
         <macros>
           <include_parent_macros>true</include_parent_macros>
           <S>scan2</S>
@@ -777,7 +777,7 @@ $(pv_value)</tooltip>
         <description>Scan 2</description>
       </action>
       <action type="OPEN_OPI_IN_VIEW">
-        <path>scan_more.opi</path>
+        <path>../sscan/scan_more.opi</path>
         <macros>
           <include_parent_macros>true</include_parent_macros>
           <S>scan3</S>
@@ -789,7 +789,7 @@ $(pv_value)</tooltip>
         <description>Scan 3</description>
       </action>
       <action type="OPEN_OPI_IN_VIEW">
-        <path>scan_more.opi</path>
+        <path>../sscan/scan_more.opi</path>
         <macros>
           <include_parent_macros>true</include_parent_macros>
           <S>scan4</S>
@@ -801,7 +801,7 @@ $(pv_value)</tooltip>
         <description>Scan 4</description>
       </action>
       <action type="OPEN_OPI_IN_VIEW">
-        <path>scan_more.opi</path>
+        <path>../sscan/scan_more.opi</path>
         <macros>
           <include_parent_macros>true</include_parent_macros>
           <S>scanH</S>
@@ -850,7 +850,7 @@ $(pv_value)</tooltip>
     <y>269</y>
     <actions hook="false">
       <action type="OPEN_OPI_IN_VIEW">
-        <path>save_restoreStatus_more.opi</path>
+        <path>../autosave/save_restoreStatus_more.opi</path>
         <macros>
           <include_parent_macros>true</include_parent_macros>
         </macros>
@@ -1226,7 +1226,7 @@ $(pv_value)</tooltip>
     <y>144</y>
     <actions hook="false">
       <action type="OPEN_OPI_IN_VIEW">
-        <path>16element_cal.opi</path>
+        <path>../mca/16element_cal.opi</path>
         <macros>
           <include_parent_macros>true</include_parent_macros>
         </macros>
@@ -1557,7 +1557,7 @@ $(pv_value)</tooltip>
     <y>219</y>
     <actions hook="false">
       <action type="OPEN_OPI_IN_VIEW">
-        <path>16element_plots.opi</path>
+        <path>../mca/16element_plots.opi</path>
         <macros>
           <include_parent_macros>true</include_parent_macros>
           <P>$(P)mca</P>
@@ -1779,7 +1779,7 @@ $(pv_value)</tooltip>
     <y>294</y>
     <actions hook="false">
       <action type="OPEN_OPI_IN_VIEW">
-        <path>asynRecord.opi</path>
+        <path>../asyn/asynRecord.opi</path>
         <macros>
           <include_parent_macros>true</include_parent_macros>
           <R>Asyn</R>

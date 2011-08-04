@@ -484,7 +484,7 @@ $(pv_value)</tooltip>
         <description>Low-level DXP parameters</description>
       </action>
       <action type="OPEN_OPI_IN_VIEW">
-        <path>simple_mca.opi</path>
+        <path>../mca/simple_mca.opi</path>
         <macros>
           <include_parent_macros>true</include_parent_macros>
           <P>$(P)$(M)</P>
@@ -605,7 +605,7 @@ $(pv_value)</tooltip>
         <description>Low-level DXP parameters</description>
       </action>
       <action type="OPEN_OPI_IN_VIEW">
-        <path>simple_mca.opi</path>
+        <path>../mca/simple_mca.opi</path>
         <macros>
           <include_parent_macros>true</include_parent_macros>
           <P>$(P)$(M)</P>
@@ -691,7 +691,7 @@ $(pv_value)</tooltip>
         <description>Low-level DXP parameters</description>
       </action>
       <action type="OPEN_OPI_IN_VIEW">
-        <path>simple_mca.opi</path>
+        <path>../mca/simple_mca.opi</path>
         <macros>
           <include_parent_macros>true</include_parent_macros>
           <P>$(P)$(M)</P>
@@ -777,7 +777,7 @@ $(pv_value)</tooltip>
         <description>Low-level DXP parameters</description>
       </action>
       <action type="OPEN_OPI_IN_VIEW">
-        <path>simple_mca.opi</path>
+        <path>../mca/simple_mca.opi</path>
         <macros>
           <include_parent_macros>true</include_parent_macros>
           <P>$(P)$(M)</P>
@@ -863,7 +863,7 @@ $(pv_value)</tooltip>
         <description>Low-level DXP parameters</description>
       </action>
       <action type="OPEN_OPI_IN_VIEW">
-        <path>simple_mca.opi</path>
+        <path>../mca/simple_mca.opi</path>
         <macros>
           <include_parent_macros>true</include_parent_macros>
           <P>$(P)$(M)</P>
