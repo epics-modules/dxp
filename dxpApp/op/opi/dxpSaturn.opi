@@ -4770,7 +4770,7 @@ $(pv_value)</tooltip>
     <y>565</y>
     <actions hook="false">
       <action type="OPEN_DISPLAY">
-        <path>mca.opi</path>
+        <path>../mca/mca.opi</path>
         <macros>
           <include_parent_macros>true</include_parent_macros>
         </macros>
@@ -5355,7 +5355,7 @@ $(pv_value)</tooltip>
     <y>490</y>
     <actions hook="false">
       <action type="OPEN_DISPLAY">
-        <path>save_restoreStatus_more.opi</path>
+        <path>../autosave/save_restoreStatus_more.opi</path>
         <macros>
           <include_parent_macros>true</include_parent_macros>
         </macros>
@@ -5435,7 +5435,7 @@ $(pv_value)</tooltip>
     <y>465</y>
     <actions hook="false">
       <action type="OPEN_DISPLAY">
-        <path>scan_more.opi</path>
+        <path>../sscan/scan_more.opi</path>
         <macros>
           <include_parent_macros>true</include_parent_macros>
           <S>scan1</S>
@@ -5447,7 +5447,7 @@ $(pv_value)</tooltip>
         <description>Scan 1</description>
       </action>
       <action type="OPEN_DISPLAY">
-        <path>scan_more.opi</path>
+        <path>../sscan/scan_more.opi</path>
         <macros>
           <include_parent_macros>true</include_parent_macros>
           <S>scan2</S>
@@ -5459,7 +5459,7 @@ $(pv_value)</tooltip>
         <description>Scan 2</description>
       </action>
       <action type="OPEN_DISPLAY">
-        <path>scan_more.opi</path>
+        <path>../sscan/scan_more.opi</path>
         <macros>
           <include_parent_macros>true</include_parent_macros>
           <S>scan3</S>
@@ -5471,7 +5471,7 @@ $(pv_value)</tooltip>
         <description>Scan 3</description>
       </action>
       <action type="OPEN_DISPLAY">
-        <path>scan_more.opi</path>
+        <path>../sscan/scan_more.opi</path>
         <macros>
           <include_parent_macros>true</include_parent_macros>
           <S>scan4</S>
@@ -5483,7 +5483,7 @@ $(pv_value)</tooltip>
         <description>Scan 4</description>
       </action>
       <action type="OPEN_DISPLAY">
-        <path>scan_more.opi</path>
+        <path>../sscan/scan_more.opi</path>
         <macros>
           <include_parent_macros>true</include_parent_macros>
           <S>scanH</S>
