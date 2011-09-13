@@ -81,7 +81,9 @@ PROD_IOC_cygwin32 += saturn_benchmark1
 saturn_benchmark1_SRCS += saturn_benchmark1.c
 saturn_benchmark1_LIBS += dxp
 saturn_benchmark1_LIBS += handel asyn
+ifeq ($(LINUX_USB_INSTALLED), YES)
 saturn_benchmark1_SYS_LIBS_Linux += usb
+endif
 saturn_benchmark1_LIBS += $(EPICS_BASE_IOC_LIBS)
 saturn_benchmark1_LIBS_WIN32 += DLPORTIO PlxApi
 saturn_benchmark1_SYS_LIBS_cygwin32 += DLPORTIO PlxApi
@@ -97,7 +99,9 @@ test_trace_SYS_LIBS_cygwin32 += DLPORTIO PlxApi
 test_trace_SYS_LIBS_cygwin32 += setupapi
 test_trace_SYS_LIBS_cygwin32 += $(CYGWIN_RPC_LIB)
 test_trace_SYS_LIBS_WIN32 += setupapi
+ifeq ($(LINUX_USB_INSTALLED), YES)
 test_trace_SYS_LIBS_Linux += usb
+endif
 
 #===========================
 #===========================
