@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2009 XIA LLC
+ * Copyright (c) 2006-2011 XIA LLC
  * All rights reserved
  *
  * Redistribution and use in source and binary forms, 
@@ -453,12 +453,13 @@ static int xia_usb2__small_read_xfer(HANDLE h, DWORD n_bytes, byte_t *buf)
   ASSERT(n_bytes != 0);
   ASSERT(buf != NULL);
   
-  big_packet = malloc(XIA_USB2_SMALL_READ_PACKET_SIZE);
+
+  big_packet = calloc(XIA_USB2_SMALL_READ_PACKET_SIZE, 1);
 
   if (!big_packet) {
     return XIA_USB2_NO_MEM;
   }
-  
+
   status = xia_usb2__xfer(h, XIA_USB2_READ_EP, 
                           XIA_USB2_SMALL_READ_PACKET_SIZE, big_packet);
 
@@ -466,7 +467,7 @@ static int xia_usb2__small_read_xfer(HANDLE h, DWORD n_bytes, byte_t *buf)
     free(big_packet);
     return status;
   }
-  
+
   memcpy(buf, big_packet, n_bytes);
   free(big_packet);
 

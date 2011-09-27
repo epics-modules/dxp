@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007-2010 XIA LLC
+ * Copyright (c) 2007-2011 XIA LLC
  * All rights reserved
  *
  * Redistribution and use in source and binary forms,
@@ -7232,17 +7232,6 @@ PSL_STATIC int psl__SetMappingMode(int detChan, int modChan, char *name,
               detChan);
       pslLogError("psl__SetMappingMode", info_string, status);
       return status;
-    }
-
-    MAPPINGMODE = (parameter_t)(*((double *)value));
-
-    status = pslSetParameter(detChan, "MAPPINGMODE", MAPPINGMODE);
-
-    if (status != XIA_SUCCESS) {
-        sprintf(info_string, "Error updating mode in the DSP for "
-                "detChan %d", detChan);
-        pslLogError("psl__SetMappingMode", info_string, status);
-        return status;
     }
 
     /* Download the mapping-specific acquisition values now. */

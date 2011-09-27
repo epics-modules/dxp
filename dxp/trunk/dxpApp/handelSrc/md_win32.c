@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2002-2004 X-ray Instrumentation Associates
- *               2005-2010 XIA LLC
+ *               2005-2011 XIA LLC
  * All rights reserved
  *
  * Redistribution and use in source and binary forms, 
@@ -1981,7 +1981,7 @@ XIA_MD_STATIC int  dxp_md_usb2_io(int *camChan, unsigned int *function,
        */
       byte_buf = md_md_alloc(n_bytes);
 
-      if (byte_buf == NULL) {
+      if (!byte_buf) {
         sprintf(ERROR_STRING, "Error allocating %lu bytes for 'byte_buf' for "
                 "camChan %d", n_bytes, *camChan);
         dxp_md_log_error("dxp_md_usb2_io", ERROR_STRING, DXP_MDNOMEM);

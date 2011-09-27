@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998-2004 X-ray Instrumentation Associates
- *               2005-2010 XIA LLC   
+ *               2005-2011 XIA LLC   
  * All rights reserved 
  *
  * Original implementation provided by Charles Fisher of 4pi Analysis, Inc.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2010 XIA LLC
+ * Copyright (c) 2006-2011 XIA LLC
  * All rights reserved
  *
  * Redistribution and use in source and binary forms, 
@@ -129,6 +129,15 @@ XIA_EXPORT void xia_print_open_handles(FILE *stream)
   for (fh = FILE_HANDLES; fh != NULL; fh = fh->next) {
     fprintf(stream, "<%p> %s, line %d\n", fh->fp, fh->file, fh->line);
   }
+}
+
+
+/** @brief Prints a list of the open file handles to stdout
+ *
+ */
+XIA_EXPORT void xia_print_open_handles_stdout(void)
+{
+  xia_print_open_handles(stdout);
 }
 
 
