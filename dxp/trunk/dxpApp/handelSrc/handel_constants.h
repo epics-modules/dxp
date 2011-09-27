@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2004 X-ray Instrumentation Associates
- *               2005-2010 XIA LLC
+ *               2005-2011 XIA LLC
  * All rights reserved
  *
  * Redistribution and use in source and binary forms, 
@@ -38,8 +38,8 @@
  */
 
 
-#ifndef HANDEL_CONSTANTS_H
-#define HANDEL_CONSTANTS_H
+#ifndef __HANDEL_CONSTANTS_H__
+#define __HANDEL_CONSTANTS_H__
 
 /** Preset Run Types **/
 #define XIA_PRESET_NONE           0.0
@@ -97,5 +97,12 @@
 #define AV_MEM_R_ADC    (AV_MEM_REQ | AV_MEM_ADC)
 #define AV_MEM_R_GLB    (AV_MEM_REQ | AV_MEM_GLOB)
 
+/** UltraLo **/
+enum ElectrodeSize
+{
+    Electrode1800 = 0,
+    Electrode707 = 1,
+    ElectrodeEnd
+};
 
-#endif /* HANDEL_CONSTANTS_H */
+#endif /* __HANDEL_CONSTANTS_H__ */

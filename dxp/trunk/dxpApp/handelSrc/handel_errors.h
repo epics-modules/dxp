@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2004 X-ray Instrumentation Associates
- *               2005-2010 XIA LLC
+ *               2005-2011 XIA LLC
  * All rights reserved
  *
  * Redistribution and use in source and binary forms, 
@@ -234,6 +234,9 @@
 #define XIA_UNKNOWN_LIST_MODE_VARIANT 675 /** Illegal list mode variant. */
 #define XIA_MALFORMED_LENGTH 676 /** List mode upper length word is malformed. */
 #define XIA_CLRBUFSIZE_LENGTH 677 /** Clear Buffer Size length is too large. */
+#define XIA_BAD_ELECTRODE_SIZE 678 /** UltraLo electrode size is invalid. */
+#define XIA_TILT_THRESHOLD_OOR 679 /** Specified threshold is out-of-range. */
+#define XIA_USB_BUSY 680 /** Direct USB command failed due to busy USB. */
 
 /* XUP errors 701-800 */
 #define XIA_XUP_VERSION     701 /** XUP version is not supported */

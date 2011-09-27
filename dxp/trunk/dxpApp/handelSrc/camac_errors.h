@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2004 X-ray Instrumentation Associates
- *               2005-2010 XIA LLC
+ *               2005-2011 XIA LLC
  * All rights reserved
  *
  * Redistribution and use in source and binary forms, 
