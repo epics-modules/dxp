@@ -1,7 +1,7 @@
 /*
  * Original author: Mark Rivers, University of Chicago
  *
- * Copyright (c) 2009-2010 XIA LLC
+ * Copyright (c) 2009-2011 XIA LLC
  * All rights reserved
  *
  * Redistribution and use in source and binary forms, 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2010 XIA LLC
+ * Copyright (c) 2006-2011 XIA LLC
  * All rights reserved
  *
  * Redistribution and use in source and binary forms, 
@@ -53,6 +53,7 @@ extern "C" {
   XIA_IMPORT int   xia_fclose(FILE *fp);
   XIA_IMPORT int   xia_num_open_handles(void);
   XIA_IMPORT void  xia_print_open_handles(FILE *stream);
+  XIA_IMPORT void  xia_print_open_handles_stdout(void);
 
 #ifdef __cplusplus
 }
