@@ -14,7 +14,9 @@ include $(TOP)/configure/CONFIG
 LIBRARY_IOC_Linux   += dxp
 LIBRARY_IOC_vxWorks += dxp
 LIBRARY_IOC_cygwin32 += dxp
+ifeq ($(T_A),win32-x86)
 LIBRARY_IOC_WIN32 += dxp
+endif
 
 DBD += dxpSupport.dbd
 DBD += dxp.dbd
@@ -44,7 +46,9 @@ ifeq ($(LINUX_USB_INSTALLED), YES)
 PROD_IOC_Linux += dxpApp
 endif
 PROD_IOC_cygwin32 += dxpApp
+ifeq ($(T_A),win32-x86)
 PROD_IOC_WIN32 += dxpApp
+endif
 
 # <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
 dxpApp_SRCS_DEFAULT += dxpMain.cpp dxp_registerRecordDeviceDriver.cpp
@@ -75,33 +79,19 @@ dxpApp_SYS_LIBS_cygwin32 += $(CYGWIN_RPC_LIB)
 dxpApp_SYS_LIBS_WIN32    += setupapi
 
 # Test applications
-PROD_IOC_Linux += saturn_benchmark1
-PROD_IOC_WIN32 += saturn_benchmark1
-PROD_IOC_cygwin32 += saturn_benchmark1
-saturn_benchmark1_SRCS += saturn_benchmark1.c
-saturn_benchmark1_LIBS += dxp
-saturn_benchmark1_LIBS += handel asyn
-ifeq ($(LINUX_USB_INSTALLED), YES)
-saturn_benchmark1_SYS_LIBS_Linux += usb
-endif
-saturn_benchmark1_LIBS += $(EPICS_BASE_IOC_LIBS)
-saturn_benchmark1_LIBS_WIN32 += DLPORTIO PlxApi
-saturn_benchmark1_SYS_LIBS_cygwin32 += DLPORTIO PlxApi
-saturn_benchmark1_SYS_LIBS_cygwin32 += setupapi
-saturn_benchmark1_SYS_LIBS_cygwin32 += $(CYGWIN_RPC_LIB)
-saturn_benchmark1_SYS_LIBS_WIN32 += setupapi
-
-PROD_IOC+= test_trace
-test_trace_SRCS += test_trace.c
-test_trace_LIBS += handel
-test_trace_LIBS_WIN32 += DLPORTIO PlxApi
-test_trace_SYS_LIBS_cygwin32 += DLPORTIO PlxApi
-test_trace_SYS_LIBS_cygwin32 += setupapi
-test_trace_SYS_LIBS_cygwin32 += $(CYGWIN_RPC_LIB)
-test_trace_SYS_LIBS_WIN32 += setupapi
-ifeq ($(LINUX_USB_INSTALLED), YES)
-test_trace_SYS_LIBS_Linux += usb
-endif
+#PROD_IOC_Linux += test_scas3
+#PROD_IOC_WIN32 += test_scas3
+#PROD_IOC_cygwin32 += test_scas3
+#test_scas3_SRCS += test_scas3.c
+#test_scas3_LIBS += dxp
+#test_scas3_LIBS += handel asyn
+#test_scas3_SYS_LIBS_Linux += usb
+#test_scas3_LIBS += $(EPICS_BASE_IOC_LIBS)
+#test_scas3_LIBS_WIN32 += DLPORTIO PlxApi
+#test_scas3_SYS_LIBS_cygwin32 += DLPORTIO PlxApi
+#test_scas3_SYS_LIBS_cygwin32 += setupapi
+#test_scas3_SYS_LIBS_cygwin32 += $(CYGWIN_RPC_LIB)
+#test_scas3_SYS_LIBS_WIN32 += setupapi
 
 #===========================
 #===========================
