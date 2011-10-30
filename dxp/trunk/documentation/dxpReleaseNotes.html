@@ -14,7 +14,7 @@
     See <a href="dxpKnownProblems.html">known problems</a> for information on problems
     in each release.</p>
   <h2 style="text-align: center">
-    Release 3-1 (XXX-Sept-2011)<br />
+    Release 3-1 (2-Nov-2011)<br />
   </h2>
   <p>
     This is a minor maintenance release. It includes XIA's Handel 1.1.11 release. That
@@ -30,6 +30,15 @@
   </ul>
   <p>
     Added opi files for CSS BOY.</p>
+  <p>
+    This release is built with mca R7-1, which fixes a problem with the mca record STIM
+    field. Previously the STIM field and the mca record time stamp recorded the time
+    that acquisition started. The problem was that the mca records are not actually
+    processed when acquisition starts with dxp multi-element detector systems, they
+    are only guaranteed to process when acquisition completes. Thus, the STIM field
+    and timestamp were not being updated. This is fixed in mca R7-1 by making the STIM
+    field and timestamp now record the time when acquisition stops, rather than when
+    it starts.</p>
   <h2 style="text-align: center">
     Release 3-0 (3-Dec-2010)<br />
   </h2>
