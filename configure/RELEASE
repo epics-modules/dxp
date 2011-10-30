@@ -12,10 +12,10 @@ SUPPORT=/corvette/home/epics/devel
 -include $(TOP)/../configure/SUPPORT.$(EPICS_HOST_ARCH)
 
 #If using the sequencer, point SNCSEQ at its top directory:
-SNCSEQ=$(SUPPORT)/seq-2-1-2
+SNCSEQ=$(SUPPORT)/seq-2-0-12
 
 ASYN=$(SUPPORT)/asyn-4-18
-AREA_DETECTOR=$(SUPPORT)/areaDetector-1-7-1
+AREA_DETECTOR=$(SUPPORT)/areaDetector-1-8
 MCA=$(SUPPORT)/mca-7-1
 CAMAC=$(SUPPORT)/camac-2-7
 DXP=$(SUPPORT)/dxp-3-1
