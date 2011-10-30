@@ -880,7 +880,13 @@
           SCAs, the dxpMED State Notation Language program only supports 32. This is because
           its function is to copy ROIs from the MCA records to the SCAs in the DXP hardware,
           and the MCA record only supports 32 ROIs. Using fewer SCAs reduces the size of the
-          data files in SCA Mapping mode.</td>
+          data files in SCA Mapping mode. <b>Important note: </b>when acquisition completes
+          EPICS processes the records with the SCA counts (SCA$(N)Counts) if the values have
+          changed. This can be a very large number of records: for example on a 16-element
+          system if NumSCAs is 32 then 512 records must process if the SCA data have changed.
+          This was measured to take about 300ms. If very short acquisition times are being
+          used, and the SCA data are not actually required by the application, then setting
+          NumSCAs to 1 will signficantly improve performance.</td>
       </tr>
       <tr valign="top">
         <td>
@@ -1870,8 +1876,8 @@
             <li>Sets AutoApply back to previous value</li>
           </ol>
           This performance optimization was added in R3-0, and reduces the time to copy ROIs
-          from several minutes in previous releases to less than 2 seconds in R3-0 for a 16-channel xMAP
-          system.
+          from several minutes in previous releases to less than 2 seconds in R3-0 for a 16-channel
+          xMAP system.
         </td>
       </tr>
       <tr valign="top">
