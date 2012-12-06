@@ -112,9 +112,9 @@ typedef enum {
     NDDxpTraceEnergySamples
 } NDDxpTraceMode_t;
 
-static char *NDDxpTraceCommands[] = {"adc_trace", "baseline_history",
-                                     "trigger_filter", "baseline_filter", "energy_filter",
-                                     "baseline_samples", "energy_samples"};
+static const char *NDDxpTraceCommands[] = {"adc_trace", "baseline_history",
+                                           "trigger_filter", "baseline_filter", "energy_filter",
+                                           "baseline_samples", "energy_samples"};
 
 static char *NDDxpBufferCharString[2]     = {"a", "b"};
 static char *NDDxpBufferFullString[2]     = {"buffer_full_a", "buffer_full_b"};
@@ -246,7 +246,7 @@ public:
     void report(FILE *fp, int details);
 
     /* Local methods to this class */
-    asynStatus xia_checkError( asynUser* pasynUser, epicsInt32 xiastatus, char *xiacmd );
+    asynStatus xia_checkError( asynUser* pasynUser, epicsInt32 xiastatus, const char *xiacmd );
     void shutdown();
 
     void acquisitionTask();
@@ -450,8 +450,7 @@ static int paramCompare(const void *p1, const void *p2)
 extern "C" int NDDxpConfig(const char *portName, int nChannels,
                             int maxBuffers, size_t maxMemory)
 {
-    NDDxp *dummy = new NDDxp(portName, nChannels, maxBuffers, maxMemory);
-    dummy = NULL;
+    new NDDxp(portName, nChannels, maxBuffers, maxMemory);
     return 0;
 }
 
@@ -1335,8 +1334,8 @@ asynStatus NDDxp::setDxpParam(asynUser *pasynUser, int addr, int function, doubl
     this->getDxpParams(pasynUser, addr);
     if (runActive) xiaStartRun(channel, 1);
     asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-        "%s:%s: exit\n",
-        driverName, functionName);
+        "%s:%s: status=%d, exit\n",
+        driverName, functionName, status);
     return asynSuccess;
 }
 
@@ -1717,7 +1716,7 @@ asynStatus NDDxp::getAcquisitionStatus(asynUser *pasynUser, int addr)
     unsigned long run_active;
     int ivalue;
     int channel=addr;
-    asynStatus status;
+    asynStatus status=asynSuccess;
     int xiastatus;
     int i;
     //const char *functionName = "getAcquisitionStatus";
@@ -1751,7 +1750,7 @@ asynStatus NDDxp::getAcquisitionStatus(asynUser *pasynUser, int addr)
     //asynPrint(pasynUser, ASYN_TRACE_FLOW,
     //    "%s::%s addr=%d channel=%d: acquiring=%d\n",
     //    driverName, functionName, addr, channel, acquiring);
-    return(asynSuccess);
+    return(status);
 }
 
 asynStatus NDDxp::getModuleStatistics(asynUser *pasynUser, int addr, moduleStatistics *stats)
@@ -2095,8 +2094,8 @@ asynStatus NDDxp::getDxpParams(asynUser *pasynUser, int addr)
         }
     }
     asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-        "%s:%s: exit\n",
-        driverName, functionName);
+        "%s:%s: status=%d, exit\n",
+        driverName, functionName, status);
     return(asynSuccess);
 }
 
@@ -2104,7 +2103,6 @@ asynStatus NDDxp::getDxpParams(asynUser *pasynUser, int addr)
 asynStatus NDDxp::getLLDxpParams(asynUser *pasynUser, int addr)
 {
     int i, numParams, param;
-    int status;
     int channel = ((addr < this->nChannels) ? addr : DXP_ALL);
     static const char *functionName = "getLLDxpParams";
     
@@ -2120,7 +2118,7 @@ asynStatus NDDxp::getLLDxpParams(asynUser *pasynUser, int addr)
             this->getLLDxpParams(pasynUser, i);
         }
     } else {
-        status = xiaGetParamData(addr, "values", LLParamValues);
+        xiaGetParamData(addr, "values", LLParamValues);
         for (param=0; param<numParams; param++) {
             setIntegerParam(addr, NDDxpLLParamVals[param], LLParamValues[LLParamSort[param]]);
         }
@@ -2242,7 +2240,8 @@ asynStatus NDDxp::getMappingData()
     epicsUInt16 *pOut=NULL;
     int mappingMode, pixelOffset, dataOffset, events, triggers, nChans;
     double realTime, triggerLiveTime, energyLiveTime, icr, ocr;
-    int dims[2], bufferCounter, arraySize;
+    size_t dims[2];
+    int bufferCounter, arraySize;
     epicsTimeStamp now, after;
     double mBytesRead;
     double readoutTime, readoutBurstRate, MBbufSize;
@@ -2399,7 +2398,7 @@ asynStatus NDDxp::getTrace(asynUser* pasynUser, int addr,
         /* Convert from us to ns */
         info[1] = traceTime * 1000.;
 
-        xiastatus = xiaDoSpecialRun(channel, NDDxpTraceCommands[traceMode], info);
+        xiastatus = xiaDoSpecialRun(channel, (char *)NDDxpTraceCommands[traceMode], info);
         status = this->xia_checkError(pasynUser, xiastatus, NDDxpTraceCommands[traceMode]);
         // Don't return error, read it out or we get stuck permanently with module busy
         // if (status == asynError) return asynError;
@@ -2695,7 +2694,7 @@ void NDDxp::report(FILE *fp, int details)
 
 
 
-asynStatus NDDxp::xia_checkError( asynUser* pasynUser, epicsInt32 xiastatus, char *xiacmd )
+asynStatus NDDxp::xia_checkError( asynUser* pasynUser, epicsInt32 xiastatus, const char *xiacmd )
 {
     if (xiastatus == XIA_SUCCESS) return asynSuccess;
 
@@ -2736,20 +2735,21 @@ int NDDxp::getModuleType()
      */
     char module_alias[MAXALIAS_LEN];
     char module_type[MAXITEM_LEN];
-    int status;
+    int status = 0;
 
     /* Get the module alias for the first channel */
-    status = xiaGetModules_VB(0, module_alias);
+    status |= xiaGetModules_VB(0, module_alias);
     /* Get the module type for this module */
-    status = xiaGetModuleItem(module_alias, "module_type", module_type);
+    status |= xiaGetModuleItem(module_alias, "module_type", module_type);
     /* Get the module type for this module */
-    status = xiaGetModuleItem(module_alias, "number_of_channels", &this->channelsPerCard);
+    status |= xiaGetModuleItem(module_alias, "number_of_channels", &this->channelsPerCard);
+    if (status) return -1;
     /* Look for known module types */
     if (strcmp(module_type, "xmap") == 0) return(NDDxpModelXMAP);
     if (strcmp(module_type, "dxpx10p") == 0) return(NDDxpModelSaturn);
     if (strcmp(module_type, "dxp4c2x") == 0) return(NDDxpModel4C2X);
     if (strcmp(module_type, "mercury") == 0) return(NDDxpModelMercury);
-    return(-1);
+    return -1;
 }
 
 static const iocshArg NDDxpConfigArg0 = {"Asyn port name", iocshArgString};
@@ -2801,7 +2801,7 @@ static const iocshArg * const xiaSaveSystemArgs[1] = {&xiaSaveSystemArg0};
 static const iocshFuncDef xiaSaveSystemFuncDef = {"xiaSaveSystem",1,xiaSaveSystemArgs};
 static void xiaSaveSystemCallFunc(const iocshArgBuf *args)
 {
-    xiaSaveSystem("handel_ini", args[0].sval);
+    xiaSaveSystem((char *)"handel_ini", args[0].sval);
 }
 
 
