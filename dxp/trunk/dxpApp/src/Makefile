@@ -26,6 +26,10 @@ USR_CFLAGS += -DXIA_SPECIAL_MEM
 USR_CFLAGS += -DEXCLUDE_DGFG200
 USR_CFLAGS += -DEXCLUDE_UDXPS
 
+# The Handel library uses "char *" rather than "const char *" in many places, so we use the following
+# flag to turn off compiler warnings when we pass string constants to those functions.
+USR_CPPFLAGS_Linux += -Wno-write-strings
+
 # The following are compiled and added to the Support library
 dxp_SRCS += NDDxp.cpp
 dxp_SRCS += dxpMED.st
@@ -98,6 +102,9 @@ dxpApp_SYS_LIBS_WIN32    += setupapi
 # Build application that lets other apps run with iopl(3)
 PROD_IOC_Linux += startWithIopl3
 startWithIopl3_SRCS += startWithIopl3.c
+
+PROD_IOC += test_sscanf
+test_sscanf_SRCS += test_sscanf.c
 
 include $(TOP)/configure/RULES
 #----------------------------------------
