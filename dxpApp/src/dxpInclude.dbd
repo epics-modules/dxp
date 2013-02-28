@@ -6,7 +6,6 @@ include "dxpSupport.dbd"
 include "NDFileNetCDF.dbd"
 include "NDFileNexus.dbd"
 include "NDFileTIFF.dbd"
-include "NDFileMagick.dbd"
 include "NDFileHDF5.dbd"
 
 # The following are needed only to support the ioc
