@@ -1706,7 +1706,7 @@ asynStatus NDDxp::configureCollectMode()
 
     asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
         "%s:%s: returning status=%d\n",
-        driverName, functionName);
+        driverName, functionName, status);
     return status;
 }
 
@@ -2086,7 +2086,7 @@ asynStatus NDDxp::getDxpParams(asynUser *pasynUser, int addr)
                     xiastatus = xiaGetRunData(channel, "buffer_len", &bufLen);
                     status = this->xia_checkError(pasynUserSelf, xiastatus, "GET buffer_len");
                     asynPrint(pasynUserSelf, ASYN_TRACEIO_DRIVER,
-                        "%s::%s [%d] Got buffer_len = %u\n", 
+                        "%s::%s [%d] Got buffer_len = %lu\n", 
                         driverName, functionName, channel, bufLen);
                 }
                 setIntegerParam(channel, NDArraySize, (int)bufLen);
