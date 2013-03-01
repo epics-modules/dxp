@@ -103,8 +103,8 @@ dxpApp_SYS_LIBS_WIN32    += setupapi
 PROD_IOC_Linux += startWithIopl3
 startWithIopl3_SRCS += startWithIopl3.c
 
-PROD_IOC += test_sscanf
-test_sscanf_SRCS += test_sscanf.c
+#PROD_IOC += test_sscanf
+#test_sscanf_SRCS += test_sscanf.c
 
 include $(TOP)/configure/RULES
 #----------------------------------------
