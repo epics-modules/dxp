@@ -1857,6 +1857,12 @@ asynStatus NDDxp::getAcquisitionStatistics(asynUser *pasynUser, int addr)
              * This assumes we are reading in numerical order, else we may get stale data! */
             if ((channel % this->channelsPerCard) == 0) getModuleStatistics(pasynUser, channel, &moduleStats[0]);
             stats = &moduleStats[channel % this->channelsPerCard];
+            /* There is a bug in the Saturn firmware.  It does not correctly compute the energy live time
+             * because it ignores overflow and underflow events.  It does correctly include the overflow
+             * and underflow events in OCR, so we compute energy live time here. */
+            if (this->deviceType == NDDxpModelSaturn) {
+                stats->energyLiveTime = stats->realTime * stats->ocr / stats->icr;
+            }
             setIntegerParam(addr, NDDxpTriggers, (int)stats->triggers);
             setIntegerParam(addr, NDDxpEvents, (int)stats->events);
             setIntegerParam(addr, NDDxpOverflows, (int)stats->overflows);
