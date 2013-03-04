@@ -15,10 +15,10 @@ SUPPORT=/corvette/home/epics/devel
 SNCSEQ=$(SUPPORT)/seq-2-1-10
 
 ASYN=$(SUPPORT)/asyn-4-21
-AREA_DETECTOR=$(SUPPORT)/areaDetector-1-9
-MCA=$(SUPPORT)/mca-7-3
+AREA_DETECTOR=$(SUPPORT)/areaDetector-1-9-1
+MCA=$(SUPPORT)/mca-7-3-1
 CAMAC=$(SUPPORT)/camac-2-7
-DXP=$(SUPPORT)/dxp-3-1
+DXP=$(SUPPORT)/dxp-3-2
 
 # The following are needed only to support the ioc
 CALC=$(SUPPORT)/calc-3-0
