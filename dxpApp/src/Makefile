@@ -14,7 +14,7 @@ include $(TOP)/configure/CONFIG
 LIBRARY_IOC_Linux   += dxp
 LIBRARY_IOC_vxWorks += dxp
 LIBRARY_IOC_cygwin32 += dxp
-ifeq ($(T_A),win32-x86)
+ifeq (win32-x86, $(findstring win32-x86, $(T_A)))
 LIBRARY_IOC_WIN32 += dxp
 endif
 
@@ -50,7 +50,7 @@ ifeq ($(LINUX_USB_INSTALLED), YES)
 PROD_IOC_Linux += dxpApp
 endif
 PROD_IOC_cygwin32 += dxpApp
-ifeq ($(T_A),win32-x86)
+ifeq (win32-x86, $(findstring win32-x86, $(T_A)))
 PROD_IOC_WIN32 += dxpApp
 endif
 
@@ -96,15 +96,13 @@ dxpApp_SYS_LIBS_WIN32    += setupapi
 #test_scas3_SYS_LIBS_cygwin32 += setupapi
 #test_scas3_SYS_LIBS_cygwin32 += $(CYGWIN_RPC_LIB)
 #test_scas3_SYS_LIBS_WIN32 += setupapi
+#PROD_IOC += test_sscanf
+#test_sscanf_SRCS += test_sscanf.c
 
-#===========================
 #===========================
 # Build application that lets other apps run with iopl(3)
 PROD_IOC_Linux += startWithIopl3
 startWithIopl3_SRCS += startWithIopl3.c
-
-#PROD_IOC += test_sscanf
-#test_sscanf_SRCS += test_sscanf.c
 
 include $(TOP)/configure/RULES
 #----------------------------------------
