@@ -14,6 +14,24 @@
     See <a href="dxpKnownProblems.html">known problems</a> for information on problems
     in each release.</p>
   <h2 style="text-align: center">
+    Release 3-2 (5-March-2013)<br />
+  </h2>
+  <p>
+    Worked around a bug in XIA's firmware for the Saturn. It is not correctly computing
+    the energy live time, so the live time and dead time reported by the MCA record
+    are incorrect. This problem is due to the calculation of the output count rate (OCR)
+    for the energy live time is only using the EVENTSINRUN, which are the events that
+    end up in the spectrum, and it is ignorring overflows and underflows, which are
+    events with energies outside the range of the spectrum. Note that the OCR that is
+    reported by the Saturn firmware is correct, it does include the overflows and underflows.
+    But the OCR that is used internally when computing the energy live time is not correct,
+    it does not include overflows and underflows. This problem was fixed by not using
+    the energy live time computed by the Saturn firmware, and simply computing in the
+    EPICS driver as RealTime * OCR / ICR.</p>
+  <p>
+    Minor changes in the driver to be compatible with areaDetector R1-9, which changed
+    the datatypes of some variables.</p>
+  <h2 style="text-align: center">
     Release 3-1 (2-Nov-2011)<br />
   </h2>
   <p>
