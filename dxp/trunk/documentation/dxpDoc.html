@@ -10,9 +10,9 @@
     <h1>
       DXP - EPICS software for XIA Digital Signal Processing Systems</h1>
     <h2>
-      Release 3-1</h2>
+      Release 3-2</h2>
     <h2>
-      November 2, 2011</h2>
+      March 11, 2013</h2>
     <h2>
       Mark Rivers</h2>
     <h2>
@@ -84,7 +84,8 @@
     DXP currently supports this hardware under the following operating systems and interfaces:</p>
   <ul>
     <li>The xMAP with the EPICS IOC running on Windows, using the National Instruments
-      PCI/PXI adapter, or with a CPU card running Windows directly in the PXI crate. </li>
+      PCI/PXI adapter, or with a CPU card running Windows directly in the PXI crate.
+    </li>
     <li>The Mercury with the EPICS IOC running on Windows or Linux using the USB 2.0 interface.</li>
     <li>The Saturn with the EPICS IOC running on Windows or Linux, using the EPP parallel
       port, USB 1.0, or USB 2.0 interfaces.</li>
@@ -298,8 +299,7 @@
           ao<br />
           ai</td>
         <td>
-          Maximum peak width in microseconds for pileup inspection.
-        </td>
+          Maximum peak width in microseconds for pileup inspection. </td>
       </tr>
       <tr>
         <td align="center" colspan="3">
@@ -454,7 +454,8 @@
         <td>
           ai</td>
         <td>
-          The dynamic range of the ADC. This is computed from PreampGain, MaxEnergy, and ADCPercentRule.</td>
+          The dynamic range of the ADC. This is computed from PreampGain, MaxEnergy, and ADCPercentRule.
+        </td>
       </tr>
       <tr>
         <td align="center" colspan="3">
@@ -577,7 +578,8 @@
         <td>
           ai</td>
         <td>
-          The input count rate (ICR), which is the same as Triggers/ElapsedTriggerLiveTime.</td>
+          The input count rate (ICR), which is the same as Triggers/ElapsedTriggerLiveTime.
+        </td>
       </tr>
       <tr valign="top">
         <td>
@@ -616,7 +618,8 @@
           is processed. The baseline histogram provides a valuable diagnostic of the electronic
           noise in the system. It should ideally be a perfect Gaussian, with a FWHM equal
           to the electronic noise in the baseline. <i>Note: this record should not be processed
-            while normal data acquisition is in progress or it will slow things down.</i></td>
+            while normal data acquisition is in progress or it will slow things down.</i>
+        </td>
       </tr>
       <tr valign="top">
         <td>
@@ -671,7 +674,8 @@
         <td>
           The time per sample in microseconds for the TraceData array. The minimum time depends
           on the hardware type; it is 0.1 microseconds for the 20 MHz Saturn and DXP2X, .05
-          microseconds for the 40MHz Saturn, and 0.02 microseconds for the xMAP and Mercury.</td>
+          microseconds for the 40MHz Saturn, and 0.02 microseconds for the xMAP and Mercury.
+        </td>
       </tr>
       <tr valign="top">
         <td>
@@ -742,7 +746,8 @@
           longout<br />
           longin</td>
         <td>
-          The high channel for SCA $(N). Actual record names are SCA0High, SCA1High, etc.</td>
+          The high channel for SCA $(N). Actual record names are SCA0High, SCA1High, etc.
+        </td>
       </tr>
       <tr valign="top">
         <td>
@@ -750,7 +755,8 @@
         <td>
           longin</td>
         <td>
-          The total counts for SCA $(N). Actual record names are SCA0Counts, SCA1Counts, etc.</td>
+          The total counts for SCA $(N). Actual record names are SCA0Counts, SCA1Counts, etc.
+        </td>
       </tr>
     </tbody>
   </table>
@@ -805,7 +811,8 @@
         <td>
           bo</td>
         <td>
-          Writing 1 to this record will read all of the low-level parameters for this channel.</td>
+          Writing 1 to this record will read all of the low-level parameters for this channel.
+        </td>
       </tr>
       <tr valign="top">
         <td>
@@ -935,8 +942,7 @@
           bo</td>
         <td>
           This record enables waiting for a client when acquisition completes. It can be used
-          to wait for a client application to save data to disk, etc.
-        </td>
+          to wait for a client application to save data to disk, etc. </td>
       </tr>
       <tr valign="top">
         <td>
@@ -945,7 +951,8 @@
           bo</td>
         <td>
           This record sets the ClientWait record to Busy if EnableClientWait is set to Enable.
-          This record is processed by EraseStart and StartAll in the dxpMED.template database.</td>
+          This record is processed by EraseStart and StartAll in the dxpMED.template database.
+        </td>
       </tr>
       <tr valign="top">
         <td>
@@ -1089,7 +1096,8 @@
           bi</td>
         <td>
           This record will be 1 ("Connected") when the SNL program has connected to all of
-          the PVs. If it is 0 ("Not connected") then there is a problem with the SNL program.</td>
+          the PVs. If it is 0 ("Not connected") then there is a problem with the SNL program.
+        </td>
       </tr>
       <tr>
         <td align="center" colspan="3">
@@ -1224,7 +1232,8 @@
         <td>
           bi</td>
         <td>
-          Acquisition status, 0=Done, 1=Acquiring. Acquiring will be 1 if any channel is acquiring.</td>
+          Acquisition status, 0=Done, 1=Acquiring. Acquiring will be 1 if any channel is acquiring.
+        </td>
       </tr>
       <tr valign="top">
         <td>
@@ -1251,7 +1260,8 @@
           ai</td>
         <td>
           The dead time. This value is the average of the dead time of all system channels.
-          The dead time of each MCA is the cumulative dead time since the MCA was last erased.</td>
+          The dead time of each MCA is the cumulative dead time since the MCA was last erased.
+        </td>
       </tr>
       <tr valign="top">
         <td>
@@ -1273,7 +1283,8 @@
         <td>
           bo</td>
         <td>
-          Writing 1 to this record copies the TriggerPeakingTime from channel 1 to all channels.</td>
+          Writing 1 to this record copies the TriggerPeakingTime from channel 1 to all channels.
+        </td>
       </tr>
       <tr valign="top">
         <td>
@@ -1281,7 +1292,8 @@
         <td>
           bo</td>
         <td>
-          Writing 1 to this record copies the TriggerGapTime from channel 1 to all channels.</td>
+          Writing 1 to this record copies the TriggerGapTime from channel 1 to all channels.
+        </td>
       </tr>
       <tr valign="top">
         <td>
@@ -1289,7 +1301,8 @@
         <td>
           bo</td>
         <td>
-          Writing 1 to this record copies the TriggerThreshold from channel 1 to all channels.</td>
+          Writing 1 to this record copies the TriggerThreshold from channel 1 to all channels.
+        </td>
       </tr>
       <tr valign="top">
         <td>
@@ -1297,7 +1310,8 @@
         <td>
           bo</td>
         <td>
-          Writing 1 to this record copies the PeakingTime from channel 1 to all channels.</td>
+          Writing 1 to this record copies the PeakingTime from channel 1 to all channels.
+        </td>
       </tr>
       <tr valign="top">
         <td>
@@ -1313,7 +1327,8 @@
         <td>
           bo</td>
         <td>
-          Writing 1 to this record copies the EnergyThreshold from channel 1 to all channels.</td>
+          Writing 1 to this record copies the EnergyThreshold from channel 1 to all channels.
+        </td>
       </tr>
       <tr valign="top">
         <td>
@@ -1329,7 +1344,8 @@
         <td>
           bo</td>
         <td>
-          Writing 1 to this record copies the BaselineCutPercent from channel 1 to all channels.</td>
+          Writing 1 to this record copies the BaselineCutPercent from channel 1 to all channels.
+        </td>
       </tr>
       <tr valign="top">
         <td>
@@ -1337,7 +1353,8 @@
         <td>
           bo</td>
         <td>
-          Writing 1 to this record copies the BaselineCutEnable from channel 1 to all channels.</td>
+          Writing 1 to this record copies the BaselineCutEnable from channel 1 to all channels.
+        </td>
       </tr>
       <tr valign="top">
         <td>
@@ -1345,7 +1362,8 @@
         <td>
           bo</td>
         <td>
-          Writing 1 to this record copies the BaselineThreshold from channel 1 to all channels.</td>
+          Writing 1 to this record copies the BaselineThreshold from channel 1 to all channels.
+        </td>
       </tr>
       <tr valign="top">
         <td>
@@ -1353,7 +1371,8 @@
         <td>
           bo</td>
         <td>
-          Writing 1 to this record copies the BaselineFilterLength from channel 1 to all channels.</td>
+          Writing 1 to this record copies the BaselineFilterLength from channel 1 to all channels.
+        </td>
       </tr>
       <tr valign="top">
         <td>
@@ -1361,7 +1380,8 @@
         <td>
           bo</td>
         <td>
-          Writing 1 to this record copies the PreampGain from channel 1 to all channels.</td>
+          Writing 1 to this record copies the PreampGain from channel 1 to all channels.
+        </td>
       </tr>
       <tr valign="top">
         <td>
@@ -1369,7 +1389,8 @@
         <td>
           bo</td>
         <td>
-          Writing 1 to this record copies the DetectorPolarity from channel 1 to all channels.</td>
+          Writing 1 to this record copies the DetectorPolarity from channel 1 to all channels.
+        </td>
       </tr>
       <tr valign="top">
         <td>
@@ -1377,7 +1398,8 @@
         <td>
           bo</td>
         <td>
-          Writing 1 to this record copies the ResetDelay from channel 1 to all channels.</td>
+          Writing 1 to this record copies the ResetDelay from channel 1 to all channels.
+        </td>
       </tr>
       <tr valign="top">
         <td>
@@ -1401,7 +1423,8 @@
         <td>
           bo</td>
         <td>
-          Writing 1 to this record copies the ADCPercentRule from channel 1 to all channels.</td>
+          Writing 1 to this record copies the ADCPercentRule from channel 1 to all channels.
+        </td>
       </tr>
       <tr>
         <td align="center" colspan="3">
@@ -1448,7 +1471,8 @@
             <li>"Baseline samples" The recent baseline samples.</li>
             <li>"Energy samples" The recent energy samples.</li>
           </ul>
-          On the DXP2X only the first 2 choices are available, "ADC" and "Baseline history".</td>
+          On the DXP2X only the first 2 choices are available, "ADC" and "Baseline history".
+        </td>
       </tr>
       <tr valign="top">
         <td>
@@ -1698,7 +1722,8 @@
             a module defined to be a sync_master will always use its pulse input for pixel_advance,
             even if another module is defined to be gate_master, and PixelAdvanceMode is defined
             to be Gate. This should be fixed in a future firmware release, but for now if a
-            sync_master is defined in the system then only use Sync for PixelAdvanceMode.</i></td>
+            sync_master is defined in the system then only use Sync for PixelAdvanceMode.</i>
+        </td>
       </tr>
       <tr valign="top">
         <td>
@@ -1708,7 +1733,8 @@
         <td>
           Writing 1 to this record causes the system to advance to the next pixel in MCA mapping
           or SCA mapping modes. This is a "software" pixel advance, and can be issued any
-          time mapping mode acquisition is in progress, regardless of the setting of PixelAdvanceMode.</td>
+          time mapping mode acquisition is in progress, regardless of the setting of PixelAdvanceMode.
+        </td>
       </tr>
       <tr valign="top">
         <td>
@@ -1738,8 +1764,7 @@
           per pixel is relatively long then decreasing PixelsPerBuffer will result in more
           frequent updates of the MCA and statistics displays. Setting this value too low
           when doing rapid mapping can result in buffer overflow. PixelsPerBuffer_RBV always
-          contains the actual number of pixels per buffer.
-        </td>
+          contains the actual number of pixels per buffer. </td>
       </tr>
       <tr valign="top">
         <td>
@@ -1779,8 +1804,7 @@
           advance signal, but its high or low state will not influence whether counting is
           enabled, i.e. only the transitions are significant. If IgnoreGate=No then counting
           will be inhibited when the Gate input is low (if InputLogicPolarity=Normal) or high
-          (if InputLogicPolarity=Inverted).
-        </td>
+          (if InputLogicPolarity=Inverted). </td>
       </tr>
       <tr valign="top">
         <td>
@@ -1794,8 +1818,7 @@
           In Normal mode a low level on the Gate input inhibits counting (if IgnoreGate=No)
           and a high-to-low transition performs a pixel advance (if PixelAdvanceMode=Gate).
           In Inverted mode these levels are the opposite, i.e. a high level inhibits counting
-          and a low-to-high transition performs a pixel advance.
-        </td>
+          and a low-to-high transition performs a pixel advance. </td>
       </tr>
       <tr valign="top">
         <td>
@@ -1810,8 +1833,7 @@
           if the Sync input were connected to the pulse output of a stepper motor controller,
           then setting SyncCount=10 would perform a pixel advance on every 10'th stepper motor
           pulse. SyncCount=1 results in no clock division, i.e. every Sync input pulse results
-          in a pixel advance.
-        </td>
+          in a pixel advance. </td>
       </tr>
       <tr valign="top">
         <td>
@@ -1820,8 +1842,7 @@
           ai</td>
         <td>
           The burst read rate in MBytes/s measured when reading the mapping data from each
-          module.
-        </td>
+          module. </td>
       </tr>
       <tr valign="top">
         <td>
@@ -1877,8 +1898,7 @@
           </ol>
           This performance optimization was added in R3-0, and reduces the time to copy ROIs
           from several minutes in previous releases to less than 2 seconds in R3-0 for a 16-channel
-          xMAP system.
-        </td>
+          xMAP system. </td>
       </tr>
       <tr valign="top">
         <td>
@@ -1889,8 +1909,7 @@
           Writing 1 to this record forces an "apply" operation, downloading the parameters
           for all channels to the hardware. This is not needed if AutoApply=Yes, but it can
           greatly improve performance to set AutoApply=No and write to this record after modifying
-          a large number of parameters.
-        </td>
+          a large number of parameters. </td>
       </tr>
     </tbody>
   </table>
@@ -2898,8 +2917,7 @@ SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}==
           <td>
             1</td>
           <td>
-            21.9
-          </td>
+            21.9 </td>
           <td>
             45.7</td>
           <td>
@@ -2915,8 +2933,7 @@ SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}==
           <td>
             4</td>
           <td>
-            56.1
-          </td>
+            56.1 </td>
           <td>
             17.8</td>
           <td>
@@ -2932,8 +2949,7 @@ SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}==
           <td>
             4</td>
           <td>
-            52.2
-          </td>
+            52.2 </td>
           <td>
             19.2</td>
           <td>
@@ -2949,8 +2965,7 @@ SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}==
           <td>
             4</td>
           <td>
-            53.5
-          </td>
+            53.5 </td>
           <td>
             18.7</td>
           <td>
@@ -3082,8 +3097,7 @@ SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}==
           <td>
             4</td>
           <td>
-            7.4
-          </td>
+            7.4 </td>
           <td>
             270.2</td>
           <td>
@@ -3101,8 +3115,7 @@ SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}==
           <td>
             4</td>
           <td>
-            7.4
-          </td>
+            7.4 </td>
           <td>
             270.2</td>
           <td>
@@ -3120,8 +3133,7 @@ SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}==
           <td>
             4</td>
           <td>
-            5.2
-          </td>
+            5.2 </td>
           <td>
             384.6</td>
           <td>
