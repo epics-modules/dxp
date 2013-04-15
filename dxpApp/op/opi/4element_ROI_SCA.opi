@@ -3,6 +3,8 @@
   <macros>
     <include_parent_macros>true</include_parent_macros>
   </macros>
+  <wuid>-3e043223:13e0e87519f:-13bd</wuid>
+  <boy_version>3.1.2.20120830</boy_version>
   <scripts />
   <show_ruler>true</show_ruler>
   <height>330</height>
@@ -10,10 +12,10 @@
   <snap_to_geometry>false</snap_to_geometry>
   <show_grid>false</show_grid>
   <background_color>
-    <color name="Gray_4" />
+    <color name="Gray_4" red="187" green="187" blue="187" />
   </background_color>
   <foreground_color>
-    <color name="Gray_14" />
+    <color name="Gray_14" red="0" green="0" blue="0" />
   </foreground_color>
   <widget_type>Display</widget_type>
   <show_close_button>true</show_close_button>
@@ -21,7 +23,12 @@
   <rules />
   <show_edit_range>true</show_edit_range>
   <grid_space>5</grid_space>
-  <actions hook="false" />
+  <auto_scale_widgets>
+    <auto_scale_widgets>false</auto_scale_widgets>
+    <min_width>-1</min_width>
+    <min_height>-1</min_height>
+  </auto_scale_widgets>
+  <actions hook="false" hook_all="false" />
   <y>63</y>
   <x>169</x>
   <widget typeId="org.csstudio.opibuilder.widgets.Rectangle" version="1.0">
@@ -31,178 +38,235 @@
     <line_color>
       <color red="128" green="0" blue="255" />
     </line_color>
+    <wuid>-3e043223:13e0e87519f:-13bc</wuid>
+    <bg_gradient_color>
+      <color red="255" green="255" blue="255" />
+    </bg_gradient_color>
     <scripts />
     <height>25</height>
     <anti_alias>true</anti_alias>
-    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
     <name>Rectangle</name>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <alpha>255</alpha>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
     <transparent>false</transparent>
-    <pv_name />
+    <pv_name></pv_name>
     <background_color>
-      <color red="0" green="0" blue="255" />
+      <color red="30" green="144" blue="255" />
     </background_color>
     <foreground_color>
-      <color name="ioc_read_fg" />
+      <color name="ioc_read_fg" red="10" green="0" blue="184" />
     </foreground_color>
     <widget_type>Rectangle</widget_type>
     <enabled>true</enabled>
+    <fg_gradient_color>
+      <color red="255" green="255" blue="255" />
+    </fg_gradient_color>
     <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
     <font>
-      <opifont.name>Default</opifont.name>
+      <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
     </font>
-    <line_style>0</line_style>
     <width>425</width>
+    <line_style>0</line_style>
     <border_style>0</border_style>
     <rules />
+    <pv_value />
     <border_width>1</border_width>
     <line_width>0</line_width>
     <horizontal_fill>true</horizontal_fill>
     <border_color>
       <color red="0" green="128" blue="255" />
     </border_color>
-    <actions hook="false" />
+    <actions hook="false" hook_all="false" />
     <y>9</y>
     <tooltip>$(pv_name)
 $(pv_value)</tooltip>
     <x>263</x>
+    <gradient>false</gradient>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.Rectangle" version="1.0">
     <border_alarm_sensitive>false</border_alarm_sensitive>
     <visible>true</visible>
     <fill_level>0.0</fill_level>
     <line_color>
-      <color name="Gray_14" />
+      <color name="Gray_14" red="0" green="0" blue="0" />
     </line_color>
+    <wuid>-3e043223:13e0e87519f:-13b0</wuid>
+    <bg_gradient_color>
+      <color red="255" green="255" blue="255" />
+    </bg_gradient_color>
     <scripts />
     <height>170</height>
     <anti_alias>true</anti_alias>
-    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
     <name>Rectangle</name>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <alpha>255</alpha>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
     <transparent>true</transparent>
-    <pv_name />
+    <pv_name></pv_name>
     <background_color>
-      <color red="0" green="0" blue="255" />
+      <color red="30" green="144" blue="255" />
     </background_color>
     <foreground_color>
-      <color name="Gray_14" />
+      <color name="Gray_14" red="0" green="0" blue="0" />
     </foreground_color>
     <widget_type>Rectangle</widget_type>
     <enabled>true</enabled>
+    <fg_gradient_color>
+      <color red="255" green="255" blue="255" />
+    </fg_gradient_color>
     <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
     <font>
-      <opifont.name>Default</opifont.name>
+      <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
     </font>
-    <line_style>0</line_style>
     <width>484</width>
+    <line_style>0</line_style>
     <border_style>0</border_style>
     <rules />
+    <pv_value />
     <border_width>1</border_width>
-    <line_width>0</line_width>
+    <line_width>1</line_width>
     <horizontal_fill>true</horizontal_fill>
     <border_color>
       <color red="0" green="128" blue="255" />
     </border_color>
-    <actions hook="false" />
+    <actions hook="false" hook_all="false" />
     <y>45</y>
     <tooltip>$(pv_name)
 $(pv_value)</tooltip>
     <x>48</x>
+    <gradient>false</gradient>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.Rectangle" version="1.0">
     <border_alarm_sensitive>false</border_alarm_sensitive>
     <visible>true</visible>
     <fill_level>0.0</fill_level>
     <line_color>
-      <color name="Gray_14" />
+      <color name="Gray_14" red="0" green="0" blue="0" />
     </line_color>
+    <wuid>-3e043223:13e0e87519f:-13af</wuid>
+    <bg_gradient_color>
+      <color red="255" green="255" blue="255" />
+    </bg_gradient_color>
     <scripts />
     <height>170</height>
     <anti_alias>true</anti_alias>
-    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
     <name>Rectangle</name>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <alpha>255</alpha>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
     <transparent>true</transparent>
-    <pv_name />
+    <pv_name></pv_name>
     <background_color>
-      <color red="0" green="0" blue="255" />
+      <color red="30" green="144" blue="255" />
     </background_color>
     <foreground_color>
-      <color name="Gray_14" />
+      <color name="Gray_14" red="0" green="0" blue="0" />
     </foreground_color>
     <widget_type>Rectangle</widget_type>
     <enabled>true</enabled>
+    <fg_gradient_color>
+      <color red="255" green="255" blue="255" />
+    </fg_gradient_color>
     <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
     <font>
-      <opifont.name>Default</opifont.name>
+      <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
     </font>
-    <line_style>0</line_style>
     <width>405</width>
+    <line_style>0</line_style>
     <border_style>0</border_style>
     <rules />
+    <pv_value />
     <border_width>1</border_width>
-    <line_width>0</line_width>
+    <line_width>1</line_width>
     <horizontal_fill>true</horizontal_fill>
     <border_color>
       <color red="0" green="128" blue="255" />
     </border_color>
-    <actions hook="false" />
+    <actions hook="false" hook_all="false" />
     <y>45</y>
     <tooltip>$(pv_name)
 $(pv_value)</tooltip>
     <x>537</x>
+    <gradient>false</gradient>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
-    <enabled>true</enabled>
-    <widget_type>Grouping Container</widget_type>
     <macros>
       <include_parent_macros>true</include_parent_macros>
     </macros>
     <visible>true</visible>
+    <wuid>-3e043223:13e0e87519f:-13ac</wuid>
+    <scripts />
+    <height>22</height>
+    <name>Grouping Container</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
+    <transparent>true</transparent>
+    <show_scrollbar>false</show_scrollbar>
+    <background_color>
+      <color red="187" green="187" blue="187" />
+    </background_color>
+    <foreground_color>
+      <color red="0" green="0" blue="0" />
+    </foreground_color>
+    <widget_type>Grouping Container</widget_type>
+    <enabled>true</enabled>
     <font>
-      <opifont.name>Default</opifont.name>
+      <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
     </font>
     <width>919</width>
     <border_style>0</border_style>
     <rules />
     <lock_children>false</lock_children>
-    <scripts />
-    <height>22</height>
     <border_width>1</border_width>
-    <name>Grouping Container</name>
     <border_color>
       <color red="0" green="128" blue="255" />
     </border_color>
-    <transparent>false</transparent>
-    <show_scrollbar>false</show_scrollbar>
+    <actions hook="false" hook_all="false" />
     <y>104</y>
-    <actions hook="false" />
-    <foreground_color>
-      <color red="0" green="0" blue="0" />
-    </foreground_color>
-    <background_color>
-      <color red="187" green="187" blue="187" />
-    </background_color>
+    <tooltip></tooltip>
     <x>19</x>
-    <tooltip />
     <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
+      <wuid>-3e043223:13e0e87519f:-13ab</wuid>
       <auto_size>false</auto_size>
       <scripts />
       <height>20</height>
       <name>Label</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <transparent>true</transparent>
       <show_scrollbar>false</show_scrollbar>
       <background_color>
         <color red="255" green="255" blue="255" />
       </background_color>
       <foreground_color>
-        <color name="Gray_14" />
+        <color name="Gray_14" red="0" green="0" blue="0" />
       </foreground_color>
       <widget_type>Label</widget_type>
       <enabled>true</enabled>
       <text>1</text>
       <font>
-        <fontdata fontName="Sans" height="14" style="0" />
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>10</width>
       <border_style>0</border_style>
@@ -212,54 +276,63 @@ $(pv_value)</tooltip>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>1</y>
       <wrap_words>true</wrap_words>
-      <tooltip />
+      <tooltip></tooltip>
       <x>0</x>
     </widget>
     <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
-      <minimum>-Infinity</minimum>
       <vertical_alignment>1</vertical_alignment>
-      <show_units>false</show_units>
       <multiline_input>false</multiline_input>
       <auto_size>false</auto_size>
       <scripts />
       <height>22</height>
       <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-      <name>Text Input</name>
-      <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
-      <transparent>false</transparent>
-      <selector_type>0</selector_type>
-      <pv_name>$(P)$(M)1.R$(R)LO</pv_name>
       <background_color>
-        <color name="ioc_write_bg" />
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
-      <foreground_color>
-        <color name="Gray_14" />
-      </foreground_color>
       <widget_type>Text Input</widget_type>
       <enabled>true</enabled>
-      <text />
-      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-      <precision>0</precision>
+      <text></text>
       <font>
-        <fontdata fontName="Sans" height="16" style="0" />
+        <fontdata fontName="Sans" height="13" style="0" />
       </font>
       <width>76</width>
       <border_style>3</border_style>
-      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <maximum>Infinity</maximum>
+      <minimum>-Infinity</minimum>
+      <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-13aa</wuid>
+      <rotation_angle>0.0</rotation_angle>
+      <name>Text Input</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <format_type>1</format_type>
+      <transparent>false</transparent>
+      <selector_type>0</selector_type>
+      <pv_name>$(P)$(M)1.R$(R)LO</pv_name>
+      <foreground_color>
+        <color name="Gray_14" red="0" green="0" blue="0" />
+      </foreground_color>
+      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+      <precision>0</precision>
+      <confirm_message></confirm_message>
+      <rules />
       <limits_from_pv>false</limits_from_pv>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -268,45 +341,54 @@ $(pv_value)</tooltip>
     <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
-      <minimum>-Infinity</minimum>
       <vertical_alignment>1</vertical_alignment>
-      <show_units>false</show_units>
       <multiline_input>false</multiline_input>
       <auto_size>false</auto_size>
       <scripts />
       <height>22</height>
       <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-      <name>Text Input</name>
-      <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
-      <transparent>false</transparent>
-      <selector_type>0</selector_type>
-      <pv_name>$(P)$(M)1.R$(R)HI</pv_name>
       <background_color>
-        <color name="ioc_write_bg" />
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
-      <foreground_color>
-        <color name="Gray_14" />
-      </foreground_color>
       <widget_type>Text Input</widget_type>
       <enabled>true</enabled>
-      <text />
-      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-      <precision>0</precision>
+      <text></text>
       <font>
-        <fontdata fontName="Sans" height="16" style="0" />
+        <fontdata fontName="Sans" height="13" style="0" />
       </font>
       <width>76</width>
       <border_style>3</border_style>
-      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <maximum>Infinity</maximum>
+      <minimum>-Infinity</minimum>
+      <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-13a9</wuid>
+      <rotation_angle>0.0</rotation_angle>
+      <name>Text Input</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <format_type>1</format_type>
+      <transparent>false</transparent>
+      <selector_type>0</selector_type>
+      <pv_name>$(P)$(M)1.R$(R)HI</pv_name>
+      <foreground_color>
+        <color name="Gray_14" red="0" green="0" blue="0" />
+      </foreground_color>
+      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+      <precision>0</precision>
+      <confirm_message></confirm_message>
+      <rules />
       <limits_from_pv>false</limits_from_pv>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -315,45 +397,54 @@ $(pv_value)</tooltip>
     <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
-      <minimum>-Infinity</minimum>
       <vertical_alignment>1</vertical_alignment>
-      <show_units>false</show_units>
       <multiline_input>false</multiline_input>
       <auto_size>false</auto_size>
       <scripts />
       <height>22</height>
       <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-      <name>Text Input</name>
-      <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
-      <transparent>false</transparent>
-      <selector_type>0</selector_type>
-      <pv_name>$(P)$(M)1.R$(R)BG</pv_name>
       <background_color>
-        <color name="ioc_write_bg" />
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
-      <foreground_color>
-        <color name="Gray_14" />
-      </foreground_color>
       <widget_type>Text Input</widget_type>
       <enabled>true</enabled>
-      <text />
-      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-      <precision>0</precision>
+      <text></text>
       <font>
-        <fontdata fontName="Sans" height="16" style="0" />
+        <fontdata fontName="Sans" height="13" style="0" />
       </font>
       <width>76</width>
       <border_style>3</border_style>
-      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <maximum>Infinity</maximum>
+      <minimum>-Infinity</minimum>
+      <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-13a8</wuid>
+      <rotation_angle>0.0</rotation_angle>
+      <name>Text Input</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <format_type>1</format_type>
+      <transparent>false</transparent>
+      <selector_type>0</selector_type>
+      <pv_name>$(P)$(M)1.R$(R)BG</pv_name>
+      <foreground_color>
+        <color name="Gray_14" red="0" green="0" blue="0" />
+      </foreground_color>
+      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+      <precision>0</precision>
+      <confirm_message></confirm_message>
+      <rules />
       <limits_from_pv>false</limits_from_pv>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -364,20 +455,27 @@ $(pv_value)</tooltip>
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
       <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-13a7</wuid>
       <auto_size>false</auto_size>
+      <rotation_angle>0.0</rotation_angle>
       <scripts />
       <height>20</height>
-      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
       <name>Text Update</name>
+      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
       <transparent>false</transparent>
       <pv_name>$(P)$(M)1.R$(R)</pv_name>
       <background_color>
-        <color name="Gray_1" />
+        <color name="Gray_1" red="236" green="236" blue="236" />
       </background_color>
       <foreground_color>
-        <color name="ioc_read_fg" />
+        <color name="ioc_read_fg" red="10" green="0" blue="184" />
       </foreground_color>
       <widget_type>Text Update</widget_type>
       <enabled>true</enabled>
@@ -385,17 +483,18 @@ $(pv_value)</tooltip>
       <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
       <precision>0</precision>
       <font>
-        <fontdata fontName="Sans" height="14" style="0" />
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>76</width>
       <border_style>0</border_style>
       <rules />
+      <pv_value />
       <border_width>1</border_width>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>1</y>
       <wrap_words>false</wrap_words>
       <tooltip>$(pv_name)
@@ -407,20 +506,27 @@ $(pv_value)</tooltip>
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
       <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-13a6</wuid>
       <auto_size>false</auto_size>
+      <rotation_angle>0.0</rotation_angle>
       <scripts />
       <height>20</height>
-      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
       <name>Text Update</name>
+      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
       <transparent>false</transparent>
       <pv_name>$(P)$(M)1.R$(R)N</pv_name>
       <background_color>
-        <color name="Gray_1" />
+        <color name="Gray_1" red="236" green="236" blue="236" />
       </background_color>
       <foreground_color>
-        <color name="ioc_read_fg" />
+        <color name="ioc_read_fg" red="10" green="0" blue="184" />
       </foreground_color>
       <widget_type>Text Update</widget_type>
       <enabled>true</enabled>
@@ -428,17 +534,18 @@ $(pv_value)</tooltip>
       <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
       <precision>0</precision>
       <font>
-        <fontdata fontName="Sans" height="14" style="0" />
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>76</width>
       <border_style>0</border_style>
       <rules />
+      <pv_value />
       <border_width>1</border_width>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>1</y>
       <wrap_words>false</wrap_words>
       <tooltip>$(pv_name)
@@ -448,45 +555,54 @@ $(pv_value)</tooltip>
     <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
-      <minimum>-Infinity</minimum>
       <vertical_alignment>1</vertical_alignment>
-      <show_units>false</show_units>
       <multiline_input>false</multiline_input>
       <auto_size>false</auto_size>
       <scripts />
       <height>22</height>
       <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-      <name>Text Input</name>
-      <format_type>4</format_type>
       <precision_from_pv>true</precision_from_pv>
-      <transparent>false</transparent>
-      <selector_type>0</selector_type>
-      <pv_name>$(P)$(M)1.R$(R)NM</pv_name>
       <background_color>
-        <color name="ioc_write_bg" />
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
-      <foreground_color>
-        <color name="Gray_14" />
-      </foreground_color>
       <widget_type>Text Input</widget_type>
       <enabled>true</enabled>
-      <text />
-      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-      <precision>0</precision>
+      <text></text>
       <font>
-        <fontdata fontName="Sans" height="16" style="0" />
+        <fontdata fontName="Sans" height="13" style="0" />
       </font>
       <width>76</width>
       <border_style>3</border_style>
-      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <maximum>Infinity</maximum>
+      <minimum>-Infinity</minimum>
+      <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-13a5</wuid>
+      <rotation_angle>0.0</rotation_angle>
+      <name>Text Input</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <format_type>4</format_type>
+      <transparent>false</transparent>
+      <selector_type>0</selector_type>
+      <pv_name>$(P)$(M)1.R$(R)NM</pv_name>
+      <foreground_color>
+        <color name="Gray_14" red="0" green="0" blue="0" />
+      </foreground_color>
+      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+      <precision>0</precision>
+      <confirm_message></confirm_message>
+      <rules />
       <limits_from_pv>false</limits_from_pv>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -495,45 +611,54 @@ $(pv_value)</tooltip>
     <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
-      <minimum>-Infinity</minimum>
       <vertical_alignment>1</vertical_alignment>
-      <show_units>false</show_units>
       <multiline_input>false</multiline_input>
       <auto_size>false</auto_size>
       <scripts />
       <height>22</height>
       <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-      <name>Text Input</name>
-      <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
-      <transparent>false</transparent>
-      <selector_type>0</selector_type>
-      <pv_name>$(P)$(D)1:SCA$(R)Low</pv_name>
       <background_color>
-        <color name="ioc_write_bg" />
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
-      <foreground_color>
-        <color name="Gray_14" />
-      </foreground_color>
       <widget_type>Text Input</widget_type>
       <enabled>true</enabled>
-      <text />
-      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-      <precision>0</precision>
+      <text></text>
       <font>
-        <fontdata fontName="Sans" height="16" style="0" />
+        <fontdata fontName="Sans" height="13" style="0" />
       </font>
       <width>76</width>
       <border_style>3</border_style>
-      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <maximum>Infinity</maximum>
+      <minimum>-Infinity</minimum>
+      <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-13a4</wuid>
+      <rotation_angle>0.0</rotation_angle>
+      <name>Text Input</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <format_type>1</format_type>
+      <transparent>false</transparent>
+      <selector_type>0</selector_type>
+      <pv_name>$(P)$(D)1:SCA$(R)Low</pv_name>
+      <foreground_color>
+        <color name="Gray_14" red="0" green="0" blue="0" />
+      </foreground_color>
+      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+      <precision>0</precision>
+      <confirm_message></confirm_message>
+      <rules />
       <limits_from_pv>false</limits_from_pv>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -542,45 +667,54 @@ $(pv_value)</tooltip>
     <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
-      <minimum>-Infinity</minimum>
       <vertical_alignment>1</vertical_alignment>
-      <show_units>false</show_units>
       <multiline_input>false</multiline_input>
       <auto_size>false</auto_size>
       <scripts />
       <height>22</height>
       <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-      <name>Text Input</name>
-      <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
-      <transparent>false</transparent>
-      <selector_type>0</selector_type>
-      <pv_name>$(P)$(D)1:SCA$(R)High</pv_name>
       <background_color>
-        <color name="ioc_write_bg" />
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
-      <foreground_color>
-        <color name="Gray_14" />
-      </foreground_color>
       <widget_type>Text Input</widget_type>
       <enabled>true</enabled>
-      <text />
-      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-      <precision>0</precision>
+      <text></text>
       <font>
-        <fontdata fontName="Sans" height="16" style="0" />
+        <fontdata fontName="Sans" height="13" style="0" />
       </font>
       <width>76</width>
       <border_style>3</border_style>
-      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <maximum>Infinity</maximum>
+      <minimum>-Infinity</minimum>
+      <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-13a3</wuid>
+      <rotation_angle>0.0</rotation_angle>
+      <name>Text Input</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <format_type>1</format_type>
+      <transparent>false</transparent>
+      <selector_type>0</selector_type>
+      <pv_name>$(P)$(D)1:SCA$(R)High</pv_name>
+      <foreground_color>
+        <color name="Gray_14" red="0" green="0" blue="0" />
+      </foreground_color>
+      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+      <precision>0</precision>
+      <confirm_message></confirm_message>
+      <rules />
       <limits_from_pv>false</limits_from_pv>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -591,20 +725,27 @@ $(pv_value)</tooltip>
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
       <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-13a2</wuid>
       <auto_size>false</auto_size>
+      <rotation_angle>0.0</rotation_angle>
       <scripts />
       <height>20</height>
-      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
       <name>Text Update</name>
+      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
       <transparent>false</transparent>
       <pv_name>$(P)$(D)1:SCA$(R)Counts</pv_name>
       <background_color>
-        <color name="Gray_1" />
+        <color name="Gray_1" red="236" green="236" blue="236" />
       </background_color>
       <foreground_color>
-        <color name="ioc_read_fg" />
+        <color name="ioc_read_fg" red="10" green="0" blue="184" />
       </foreground_color>
       <widget_type>Text Update</widget_type>
       <enabled>true</enabled>
@@ -612,17 +753,18 @@ $(pv_value)</tooltip>
       <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
       <precision>0</precision>
       <font>
-        <fontdata fontName="Sans" height="14" style="0" />
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>76</width>
       <border_style>0</border_style>
       <rules />
+      <pv_value />
       <border_width>1</border_width>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>1</y>
       <wrap_words>false</wrap_words>
       <tooltip>$(pv_name)
@@ -634,20 +776,27 @@ $(pv_value)</tooltip>
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
       <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-13a1</wuid>
       <auto_size>false</auto_size>
+      <rotation_angle>0.0</rotation_angle>
       <scripts />
       <height>20</height>
-      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
       <name>Text Update</name>
+      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
       <transparent>false</transparent>
       <pv_name>$(P)$(D)1:SCA$(R)Low_RBV</pv_name>
       <background_color>
-        <color name="Gray_1" />
+        <color name="Gray_1" red="236" green="236" blue="236" />
       </background_color>
       <foreground_color>
-        <color name="ioc_read_fg" />
+        <color name="ioc_read_fg" red="10" green="0" blue="184" />
       </foreground_color>
       <widget_type>Text Update</widget_type>
       <enabled>true</enabled>
@@ -655,17 +804,18 @@ $(pv_value)</tooltip>
       <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
       <precision>0</precision>
       <font>
-        <fontdata fontName="Sans" height="14" style="0" />
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>76</width>
       <border_style>0</border_style>
       <rules />
+      <pv_value />
       <border_width>1</border_width>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>1</y>
       <wrap_words>false</wrap_words>
       <tooltip>$(pv_name)
@@ -677,20 +827,27 @@ $(pv_value)</tooltip>
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
       <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-13a0</wuid>
       <auto_size>false</auto_size>
+      <rotation_angle>0.0</rotation_angle>
       <scripts />
       <height>20</height>
-      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
       <name>Text Update</name>
+      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
       <transparent>false</transparent>
       <pv_name>$(P)$(D)1:SCA$(R)High_RBV</pv_name>
       <background_color>
-        <color name="Gray_1" />
+        <color name="Gray_1" red="236" green="236" blue="236" />
       </background_color>
       <foreground_color>
-        <color name="ioc_read_fg" />
+        <color name="ioc_read_fg" red="10" green="0" blue="184" />
       </foreground_color>
       <widget_type>Text Update</widget_type>
       <enabled>true</enabled>
@@ -698,17 +855,18 @@ $(pv_value)</tooltip>
       <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
       <precision>0</precision>
       <font>
-        <fontdata fontName="Sans" height="14" style="0" />
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>76</width>
       <border_style>0</border_style>
       <rules />
+      <pv_value />
       <border_width>1</border_width>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>1</y>
       <wrap_words>false</wrap_words>
       <tooltip>$(pv_name)
@@ -717,58 +875,70 @@ $(pv_value)</tooltip>
     </widget>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
-    <enabled>true</enabled>
-    <widget_type>Grouping Container</widget_type>
     <macros>
       <include_parent_macros>true</include_parent_macros>
     </macros>
     <visible>true</visible>
+    <wuid>-3e043223:13e0e87519f:-139f</wuid>
+    <scripts />
+    <height>22</height>
+    <name>Grouping Container</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
+    <transparent>true</transparent>
+    <show_scrollbar>false</show_scrollbar>
+    <background_color>
+      <color red="187" green="187" blue="187" />
+    </background_color>
+    <foreground_color>
+      <color red="0" green="0" blue="0" />
+    </foreground_color>
+    <widget_type>Grouping Container</widget_type>
+    <enabled>true</enabled>
     <font>
-      <opifont.name>Default</opifont.name>
+      <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
     </font>
     <width>919</width>
     <border_style>0</border_style>
     <rules />
     <lock_children>false</lock_children>
-    <scripts />
-    <height>22</height>
     <border_width>1</border_width>
-    <name>Grouping Container</name>
     <border_color>
       <color red="0" green="128" blue="255" />
     </border_color>
-    <transparent>false</transparent>
-    <show_scrollbar>false</show_scrollbar>
+    <actions hook="false" hook_all="false" />
     <y>131</y>
-    <actions hook="false" />
-    <foreground_color>
-      <color red="0" green="0" blue="0" />
-    </foreground_color>
-    <background_color>
-      <color red="187" green="187" blue="187" />
-    </background_color>
+    <tooltip></tooltip>
     <x>19</x>
-    <tooltip />
     <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
+      <wuid>-3e043223:13e0e87519f:-139e</wuid>
       <auto_size>false</auto_size>
       <scripts />
       <height>20</height>
       <name>Label</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <transparent>true</transparent>
       <show_scrollbar>false</show_scrollbar>
       <background_color>
         <color red="255" green="255" blue="255" />
       </background_color>
       <foreground_color>
-        <color name="Gray_14" />
+        <color name="Gray_14" red="0" green="0" blue="0" />
       </foreground_color>
       <widget_type>Label</widget_type>
       <enabled>true</enabled>
       <text>2</text>
       <font>
-        <fontdata fontName="Sans" height="14" style="0" />
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>10</width>
       <border_style>0</border_style>
@@ -778,54 +948,63 @@ $(pv_value)</tooltip>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>1</y>
       <wrap_words>true</wrap_words>
-      <tooltip />
+      <tooltip></tooltip>
       <x>0</x>
     </widget>
     <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
-      <minimum>-Infinity</minimum>
       <vertical_alignment>1</vertical_alignment>
-      <show_units>false</show_units>
       <multiline_input>false</multiline_input>
       <auto_size>false</auto_size>
       <scripts />
       <height>22</height>
       <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-      <name>Text Input</name>
-      <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
-      <transparent>false</transparent>
-      <selector_type>0</selector_type>
-      <pv_name>$(P)$(M)2.R$(R)LO</pv_name>
       <background_color>
-        <color name="ioc_write_bg" />
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
-      <foreground_color>
-        <color name="Gray_14" />
-      </foreground_color>
       <widget_type>Text Input</widget_type>
       <enabled>true</enabled>
-      <text />
-      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-      <precision>0</precision>
+      <text></text>
       <font>
-        <fontdata fontName="Sans" height="16" style="0" />
+        <fontdata fontName="Sans" height="13" style="0" />
       </font>
       <width>76</width>
       <border_style>3</border_style>
-      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <maximum>Infinity</maximum>
+      <minimum>-Infinity</minimum>
+      <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-139d</wuid>
+      <rotation_angle>0.0</rotation_angle>
+      <name>Text Input</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <format_type>1</format_type>
+      <transparent>false</transparent>
+      <selector_type>0</selector_type>
+      <pv_name>$(P)$(M)2.R$(R)LO</pv_name>
+      <foreground_color>
+        <color name="Gray_14" red="0" green="0" blue="0" />
+      </foreground_color>
+      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+      <precision>0</precision>
+      <confirm_message></confirm_message>
+      <rules />
       <limits_from_pv>false</limits_from_pv>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -834,45 +1013,54 @@ $(pv_value)</tooltip>
     <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
-      <minimum>-Infinity</minimum>
       <vertical_alignment>1</vertical_alignment>
-      <show_units>false</show_units>
       <multiline_input>false</multiline_input>
       <auto_size>false</auto_size>
       <scripts />
       <height>22</height>
       <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-      <name>Text Input</name>
-      <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
-      <transparent>false</transparent>
-      <selector_type>0</selector_type>
-      <pv_name>$(P)$(M)2.R$(R)HI</pv_name>
       <background_color>
-        <color name="ioc_write_bg" />
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
-      <foreground_color>
-        <color name="Gray_14" />
-      </foreground_color>
       <widget_type>Text Input</widget_type>
       <enabled>true</enabled>
-      <text />
-      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-      <precision>0</precision>
+      <text></text>
       <font>
-        <fontdata fontName="Sans" height="16" style="0" />
+        <fontdata fontName="Sans" height="13" style="0" />
       </font>
       <width>76</width>
       <border_style>3</border_style>
-      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <maximum>Infinity</maximum>
+      <minimum>-Infinity</minimum>
+      <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-139c</wuid>
+      <rotation_angle>0.0</rotation_angle>
+      <name>Text Input</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <format_type>1</format_type>
+      <transparent>false</transparent>
+      <selector_type>0</selector_type>
+      <pv_name>$(P)$(M)2.R$(R)HI</pv_name>
+      <foreground_color>
+        <color name="Gray_14" red="0" green="0" blue="0" />
+      </foreground_color>
+      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+      <precision>0</precision>
+      <confirm_message></confirm_message>
+      <rules />
       <limits_from_pv>false</limits_from_pv>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -881,45 +1069,54 @@ $(pv_value)</tooltip>
     <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
-      <minimum>-Infinity</minimum>
       <vertical_alignment>1</vertical_alignment>
-      <show_units>false</show_units>
       <multiline_input>false</multiline_input>
       <auto_size>false</auto_size>
       <scripts />
       <height>22</height>
       <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-      <name>Text Input</name>
-      <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
-      <transparent>false</transparent>
-      <selector_type>0</selector_type>
-      <pv_name>$(P)$(M)2.R$(R)BG</pv_name>
       <background_color>
-        <color name="ioc_write_bg" />
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
-      <foreground_color>
-        <color name="Gray_14" />
-      </foreground_color>
       <widget_type>Text Input</widget_type>
       <enabled>true</enabled>
-      <text />
-      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-      <precision>0</precision>
+      <text></text>
       <font>
-        <fontdata fontName="Sans" height="16" style="0" />
+        <fontdata fontName="Sans" height="13" style="0" />
       </font>
       <width>76</width>
       <border_style>3</border_style>
-      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <maximum>Infinity</maximum>
+      <minimum>-Infinity</minimum>
+      <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-139b</wuid>
+      <rotation_angle>0.0</rotation_angle>
+      <name>Text Input</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <format_type>1</format_type>
+      <transparent>false</transparent>
+      <selector_type>0</selector_type>
+      <pv_name>$(P)$(M)2.R$(R)BG</pv_name>
+      <foreground_color>
+        <color name="Gray_14" red="0" green="0" blue="0" />
+      </foreground_color>
+      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+      <precision>0</precision>
+      <confirm_message></confirm_message>
+      <rules />
       <limits_from_pv>false</limits_from_pv>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -930,20 +1127,27 @@ $(pv_value)</tooltip>
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
       <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-139a</wuid>
       <auto_size>false</auto_size>
+      <rotation_angle>0.0</rotation_angle>
       <scripts />
       <height>20</height>
-      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
       <name>Text Update</name>
+      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
       <transparent>false</transparent>
       <pv_name>$(P)$(M)2.R$(R)</pv_name>
       <background_color>
-        <color name="Gray_1" />
+        <color name="Gray_1" red="236" green="236" blue="236" />
       </background_color>
       <foreground_color>
-        <color name="ioc_read_fg" />
+        <color name="ioc_read_fg" red="10" green="0" blue="184" />
       </foreground_color>
       <widget_type>Text Update</widget_type>
       <enabled>true</enabled>
@@ -951,17 +1155,18 @@ $(pv_value)</tooltip>
       <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
       <precision>0</precision>
       <font>
-        <fontdata fontName="Sans" height="14" style="0" />
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>76</width>
       <border_style>0</border_style>
       <rules />
+      <pv_value />
       <border_width>1</border_width>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>1</y>
       <wrap_words>false</wrap_words>
       <tooltip>$(pv_name)
@@ -973,20 +1178,27 @@ $(pv_value)</tooltip>
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
       <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-1399</wuid>
       <auto_size>false</auto_size>
+      <rotation_angle>0.0</rotation_angle>
       <scripts />
       <height>20</height>
-      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
       <name>Text Update</name>
+      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
       <transparent>false</transparent>
       <pv_name>$(P)$(M)2.R$(R)N</pv_name>
       <background_color>
-        <color name="Gray_1" />
+        <color name="Gray_1" red="236" green="236" blue="236" />
       </background_color>
       <foreground_color>
-        <color name="ioc_read_fg" />
+        <color name="ioc_read_fg" red="10" green="0" blue="184" />
       </foreground_color>
       <widget_type>Text Update</widget_type>
       <enabled>true</enabled>
@@ -994,17 +1206,18 @@ $(pv_value)</tooltip>
       <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
       <precision>0</precision>
       <font>
-        <fontdata fontName="Sans" height="14" style="0" />
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>76</width>
       <border_style>0</border_style>
       <rules />
+      <pv_value />
       <border_width>1</border_width>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>1</y>
       <wrap_words>false</wrap_words>
       <tooltip>$(pv_name)
@@ -1014,45 +1227,54 @@ $(pv_value)</tooltip>
     <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
-      <minimum>-Infinity</minimum>
       <vertical_alignment>1</vertical_alignment>
-      <show_units>false</show_units>
       <multiline_input>false</multiline_input>
       <auto_size>false</auto_size>
       <scripts />
       <height>22</height>
       <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-      <name>Text Input</name>
-      <format_type>4</format_type>
       <precision_from_pv>true</precision_from_pv>
-      <transparent>false</transparent>
-      <selector_type>0</selector_type>
-      <pv_name>$(P)$(M)2.R$(R)NM</pv_name>
       <background_color>
-        <color name="ioc_write_bg" />
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
-      <foreground_color>
-        <color name="Gray_14" />
-      </foreground_color>
       <widget_type>Text Input</widget_type>
       <enabled>true</enabled>
-      <text />
-      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-      <precision>0</precision>
+      <text></text>
       <font>
-        <fontdata fontName="Sans" height="16" style="0" />
+        <fontdata fontName="Sans" height="13" style="0" />
       </font>
       <width>76</width>
       <border_style>3</border_style>
-      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <maximum>Infinity</maximum>
+      <minimum>-Infinity</minimum>
+      <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-1398</wuid>
+      <rotation_angle>0.0</rotation_angle>
+      <name>Text Input</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <format_type>4</format_type>
+      <transparent>false</transparent>
+      <selector_type>0</selector_type>
+      <pv_name>$(P)$(M)2.R$(R)NM</pv_name>
+      <foreground_color>
+        <color name="Gray_14" red="0" green="0" blue="0" />
+      </foreground_color>
+      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+      <precision>0</precision>
+      <confirm_message></confirm_message>
+      <rules />
       <limits_from_pv>false</limits_from_pv>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -1061,45 +1283,54 @@ $(pv_value)</tooltip>
     <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
-      <minimum>-Infinity</minimum>
       <vertical_alignment>1</vertical_alignment>
-      <show_units>false</show_units>
       <multiline_input>false</multiline_input>
       <auto_size>false</auto_size>
       <scripts />
       <height>22</height>
       <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-      <name>Text Input</name>
-      <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
-      <transparent>false</transparent>
-      <selector_type>0</selector_type>
-      <pv_name>$(P)$(D)2:SCA$(R)Low</pv_name>
       <background_color>
-        <color name="ioc_write_bg" />
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
-      <foreground_color>
-        <color name="Gray_14" />
-      </foreground_color>
       <widget_type>Text Input</widget_type>
       <enabled>true</enabled>
-      <text />
-      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-      <precision>0</precision>
+      <text></text>
       <font>
-        <fontdata fontName="Sans" height="16" style="0" />
+        <fontdata fontName="Sans" height="13" style="0" />
       </font>
       <width>76</width>
       <border_style>3</border_style>
-      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <maximum>Infinity</maximum>
+      <minimum>-Infinity</minimum>
+      <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-1397</wuid>
+      <rotation_angle>0.0</rotation_angle>
+      <name>Text Input</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <format_type>1</format_type>
+      <transparent>false</transparent>
+      <selector_type>0</selector_type>
+      <pv_name>$(P)$(D)2:SCA$(R)Low</pv_name>
+      <foreground_color>
+        <color name="Gray_14" red="0" green="0" blue="0" />
+      </foreground_color>
+      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+      <precision>0</precision>
+      <confirm_message></confirm_message>
+      <rules />
       <limits_from_pv>false</limits_from_pv>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -1108,45 +1339,54 @@ $(pv_value)</tooltip>
     <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
-      <minimum>-Infinity</minimum>
       <vertical_alignment>1</vertical_alignment>
-      <show_units>false</show_units>
       <multiline_input>false</multiline_input>
       <auto_size>false</auto_size>
       <scripts />
       <height>22</height>
       <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-      <name>Text Input</name>
-      <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
-      <transparent>false</transparent>
-      <selector_type>0</selector_type>
-      <pv_name>$(P)$(D)2:SCA$(R)High</pv_name>
       <background_color>
-        <color name="ioc_write_bg" />
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
-      <foreground_color>
-        <color name="Gray_14" />
-      </foreground_color>
       <widget_type>Text Input</widget_type>
       <enabled>true</enabled>
-      <text />
-      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-      <precision>0</precision>
+      <text></text>
       <font>
-        <fontdata fontName="Sans" height="16" style="0" />
+        <fontdata fontName="Sans" height="13" style="0" />
       </font>
       <width>76</width>
       <border_style>3</border_style>
-      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <maximum>Infinity</maximum>
+      <minimum>-Infinity</minimum>
+      <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-1396</wuid>
+      <rotation_angle>0.0</rotation_angle>
+      <name>Text Input</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <format_type>1</format_type>
+      <transparent>false</transparent>
+      <selector_type>0</selector_type>
+      <pv_name>$(P)$(D)2:SCA$(R)High</pv_name>
+      <foreground_color>
+        <color name="Gray_14" red="0" green="0" blue="0" />
+      </foreground_color>
+      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+      <precision>0</precision>
+      <confirm_message></confirm_message>
+      <rules />
       <limits_from_pv>false</limits_from_pv>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -1157,20 +1397,27 @@ $(pv_value)</tooltip>
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
       <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-1395</wuid>
       <auto_size>false</auto_size>
+      <rotation_angle>0.0</rotation_angle>
       <scripts />
       <height>20</height>
-      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
       <name>Text Update</name>
+      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
       <transparent>false</transparent>
       <pv_name>$(P)$(D)2:SCA$(R)Counts</pv_name>
       <background_color>
-        <color name="Gray_1" />
+        <color name="Gray_1" red="236" green="236" blue="236" />
       </background_color>
       <foreground_color>
-        <color name="ioc_read_fg" />
+        <color name="ioc_read_fg" red="10" green="0" blue="184" />
       </foreground_color>
       <widget_type>Text Update</widget_type>
       <enabled>true</enabled>
@@ -1178,17 +1425,18 @@ $(pv_value)</tooltip>
       <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
       <precision>0</precision>
       <font>
-        <fontdata fontName="Sans" height="14" style="0" />
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>76</width>
       <border_style>0</border_style>
       <rules />
+      <pv_value />
       <border_width>1</border_width>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>1</y>
       <wrap_words>false</wrap_words>
       <tooltip>$(pv_name)
@@ -1200,20 +1448,27 @@ $(pv_value)</tooltip>
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
       <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-1394</wuid>
       <auto_size>false</auto_size>
+      <rotation_angle>0.0</rotation_angle>
       <scripts />
       <height>20</height>
-      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
       <name>Text Update</name>
+      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
       <transparent>false</transparent>
       <pv_name>$(P)$(D)2:SCA$(R)Low_RBV</pv_name>
       <background_color>
-        <color name="Gray_1" />
+        <color name="Gray_1" red="236" green="236" blue="236" />
       </background_color>
       <foreground_color>
-        <color name="ioc_read_fg" />
+        <color name="ioc_read_fg" red="10" green="0" blue="184" />
       </foreground_color>
       <widget_type>Text Update</widget_type>
       <enabled>true</enabled>
@@ -1221,17 +1476,18 @@ $(pv_value)</tooltip>
       <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
       <precision>0</precision>
       <font>
-        <fontdata fontName="Sans" height="14" style="0" />
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>76</width>
       <border_style>0</border_style>
       <rules />
+      <pv_value />
       <border_width>1</border_width>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>1</y>
       <wrap_words>false</wrap_words>
       <tooltip>$(pv_name)
@@ -1243,20 +1499,27 @@ $(pv_value)</tooltip>
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
       <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-1393</wuid>
       <auto_size>false</auto_size>
+      <rotation_angle>0.0</rotation_angle>
       <scripts />
       <height>20</height>
-      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
       <name>Text Update</name>
+      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
       <transparent>false</transparent>
       <pv_name>$(P)$(D)2:SCA$(R)High_RBV</pv_name>
       <background_color>
-        <color name="Gray_1" />
+        <color name="Gray_1" red="236" green="236" blue="236" />
       </background_color>
       <foreground_color>
-        <color name="ioc_read_fg" />
+        <color name="ioc_read_fg" red="10" green="0" blue="184" />
       </foreground_color>
       <widget_type>Text Update</widget_type>
       <enabled>true</enabled>
@@ -1264,17 +1527,18 @@ $(pv_value)</tooltip>
       <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
       <precision>0</precision>
       <font>
-        <fontdata fontName="Sans" height="14" style="0" />
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>76</width>
       <border_style>0</border_style>
       <rules />
+      <pv_value />
       <border_width>1</border_width>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>1</y>
       <wrap_words>false</wrap_words>
       <tooltip>$(pv_name)
@@ -1283,58 +1547,70 @@ $(pv_value)</tooltip>
     </widget>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
-    <enabled>true</enabled>
-    <widget_type>Grouping Container</widget_type>
     <macros>
       <include_parent_macros>true</include_parent_macros>
     </macros>
     <visible>true</visible>
+    <wuid>-3e043223:13e0e87519f:-1392</wuid>
+    <scripts />
+    <height>22</height>
+    <name>Grouping Container</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
+    <transparent>true</transparent>
+    <show_scrollbar>false</show_scrollbar>
+    <background_color>
+      <color red="187" green="187" blue="187" />
+    </background_color>
+    <foreground_color>
+      <color red="0" green="0" blue="0" />
+    </foreground_color>
+    <widget_type>Grouping Container</widget_type>
+    <enabled>true</enabled>
     <font>
-      <opifont.name>Default</opifont.name>
+      <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
     </font>
     <width>919</width>
     <border_style>0</border_style>
     <rules />
     <lock_children>false</lock_children>
-    <scripts />
-    <height>22</height>
     <border_width>1</border_width>
-    <name>Grouping Container</name>
     <border_color>
       <color red="0" green="128" blue="255" />
     </border_color>
-    <transparent>false</transparent>
-    <show_scrollbar>false</show_scrollbar>
+    <actions hook="false" hook_all="false" />
     <y>158</y>
-    <actions hook="false" />
-    <foreground_color>
-      <color red="0" green="0" blue="0" />
-    </foreground_color>
-    <background_color>
-      <color red="187" green="187" blue="187" />
-    </background_color>
+    <tooltip></tooltip>
     <x>19</x>
-    <tooltip />
     <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
+      <wuid>-3e043223:13e0e87519f:-1391</wuid>
       <auto_size>false</auto_size>
       <scripts />
       <height>20</height>
       <name>Label</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <transparent>true</transparent>
       <show_scrollbar>false</show_scrollbar>
       <background_color>
         <color red="255" green="255" blue="255" />
       </background_color>
       <foreground_color>
-        <color name="Gray_14" />
+        <color name="Gray_14" red="0" green="0" blue="0" />
       </foreground_color>
       <widget_type>Label</widget_type>
       <enabled>true</enabled>
       <text>3</text>
       <font>
-        <fontdata fontName="Sans" height="14" style="0" />
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>10</width>
       <border_style>0</border_style>
@@ -1344,54 +1620,63 @@ $(pv_value)</tooltip>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>1</y>
       <wrap_words>true</wrap_words>
-      <tooltip />
+      <tooltip></tooltip>
       <x>0</x>
     </widget>
     <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
-      <minimum>-Infinity</minimum>
       <vertical_alignment>1</vertical_alignment>
-      <show_units>false</show_units>
       <multiline_input>false</multiline_input>
       <auto_size>false</auto_size>
       <scripts />
       <height>22</height>
       <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-      <name>Text Input</name>
-      <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
-      <transparent>false</transparent>
-      <selector_type>0</selector_type>
-      <pv_name>$(P)$(M)3.R$(R)LO</pv_name>
       <background_color>
-        <color name="ioc_write_bg" />
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
-      <foreground_color>
-        <color name="Gray_14" />
-      </foreground_color>
       <widget_type>Text Input</widget_type>
       <enabled>true</enabled>
-      <text />
-      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-      <precision>0</precision>
+      <text></text>
       <font>
-        <fontdata fontName="Sans" height="16" style="0" />
+        <fontdata fontName="Sans" height="13" style="0" />
       </font>
       <width>76</width>
       <border_style>3</border_style>
-      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <maximum>Infinity</maximum>
+      <minimum>-Infinity</minimum>
+      <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-1390</wuid>
+      <rotation_angle>0.0</rotation_angle>
+      <name>Text Input</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <format_type>1</format_type>
+      <transparent>false</transparent>
+      <selector_type>0</selector_type>
+      <pv_name>$(P)$(M)3.R$(R)LO</pv_name>
+      <foreground_color>
+        <color name="Gray_14" red="0" green="0" blue="0" />
+      </foreground_color>
+      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+      <precision>0</precision>
+      <confirm_message></confirm_message>
+      <rules />
       <limits_from_pv>false</limits_from_pv>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -1400,45 +1685,54 @@ $(pv_value)</tooltip>
     <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
-      <minimum>-Infinity</minimum>
       <vertical_alignment>1</vertical_alignment>
-      <show_units>false</show_units>
       <multiline_input>false</multiline_input>
       <auto_size>false</auto_size>
       <scripts />
       <height>22</height>
       <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-      <name>Text Input</name>
-      <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
-      <transparent>false</transparent>
-      <selector_type>0</selector_type>
-      <pv_name>$(P)$(M)3.R$(R)HI</pv_name>
       <background_color>
-        <color name="ioc_write_bg" />
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
-      <foreground_color>
-        <color name="Gray_14" />
-      </foreground_color>
       <widget_type>Text Input</widget_type>
       <enabled>true</enabled>
-      <text />
-      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-      <precision>0</precision>
+      <text></text>
       <font>
-        <fontdata fontName="Sans" height="16" style="0" />
+        <fontdata fontName="Sans" height="13" style="0" />
       </font>
       <width>76</width>
       <border_style>3</border_style>
-      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <maximum>Infinity</maximum>
+      <minimum>-Infinity</minimum>
+      <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-138f</wuid>
+      <rotation_angle>0.0</rotation_angle>
+      <name>Text Input</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <format_type>1</format_type>
+      <transparent>false</transparent>
+      <selector_type>0</selector_type>
+      <pv_name>$(P)$(M)3.R$(R)HI</pv_name>
+      <foreground_color>
+        <color name="Gray_14" red="0" green="0" blue="0" />
+      </foreground_color>
+      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+      <precision>0</precision>
+      <confirm_message></confirm_message>
+      <rules />
       <limits_from_pv>false</limits_from_pv>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -1447,45 +1741,54 @@ $(pv_value)</tooltip>
     <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
-      <minimum>-Infinity</minimum>
       <vertical_alignment>1</vertical_alignment>
-      <show_units>false</show_units>
       <multiline_input>false</multiline_input>
       <auto_size>false</auto_size>
       <scripts />
       <height>22</height>
       <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-      <name>Text Input</name>
-      <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
-      <transparent>false</transparent>
-      <selector_type>0</selector_type>
-      <pv_name>$(P)$(M)3.R$(R)BG</pv_name>
       <background_color>
-        <color name="ioc_write_bg" />
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
-      <foreground_color>
-        <color name="Gray_14" />
-      </foreground_color>
       <widget_type>Text Input</widget_type>
       <enabled>true</enabled>
-      <text />
-      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-      <precision>0</precision>
+      <text></text>
       <font>
-        <fontdata fontName="Sans" height="16" style="0" />
+        <fontdata fontName="Sans" height="13" style="0" />
       </font>
       <width>76</width>
       <border_style>3</border_style>
-      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <maximum>Infinity</maximum>
+      <minimum>-Infinity</minimum>
+      <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-138e</wuid>
+      <rotation_angle>0.0</rotation_angle>
+      <name>Text Input</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <format_type>1</format_type>
+      <transparent>false</transparent>
+      <selector_type>0</selector_type>
+      <pv_name>$(P)$(M)3.R$(R)BG</pv_name>
+      <foreground_color>
+        <color name="Gray_14" red="0" green="0" blue="0" />
+      </foreground_color>
+      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+      <precision>0</precision>
+      <confirm_message></confirm_message>
+      <rules />
       <limits_from_pv>false</limits_from_pv>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -1496,20 +1799,27 @@ $(pv_value)</tooltip>
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
       <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-138d</wuid>
       <auto_size>false</auto_size>
+      <rotation_angle>0.0</rotation_angle>
       <scripts />
       <height>20</height>
-      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
       <name>Text Update</name>
+      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
       <transparent>false</transparent>
       <pv_name>$(P)$(M)3.R$(R)</pv_name>
       <background_color>
-        <color name="Gray_1" />
+        <color name="Gray_1" red="236" green="236" blue="236" />
       </background_color>
       <foreground_color>
-        <color name="ioc_read_fg" />
+        <color name="ioc_read_fg" red="10" green="0" blue="184" />
       </foreground_color>
       <widget_type>Text Update</widget_type>
       <enabled>true</enabled>
@@ -1517,17 +1827,18 @@ $(pv_value)</tooltip>
       <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
       <precision>0</precision>
       <font>
-        <fontdata fontName="Sans" height="14" style="0" />
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>76</width>
       <border_style>0</border_style>
       <rules />
+      <pv_value />
       <border_width>1</border_width>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>1</y>
       <wrap_words>false</wrap_words>
       <tooltip>$(pv_name)
@@ -1539,20 +1850,27 @@ $(pv_value)</tooltip>
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
       <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-138c</wuid>
       <auto_size>false</auto_size>
+      <rotation_angle>0.0</rotation_angle>
       <scripts />
       <height>20</height>
-      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
       <name>Text Update</name>
+      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
       <transparent>false</transparent>
       <pv_name>$(P)$(M)3.R$(R)N</pv_name>
       <background_color>
-        <color name="Gray_1" />
+        <color name="Gray_1" red="236" green="236" blue="236" />
       </background_color>
       <foreground_color>
-        <color name="ioc_read_fg" />
+        <color name="ioc_read_fg" red="10" green="0" blue="184" />
       </foreground_color>
       <widget_type>Text Update</widget_type>
       <enabled>true</enabled>
@@ -1560,17 +1878,18 @@ $(pv_value)</tooltip>
       <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
       <precision>0</precision>
       <font>
-        <fontdata fontName="Sans" height="14" style="0" />
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>76</width>
       <border_style>0</border_style>
       <rules />
+      <pv_value />
       <border_width>1</border_width>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>1</y>
       <wrap_words>false</wrap_words>
       <tooltip>$(pv_name)
@@ -1580,45 +1899,54 @@ $(pv_value)</tooltip>
     <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
-      <minimum>-Infinity</minimum>
       <vertical_alignment>1</vertical_alignment>
-      <show_units>false</show_units>
       <multiline_input>false</multiline_input>
       <auto_size>false</auto_size>
       <scripts />
       <height>22</height>
       <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-      <name>Text Input</name>
-      <format_type>4</format_type>
       <precision_from_pv>true</precision_from_pv>
-      <transparent>false</transparent>
-      <selector_type>0</selector_type>
-      <pv_name>$(P)$(M)3.R$(R)NM</pv_name>
       <background_color>
-        <color name="ioc_write_bg" />
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
-      <foreground_color>
-        <color name="Gray_14" />
-      </foreground_color>
       <widget_type>Text Input</widget_type>
       <enabled>true</enabled>
-      <text />
-      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-      <precision>0</precision>
+      <text></text>
       <font>
-        <fontdata fontName="Sans" height="16" style="0" />
+        <fontdata fontName="Sans" height="13" style="0" />
       </font>
       <width>76</width>
       <border_style>3</border_style>
-      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <maximum>Infinity</maximum>
+      <minimum>-Infinity</minimum>
+      <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-138b</wuid>
+      <rotation_angle>0.0</rotation_angle>
+      <name>Text Input</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <format_type>4</format_type>
+      <transparent>false</transparent>
+      <selector_type>0</selector_type>
+      <pv_name>$(P)$(M)3.R$(R)NM</pv_name>
+      <foreground_color>
+        <color name="Gray_14" red="0" green="0" blue="0" />
+      </foreground_color>
+      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+      <precision>0</precision>
+      <confirm_message></confirm_message>
+      <rules />
       <limits_from_pv>false</limits_from_pv>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -1627,45 +1955,54 @@ $(pv_value)</tooltip>
     <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
-      <minimum>-Infinity</minimum>
       <vertical_alignment>1</vertical_alignment>
-      <show_units>false</show_units>
       <multiline_input>false</multiline_input>
       <auto_size>false</auto_size>
       <scripts />
       <height>22</height>
       <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-      <name>Text Input</name>
-      <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
-      <transparent>false</transparent>
-      <selector_type>0</selector_type>
-      <pv_name>$(P)$(D)3:SCA$(R)Low</pv_name>
       <background_color>
-        <color name="ioc_write_bg" />
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
-      <foreground_color>
-        <color name="Gray_14" />
-      </foreground_color>
       <widget_type>Text Input</widget_type>
       <enabled>true</enabled>
-      <text />
-      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-      <precision>0</precision>
+      <text></text>
       <font>
-        <fontdata fontName="Sans" height="16" style="0" />
+        <fontdata fontName="Sans" height="13" style="0" />
       </font>
       <width>76</width>
       <border_style>3</border_style>
-      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <maximum>Infinity</maximum>
+      <minimum>-Infinity</minimum>
+      <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-138a</wuid>
+      <rotation_angle>0.0</rotation_angle>
+      <name>Text Input</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <format_type>1</format_type>
+      <transparent>false</transparent>
+      <selector_type>0</selector_type>
+      <pv_name>$(P)$(D)3:SCA$(R)Low</pv_name>
+      <foreground_color>
+        <color name="Gray_14" red="0" green="0" blue="0" />
+      </foreground_color>
+      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+      <precision>0</precision>
+      <confirm_message></confirm_message>
+      <rules />
       <limits_from_pv>false</limits_from_pv>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -1674,45 +2011,54 @@ $(pv_value)</tooltip>
     <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
-      <minimum>-Infinity</minimum>
       <vertical_alignment>1</vertical_alignment>
-      <show_units>false</show_units>
       <multiline_input>false</multiline_input>
       <auto_size>false</auto_size>
       <scripts />
       <height>22</height>
       <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-      <name>Text Input</name>
-      <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
-      <transparent>false</transparent>
-      <selector_type>0</selector_type>
-      <pv_name>$(P)$(D)3:SCA$(R)High</pv_name>
       <background_color>
-        <color name="ioc_write_bg" />
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
-      <foreground_color>
-        <color name="Gray_14" />
-      </foreground_color>
       <widget_type>Text Input</widget_type>
       <enabled>true</enabled>
-      <text />
-      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-      <precision>0</precision>
+      <text></text>
       <font>
-        <fontdata fontName="Sans" height="16" style="0" />
+        <fontdata fontName="Sans" height="13" style="0" />
       </font>
       <width>76</width>
       <border_style>3</border_style>
-      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <maximum>Infinity</maximum>
+      <minimum>-Infinity</minimum>
+      <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-1389</wuid>
+      <rotation_angle>0.0</rotation_angle>
+      <name>Text Input</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <format_type>1</format_type>
+      <transparent>false</transparent>
+      <selector_type>0</selector_type>
+      <pv_name>$(P)$(D)3:SCA$(R)High</pv_name>
+      <foreground_color>
+        <color name="Gray_14" red="0" green="0" blue="0" />
+      </foreground_color>
+      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+      <precision>0</precision>
+      <confirm_message></confirm_message>
+      <rules />
       <limits_from_pv>false</limits_from_pv>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -1723,20 +2069,27 @@ $(pv_value)</tooltip>
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
       <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-1388</wuid>
       <auto_size>false</auto_size>
+      <rotation_angle>0.0</rotation_angle>
       <scripts />
       <height>20</height>
-      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
       <name>Text Update</name>
+      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
       <transparent>false</transparent>
       <pv_name>$(P)$(D)3:SCA$(R)Counts</pv_name>
       <background_color>
-        <color name="Gray_1" />
+        <color name="Gray_1" red="236" green="236" blue="236" />
       </background_color>
       <foreground_color>
-        <color name="ioc_read_fg" />
+        <color name="ioc_read_fg" red="10" green="0" blue="184" />
       </foreground_color>
       <widget_type>Text Update</widget_type>
       <enabled>true</enabled>
@@ -1744,17 +2097,18 @@ $(pv_value)</tooltip>
       <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
       <precision>0</precision>
       <font>
-        <fontdata fontName="Sans" height="14" style="0" />
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>76</width>
       <border_style>0</border_style>
       <rules />
+      <pv_value />
       <border_width>1</border_width>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>1</y>
       <wrap_words>false</wrap_words>
       <tooltip>$(pv_name)
@@ -1766,20 +2120,27 @@ $(pv_value)</tooltip>
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
       <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-1387</wuid>
       <auto_size>false</auto_size>
+      <rotation_angle>0.0</rotation_angle>
       <scripts />
       <height>20</height>
-      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
       <name>Text Update</name>
+      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
       <transparent>false</transparent>
       <pv_name>$(P)$(D)3:SCA$(R)Low_RBV</pv_name>
       <background_color>
-        <color name="Gray_1" />
+        <color name="Gray_1" red="236" green="236" blue="236" />
       </background_color>
       <foreground_color>
-        <color name="ioc_read_fg" />
+        <color name="ioc_read_fg" red="10" green="0" blue="184" />
       </foreground_color>
       <widget_type>Text Update</widget_type>
       <enabled>true</enabled>
@@ -1787,17 +2148,18 @@ $(pv_value)</tooltip>
       <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
       <precision>0</precision>
       <font>
-        <fontdata fontName="Sans" height="14" style="0" />
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>76</width>
       <border_style>0</border_style>
       <rules />
+      <pv_value />
       <border_width>1</border_width>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>1</y>
       <wrap_words>false</wrap_words>
       <tooltip>$(pv_name)
@@ -1809,20 +2171,27 @@ $(pv_value)</tooltip>
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
       <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-1386</wuid>
       <auto_size>false</auto_size>
+      <rotation_angle>0.0</rotation_angle>
       <scripts />
       <height>20</height>
-      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
       <name>Text Update</name>
+      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
       <transparent>false</transparent>
       <pv_name>$(P)$(D)3:SCA$(R)High_RBV</pv_name>
       <background_color>
-        <color name="Gray_1" />
+        <color name="Gray_1" red="236" green="236" blue="236" />
       </background_color>
       <foreground_color>
-        <color name="ioc_read_fg" />
+        <color name="ioc_read_fg" red="10" green="0" blue="184" />
       </foreground_color>
       <widget_type>Text Update</widget_type>
       <enabled>true</enabled>
@@ -1830,17 +2199,18 @@ $(pv_value)</tooltip>
       <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
       <precision>0</precision>
       <font>
-        <fontdata fontName="Sans" height="14" style="0" />
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>76</width>
       <border_style>0</border_style>
       <rules />
+      <pv_value />
       <border_width>1</border_width>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>1</y>
       <wrap_words>false</wrap_words>
       <tooltip>$(pv_name)
@@ -1849,58 +2219,70 @@ $(pv_value)</tooltip>
     </widget>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
-    <enabled>true</enabled>
-    <widget_type>Grouping Container</widget_type>
     <macros>
       <include_parent_macros>true</include_parent_macros>
     </macros>
     <visible>true</visible>
+    <wuid>-3e043223:13e0e87519f:-1385</wuid>
+    <scripts />
+    <height>22</height>
+    <name>Grouping Container</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
+    <transparent>true</transparent>
+    <show_scrollbar>false</show_scrollbar>
+    <background_color>
+      <color red="187" green="187" blue="187" />
+    </background_color>
+    <foreground_color>
+      <color red="0" green="0" blue="0" />
+    </foreground_color>
+    <widget_type>Grouping Container</widget_type>
+    <enabled>true</enabled>
     <font>
-      <opifont.name>Default</opifont.name>
+      <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
     </font>
     <width>919</width>
     <border_style>0</border_style>
     <rules />
     <lock_children>false</lock_children>
-    <scripts />
-    <height>22</height>
     <border_width>1</border_width>
-    <name>Grouping Container</name>
     <border_color>
       <color red="0" green="128" blue="255" />
     </border_color>
-    <transparent>false</transparent>
-    <show_scrollbar>false</show_scrollbar>
+    <actions hook="false" hook_all="false" />
     <y>185</y>
-    <actions hook="false" />
-    <foreground_color>
-      <color red="0" green="0" blue="0" />
-    </foreground_color>
-    <background_color>
-      <color red="187" green="187" blue="187" />
-    </background_color>
+    <tooltip></tooltip>
     <x>19</x>
-    <tooltip />
     <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
+      <wuid>-3e043223:13e0e87519f:-1384</wuid>
       <auto_size>false</auto_size>
       <scripts />
       <height>20</height>
       <name>Label</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <transparent>true</transparent>
       <show_scrollbar>false</show_scrollbar>
       <background_color>
         <color red="255" green="255" blue="255" />
       </background_color>
       <foreground_color>
-        <color name="Gray_14" />
+        <color name="Gray_14" red="0" green="0" blue="0" />
       </foreground_color>
       <widget_type>Label</widget_type>
       <enabled>true</enabled>
       <text>4</text>
       <font>
-        <fontdata fontName="Sans" height="14" style="0" />
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>10</width>
       <border_style>0</border_style>
@@ -1910,54 +2292,63 @@ $(pv_value)</tooltip>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>1</y>
       <wrap_words>true</wrap_words>
-      <tooltip />
+      <tooltip></tooltip>
       <x>0</x>
     </widget>
     <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
-      <minimum>-Infinity</minimum>
       <vertical_alignment>1</vertical_alignment>
-      <show_units>false</show_units>
       <multiline_input>false</multiline_input>
       <auto_size>false</auto_size>
       <scripts />
       <height>22</height>
       <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-      <name>Text Input</name>
-      <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
-      <transparent>false</transparent>
-      <selector_type>0</selector_type>
-      <pv_name>$(P)$(M)4.R$(R)LO</pv_name>
       <background_color>
-        <color name="ioc_write_bg" />
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
-      <foreground_color>
-        <color name="Gray_14" />
-      </foreground_color>
       <widget_type>Text Input</widget_type>
       <enabled>true</enabled>
-      <text />
-      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-      <precision>0</precision>
+      <text></text>
       <font>
-        <fontdata fontName="Sans" height="16" style="0" />
+        <fontdata fontName="Sans" height="13" style="0" />
       </font>
       <width>76</width>
       <border_style>3</border_style>
-      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <maximum>Infinity</maximum>
+      <minimum>-Infinity</minimum>
+      <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-1383</wuid>
+      <rotation_angle>0.0</rotation_angle>
+      <name>Text Input</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <format_type>1</format_type>
+      <transparent>false</transparent>
+      <selector_type>0</selector_type>
+      <pv_name>$(P)$(M)4.R$(R)LO</pv_name>
+      <foreground_color>
+        <color name="Gray_14" red="0" green="0" blue="0" />
+      </foreground_color>
+      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+      <precision>0</precision>
+      <confirm_message></confirm_message>
+      <rules />
       <limits_from_pv>false</limits_from_pv>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -1966,45 +2357,54 @@ $(pv_value)</tooltip>
     <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
-      <minimum>-Infinity</minimum>
       <vertical_alignment>1</vertical_alignment>
-      <show_units>false</show_units>
       <multiline_input>false</multiline_input>
       <auto_size>false</auto_size>
       <scripts />
       <height>22</height>
       <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-      <name>Text Input</name>
-      <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
-      <transparent>false</transparent>
-      <selector_type>0</selector_type>
-      <pv_name>$(P)$(M)4.R$(R)HI</pv_name>
       <background_color>
-        <color name="ioc_write_bg" />
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
-      <foreground_color>
-        <color name="Gray_14" />
-      </foreground_color>
       <widget_type>Text Input</widget_type>
       <enabled>true</enabled>
-      <text />
-      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-      <precision>0</precision>
+      <text></text>
       <font>
-        <fontdata fontName="Sans" height="16" style="0" />
+        <fontdata fontName="Sans" height="13" style="0" />
       </font>
       <width>76</width>
       <border_style>3</border_style>
-      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <maximum>Infinity</maximum>
+      <minimum>-Infinity</minimum>
+      <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-1382</wuid>
+      <rotation_angle>0.0</rotation_angle>
+      <name>Text Input</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <format_type>1</format_type>
+      <transparent>false</transparent>
+      <selector_type>0</selector_type>
+      <pv_name>$(P)$(M)4.R$(R)HI</pv_name>
+      <foreground_color>
+        <color name="Gray_14" red="0" green="0" blue="0" />
+      </foreground_color>
+      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+      <precision>0</precision>
+      <confirm_message></confirm_message>
+      <rules />
       <limits_from_pv>false</limits_from_pv>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -2013,45 +2413,54 @@ $(pv_value)</tooltip>
     <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
-      <minimum>-Infinity</minimum>
       <vertical_alignment>1</vertical_alignment>
-      <show_units>false</show_units>
       <multiline_input>false</multiline_input>
       <auto_size>false</auto_size>
       <scripts />
       <height>22</height>
       <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-      <name>Text Input</name>
-      <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
-      <transparent>false</transparent>
-      <selector_type>0</selector_type>
-      <pv_name>$(P)$(M)4.R$(R)BG</pv_name>
       <background_color>
-        <color name="ioc_write_bg" />
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
-      <foreground_color>
-        <color name="Gray_14" />
-      </foreground_color>
       <widget_type>Text Input</widget_type>
       <enabled>true</enabled>
-      <text />
-      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-      <precision>0</precision>
+      <text></text>
       <font>
-        <fontdata fontName="Sans" height="16" style="0" />
+        <fontdata fontName="Sans" height="13" style="0" />
       </font>
       <width>76</width>
       <border_style>3</border_style>
-      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <maximum>Infinity</maximum>
+      <minimum>-Infinity</minimum>
+      <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-1381</wuid>
+      <rotation_angle>0.0</rotation_angle>
+      <name>Text Input</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <format_type>1</format_type>
+      <transparent>false</transparent>
+      <selector_type>0</selector_type>
+      <pv_name>$(P)$(M)4.R$(R)BG</pv_name>
+      <foreground_color>
+        <color name="Gray_14" red="0" green="0" blue="0" />
+      </foreground_color>
+      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+      <precision>0</precision>
+      <confirm_message></confirm_message>
+      <rules />
       <limits_from_pv>false</limits_from_pv>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -2062,20 +2471,27 @@ $(pv_value)</tooltip>
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
       <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-1380</wuid>
       <auto_size>false</auto_size>
+      <rotation_angle>0.0</rotation_angle>
       <scripts />
       <height>20</height>
-      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
       <name>Text Update</name>
+      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
       <transparent>false</transparent>
       <pv_name>$(P)$(M)4.R$(R)</pv_name>
       <background_color>
-        <color name="Gray_1" />
+        <color name="Gray_1" red="236" green="236" blue="236" />
       </background_color>
       <foreground_color>
-        <color name="ioc_read_fg" />
+        <color name="ioc_read_fg" red="10" green="0" blue="184" />
       </foreground_color>
       <widget_type>Text Update</widget_type>
       <enabled>true</enabled>
@@ -2083,17 +2499,18 @@ $(pv_value)</tooltip>
       <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
       <precision>0</precision>
       <font>
-        <fontdata fontName="Sans" height="14" style="0" />
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>76</width>
       <border_style>0</border_style>
       <rules />
+      <pv_value />
       <border_width>1</border_width>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>1</y>
       <wrap_words>false</wrap_words>
       <tooltip>$(pv_name)
@@ -2105,20 +2522,27 @@ $(pv_value)</tooltip>
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
       <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-137f</wuid>
       <auto_size>false</auto_size>
+      <rotation_angle>0.0</rotation_angle>
       <scripts />
       <height>20</height>
-      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
       <name>Text Update</name>
+      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
       <transparent>false</transparent>
       <pv_name>$(P)$(M)4.R$(R)N</pv_name>
       <background_color>
-        <color name="Gray_1" />
+        <color name="Gray_1" red="236" green="236" blue="236" />
       </background_color>
       <foreground_color>
-        <color name="ioc_read_fg" />
+        <color name="ioc_read_fg" red="10" green="0" blue="184" />
       </foreground_color>
       <widget_type>Text Update</widget_type>
       <enabled>true</enabled>
@@ -2126,17 +2550,18 @@ $(pv_value)</tooltip>
       <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
       <precision>0</precision>
       <font>
-        <fontdata fontName="Sans" height="14" style="0" />
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>76</width>
       <border_style>0</border_style>
       <rules />
+      <pv_value />
       <border_width>1</border_width>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>1</y>
       <wrap_words>false</wrap_words>
       <tooltip>$(pv_name)
@@ -2146,45 +2571,54 @@ $(pv_value)</tooltip>
     <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
-      <minimum>-Infinity</minimum>
       <vertical_alignment>1</vertical_alignment>
-      <show_units>false</show_units>
       <multiline_input>false</multiline_input>
       <auto_size>false</auto_size>
       <scripts />
       <height>22</height>
       <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-      <name>Text Input</name>
-      <format_type>4</format_type>
       <precision_from_pv>true</precision_from_pv>
-      <transparent>false</transparent>
-      <selector_type>0</selector_type>
-      <pv_name>$(P)$(M)4.R$(R)NM</pv_name>
       <background_color>
-        <color name="ioc_write_bg" />
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
-      <foreground_color>
-        <color name="Gray_14" />
-      </foreground_color>
       <widget_type>Text Input</widget_type>
       <enabled>true</enabled>
-      <text />
-      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-      <precision>0</precision>
+      <text></text>
       <font>
-        <fontdata fontName="Sans" height="16" style="0" />
+        <fontdata fontName="Sans" height="13" style="0" />
       </font>
       <width>76</width>
       <border_style>3</border_style>
-      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <maximum>Infinity</maximum>
+      <minimum>-Infinity</minimum>
+      <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-137e</wuid>
+      <rotation_angle>0.0</rotation_angle>
+      <name>Text Input</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <format_type>4</format_type>
+      <transparent>false</transparent>
+      <selector_type>0</selector_type>
+      <pv_name>$(P)$(M)4.R$(R)NM</pv_name>
+      <foreground_color>
+        <color name="Gray_14" red="0" green="0" blue="0" />
+      </foreground_color>
+      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+      <precision>0</precision>
+      <confirm_message></confirm_message>
+      <rules />
       <limits_from_pv>false</limits_from_pv>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -2193,45 +2627,54 @@ $(pv_value)</tooltip>
     <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
-      <minimum>-Infinity</minimum>
       <vertical_alignment>1</vertical_alignment>
-      <show_units>false</show_units>
       <multiline_input>false</multiline_input>
       <auto_size>false</auto_size>
       <scripts />
       <height>22</height>
       <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-      <name>Text Input</name>
-      <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
-      <transparent>false</transparent>
-      <selector_type>0</selector_type>
-      <pv_name>$(P)$(D)4:SCA$(R)Low</pv_name>
       <background_color>
-        <color name="ioc_write_bg" />
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
-      <foreground_color>
-        <color name="Gray_14" />
-      </foreground_color>
       <widget_type>Text Input</widget_type>
       <enabled>true</enabled>
-      <text />
-      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-      <precision>0</precision>
+      <text></text>
       <font>
-        <fontdata fontName="Sans" height="16" style="0" />
+        <fontdata fontName="Sans" height="13" style="0" />
       </font>
       <width>76</width>
       <border_style>3</border_style>
-      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <maximum>Infinity</maximum>
+      <minimum>-Infinity</minimum>
+      <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-137d</wuid>
+      <rotation_angle>0.0</rotation_angle>
+      <name>Text Input</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <format_type>1</format_type>
+      <transparent>false</transparent>
+      <selector_type>0</selector_type>
+      <pv_name>$(P)$(D)4:SCA$(R)Low</pv_name>
+      <foreground_color>
+        <color name="Gray_14" red="0" green="0" blue="0" />
+      </foreground_color>
+      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+      <precision>0</precision>
+      <confirm_message></confirm_message>
+      <rules />
       <limits_from_pv>false</limits_from_pv>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -2240,45 +2683,54 @@ $(pv_value)</tooltip>
     <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
-      <minimum>-Infinity</minimum>
       <vertical_alignment>1</vertical_alignment>
-      <show_units>false</show_units>
       <multiline_input>false</multiline_input>
       <auto_size>false</auto_size>
       <scripts />
       <height>22</height>
       <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-      <name>Text Input</name>
-      <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
-      <transparent>false</transparent>
-      <selector_type>0</selector_type>
-      <pv_name>$(P)$(D)4:SCA$(R)High</pv_name>
       <background_color>
-        <color name="ioc_write_bg" />
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
-      <foreground_color>
-        <color name="Gray_14" />
-      </foreground_color>
       <widget_type>Text Input</widget_type>
       <enabled>true</enabled>
-      <text />
-      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-      <precision>0</precision>
+      <text></text>
       <font>
-        <fontdata fontName="Sans" height="16" style="0" />
+        <fontdata fontName="Sans" height="13" style="0" />
       </font>
       <width>76</width>
       <border_style>3</border_style>
-      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <maximum>Infinity</maximum>
+      <minimum>-Infinity</minimum>
+      <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-137c</wuid>
+      <rotation_angle>0.0</rotation_angle>
+      <name>Text Input</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <format_type>1</format_type>
+      <transparent>false</transparent>
+      <selector_type>0</selector_type>
+      <pv_name>$(P)$(D)4:SCA$(R)High</pv_name>
+      <foreground_color>
+        <color name="Gray_14" red="0" green="0" blue="0" />
+      </foreground_color>
+      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+      <precision>0</precision>
+      <confirm_message></confirm_message>
+      <rules />
       <limits_from_pv>false</limits_from_pv>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -2289,20 +2741,27 @@ $(pv_value)</tooltip>
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
       <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-137b</wuid>
       <auto_size>false</auto_size>
+      <rotation_angle>0.0</rotation_angle>
       <scripts />
       <height>20</height>
-      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
       <name>Text Update</name>
+      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
       <transparent>false</transparent>
       <pv_name>$(P)$(D)4:SCA$(R)Counts</pv_name>
       <background_color>
-        <color name="Gray_1" />
+        <color name="Gray_1" red="236" green="236" blue="236" />
       </background_color>
       <foreground_color>
-        <color name="ioc_read_fg" />
+        <color name="ioc_read_fg" red="10" green="0" blue="184" />
       </foreground_color>
       <widget_type>Text Update</widget_type>
       <enabled>true</enabled>
@@ -2310,17 +2769,18 @@ $(pv_value)</tooltip>
       <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
       <precision>0</precision>
       <font>
-        <fontdata fontName="Sans" height="14" style="0" />
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>76</width>
       <border_style>0</border_style>
       <rules />
+      <pv_value />
       <border_width>1</border_width>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>1</y>
       <wrap_words>false</wrap_words>
       <tooltip>$(pv_name)
@@ -2332,20 +2792,27 @@ $(pv_value)</tooltip>
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
       <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-137a</wuid>
       <auto_size>false</auto_size>
+      <rotation_angle>0.0</rotation_angle>
       <scripts />
       <height>20</height>
-      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
       <name>Text Update</name>
+      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
       <transparent>false</transparent>
       <pv_name>$(P)$(D)4:SCA$(R)Low_RBV</pv_name>
       <background_color>
-        <color name="Gray_1" />
+        <color name="Gray_1" red="236" green="236" blue="236" />
       </background_color>
       <foreground_color>
-        <color name="ioc_read_fg" />
+        <color name="ioc_read_fg" red="10" green="0" blue="184" />
       </foreground_color>
       <widget_type>Text Update</widget_type>
       <enabled>true</enabled>
@@ -2353,17 +2820,18 @@ $(pv_value)</tooltip>
       <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
       <precision>0</precision>
       <font>
-        <fontdata fontName="Sans" height="14" style="0" />
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>76</width>
       <border_style>0</border_style>
       <rules />
+      <pv_value />
       <border_width>1</border_width>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>1</y>
       <wrap_words>false</wrap_words>
       <tooltip>$(pv_name)
@@ -2375,20 +2843,27 @@ $(pv_value)</tooltip>
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
       <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-1379</wuid>
       <auto_size>false</auto_size>
+      <rotation_angle>0.0</rotation_angle>
       <scripts />
       <height>20</height>
-      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
       <name>Text Update</name>
+      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
       <transparent>false</transparent>
       <pv_name>$(P)$(D)4:SCA$(R)High_RBV</pv_name>
       <background_color>
-        <color name="Gray_1" />
+        <color name="Gray_1" red="236" green="236" blue="236" />
       </background_color>
       <foreground_color>
-        <color name="ioc_read_fg" />
+        <color name="ioc_read_fg" red="10" green="0" blue="184" />
       </foreground_color>
       <widget_type>Text Update</widget_type>
       <enabled>true</enabled>
@@ -2396,17 +2871,18 @@ $(pv_value)</tooltip>
       <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
       <precision>0</precision>
       <font>
-        <fontdata fontName="Sans" height="14" style="0" />
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>76</width>
       <border_style>0</border_style>
       <rules />
+      <pv_value />
       <border_width>1</border_width>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>1</y>
       <wrap_words>false</wrap_words>
       <tooltip>$(pv_name)
@@ -2415,91 +2891,109 @@ $(pv_value)</tooltip>
     </widget>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
-    <enabled>true</enabled>
-    <widget_type>Grouping Container</widget_type>
     <macros>
       <include_parent_macros>true</include_parent_macros>
     </macros>
     <visible>true</visible>
+    <wuid>-3e043223:13e0e87519f:-1378</wuid>
+    <scripts />
+    <height>93</height>
+    <name>Grouping Container</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
+    <transparent>true</transparent>
+    <show_scrollbar>false</show_scrollbar>
+    <background_color>
+      <color red="187" green="187" blue="187" />
+    </background_color>
+    <foreground_color>
+      <color red="0" green="0" blue="0" />
+    </foreground_color>
+    <widget_type>Grouping Container</widget_type>
+    <enabled>true</enabled>
     <font>
-      <opifont.name>Default</opifont.name>
+      <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
     </font>
     <width>647</width>
     <border_style>0</border_style>
     <rules />
     <lock_children>false</lock_children>
-    <scripts />
-    <height>93</height>
     <border_width>1</border_width>
-    <name>Grouping Container</name>
     <border_color>
       <color red="0" green="128" blue="255" />
     </border_color>
-    <transparent>false</transparent>
-    <show_scrollbar>false</show_scrollbar>
+    <actions hook="false" hook_all="false" />
     <y>225</y>
-    <actions hook="false" />
-    <foreground_color>
-      <color red="0" green="0" blue="0" />
-    </foreground_color>
-    <background_color>
-      <color red="187" green="187" blue="187" />
-    </background_color>
+    <tooltip></tooltip>
     <x>47</x>
-    <tooltip />
     <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
-      <enabled>true</enabled>
-      <widget_type>Grouping Container</widget_type>
       <macros>
         <include_parent_macros>true</include_parent_macros>
       </macros>
       <visible>true</visible>
+      <wuid>-3e043223:13e0e87519f:-1377</wuid>
+      <scripts />
+      <height>70</height>
+      <name>Grouping Container</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <transparent>true</transparent>
+      <show_scrollbar>false</show_scrollbar>
+      <background_color>
+        <color red="187" green="187" blue="187" />
+      </background_color>
+      <foreground_color>
+        <color red="0" green="0" blue="0" />
+      </foreground_color>
+      <widget_type>Grouping Container</widget_type>
+      <enabled>true</enabled>
       <font>
-        <opifont.name>Default</opifont.name>
+        <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
       </font>
       <width>647</width>
       <border_style>0</border_style>
       <rules />
       <lock_children>false</lock_children>
-      <scripts />
-      <height>70</height>
       <border_width>1</border_width>
-      <name>Grouping Container</name>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
-      <transparent>false</transparent>
-      <show_scrollbar>false</show_scrollbar>
+      <actions hook="false" hook_all="false" />
       <y>23</y>
-      <actions hook="false" />
-      <foreground_color>
-        <color red="0" green="0" blue="0" />
-      </foreground_color>
-      <background_color>
-        <color red="187" green="187" blue="187" />
-      </background_color>
+      <tooltip></tooltip>
       <x>0</x>
-      <tooltip />
       <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
         <visible>true</visible>
         <vertical_alignment>1</vertical_alignment>
+        <wuid>-3e043223:13e0e87519f:-1376</wuid>
         <auto_size>false</auto_size>
         <scripts />
         <height>20</height>
         <name>Label</name>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <transparent>true</transparent>
         <show_scrollbar>false</show_scrollbar>
         <background_color>
           <color red="255" green="255" blue="255" />
         </background_color>
         <foreground_color>
-          <color name="Gray_14" />
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <widget_type>Label</widget_type>
         <enabled>true</enabled>
         <text>Copy all detector 1 ROIs to all detectors by channel</text>
         <font>
-          <fontdata fontName="Sans" height="14" style="0" />
+          <fontdata fontName="Sans" height="11" style="0" />
         </font>
         <width>520</width>
         <border_style>0</border_style>
@@ -2509,32 +3003,38 @@ $(pv_value)</tooltip>
           <color red="0" green="128" blue="255" />
         </border_color>
         <horizontal_alignment>1</horizontal_alignment>
-        <actions hook="false" />
+        <actions hook="false" hook_all="false" />
         <y>0</y>
         <wrap_words>true</wrap_words>
-        <tooltip />
+        <tooltip></tooltip>
         <x>127</x>
       </widget>
       <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
         <visible>true</visible>
         <vertical_alignment>1</vertical_alignment>
+        <wuid>-3e043223:13e0e87519f:-1375</wuid>
         <auto_size>false</auto_size>
         <scripts />
         <height>20</height>
         <name>Label</name>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <transparent>true</transparent>
         <show_scrollbar>false</show_scrollbar>
         <background_color>
           <color red="255" green="255" blue="255" />
         </background_color>
         <foreground_color>
-          <color name="Gray_14" />
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <widget_type>Label</widget_type>
         <enabled>true</enabled>
         <text>Copy all detector 1 ROIs to all detectors by energy</text>
         <font>
-          <fontdata fontName="Sans" height="14" style="0" />
+          <fontdata fontName="Sans" height="11" style="0" />
         </font>
         <width>510</width>
         <border_style>0</border_style>
@@ -2544,32 +3044,38 @@ $(pv_value)</tooltip>
           <color red="0" green="128" blue="255" />
         </border_color>
         <horizontal_alignment>1</horizontal_alignment>
-        <actions hook="false" />
+        <actions hook="false" hook_all="false" />
         <y>25</y>
         <wrap_words>true</wrap_words>
-        <tooltip />
+        <tooltip></tooltip>
         <x>127</x>
       </widget>
       <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
         <visible>true</visible>
         <vertical_alignment>1</vertical_alignment>
+        <wuid>-3e043223:13e0e87519f:-1374</wuid>
         <auto_size>false</auto_size>
         <scripts />
         <height>20</height>
         <name>Label</name>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <transparent>true</transparent>
         <show_scrollbar>false</show_scrollbar>
         <background_color>
           <color red="255" green="255" blue="255" />
         </background_color>
         <foreground_color>
-          <color name="Gray_14" />
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <widget_type>Label</widget_type>
         <enabled>true</enabled>
         <text>Copy all ROIs to SCAs for all detectors</text>
         <font>
-          <fontdata fontName="Sans" height="14" style="0" />
+          <fontdata fontName="Sans" height="11" style="0" />
         </font>
         <width>390</width>
         <border_style>0</border_style>
@@ -2579,50 +3085,57 @@ $(pv_value)</tooltip>
           <color red="0" green="128" blue="255" />
         </border_color>
         <horizontal_alignment>1</horizontal_alignment>
-        <actions hook="false" />
+        <actions hook="false" hook_all="false" />
         <y>50</y>
         <wrap_words>true</wrap_words>
-        <tooltip />
+        <tooltip></tooltip>
         <x>127</x>
       </widget>
       <widget typeId="org.csstudio.opibuilder.widgets.ActionButton" version="1.0">
         <border_alarm_sensitive>false</border_alarm_sensitive>
         <visible>true</visible>
+        <wuid>-3e043223:13e0e87519f:-1373</wuid>
         <scripts />
         <height>18</height>
-        <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
         <name>Action Button</name>
+        <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <pv_name>$(P)CopyROIChannel</pv_name>
         <background_color>
-          <color name="ioc_write_bg" />
+          <color name="ioc_write_bg" red="115" green="223" blue="255" />
         </background_color>
         <foreground_color>
-          <color name="Gray_14" />
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <widget_type>Action Button</widget_type>
         <enabled>true</enabled>
         <text>Copy 1-&gt;All</text>
         <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
         <font>
-          <opifont.name>Default</opifont.name>
+          <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
         </font>
         <width>120</width>
-        <push_action_index>0</push_action_index>
         <border_style>0</border_style>
-        <image />
+        <push_action_index>0</push_action_index>
+        <image></image>
         <rules />
+        <pv_value />
         <toggle_button>false</toggle_button>
         <border_width>1</border_width>
         <border_color>
           <color red="0" green="128" blue="255" />
         </border_color>
         <y>1</y>
-        <actions hook="false">
+        <actions hook="false" hook_all="false">
           <action type="WRITE_PV">
             <pv_name>$(P)CopyROIChannel</pv_name>
             <value>1</value>
             <timeout>10</timeout>
-            <description />
+            <description></description>
           </action>
         </actions>
         <tooltip>$(pv_name)
@@ -2632,41 +3145,48 @@ $(pv_value)</tooltip>
       <widget typeId="org.csstudio.opibuilder.widgets.ActionButton" version="1.0">
         <border_alarm_sensitive>false</border_alarm_sensitive>
         <visible>true</visible>
+        <wuid>-3e043223:13e0e87519f:-1372</wuid>
         <scripts />
         <height>18</height>
-        <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
         <name>Action Button</name>
+        <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <pv_name>$(P)CopyROIEnergy</pv_name>
         <background_color>
-          <color name="ioc_write_bg" />
+          <color name="ioc_write_bg" red="115" green="223" blue="255" />
         </background_color>
         <foreground_color>
-          <color name="Gray_14" />
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <widget_type>Action Button</widget_type>
         <enabled>true</enabled>
         <text>Copy 1-&gt;All</text>
         <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
         <font>
-          <opifont.name>Default</opifont.name>
+          <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
         </font>
         <width>120</width>
-        <push_action_index>0</push_action_index>
         <border_style>0</border_style>
-        <image />
+        <push_action_index>0</push_action_index>
+        <image></image>
         <rules />
+        <pv_value />
         <toggle_button>false</toggle_button>
         <border_width>1</border_width>
         <border_color>
           <color red="0" green="128" blue="255" />
         </border_color>
         <y>26</y>
-        <actions hook="false">
+        <actions hook="false" hook_all="false">
           <action type="WRITE_PV">
             <pv_name>$(P)CopyROIEnergy</pv_name>
             <value>1</value>
             <timeout>10</timeout>
-            <description />
+            <description></description>
           </action>
         </actions>
         <tooltip>$(pv_name)
@@ -2676,41 +3196,48 @@ $(pv_value)</tooltip>
       <widget typeId="org.csstudio.opibuilder.widgets.ActionButton" version="1.0">
         <border_alarm_sensitive>false</border_alarm_sensitive>
         <visible>true</visible>
+        <wuid>-3e043223:13e0e87519f:-1371</wuid>
         <scripts />
         <height>18</height>
-        <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
         <name>Action Button</name>
+        <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <pv_name>$(P)CopyROI_SCA</pv_name>
         <background_color>
-          <color name="ioc_write_bg" />
+          <color name="ioc_write_bg" red="115" green="223" blue="255" />
         </background_color>
         <foreground_color>
-          <color name="Gray_14" />
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <widget_type>Action Button</widget_type>
         <enabled>true</enabled>
         <text>Copy ROIs to SCAs</text>
         <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
         <font>
-          <opifont.name>Default</opifont.name>
+          <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
         </font>
         <width>120</width>
-        <push_action_index>0</push_action_index>
         <border_style>0</border_style>
-        <image />
+        <push_action_index>0</push_action_index>
+        <image></image>
         <rules />
+        <pv_value />
         <toggle_button>false</toggle_button>
         <border_width>1</border_width>
         <border_color>
           <color red="0" green="128" blue="255" />
         </border_color>
         <y>51</y>
-        <actions hook="false">
+        <actions hook="false" hook_all="false">
           <action type="WRITE_PV">
             <pv_name>$(P)CopyROI_SCA</pv_name>
             <value>1</value>
             <timeout>10</timeout>
-            <description />
+            <description></description>
           </action>
         </actions>
         <tooltip>$(pv_name)
@@ -2721,23 +3248,29 @@ $(pv_value)</tooltip>
     <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
+      <wuid>-3e043223:13e0e87519f:-1370</wuid>
       <auto_size>false</auto_size>
       <scripts />
       <height>20</height>
       <name>Label</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <transparent>true</transparent>
       <show_scrollbar>false</show_scrollbar>
       <background_color>
         <color red="255" green="255" blue="255" />
       </background_color>
       <foreground_color>
-        <color name="Gray_14" />
+        <color name="Gray_14" red="0" green="0" blue="0" />
       </foreground_color>
       <widget_type>Label</widget_type>
       <enabled>true</enabled>
       <text>Maximum number of SCAs</text>
       <font>
-        <fontdata fontName="Sans" height="14" style="0" />
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>220</width>
       <border_style>0</border_style>
@@ -2747,54 +3280,63 @@ $(pv_value)</tooltip>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <wrap_words>true</wrap_words>
-      <tooltip />
+      <tooltip></tooltip>
       <x>85</x>
     </widget>
     <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
-      <minimum>-Infinity</minimum>
       <vertical_alignment>1</vertical_alignment>
-      <show_units>false</show_units>
       <multiline_input>false</multiline_input>
       <auto_size>false</auto_size>
       <scripts />
       <height>20</height>
       <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-      <name>Text Input</name>
-      <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
-      <transparent>false</transparent>
-      <selector_type>0</selector_type>
-      <pv_name>$(P)NumSCAs</pv_name>
       <background_color>
-        <color name="ioc_write_bg" />
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
-      <foreground_color>
-        <color name="Gray_14" />
-      </foreground_color>
       <widget_type>Text Input</widget_type>
       <enabled>true</enabled>
-      <text />
-      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-      <precision>0</precision>
+      <text></text>
       <font>
-        <fontdata fontName="Sans" height="14" style="0" />
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>80</width>
       <border_style>3</border_style>
-      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <maximum>Infinity</maximum>
+      <minimum>-Infinity</minimum>
+      <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-136f</wuid>
+      <rotation_angle>0.0</rotation_angle>
+      <name>Text Input</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <format_type>1</format_type>
+      <transparent>false</transparent>
+      <selector_type>0</selector_type>
+      <pv_name>$(P)NumSCAs</pv_name>
+      <foreground_color>
+        <color name="Gray_14" red="0" green="0" blue="0" />
+      </foreground_color>
+      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+      <precision>0</precision>
+      <confirm_message></confirm_message>
+      <rules />
       <limits_from_pv>false</limits_from_pv>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -2803,23 +3345,29 @@ $(pv_value)</tooltip>
     <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
+      <wuid>-3e043223:13e0e87519f:-136e</wuid>
       <auto_size>false</auto_size>
       <scripts />
       <height>20</height>
       <name>Label</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <transparent>true</transparent>
       <show_scrollbar>false</show_scrollbar>
       <background_color>
         <color red="255" green="255" blue="255" />
       </background_color>
       <foreground_color>
-        <color name="Gray_14" />
+        <color name="Gray_14" red="0" green="0" blue="0" />
       </foreground_color>
       <widget_type>Label</widget_type>
       <enabled>true</enabled>
       <text>Number of SCAs to use</text>
       <font>
-        <fontdata fontName="Sans" height="14" style="0" />
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>210</width>
       <border_style>0</border_style>
@@ -2829,10 +3377,10 @@ $(pv_value)</tooltip>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <wrap_words>true</wrap_words>
-      <tooltip />
+      <tooltip></tooltip>
       <x>410</x>
     </widget>
     <widget typeId="org.csstudio.opibuilder.widgets.TextUpdate" version="1.0">
@@ -2840,20 +3388,27 @@ $(pv_value)</tooltip>
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
       <show_units>false</show_units>
+      <wuid>-3e043223:13e0e87519f:-136d</wuid>
       <auto_size>false</auto_size>
+      <rotation_angle>0.0</rotation_angle>
       <scripts />
       <height>20</height>
-      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
       <name>Text Update</name>
+      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
       <transparent>false</transparent>
       <pv_name>$(P)MaxSCAs</pv_name>
       <background_color>
-        <color name="Gray_0" />
+        <color name="Gray_0" red="255" green="255" blue="255" />
       </background_color>
       <foreground_color>
-        <color name="ioc_read_fg" />
+        <color name="ioc_read_fg" red="10" green="0" blue="184" />
       </foreground_color>
       <widget_type>Text Update</widget_type>
       <enabled>true</enabled>
@@ -2861,17 +3416,18 @@ $(pv_value)</tooltip>
       <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
       <precision>0</precision>
       <font>
-        <fontdata fontName="Sans" height="14" style="0" />
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>80</width>
       <border_style>0</border_style>
       <rules />
+      <pv_value />
       <border_width>1</border_width>
       <border_color>
         <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false" />
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <wrap_words>false</wrap_words>
       <tooltip>$(pv_name)
@@ -2882,23 +3438,29 @@ $(pv_value)</tooltip>
   <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
     <visible>true</visible>
     <vertical_alignment>1</vertical_alignment>
+    <wuid>-3e043223:13e0e87519f:-13bb</wuid>
     <auto_size>false</auto_size>
     <scripts />
     <height>25</height>
     <name>Label</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
     <transparent>true</transparent>
     <show_scrollbar>false</show_scrollbar>
     <background_color>
       <color red="255" green="255" blue="255" />
     </background_color>
     <foreground_color>
-      <color name="Gray_0" />
+      <color name="Gray_0" red="255" green="255" blue="255" />
     </foreground_color>
     <widget_type>Label</widget_type>
     <enabled>true</enabled>
     <text>4 Element Detector - ROI/SCA $(R)</text>
     <font>
-      <fontdata fontName="Sans" height="18" style="0" />
+      <fontdata fontName="Sans" height="15" style="0" />
     </font>
     <width>408</width>
     <border_style>0</border_style>
@@ -2908,32 +3470,38 @@ $(pv_value)</tooltip>
       <color red="0" green="128" blue="255" />
     </border_color>
     <horizontal_alignment>0</horizontal_alignment>
-    <actions hook="false" />
+    <actions hook="false" hook_all="false" />
     <y>10</y>
     <wrap_words>true</wrap_words>
-    <tooltip />
+    <tooltip></tooltip>
     <x>270</x>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
     <visible>true</visible>
     <vertical_alignment>1</vertical_alignment>
+    <wuid>-3e043223:13e0e87519f:-13ba</wuid>
     <auto_size>false</auto_size>
     <scripts />
     <height>20</height>
     <name>Label</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
     <transparent>true</transparent>
     <show_scrollbar>false</show_scrollbar>
     <background_color>
       <color red="255" green="255" blue="255" />
     </background_color>
     <foreground_color>
-      <color name="Gray_14" />
+      <color name="Gray_14" red="0" green="0" blue="0" />
     </foreground_color>
     <widget_type>Label</widget_type>
     <enabled>true</enabled>
     <text>Det.</text>
     <font>
-      <fontdata fontName="Sans" height="14" style="0" />
+      <fontdata fontName="Sans" height="11" style="0" />
     </font>
     <width>40</width>
     <border_style>0</border_style>
@@ -2943,32 +3511,38 @@ $(pv_value)</tooltip>
       <color red="0" green="128" blue="255" />
     </border_color>
     <horizontal_alignment>1</horizontal_alignment>
-    <actions hook="false" />
+    <actions hook="false" hook_all="false" />
     <y>78</y>
     <wrap_words>true</wrap_words>
-    <tooltip />
+    <tooltip></tooltip>
     <x>8</x>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
     <visible>true</visible>
     <vertical_alignment>1</vertical_alignment>
+    <wuid>-3e043223:13e0e87519f:-13b9</wuid>
     <auto_size>false</auto_size>
     <scripts />
     <height>20</height>
     <name>Label</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
     <transparent>true</transparent>
     <show_scrollbar>false</show_scrollbar>
     <background_color>
       <color red="255" green="255" blue="255" />
     </background_color>
     <foreground_color>
-      <color name="Gray_14" />
+      <color name="Gray_14" red="0" green="0" blue="0" />
     </foreground_color>
     <widget_type>Label</widget_type>
     <enabled>true</enabled>
     <text>Low</text>
     <font>
-      <fontdata fontName="Sans" height="14" style="0" />
+      <fontdata fontName="Sans" height="11" style="0" />
     </font>
     <width>30</width>
     <border_style>0</border_style>
@@ -2978,32 +3552,38 @@ $(pv_value)</tooltip>
       <color red="0" green="128" blue="255" />
     </border_color>
     <horizontal_alignment>1</horizontal_alignment>
-    <actions hook="false" />
+    <actions hook="false" hook_all="false" />
     <y>78</y>
     <wrap_words>true</wrap_words>
-    <tooltip />
+    <tooltip></tooltip>
     <x>158</x>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
     <visible>true</visible>
     <vertical_alignment>1</vertical_alignment>
+    <wuid>-3e043223:13e0e87519f:-13b8</wuid>
     <auto_size>false</auto_size>
     <scripts />
     <height>20</height>
     <name>Label</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
     <transparent>true</transparent>
     <show_scrollbar>false</show_scrollbar>
     <background_color>
       <color red="255" green="255" blue="255" />
     </background_color>
     <foreground_color>
-      <color name="Gray_14" />
+      <color name="Gray_14" red="0" green="0" blue="0" />
     </foreground_color>
     <widget_type>Label</widget_type>
     <enabled>true</enabled>
     <text>High</text>
     <font>
-      <fontdata fontName="Sans" height="14" style="0" />
+      <fontdata fontName="Sans" height="11" style="0" />
     </font>
     <width>40</width>
     <border_style>0</border_style>
@@ -3013,32 +3593,38 @@ $(pv_value)</tooltip>
       <color red="0" green="128" blue="255" />
     </border_color>
     <horizontal_alignment>1</horizontal_alignment>
-    <actions hook="false" />
+    <actions hook="false" hook_all="false" />
     <y>78</y>
     <wrap_words>true</wrap_words>
-    <tooltip />
+    <tooltip></tooltip>
     <x>234</x>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
     <visible>true</visible>
     <vertical_alignment>1</vertical_alignment>
+    <wuid>-3e043223:13e0e87519f:-13b7</wuid>
     <auto_size>false</auto_size>
     <scripts />
     <height>20</height>
     <name>Label</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
     <transparent>true</transparent>
     <show_scrollbar>false</show_scrollbar>
     <background_color>
       <color red="255" green="255" blue="255" />
     </background_color>
     <foreground_color>
-      <color name="Gray_14" />
+      <color name="Gray_14" red="0" green="0" blue="0" />
     </foreground_color>
     <widget_type>Label</widget_type>
     <enabled>true</enabled>
     <text>nAvg</text>
     <font>
-      <fontdata fontName="Sans" height="14" style="0" />
+      <fontdata fontName="Sans" height="11" style="0" />
     </font>
     <width>40</width>
     <border_style>0</border_style>
@@ -3048,32 +3634,38 @@ $(pv_value)</tooltip>
       <color red="0" green="128" blue="255" />
     </border_color>
     <horizontal_alignment>1</horizontal_alignment>
-    <actions hook="false" />
+    <actions hook="false" hook_all="false" />
     <y>78</y>
     <wrap_words>true</wrap_words>
-    <tooltip />
+    <tooltip></tooltip>
     <x>315</x>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
     <visible>true</visible>
     <vertical_alignment>1</vertical_alignment>
+    <wuid>-3e043223:13e0e87519f:-13b6</wuid>
     <auto_size>false</auto_size>
     <scripts />
     <height>20</height>
     <name>Label</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
     <transparent>true</transparent>
     <show_scrollbar>false</show_scrollbar>
     <background_color>
       <color red="255" green="255" blue="255" />
     </background_color>
     <foreground_color>
-      <color name="Gray_14" />
+      <color name="Gray_14" red="0" green="0" blue="0" />
     </foreground_color>
     <widget_type>Label</widget_type>
     <enabled>true</enabled>
     <text>Sum</text>
     <font>
-      <fontdata fontName="Sans" height="14" style="0" />
+      <fontdata fontName="Sans" height="11" style="0" />
     </font>
     <width>30</width>
     <border_style>0</border_style>
@@ -3083,32 +3675,38 @@ $(pv_value)</tooltip>
       <color red="0" green="128" blue="255" />
     </border_color>
     <horizontal_alignment>1</horizontal_alignment>
-    <actions hook="false" />
+    <actions hook="false" hook_all="false" />
     <y>78</y>
     <wrap_words>true</wrap_words>
-    <tooltip />
+    <tooltip></tooltip>
     <x>401</x>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
     <visible>true</visible>
     <vertical_alignment>1</vertical_alignment>
+    <wuid>-3e043223:13e0e87519f:-13b5</wuid>
     <auto_size>false</auto_size>
     <scripts />
     <height>20</height>
     <name>Label</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
     <transparent>true</transparent>
     <show_scrollbar>false</show_scrollbar>
     <background_color>
       <color red="255" green="255" blue="255" />
     </background_color>
     <foreground_color>
-      <color name="Gray_14" />
+      <color name="Gray_14" red="0" green="0" blue="0" />
     </foreground_color>
     <widget_type>Label</widget_type>
     <enabled>true</enabled>
     <text>Net</text>
     <font>
-      <fontdata fontName="Sans" height="14" style="0" />
+      <fontdata fontName="Sans" height="11" style="0" />
     </font>
     <width>30</width>
     <border_style>0</border_style>
@@ -3118,32 +3716,38 @@ $(pv_value)</tooltip>
       <color red="0" green="128" blue="255" />
     </border_color>
     <horizontal_alignment>1</horizontal_alignment>
-    <actions hook="false" />
+    <actions hook="false" hook_all="false" />
     <y>78</y>
     <wrap_words>true</wrap_words>
-    <tooltip />
+    <tooltip></tooltip>
     <x>482</x>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
     <visible>true</visible>
     <vertical_alignment>1</vertical_alignment>
+    <wuid>-3e043223:13e0e87519f:-13b4</wuid>
     <auto_size>false</auto_size>
     <scripts />
     <height>20</height>
     <name>Label</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
     <transparent>true</transparent>
     <show_scrollbar>false</show_scrollbar>
     <background_color>
       <color red="255" green="255" blue="255" />
     </background_color>
     <foreground_color>
-      <color name="Gray_14" />
+      <color name="Gray_14" red="0" green="0" blue="0" />
     </foreground_color>
     <widget_type>Label</widget_type>
     <enabled>true</enabled>
     <text>Label</text>
     <font>
-      <fontdata fontName="Sans" height="14" style="0" />
+      <fontdata fontName="Sans" height="11" style="0" />
     </font>
     <width>30</width>
     <border_style>0</border_style>
@@ -3153,32 +3757,38 @@ $(pv_value)</tooltip>
       <color red="0" green="128" blue="255" />
     </border_color>
     <horizontal_alignment>1</horizontal_alignment>
-    <actions hook="false" />
+    <actions hook="false" hook_all="false" />
     <y>78</y>
     <wrap_words>true</wrap_words>
-    <tooltip />
+    <tooltip></tooltip>
     <x>83</x>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
     <visible>true</visible>
     <vertical_alignment>1</vertical_alignment>
+    <wuid>-3e043223:13e0e87519f:-13b3</wuid>
     <auto_size>false</auto_size>
     <scripts />
     <height>20</height>
     <name>Label</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
     <transparent>true</transparent>
     <show_scrollbar>false</show_scrollbar>
     <background_color>
       <color red="255" green="255" blue="255" />
     </background_color>
     <foreground_color>
-      <color name="Gray_14" />
+      <color name="Gray_14" red="0" green="0" blue="0" />
     </foreground_color>
     <widget_type>Label</widget_type>
     <enabled>true</enabled>
     <text>Low</text>
     <font>
-      <fontdata fontName="Sans" height="14" style="0" />
+      <fontdata fontName="Sans" height="11" style="0" />
     </font>
     <width>30</width>
     <border_style>0</border_style>
@@ -3188,32 +3798,38 @@ $(pv_value)</tooltip>
       <color red="0" green="128" blue="255" />
     </border_color>
     <horizontal_alignment>1</horizontal_alignment>
-    <actions hook="false" />
+    <actions hook="false" hook_all="false" />
     <y>78</y>
     <wrap_words>true</wrap_words>
-    <tooltip />
+    <tooltip></tooltip>
     <x>606</x>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
     <visible>true</visible>
     <vertical_alignment>1</vertical_alignment>
+    <wuid>-3e043223:13e0e87519f:-13b2</wuid>
     <auto_size>false</auto_size>
     <scripts />
     <height>20</height>
     <name>Label</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
     <transparent>true</transparent>
     <show_scrollbar>false</show_scrollbar>
     <background_color>
       <color red="255" green="255" blue="255" />
     </background_color>
     <foreground_color>
-      <color name="Gray_14" />
+      <color name="Gray_14" red="0" green="0" blue="0" />
     </foreground_color>
     <widget_type>Label</widget_type>
     <enabled>true</enabled>
     <text>High</text>
     <font>
-      <fontdata fontName="Sans" height="14" style="0" />
+      <fontdata fontName="Sans" height="11" style="0" />
     </font>
     <width>40</width>
     <border_style>0</border_style>
@@ -3223,32 +3839,38 @@ $(pv_value)</tooltip>
       <color red="0" green="128" blue="255" />
     </border_color>
     <horizontal_alignment>1</horizontal_alignment>
-    <actions hook="false" />
+    <actions hook="false" hook_all="false" />
     <y>78</y>
     <wrap_words>true</wrap_words>
-    <tooltip />
+    <tooltip></tooltip>
     <x>757</x>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
     <visible>true</visible>
     <vertical_alignment>1</vertical_alignment>
+    <wuid>-3e043223:13e0e87519f:-13b1</wuid>
     <auto_size>false</auto_size>
     <scripts />
     <height>20</height>
     <name>Label</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
     <transparent>true</transparent>
     <show_scrollbar>false</show_scrollbar>
     <background_color>
       <color red="255" green="255" blue="255" />
     </background_color>
     <foreground_color>
-      <color name="Gray_14" />
+      <color name="Gray_14" red="0" green="0" blue="0" />
     </foreground_color>
     <widget_type>Label</widget_type>
     <enabled>true</enabled>
     <text>Counts</text>
     <font>
-      <fontdata fontName="Sans" height="14" style="0" />
+      <fontdata fontName="Sans" height="11" style="0" />
     </font>
     <width>30</width>
     <border_style>0</border_style>
@@ -3258,32 +3880,38 @@ $(pv_value)</tooltip>
       <color red="0" green="128" blue="255" />
     </border_color>
     <horizontal_alignment>1</horizontal_alignment>
-    <actions hook="false" />
+    <actions hook="false" hook_all="false" />
     <y>78</y>
     <wrap_words>true</wrap_words>
-    <tooltip />
+    <tooltip></tooltip>
     <x>881</x>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
     <visible>true</visible>
     <vertical_alignment>1</vertical_alignment>
+    <wuid>-3e043223:13e0e87519f:-13ae</wuid>
     <auto_size>false</auto_size>
     <scripts />
     <height>25</height>
     <name>Label</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
     <transparent>true</transparent>
     <show_scrollbar>false</show_scrollbar>
     <background_color>
       <color red="255" green="255" blue="255" />
     </background_color>
     <foreground_color>
-      <color name="MEDM_COLOR_28" />
+      <color name="MEDM_COLOR_28" red="58" green="94" blue="171" />
     </foreground_color>
     <widget_type>Label</widget_type>
     <enabled>true</enabled>
     <text>DXP SCA</text>
     <font>
-      <fontdata fontName="Sans" height="18" style="0" />
+      <fontdata fontName="Sans" height="15" style="0" />
     </font>
     <width>84</width>
     <border_style>0</border_style>
@@ -3293,32 +3921,38 @@ $(pv_value)</tooltip>
       <color red="0" green="128" blue="255" />
     </border_color>
     <horizontal_alignment>1</horizontal_alignment>
-    <actions hook="false" />
+    <actions hook="false" hook_all="false" />
     <y>50</y>
     <wrap_words>true</wrap_words>
-    <tooltip />
+    <tooltip></tooltip>
     <x>699</x>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
     <visible>true</visible>
     <vertical_alignment>1</vertical_alignment>
+    <wuid>-3e043223:13e0e87519f:-13ad</wuid>
     <auto_size>false</auto_size>
     <scripts />
     <height>25</height>
     <name>Label</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
     <transparent>true</transparent>
     <show_scrollbar>false</show_scrollbar>
     <background_color>
       <color red="255" green="255" blue="255" />
     </background_color>
     <foreground_color>
-      <color name="MEDM_COLOR_28" />
+      <color name="MEDM_COLOR_28" red="58" green="94" blue="171" />
     </foreground_color>
     <widget_type>Label</widget_type>
     <enabled>true</enabled>
     <text>MCA ROI</text>
     <font>
-      <fontdata fontName="Sans" height="18" style="0" />
+      <fontdata fontName="Sans" height="15" style="0" />
     </font>
     <width>84</width>
     <border_style>0</border_style>
@@ -3328,10 +3962,10 @@ $(pv_value)</tooltip>
       <color red="0" green="128" blue="255" />
     </border_color>
     <horizontal_alignment>1</horizontal_alignment>
-    <actions hook="false" />
+    <actions hook="false" hook_all="false" />
     <y>50</y>
     <wrap_words>true</wrap_words>
-    <tooltip />
+    <tooltip></tooltip>
     <x>222</x>
   </widget>
 </display>
