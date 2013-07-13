@@ -74,11 +74,7 @@ int     CopyPeakingTime; assign CopyPeakingTime to "{P}CopyPeakingTime";
 monitor CopyPeakingTime; evflag CopyPeakingTimeMon; sync CopyPeakingTime CopyPeakingTimeMon;
 
 double  GapTime[MAX_DETECTORS]; 
-assign  GapTime to
-            {"","","","","","","","","","","","","","","","","","","","","","","","","",
-             "","","","","","","","","","","","","","","","","","","","","","","","","",
-             "","","","","","","","","","","","","","","","","","","","","","","","","",
-             "","","","","","","","","","","","","","","","","","","","","","","","",""};
+assign  GapTime to {};
 int     CopyGapTime; assign CopyGapTime to "{P}CopyGapTime";
 monitor CopyGapTime; evflag CopyGapTimeMon; sync CopyGapTime CopyGapTimeMon;
 
