@@ -1,0 +1,189 @@
+4 0 1
+beginScreenProperties
+major 4
+minor 0
+release 1
+x 443
+y 49
+w 871
+h 571
+font "arial-medium-r-12.0"
+fontAlign "center"
+ctlFont "arial-medium-r-12.0"
+ctlFontAlign "center"
+btnFont "arial-medium-r-12.0"
+btnFontAlign "center"
+fgColor index 14
+bgColor index 3
+textColor index 14
+ctlFgColor1 index 25
+ctlFgColor2 index 30
+ctlBgColor1 index 10
+ctlBgColor2 index 14
+topShadowColor index 1
+botShadowColor index 11
+title "DXP MCA spectrum"
+showGrid
+snapToGrid
+gridSize 5
+disableScroll
+endScreenProperties
+
+# (X-Y Graph)
+object xyGraphClass
+beginObjectProperties
+major 4
+minor 6
+release 0
+# Geometry
+x 5
+y 35
+w 860
+h 530
+# Appearance
+border
+xLabel "bin"
+yLabel "count"
+fgColor index 12
+bgColor index 14
+gridColor index 6
+font "arial-medium-r-12.0"
+# Operating Modes
+nPts 2
+# X axis properties
+showXAxis
+xAxisSrc "AutoScale"
+xMax 1
+# Y axis properties
+showYAxis
+yAxisSrc "AutoScale"
+yMax 1
+# Y2 axis properties
+y2AxisSrc "AutoScale"
+y2Max 1
+# Trace Properties
+numTraces 12
+yPv {
+  0 "$(P)$(MCA)$(A).VAL"
+  1 "$(P)$(MCA)$(B).VAL"
+  2 "$(P)$(MCA)$(C).VAL"
+  3 "$(P)$(MCA)$(D).VAL"
+  4 "$(P)$(MCA)$(E).VAL"
+  5 "$(P)$(MCA)$(F).VAL"
+  6 "$(P)$(MCA)$(G).VAL"
+  7 "$(P)$(MCA)$(H).VAL"
+  8 "$(P)$(MCA)$(I).VAL"
+  9 "$(P)$(MCA)$(J).VAL"
+  10 "$(P)$(MCA)$(K).VAL"
+  11 "$(P)$(MCA)$(L).VAL"
+}
+plotColor {
+  0 index 15
+  1 index 25
+  2 index 31
+  3 index 45
+  4 index 41
+  5 index 73
+  6 index 35
+  7 index 37
+  8 index 24
+  9 index 21
+  10 index 76
+  11 index 55
+}
+endObjectProperties
+
+# (Group)
+object activeGroupClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 0
+y 0
+w 870
+h 25
+
+beginGroup
+
+# (Rectangle)
+object activeRectangleClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 0
+y 2
+w 869
+h 25
+lineColor index 1
+fillColor index 0
+endObjectProperties
+
+# (Rectangle)
+object activeRectangleClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 1
+y 3
+w 869
+h 25
+lineColor index 11
+fillColor index 0
+endObjectProperties
+
+# (Related Display)
+object relatedDisplayClass
+beginObjectProperties
+major 4
+minor 2
+release 0
+x 1
+y 3
+w 869
+h 24
+fgColor index 14
+bgColor index 3
+topShadowColor index 0
+botShadowColor index 0
+font "arial-bold-r-14.0"
+xPosOffset 5
+yPosOffset 5
+button3Popup
+invisible
+buttonLabel "tooltip"
+numPvs 4
+numDsps 1
+displayFileName {
+  0 "generic-tooltip"
+}
+setPosition {
+  0 "button"
+}
+endObjectProperties
+
+# (Static Text)
+object activeXTextClass
+beginObjectProperties
+major 4
+minor 1
+release 0
+x 1
+y 3
+w 869
+h 25
+font "arial-bold-r-16.0"
+fontAlign "center"
+fgColor index 14
+bgColor index 51
+value {
+  "12 Element Combined MCA [$(A)-$(L)]"
+}
+endObjectProperties
+
+endGroup
+
+endObjectProperties
+
