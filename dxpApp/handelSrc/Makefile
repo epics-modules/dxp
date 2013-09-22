@@ -12,7 +12,9 @@ include $(TOP)/configure/CONFIG
 LIBRARY_IOC_Linux    += handel
 LIBRARY_IOC_vxWorks  += handel
 LIBRARY_IOC_cygwin32 += handel
+ifeq (win32-x86, $(findstring win32-x86, $(T_A)))
 LIBRARY_IOC_WIN32    += handel
+endif
 
 ifeq ($(LINUX_USB_INSTALLED), YES)
 USR_CFLAGS_Linux    += -DEXCLUDE_CAMAC -DEXCLUDE_DXP4C2X -DEXCLUDE_XMAP -DEXCLUDE_PLX -DLINUX
