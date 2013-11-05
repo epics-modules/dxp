@@ -2607,12 +2607,12 @@ void NDDxp::acquisitionTask()
                 this->getSCAData(this->pasynUserSelf, DXP_ALL);
             }
             else {
-                /* In mapping modes we force two attempts to read the mapping buffers because
-                 * acquisition could have completed when both buffers still need to be read. */
-                for (i=0; i<2; i++) {
-                    epicsThreadSleep(0.02);
-                    this->pollMappingMode();
-                }
+                /* In mapping modes need to make an extra call to pollMappingMode because there could be
+                 * 2 mapping mode buffers that still need to be read out. 
+                 * This call will read out the first one, and just below this !acquiring block
+                 * there is a second call to pollMapping mode which is
+                 * done on every main loop in mapping modes. */
+                 this->pollMappingMode();
             }
         } 
         if (mode != NDDxpModeMCA)
