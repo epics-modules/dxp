@@ -1719,7 +1719,7 @@ asynStatus NDDxp::getAcquisitionStatus(asynUser *pasynUser, int addr)
     asynStatus status=asynSuccess;
     int xiastatus;
     int i;
-    //const char *functionName = "getAcquisitionStatus";
+    //static const char *functionName = "getAcquisitionStatus";
     
     /* Note: we use the internal parameter NDDxpAcquiring rather than mcaAcquiring here
      * because we need to do callbacks in acquisitionTask() on all other parameters before
@@ -1747,7 +1747,7 @@ asynStatus NDDxp::getAcquisitionStatus(asynUser *pasynUser, int addr)
         acquiring = (run_active & XIA_RUN_HARDWARE);
         setIntegerParam(addr, NDDxpAcquiring, acquiring);
     }
-    //asynPrint(pasynUser, ASYN_TRACE_FLOW,
+    //asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
     //    "%s::%s addr=%d channel=%d: acquiring=%d\n",
     //    driverName, functionName, addr, channel, acquiring);
     return(status);
@@ -2291,8 +2291,8 @@ asynStatus NDDxp::getMappingData()
             "%s::%s Got data! size=%.3fMB (%d) dt=%.3fs speed=%.3fMB/s\n",
             driverName, functionName, MBbufSize, arraySize, readoutTime, readoutBurstRate);
         asynPrint(this->pasynUserSelf, ASYN_TRACEIO_DRIVER, 
-            "%s::%s channel=%d, data[0:3] = %x %x %x %x\n",
-            driverName, functionName, channel, pMapRaw[0], pMapRaw[1], pMapRaw[2], pMapRaw[3]);
+            "%s::%s channel=%d, bufferNumber=%d, firstPixel=%d, numPixels=%d\n",
+            driverName, functionName, channel, pMapRaw[5], pMapRaw[9], pMapRaw[8]);
     
         /* If this is MCA mapping mode then copy the spectral data for the first pixel
          * in this buffer to the mcaRaw buffers.
@@ -2590,19 +2590,32 @@ void NDDxp::acquisitionTask()
          * and the data. */
         this->getAcquisitionStatus(this->pasynUserSelf, DXP_ALL);
         getIntegerParam(this->nChannels, NDDxpAcquiring, &acquiring);
-        if (mode == NDDxpModeMCA && (!acquiring))
+        if (!acquiring)
         {
             /* There must have just been a transition from acquiring to not acquiring */
-            asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-                "%s::%s Detected acquisition stop! Now reading statistics\n",
-                driverName, functionName);
-            this->getAcquisitionStatistics(this->pasynUserSelf, DXP_ALL);
-            asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, 
-                "%s::%s Detected acquisition stop! Now reading data\n",
-                driverName, functionName);
-            this->getMcaData(this->pasynUserSelf, DXP_ALL);
-            this->getSCAData(this->pasynUserSelf, DXP_ALL);
-        } else if (mode != NDDxpModeMCA)
+
+            if (mode == NDDxpModeMCA) {
+                /* In MCA mode we force a read of the data */
+                asynPrint(pasynUser, ASYN_TRACE_FLOW, 
+                    "%s::%s Detected acquisition stop! Now reading statistics\n",
+                    driverName, functionName);
+                this->getAcquisitionStatistics(this->pasynUserSelf, DXP_ALL);
+                asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, 
+                    "%s::%s Detected acquisition stop! Now reading data\n",
+                    driverName, functionName);
+                this->getMcaData(this->pasynUserSelf, DXP_ALL);
+                this->getSCAData(this->pasynUserSelf, DXP_ALL);
+            }
+            else {
+                /* In mapping modes we force two attempts to read the mapping buffers because
+                 * acquisition could have completed when both buffers still need to be read. */
+                for (i=0; i<2; i++) {
+                    epicsThreadSleep(0.02);
+                    this->pollMappingMode();
+                }
+            }
+        } 
+        if (mode != NDDxpModeMCA)
         {
             this->pollMappingMode();
         }
@@ -2666,7 +2679,7 @@ asynStatus NDDxp::pollMappingMode()
         if (!isFull) allFull = 0;
         if (isFull)  anyFull = 1;
     }
-    
+
     /* In list mapping mode if any buffer is full then switch buffers on the non-full ones.
      * Note: this is prone to error because they could have already switched! */
     if (anyFull && (mappingMode == NDDxpModeListMapping)) {
