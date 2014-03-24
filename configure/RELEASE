@@ -17,7 +17,7 @@ SNCSEQ=$(SUPPORT)/seq-2-1-10
 ASYN=$(SUPPORT)/asyn-4-22
 AREA_DETECTOR=$(SUPPORT)/areaDetector-2-0
 ADCORE=$(SUPPORT)/areaDetector-2-0/ADCore
-include $(AREA_DETECTOR)/configure/CONFIG_SITE
+ADBINARIES=$(SUPPORT)/areaDetector-2-0/ADBinaries
 
 MCA=$(SUPPORT)/mca-7-4
 CAMAC=$(SUPPORT)/camac-2-7
