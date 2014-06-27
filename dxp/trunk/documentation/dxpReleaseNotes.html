@@ -14,12 +14,23 @@
     See <a href="dxpKnownProblems.html">known problems</a> for information on problems
     in each release.</p>
   <h2 style="text-align: center">
-    Release 3-3 (XXX-June-2013)<br />
+    Release 3-3 (27-June-2014)<br />
   </h2>
   <p>
+    Changed Makefile to build with areaDetector 2-0, which has a different layout than
+    previous versions of areaDetector.</p>
+  <p>
+    Fixed a bug in mapping modes on the xMAP and Mercury. The problem occurred when
+    the final mapping buffer was just a few pixels and the dwell time per pixel was
+    less than 5 ms. Under these conditions the final mapping buffer might not be read
+    out, and the file saving plugins would not get the callbacks for the final buffer.
+    After acquisition completes both mapping buffers (A and B) may need to be read out,
+    but the previous code was only forcing 1 read, not 2. Changed code to force 2 calls
+    to read the mapping buffers after acquisition completes.</p>
+  <p>
     Cleaned up dxpMED.st SNL program by removing unneeded empty strings in assign statements.
-    No functional effect, just reduces lines of code almost 2X and makes it easier to read
-    and maintain.</p>
+    No functional effect, just reduces lines of code almost 2X and makes it easier to
+    read and maintain.</p>
   <h2 style="text-align: center">
     Release 3-2 (11-March-2013)<br />
   </h2>
