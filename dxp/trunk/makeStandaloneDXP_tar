@@ -18,6 +18,7 @@ dxp-3-3/dxpApp/firmware \
 dxp-3-3/dxpApp/op/adl \
 dxp-3-3/bin/win32-x86 \
 dxp-3-3/bin/linux-x86 \
+dxp-3-3/bin/linux-x86-gcc43 \
 dxp-3-3/bin/linux-x86_64 \
 dxp-3-3/dbd/ \
 dxp-3-3/iocBoot
