@@ -14,7 +14,7 @@ SUPPORT=/corvette/home/epics/devel
 #If using the sequencer, point SNCSEQ at its top directory:
 SNCSEQ=$(SUPPORT)/seq-2-1-10
 
-ASYN=$(SUPPORT)/asyn-4-22
+ASYN=$(SUPPORT)/asyn-4-23
 AREA_DETECTOR=$(SUPPORT)/areaDetector-2-0
 ADCORE=$(SUPPORT)/areaDetector-2-0/ADCore
 ADBINARIES=$(SUPPORT)/areaDetector-2-0/ADBinaries
@@ -30,7 +30,7 @@ BUSY=$(SUPPORT)/busy-1-6
 AUTOSAVE=$(SUPPORT)/autosave-5-1
 
 # EPICS_BASE usually appears last so other apps can override stuff:
-EPICS_BASE=/corvette/usr/local/epics/base-3.14.12.3
+EPICS_BASE=/corvette/usr/local/epics/base-3.14.12.4
 -include $(TOP)/../configure/EPICS_BASE.$(EPICS_HOST_ARCH)
 
 #Capfast users may need the following definitions
