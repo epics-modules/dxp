@@ -10,10 +10,6 @@ autosave-5-1/asApp/Db/ \
 autosave-5-1/asApp/op/adl/ \
 sscan-2-9/sscanApp/Db/ \
 sscan-2-9/sscanApp/op/adl/ \
-areaDetector-2-0/ADCore/bin/cygwin-x86/*.dll \
-areaDetector-2-0/ADCore/win32-x86/*.dll \
-areaDetector-2-0/ADBinaries/cygwin-x86/*.dll \
-areaDetector-2-0/ADBinaries/win32-x86/*.dll \
 areaDetector-2-0/ADCore/ADApp/Db/ \
 areaDetector-2-0/ADCore/ADApp/op/adl/ \
 dxp-3-3/documentation \
