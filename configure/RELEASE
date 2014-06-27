@@ -19,9 +19,9 @@ AREA_DETECTOR=$(SUPPORT)/areaDetector-2-0
 ADCORE=$(SUPPORT)/areaDetector-2-0/ADCore
 ADBINARIES=$(SUPPORT)/areaDetector-2-0/ADBinaries
 
-MCA=$(SUPPORT)/mca-7-4
+MCA=$(SUPPORT)/mca-7-5
 CAMAC=$(SUPPORT)/camac-2-7
-DXP=$(SUPPORT)/dxp-3-2
+DXP=$(SUPPORT)/dxp-3-3
 
 # The following are needed only to support the ioc
 CALC=$(SUPPORT)/calc-3-2
