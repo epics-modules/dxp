@@ -1,27 +1,29 @@
-find . -name 'auto_settings*.sav_*' -exec rm -fv {} \;
+find . -name 'auto_settings*.sav*_*' -exec rm -fv {} \;
 find . -name 'core.*' -exec rm -fv {} \;
 pushd ..
-tar czvf /home/epics/public_html/pub/dxpStandalone_3-1.tgz  --exclude '.svn*' \
-asyn-4-21/db \
-asyn-4-21/opi/medm \
-mca-7-3-1/mcaApp/Db/ \
-mca-7-3-1/mcaApp/op/adl/ \
-autosave-5-0/asApp/Db/ \
-autosave-5-0/asApp/op/adl/ \
-sscan-2-8-1/sscanApp/Db/ \
-sscan-2-8-1/sscanApp/op/adl/ \
-areaDetector-1-9-1/bin/cygwin-x86/*.dll \
-areaDetector-1-9-1/bin/win32-x86/*.dll \
-areaDetector-1-9-1/ADApp/Db/ \
-areaDetector-1-9-1/ADApp/op/adl/ \
-dxp-3-2/documentation \
-dxp-3-2/dxpApp/Db \
-dxp-3-2/dxpApp/firmware \
-dxp-3-2/dxpApp/op/adl \
-dxp-3-2/bin/cygwin-x86 \
-dxp-3-2/bin/win32-x86 \
-dxp-3-2/bin/linux-x86 \
-dxp-3-2/bin/linux-x86_64 \
-dxp-3-2/dbd/ \
-dxp-3-2/iocBoot
+tar czvf /home/epics/public_html/pub/dxpStandalone_3-3beta1.tgz  --exclude '.svn*' \
+asyn-4-23/db \
+asyn-4-23/opi/medm \
+mca-7-5/mcaApp/Db/ \
+mca-7-5/mcaApp/op/adl/ \
+autosave-5-1/asApp/Db/ \
+autosave-5-1/asApp/op/adl/ \
+sscan-2-9/sscanApp/Db/ \
+sscan-2-9/sscanApp/op/adl/ \
+areaDetector-2-0/ADCore/bin/cygwin-x86/*.dll \
+areaDetector-2-0/ADCore/win32-x86/*.dll \
+areaDetector-2-0/ADBinaries/cygwin-x86/*.dll \
+areaDetector-2-0/ADBinaries/win32-x86/*.dll \
+areaDetector-2-0/ADCore/ADApp/Db/ \
+areaDetector-2-0/ADCore/ADApp/op/adl/ \
+dxp-3-3/documentation \
+dxp-3-3/dxpApp/Db \
+dxp-3-3/dxpApp/firmware \
+dxp-3-3/dxpApp/op/adl \
+dxp-3-3/bin/cygwin-x86 \
+dxp-3-3/bin/win32-x86 \
+dxp-3-3/bin/linux-x86 \
+dxp-3-3/bin/linux-x86_64 \
+dxp-3-3/dbd/ \
+dxp-3-3/iocBoot
 popd
