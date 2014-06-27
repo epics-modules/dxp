@@ -1,0 +1,24 @@
+find . -name 'auto_settings*.sav*_*' -exec rm -fv {} \;
+find . -name 'core.*' -exec rm -fv {} \;
+pushd ..
+tar czvf /home/epics/public_html/pub/dxpStandalone_3-3.tgz  --exclude '.svn*' \
+asyn-4-23/db \
+asyn-4-23/opi/medm \
+mca-7-5/mcaApp/Db/ \
+mca-7-5/mcaApp/op/adl/ \
+autosave-5-1/asApp/Db/ \
+autosave-5-1/asApp/op/adl/ \
+sscan-2-9/sscanApp/Db/ \
+sscan-2-9/sscanApp/op/adl/ \
+areaDetector-2-0/ADCore/ADApp/Db/ \
+areaDetector-2-0/ADCore/ADApp/op/adl/ \
+dxp-3-3/documentation \
+dxp-3-3/dxpApp/Db \
+dxp-3-3/dxpApp/firmware \
+dxp-3-3/dxpApp/op/adl \
+dxp-3-3/bin/win32-x86 \
+dxp-3-3/bin/linux-x86 \
+dxp-3-3/bin/linux-x86_64 \
+dxp-3-3/dbd/ \
+dxp-3-3/iocBoot
+popd
