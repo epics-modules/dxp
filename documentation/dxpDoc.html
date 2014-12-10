@@ -10,9 +10,9 @@
     <h1>
       DXP - EPICS software for XIA Digital Signal Processing Systems</h1>
     <h2>
-      Release 3-3</h2>
+      Release 3-4</h2>
     <h2>
-      June 27, 2014</h2>
+      December 10, 2014</h2>
     <h2>
       Mark Rivers</h2>
     <h2>
@@ -588,6 +588,48 @@
           ai</td>
         <td>
           The output count rate (OCR), which is the same as Events/ElapsedRealTime.</td>
+      </tr>
+      <tr>
+        <td align="center" colspan="3">
+          <b>Mercury Auxiliary Output Control Records)</b></td>
+      </tr>
+      <tr valign="top">
+        <td>
+          TriggerOutput<br />
+          TriggerOutput_RBV</td>
+        <td>
+          mbbo<br />
+          mbbi</td>
+        <td>
+          The signal to output on the Trigger Output front-panel auxiliary output line. The
+          choices are:
+          <ul>
+            <li>Disabled</li>
+            <li>Fast Filter</li>
+            <li>Baseline Filter</li>
+            <li>Energy Filter</li>
+            <li>Energy Active</li>
+          </ul>
+        </td>
+      </tr>
+      <tr valign="top">
+        <td>
+          LiveTimeOutput<br />
+          LiveTimeOutput_RBV</td>
+        <td>
+          mbbo<br />
+          mbbi</td>
+        <td>
+          The signal to output on the Livetime Output front-panel auxiliary output line. The
+          choices are:
+          <ul>
+            <li>Disabled</li>
+            <li>Fast Filter</li>
+            <li>Baseline Filter</li>
+            <li>Energy Filter</li>
+            <li>Energy Active</li>
+          </ul>
+        </td>
       </tr>
       <tr>
         <td align="center" colspan="3">
@@ -1582,6 +1624,15 @@
     Screen to display presets for each detector.</p>
   <p style="text-align: center">
     <img alt="16element_dxp_presets.png" src="16element_dxp_presets.png" /></p>
+  <p>
+  </p>
+  <hr />
+  <h3 style="text-align: center">
+    mercuryOutputs.adl</h3>
+  <p>
+    Screen to control the Mercury trigger and livetime auxiliary outputs.</p>
+  <p style="text-align: center">
+    <img alt="mercuryOutputs.png" src="mercuryOutputs.png" /></p>
   <p>
   </p>
   <hr />
