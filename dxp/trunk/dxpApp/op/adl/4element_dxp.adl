@@ -1,7 +1,7 @@
 
 file {
 	name="/home/epics/devel/dxp/dxpApp/op/adl/4element_dxp.adl"
-	version=030102
+	version=030107
 }
 display {
 	object {
@@ -237,6 +237,11 @@ rectangle {
 		label="Pre-amp & MCA parameters"
 		name="4element_PreAmp_MCA.adl"
 		args="P=$(P), D=$(D), M=$(M)"
+	}
+	display[2] {
+		label="Mercury outputs"
+		name="mercuryOutputs.adl"
+		args="P=$(P), D=$(D)"
 	}
 	clr=14
 	bclr=51
