@@ -5,6 +5,8 @@ $(P)$(R)BaselineCutPercent
 $(P)$(R)BaselineCutEnable
 $(P)$(R)BaselineFilterLength
 $(P)$(R)EnergyThreshold
+$(P)$(R)TriggerOutput
+$(P)$(R)LiveTimeOutput
 $(P)$(R)ADCPercentRule
 $(P)$(R)MaxEnergy
 $(P)$(R)PreampGain
