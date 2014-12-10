@@ -31,7 +31,7 @@ PROJECT_NAME           = dxp
 # This could be handy for archiving the generated documentation or 
 # if some version control system is used.
 
-PROJECT_NUMBER         = 3-3
+PROJECT_NUMBER         = 3-4
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) 
 # base path where the generated documentation will be put. 
@@ -573,10 +573,10 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces.
 
-INPUT                  = ../../asyn/asyn/miscellaneous/asynPortDriver.cpp \
-                         ../../asyn/asyn/miscellaneous/asynPortDriver.h \
-                         ../../areaDetector/ADApp/ADSrc/asynNDArrayDriver.cpp \
-                         ../../areaDetector/ADApp/ADSrc/asynNDArrayDriver.h \
+INPUT                  = ../../asyn/asyn/asynPortDriver/asynPortDriver.cpp \
+                         ../../asyn/asyn/asynPortDriver/asynPortDriver.h \
+                         ../../areaDetector/ADCore/ADApp/ADSrc/asynNDArrayDriver.cpp \
+                         ../../areaDetector/ADCore/ADApp/ADSrc/asynNDArrayDriver.h \
                          ../dxpApp/src/NDDxp.cpp \
                          ../dxpApp/src/NDDxp.h \
 
