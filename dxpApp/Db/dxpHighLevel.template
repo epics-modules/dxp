@@ -211,6 +211,75 @@ record(ai, "$(P)$(R)EnergyThreshold_RBV") {
     field(SCAN, "I/O Intr")
 }
 
+record(mbbo, "$(P)$(R)TriggerOutput") {
+    field(PINI, "YES")
+    field(DESC, "set trigger output")
+    field(DTYP, "asynInt32")
+    field(OUT,  "$(IO)DxpTriggerOutput")
+    field(ZRVL, "0")
+    field(ZRST, "Disabled")
+    field(ONVL, "1")
+    field(ONST, "Fast Filter")
+    field(TWVL, "2")
+    field(TWST, "Baseline Filter")
+    field(THVL, "3")
+    field(THST, "Energy Filter")
+    field(FRVL, "4")
+    field(FRST, "Energy Active")
+}
+
+record(mbbi, "$(P)$(R)TriggerOutput_RBV") {
+    field(DESC, "read trigger output")
+    field(DTYP, "asynInt32")
+    field(INP,  "$(IO)DxpTriggerOutput")
+    field(ZRVL, "0")
+    field(ZRST, "Disabled")
+    field(ONVL, "1")
+    field(ONST, "Fast Filter")
+    field(TWVL, "2")
+    field(TWST, "Baseline Filter")
+    field(THVL, "3")
+    field(THST, "Energy Filter")
+    field(FRVL, "4")
+    field(FRST, "Energy Active")
+    field(SCAN, "I/O Intr")
+}
+
+record(mbbo, "$(P)$(R)LiveTimeOutput") {
+    field(PINI, "YES")
+    field(DESC, "set livetime output")
+    field(DTYP, "asynInt32")
+    field(OUT,  "$(IO)DxpLiveTimeOutput")
+    field(ZRVL, "0")
+    field(ZRST, "Disabled")
+    field(ONVL, "1")
+    field(ONST, "Fast Filter")
+    field(TWVL, "2")
+    field(TWST, "Baseline Filter")
+    field(THVL, "3")
+    field(THST, "Energy Filter")
+    field(FRVL, "4")
+    field(FRST, "Energy Active")
+}
+
+record(mbbi, "$(P)$(R)LiveTimeOutput_RBV") {
+    field(DESC, "read livetime output")
+    field(DTYP, "asynInt32")
+    field(INP,  "$(IO)DxpLiveTimeOutput")
+    field(ZRVL, "0")
+    field(ZRST, "Disabled")
+    field(ONVL, "1")
+    field(ONST, "Fast Filter")
+    field(TWVL, "2")
+    field(TWST, "Baseline Filter")
+    field(THVL, "3")
+    field(THST, "Energy Filter")
+    field(FRVL, "4")
+    field(FRST, "Energy Active")
+    field(SCAN, "I/O Intr")
+}
+
+
 # We force ECAL=EMAX/2. in driver, so only read it back
 record(ai, "$(P)$(R)CalibrationEnergy_RBV") {
     field(DTYP, "asynFloat64")
