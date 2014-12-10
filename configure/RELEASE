@@ -14,20 +14,20 @@ SUPPORT=/corvette/home/epics/devel
 #If using the sequencer, point SNCSEQ at its top directory:
 SNCSEQ=$(SUPPORT)/seq-2-1-10
 
-ASYN=$(SUPPORT)/asyn-4-23
-AREA_DETECTOR=$(SUPPORT)/areaDetector-2-0
-ADCORE=$(SUPPORT)/areaDetector-2-0/ADCore
-ADBINARIES=$(SUPPORT)/areaDetector-2-0/ADBinaries
+ASYN=$(SUPPORT)/asyn-4-24
+AREA_DETECTOR=$(SUPPORT)/areaDetector-2-1
+ADCORE=$(SUPPORT)/areaDetector-2-1/ADCore
+ADBINARIES=$(SUPPORT)/areaDetector-2-1/ADBinaries
 
 MCA=$(SUPPORT)/mca-7-5
 CAMAC=$(SUPPORT)/camac-2-7
 DXP=$(SUPPORT)/dxp-3-3
 
 # The following are needed only to support the ioc
-CALC=$(SUPPORT)/calc-3-2
-SSCAN=$(SUPPORT)/sscan-2-9
+CALC=$(SUPPORT)/calc-3-4-1
+SSCAN=$(SUPPORT)/sscan-2-10
 BUSY=$(SUPPORT)/busy-1-6
-AUTOSAVE=$(SUPPORT)/autosave-5-1
+AUTOSAVE=$(SUPPORT)/autosave-5-4-2
 
 # EPICS_BASE usually appears last so other apps can override stuff:
 EPICS_BASE=/corvette/usr/local/epics/base-3.14.12.4
