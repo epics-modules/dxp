@@ -103,6 +103,14 @@ typedef enum {
 } NDDxpPixelAdvanceMode_t;
 
 typedef enum {
+    NDDxpOutputDisabled,
+    NDDxpOutputFastFilter,
+    NDDxpOutputBaselineFilter,
+    NDDxpOutputEnergyFilter,
+    NDDxpOutputEnergyActive,
+} NDDxpOutputMode_t;
+
+typedef enum {
     NDDxpTraceADC, 
     NDDxpTraceBaselineHistory,
     NDDxpTraceTriggerFilter, 
@@ -213,6 +221,8 @@ typedef struct moduleStatistics {
 #define NDDxpPresetEventsString             "DxpPresetEvents"
 #define NDDxpPresetTriggersString           "DxpPresetTriggers"
 #define NDDxpSpectrumXAxisString            "DxpSpectrumXAxis"
+#define NDDxpTriggerOutputString            "DxpTriggerOutput"
+#define NDDxpLiveTimeOutputString           "DxpLiveTimeOutput"
 
 /* SCA parameters */
 #define NDDxpNumSCAsString                  "DxpNumSCAs"
@@ -348,6 +358,8 @@ protected:
     int NDDxpPresetEvents;
     int NDDxpPresetTriggers;
     int NDDxpSpectrumXAxis;
+    int NDDxpTriggerOutput;
+    int NDDxpLiveTimeOutput;
 
     /* SCA parameters */
     int NDDxpMaxSCAs;
@@ -542,6 +554,8 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     createParam(NDDxpPresetEventsString,           asynParamInt32,   &NDDxpPresetEvents);
     createParam(NDDxpPresetTriggersString,         asynParamInt32,   &NDDxpPresetTriggers);
     createParam(NDDxpSpectrumXAxisString,          asynParamFloat64Array, &NDDxpSpectrumXAxis);
+    createParam(NDDxpTriggerOutputString,          asynParamInt32,   &NDDxpTriggerOutput);
+    createParam(NDDxpLiveTimeOutputString,         asynParamInt32,   &NDDxpLiveTimeOutput);
 
     /* SCA parameters */
     createParam(NDDxpNumSCAsString,                asynParamInt32,   &NDDxpNumSCAs);
@@ -867,7 +881,9 @@ asynStatus NDDxp::writeInt32( asynUser *pasynUser, epicsInt32 value)
     } 
     else if ((function == NDDxpDetectorPolarity) ||
              (function == NDDxpEnableBaselineCut)||
-             (function == NDDxpBaselineAverage)) 
+             (function == NDDxpBaselineAverage)  ||
+             (function == NDDxpTriggerOutput)    ||
+             (function == NDDxpLiveTimeOutput)) 
     {
         this->setDxpParam(pasynUser, addr, function, (double)value);
     }
@@ -1304,6 +1320,18 @@ asynStatus NDDxp::setDxpParam(asynUser *pasynUser, int addr, int function, doubl
             (this->deviceType != NDDxpModelMercury)) {
             xiastatus = xiaSetAcquisitionValues(channel, "enable_baseline_cut", &dvalue);
             status = this->xia_checkError(pasynUser, xiastatus, "setting enable_baseline_cut");
+        }
+    } else if (function == NDDxpTriggerOutput) {
+        /* This is only supported on the Mercury */
+        if (this->deviceType == NDDxpModelMercury) {
+            xiastatus = xiaSetAcquisitionValues(channel, "trigger_output", &dvalue);
+            status = this->xia_checkError(pasynUser, xiastatus, "trigger_output");
+        }
+    } else if (function == NDDxpLiveTimeOutput) {
+        /* This is only supported on the Mercury */
+        if (this->deviceType == NDDxpModelMercury) {
+            xiastatus = xiaSetAcquisitionValues(channel, "livetime_output", &dvalue);
+            status = this->xia_checkError(pasynUser, xiastatus, "livetime_output");
         }
     } else if (function == NDDxpMaxEnergy) {
         getIntegerParam(addr, mcaNumChannels, &numMcaChannels);
@@ -1963,6 +1991,12 @@ asynStatus NDDxp::getDxpParams(asynUser *pasynUser, int addr)
         setDoubleParam(channel, NDDxpBaselineThreshold, dvalue);
         xiaGetAcquisitionValues(channel, "maxwidth", &dvalue);
         setDoubleParam(channel, NDDxpMaxWidth, dvalue);
+        if (this->deviceType == NDDxpModelMercury){
+            xiaGetAcquisitionValues(channel, "trigger_output", &dvalue);
+            setIntegerParam(channel, NDDxpTriggerOutput, (int)dvalue);
+            xiaGetAcquisitionValues(channel, "livetime_output", &dvalue);
+            setIntegerParam(channel, NDDxpLiveTimeOutput, (int)dvalue);
+        }
         if ((this->deviceType == NDDxpModelXMAP) ||
             (this->deviceType == NDDxpModelMercury)){
             setDoubleParam(channel, NDDxpBaselineCut, 0.0);
