@@ -1,12 +1,12 @@
 
 file {
-	name="/home/epics/devel/dxp-3-4/dxpApp/op/adl/mercuryOutputs.adl"
+	name="mercuryOutputs.adl"
 	version=030107
 }
 display {
 	object {
-		x=157
-		y=143
+		x=66
+		y=359
 		width=625
 		height=200
 	}
@@ -124,29 +124,286 @@ rectangle {
 }
 text {
 	object {
-		x=109
+		x=81
 		y=49
-		width=154
+		width=91
 		height=14
 	}
 	"basic attribute" {
 		clr=14
 	}
-	textix="Trigger Output (pin 7)"
+	textix="Trigger Output"
 	align="horiz. centered"
 }
 text {
 	object {
-		x=392
+		x=360
 		y=50
-		width=161
+		width=105
 		height=14
 	}
 	"basic attribute" {
 		clr=14
 	}
-	textix="Livetime Output (pin 8)"
+	textix="Livetime Output"
 	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=204
+		y=104
+		width=120
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)2:TriggerOutput_RBV"
+		clr=14
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=204
+		y=74
+		width=120
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)1:TriggerOutput_RBV"
+		clr=14
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=204
+		y=134
+		width=120
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)3:TriggerOutput_RBV"
+		clr=14
+		bclr=2
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=204
+		y=164
+		width=120
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)4:TriggerOutput_RBV"
+		clr=14
+		bclr=2
+	}
+	limits {
+	}
+}
+composite {
+	object {
+		x=49
+		y=72
+		width=150
+		height=108
+	}
+	"composite name"=""
+	children {
+		menu {
+			object {
+				x=49
+				y=102
+				width=150
+				height=18
+			}
+			control {
+				chan="$(P)$(D)2:TriggerOutput"
+				clr=14
+				bclr=51
+			}
+		}
+		menu {
+			object {
+				x=49
+				y=72
+				width=150
+				height=18
+			}
+			control {
+				chan="$(P)$(D)1:TriggerOutput"
+				clr=14
+				bclr=51
+			}
+		}
+		menu {
+			object {
+				x=49
+				y=132
+				width=150
+				height=18
+			}
+			control {
+				chan="$(P)$(D)3:TriggerOutput"
+				clr=14
+				bclr=51
+			}
+		}
+		menu {
+			object {
+				x=49
+				y=162
+				width=150
+				height=18
+			}
+			control {
+				chan="$(P)$(D)4:TriggerOutput"
+				clr=14
+				bclr=51
+			}
+		}
+	}
+}
+composite {
+	object {
+		x=490
+		y=75
+		width=120
+		height=104
+	}
+	"composite name"=""
+	children {
+		"text update" {
+			object {
+				x=490
+				y=105
+				width=120
+				height=14
+			}
+			monitor {
+				chan="$(P)$(D)2:LiveTimeOutput_RBV"
+				clr=14
+				bclr=2
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=490
+				y=75
+				width=120
+				height=14
+			}
+			monitor {
+				chan="$(P)$(D)1:LiveTimeOutput_RBV"
+				clr=14
+				bclr=2
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=490
+				y=135
+				width=120
+				height=14
+			}
+			monitor {
+				chan="$(P)$(D)3:LiveTimeOutput_RBV"
+				clr=14
+				bclr=2
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=490
+				y=165
+				width=120
+				height=14
+			}
+			monitor {
+				chan="$(P)$(D)4:LiveTimeOutput_RBV"
+				clr=14
+				bclr=2
+			}
+			limits {
+			}
+		}
+	}
+}
+composite {
+	object {
+		x=335
+		y=73
+		width=150
+		height=108
+	}
+	"composite name"=""
+	children {
+		menu {
+			object {
+				x=335
+				y=103
+				width=150
+				height=18
+			}
+			control {
+				chan="$(P)$(D)2:LiveTimeOutput"
+				clr=14
+				bclr=51
+			}
+		}
+		menu {
+			object {
+				x=335
+				y=73
+				width=150
+				height=18
+			}
+			control {
+				chan="$(P)$(D)1:LiveTimeOutput"
+				clr=14
+				bclr=51
+			}
+		}
+		menu {
+			object {
+				x=335
+				y=133
+				width=150
+				height=18
+			}
+			control {
+				chan="$(P)$(D)3:LiveTimeOutput"
+				clr=14
+				bclr=51
+			}
+		}
+		menu {
+			object {
+				x=335
+				y=163
+				width=150
+				height=18
+			}
+			control {
+				chan="$(P)$(D)4:LiveTimeOutput"
+				clr=14
+				bclr=51
+			}
+		}
+	}
 }
 composite {
 	object {
@@ -226,285 +483,6 @@ composite {
 			}
 			textix="4"
 			align="horiz. centered"
-		}
-	}
-}
-composite {
-	object {
-		x=49
-		y=72
-		width=275
-		height=108
-	}
-	"composite name"=""
-	children {
-		"text update" {
-			object {
-				x=204
-				y=104
-				width=120
-				height=14
-			}
-			monitor {
-				chan="$(P)$(D)2:TriggerOutput_RBV"
-				clr=14
-				bclr=2
-			}
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=204
-				y=74
-				width=120
-				height=14
-			}
-			monitor {
-				chan="$(P)$(D)1:TriggerOutput_RBV"
-				clr=14
-				bclr=2
-			}
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=204
-				y=134
-				width=120
-				height=14
-			}
-			monitor {
-				chan="$(P)$(D)3:TriggerOutput_RBV"
-				clr=14
-				bclr=2
-			}
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=204
-				y=164
-				width=120
-				height=14
-			}
-			monitor {
-				chan="$(P)$(D)4:TriggerOutput_RBV"
-				clr=14
-				bclr=2
-			}
-			limits {
-			}
-		}
-		composite {
-			object {
-				x=49
-				y=72
-				width=150
-				height=108
-			}
-			"composite name"=""
-			children {
-				menu {
-					object {
-						x=49
-						y=102
-						width=150
-						height=18
-					}
-					control {
-						chan="$(P)$(D)2:TriggerOutput"
-						clr=14
-						bclr=51
-					}
-				}
-				menu {
-					object {
-						x=49
-						y=72
-						width=150
-						height=18
-					}
-					control {
-						chan="$(P)$(D)1:TriggerOutput"
-						clr=14
-						bclr=51
-					}
-				}
-				menu {
-					object {
-						x=49
-						y=132
-						width=150
-						height=18
-					}
-					control {
-						chan="$(P)$(D)3:TriggerOutput"
-						clr=14
-						bclr=51
-					}
-				}
-				menu {
-					object {
-						x=49
-						y=162
-						width=150
-						height=18
-					}
-					control {
-						chan="$(P)$(D)4:TriggerOutput"
-						clr=14
-						bclr=51
-					}
-				}
-			}
-		}
-	}
-}
-composite {
-	object {
-		x=335
-		y=73
-		width=275
-		height=108
-	}
-	"composite name"=""
-	children {
-		composite {
-			object {
-				x=490
-				y=75
-				width=120
-				height=104
-			}
-			"composite name"=""
-			children {
-				"text update" {
-					object {
-						x=490
-						y=105
-						width=120
-						height=14
-					}
-					monitor {
-						chan="$(P)$(D)2:LiveTimeOutput_RBV"
-						clr=14
-						bclr=2
-					}
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=490
-						y=75
-						width=120
-						height=14
-					}
-					monitor {
-						chan="$(P)$(D)1:LiveTimeOutput_RBV"
-						clr=14
-						bclr=2
-					}
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=490
-						y=135
-						width=120
-						height=14
-					}
-					monitor {
-						chan="$(P)$(D)3:LiveTimeOutput_RBV"
-						clr=14
-						bclr=2
-					}
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=490
-						y=165
-						width=120
-						height=14
-					}
-					monitor {
-						chan="$(P)$(D)4:LiveTimeOutput_RBV"
-						clr=14
-						bclr=2
-					}
-					limits {
-					}
-				}
-			}
-		}
-		composite {
-			object {
-				x=335
-				y=73
-				width=150
-				height=108
-			}
-			"composite name"=""
-			children {
-				menu {
-					object {
-						x=335
-						y=103
-						width=150
-						height=18
-					}
-					control {
-						chan="$(P)$(D)2:LiveTimeOutput"
-						clr=14
-						bclr=51
-					}
-				}
-				menu {
-					object {
-						x=335
-						y=73
-						width=150
-						height=18
-					}
-					control {
-						chan="$(P)$(D)1:LiveTimeOutput"
-						clr=14
-						bclr=51
-					}
-				}
-				menu {
-					object {
-						x=335
-						y=133
-						width=150
-						height=18
-					}
-					control {
-						chan="$(P)$(D)3:LiveTimeOutput"
-						clr=14
-						bclr=51
-					}
-				}
-				menu {
-					object {
-						x=335
-						y=163
-						width=150
-						height=18
-					}
-					control {
-						chan="$(P)$(D)4:LiveTimeOutput"
-						clr=14
-						bclr=51
-					}
-				}
-			}
 		}
 	}
 }
