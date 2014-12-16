@@ -1,0 +1,179 @@
+;===========================================================
+;
+; File    : PlxSdk.inf
+;
+; Abstract: Windows INF for boards with PLX chips
+;
+;===========================================================
+
+
+;===================================================================
+; NOTES:
+;
+; This file is provided by PLX to install PLX drivers for PLX
+; Reference Design Boards.  It may be used by others for reference
+; purposes.  For those interested in modifying it for their own
+; purposes, it is recommended that you refer to the Microsoft Windows
+; Driver Kit (WDK) documentation, which contains all the information
+; to create and modify INF files.  At the time of this writing, the
+; Windows WDK was available from http://www.microsoft.com/whdc/devtools/wdk.
+;
+;
+; ADDING AN ENTRY FOR OEM/CUSTOM DEVICES
+; --------------------------------------
+; For those interested in simply adding an entry for their custom
+; board with a custom ID, and planning to use the PLX SDK supplied
+; driver, follow the simple steps below.  Note that additional
+; changes may be required depending upon the device type and any
+; other requirements of custom drivers, etc.  Refer to the
+; Windows WDK for additional information regarding changes.
+;
+; To add a custom device, in the [PLX.Mfg] section, add an entry
+; similar to the existing entries according to the following:
+;
+;  "<My Device Name>" = DDInstall_<PLX_Chip>, PCI\VEN_<Vxxx>&DEV_<Dxxx>
+;
+;  where:
+;
+;    <My Device Name> = Name of device as it will appear in the
+;                       Windows Device Manager.
+;
+;    <PLX_Chip>       = A supported PLX chip type, such as 9054 or 9656.
+;                       This INF file already contains installation
+;                       sections for currently supported PLX chips,
+;                       assuming the PLX supplied driver will be used.
+;
+;    <Vxxx>           = The Vendor ID of your device.  An ID is
+;                       assigned to each member of the PCI SIG.
+;                       10B5 is assigned to and reserved for use by
+;                       PLX Technology.
+;
+;    <Dxxx>           = The Device ID of your device.  Each vendor is
+;                       responsible to managing their own Device IDs.
+;                       PLX maintains a list of all IDs associated with
+;                       a Vendor ID of 10B5.  The list in this INF file
+;                       contains IDs of supported PLX RDKs and the
+;                       default IDs of PLX chips.
+;
+;
+; DRIVER AND DLL FILE COPYING DISABLED
+; ------------------------------------
+; When using an INF to install drivers, Windows will always ask the user
+; for the source location of the required files.  In this case, the required
+; files are the PLX API DLL and the driver file (e.g. Plx8000.sys).
+;
+; Since the PLX SDK installation package already copies the necessary
+; files to their correct locations, the copying of files has been disabled
+; in this INF.  This prevents the OS from prompting the user for file
+; locations; however, users attempting to use this INF for distribution
+; purposes should modify the file to re-enable the copying of files.  If not,
+; the files will not be copied to the destinations and Windows will not
+; load the driver, since the .SYS file will be missing.
+;
+; The re-enable of the file copy is a simple procedure.  The relevant lines
+; have been commented out, but remain in this INF.  To re-enable file copy,
+; perform the following steps:
+;
+;  - Go to the section [DDInstall_XXXX.NT], where <XXXX> is the PLX chip type
+;  - The line "CopyFiles = ...." tells the OS which files to copy
+;  - Remove the comment symbol (;) from the "CopyFiles = ..." line
+;  - Repeat for all [DDInstall_XXXX.NT] sections where a driver may be installed
+;
+; That's all that's needed to enable file copy.  For distribution, just copy
+; the modified INF along with the PlxApiXX.dll and the relevant driver file(s)
+; to a floppy or CD-ROM and driver installation for end users should be automatic.
+;
+; Please refer to the Windows WDK for more information.
+;
+;===================================================================
+
+
+
+
+[Version]
+Signature         = $Windows NT$
+Provider          = %PLX%
+Class             = Unknown
+ClassGuid         = {4d36e97e-e325-11ce-bfc1-08002be10318}
+DriverVer         = 06/01/2009, 6.3.1.0
+DriverPackageType = PlugAndPlay
+
+
+
+[Manufacturer]
+%PLX% = PLX.Mfg, NTamd64
+
+;-----------------------------------------------------------
+; Device identification for 32-bit Windows
+;-----------------------------------------------------------
+[PLX.Mfg]
+"XIA xMAP Digital Spectrometer"        = DDInstall_9054, PCI\VEN_10b5&DEV_9054
+
+;-----------------------------------------------------------
+; Device identification for 64-bit Windows x64
+;-----------------------------------------------------------
+[PLX.Mfg.NTamd64]
+"PLX Custom (OEM) PCI 9054 Board (64-bit)"      = DDInstall_9054, PCI\VEN_10b5&DEV_9054
+
+;-----------------------------------------------------------
+; CopyFiles section
+;
+; Flags: 0x00000004 = COPYFLG_NOVERSIONCHECK
+;-----------------------------------------------------------
+[CopyFiles_9054]
+Plx9054.sys,,,0x00000004
+
+;-----------------------------------------------------------
+; Driver installation section
+;
+; NOTE:  To enable file copy for distribution, remove the
+;        comment symbol (;) from each "CopyFiles" line.
+;-----------------------------------------------------------
+
+[DDInstall_9054.NT]
+AddReg    = AddRegistry_NT_9054
+CopyFiles = CopyFiles_9054
+
+;-----------------------------------------------------------
+; AddService section
+;-----------------------------------------------------------
+[DDInstall_9054.NT.Services]
+AddService = Plx9054, 0x00000002, Service_Inst_9054
+
+;-----------------------------------------------------------
+; AddRegistry section
+;-----------------------------------------------------------
+[AddRegistry_NT_9054]
+HKLM,System\CurrentControlSet\Services\Plx9054,CommonBufferSize,0x00010003,0x10000
+
+;-----------------------------------------------------------
+; Service installation section
+;-----------------------------------------------------------
+[Service_Inst_9054]
+ServiceType    = 1                  ; SERVICE_KERNEL_DRIVER
+StartType      = 3                  ; SERVICE_DEMAND_START
+ErrorControl   = 0                  ; SERVICE_ERROR_IGNORE
+ServiceBinary  = %12%\Plx9054.sys
+
+;-----------------------------------------------------------
+; Source file information
+;-----------------------------------------------------------
+
+[SourceDisksNames]
+1 = %InstallDisk%
+
+[SourceDisksFiles]
+PlxApi52.dll  = 1
+Plx9054.sys   = 1
+
+[DestinationDirs]
+;CopyFiles_ApiDll = 16425       ;16425 = %WinDir%\System32 (supports WOW64)
+DefaultDestDir   = 12          ;12    = Drivers Directory
+
+;-----------------------------------------------------------
+; String information
+;-----------------------------------------------------------
+
+[Strings]
+InstallDisk = "PLX Installation Disk"
+PLX         = "PLX Technology, Inc."
