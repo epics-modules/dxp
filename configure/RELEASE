@@ -14,10 +14,10 @@ SUPPORT=/corvette/home/epics/devel
 #If using the sequencer, point SNCSEQ at its top directory:
 SNCSEQ=$(SUPPORT)/seq-2-1-10
 
-ASYN=$(SUPPORT)/asyn-4-24
-AREA_DETECTOR=$(SUPPORT)/areaDetector-2-1
-ADCORE=$(SUPPORT)/areaDetector-2-1/ADCore
-ADBINARIES=$(SUPPORT)/areaDetector-2-1/ADBinaries
+ASYN=$(SUPPORT)/asyn-4-26
+AREA_DETECTOR=$(SUPPORT)/areaDetector-2-2
+ADCORE=$(SUPPORT)/areaDetector-2-2/ADCore
+ADBINARIES=$(SUPPORT)/areaDetector-2-2/ADBinaries
 
 MCA=$(SUPPORT)/mca-7-6
 CAMAC=$(SUPPORT)/camac-2-7
