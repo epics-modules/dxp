@@ -1,25 +1,25 @@
 find . -name 'auto_settings*.sav*_*' -exec rm -fv {} \;
 find . -name 'core.*' -exec rm -fv {} \;
 pushd ..
-tar czvf /home/epics/public_html/pub/dxpStandalone_3-3.tgz  --exclude '.svn*' \
-asyn-4-24/db \
-asyn-4-24/opi/medm \
+tar czvf /home/epics/public_html/pub/dxpStandalone_3-4.tgz  --exclude '.svn*' \
+asyn-4-26/db \
+asyn-4-26/opi/medm \
 mca-7-6/mcaApp/Db/ \
 mca-7-6/mcaApp/op/adl/ \
 autosave-5-4-2/asApp/Db/ \
 autosave-5-4-2/asApp/op/adl/ \
 sscan-2-10/sscanApp/Db/ \
 sscan-2-10/sscanApp/op/adl/ \
-areaDetector-2-1/ADCore/ADApp/Db/ \
-areaDetector-2-1/ADCore/ADApp/op/adl/ \
-dxp-3-4/documentation \
-dxp-3-4/dxpApp/Db \
-dxp-3-4/dxpApp/firmware \
-dxp-3-4/dxpApp/op/adl \
-dxp-3-4/bin/win32-x86 \
-dxp-3-4/bin/linux-x86 \
-dxp-3-4/bin/linux-x86-gcc43 \
-dxp-3-4/bin/linux-x86_64 \
-dxp-3-4/dbd/ \
-dxp-3-4/iocBoot
+areaDetector-2-2/ADCore/ADApp/Db/ \
+areaDetector-2-2/ADCore/ADApp/op/adl/ \
+dxp-3-5/documentation \
+dxp-3-5/dxpApp/Db \
+dxp-3-5/dxpApp/firmware \
+dxp-3-5/dxpApp/op/adl \
+dxp-3-5/bin/win32-x86 \
+dxp-3-5/bin/linux-x86 \
+dxp-3-5/bin/linux-x86-gcc43 \
+dxp-3-5/bin/linux-x86_64 \
+dxp-3-5/dbd/ \
+dxp-3-5/iocBoot
 popd
