@@ -1,0 +1,2186 @@
+
+file {
+	name="/home/epics/devel/dxp/dxpApp/op/adl/4elementFilters.adl"
+	version=030102
+}
+display {
+	object {
+		x=14
+		y=72
+		width=1090
+		height=290
+	}
+	clr=14
+	bclr=4
+	cmap=""
+	gridSpacing=10
+	gridOn=0
+	snapToGrid=0
+}
+"color map" {
+	ncolors=65
+	colors {
+		ffffff,
+		ececec,
+		dadada,
+		c8c8c8,
+		bbbbbb,
+		aeaeae,
+		9e9e9e,
+		919191,
+		858585,
+		787878,
+		696969,
+		5a5a5a,
+		464646,
+		2d2d2d,
+		000000,
+		00d800,
+		1ebb00,
+		339900,
+		2d7f00,
+		216c00,
+		fd0000,
+		de1309,
+		be190b,
+		a01207,
+		820400,
+		5893ff,
+		597ee1,
+		4b6ec7,
+		3a5eab,
+		27548d,
+		fbf34a,
+		f9da3c,
+		eeb62b,
+		e19015,
+		cd6100,
+		ffb0ff,
+		d67fe2,
+		ae4ebc,
+		8b1a96,
+		610a75,
+		a4aaff,
+		8793e2,
+		6a73c1,
+		4d52a4,
+		343386,
+		c7bb6d,
+		b79d5c,
+		a47e3c,
+		7d5627,
+		58340f,
+		99ffff,
+		73dfff,
+		4ea5f9,
+		2a63e4,
+		0a00b8,
+		ebf1b5,
+		d4db9d,
+		bbc187,
+		a6a462,
+		8b8239,
+		73ff6b,
+		52da3b,
+		3cb420,
+		289315,
+		1a7309,
+	}
+}
+rectangle {
+	object {
+		x=358
+		y=9
+		width=375
+		height=25
+	}
+	"basic attribute" {
+		clr=54
+	}
+}
+text {
+	object {
+		x=413
+		y=10
+		width=264
+		height=25
+	}
+	"basic attribute" {
+		clr=0
+	}
+	textix="4 Element DXP Filters"
+}
+"related display" {
+	object {
+		x=816
+		y=3177
+		width=50
+		height=20
+	}
+	display[0] {
+		label="Low-level DXP parameters"
+		name="dxpLowLevel.adl"
+		args="P=$(P)$(D), R=14:"
+	}
+	display[1] {
+		label="MCA plot"
+		name="simple_mca.adl"
+		args="P=$(P)$(M), M=14"
+	}
+	display[2] {
+		label="Baseline histogram"
+		name="dxp_baseline.adl"
+		args="P=$(P)$(D), R=14:"
+	}
+	display[3] {
+		label="ADC Trace"
+		name="dxp_trace.adl"
+		args="P=$(P)$(D), R=14:"
+	}
+	display[4] {
+		label="ROIs/SCAs"
+		name="dxpROI_SCA32.adl"
+		args="P=$(P),M=$(M),D=$(D),R=14"
+	}
+	clr=14
+	bclr=4
+}
+text {
+	object {
+		x=5
+		y=79
+		width=30
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="Det."
+	align="horiz. centered"
+}
+text {
+	object {
+		x=814
+		y=40
+		width=91
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Baseline"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=677
+		y=37
+		width=340
+		height=215
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+}
+text {
+	object {
+		x=740
+		y=79
+		width=21
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Cut"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=819
+		y=79
+		width=63
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Threshold"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=909
+		y=79
+		width=91
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Filter Length"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=413
+		y=40
+		width=130
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Energy Filter"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=315
+		y=37
+		width=355
+		height=215
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+}
+text {
+	object {
+		x=421
+		y=79
+		width=56
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Gap Time"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=350
+		y=79
+		width=28
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Time"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=339
+		y=64
+		width=49
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Peaking"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=519
+		y=79
+		width=35
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Level"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=512
+		y=64
+		width=49
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Trigger"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=610
+		y=79
+		width=35
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Width"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=613
+		y=64
+		width=28
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Maximum"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=101
+		y=40
+		width=140
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Trigger Filter"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=37
+		y=37
+		width=270
+		height=215
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+}
+text {
+	object {
+		x=70
+		y=79
+		width=28
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Time"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=59
+		y=64
+		width=49
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Peaking"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=145
+		y=79
+		width=56
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Gap Time"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=242
+		y=79
+		width=35
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Level"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=235
+		y=64
+		width=49
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Trigger"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=16
+		y=134
+		width=7
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="2"
+	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=965
+		y=134
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)2:BaselineFilterLength_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=854
+		y=134
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)2:BaselineThreshold_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=679
+		y=131
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)2:BaselineCutPercent"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=721
+		y=134
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)2:BaselineCutPercent_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=812
+		y=131
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)2:BaselineThreshold"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+menu {
+	object {
+		x=764
+		y=132
+		width=40
+		height=18
+	}
+	control {
+		chan="$(P)$(D)2:BaselineCutEnable"
+		clr=14
+		bclr=51
+	}
+}
+"text entry" {
+	object {
+		x=407
+		y=131
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)2:GapTime"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=449
+		y=134
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)2:GapTime_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=359
+		y=134
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)2:PeakingTime_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=317
+		y=131
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)2:PeakingTime"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=497
+		y=131
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)2:EnergyThreshold"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=539
+		y=134
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)2:EnergyThreshold_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=587
+		y=131
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)2:MaxWidth"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=629
+		y=134
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)2:MaxWidth_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=81
+		y=134
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)2:TriggerPeakingTime_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=39
+		y=131
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)2:TriggerPeakingTime"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=129
+		y=131
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)2:TriggerGapTime"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=171
+		y=134
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)2:TriggerGapTime_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=261
+		y=134
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)2:TriggerThreshold_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=219
+		y=131
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)2:TriggerThreshold"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=16
+		y=104
+		width=7
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="1"
+	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=965
+		y=104
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)1:BaselineFilterLength_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=854
+		y=104
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)1:BaselineThreshold_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=679
+		y=101
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)1:BaselineCutPercent"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=721
+		y=104
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)1:BaselineCutPercent_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=812
+		y=101
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)1:BaselineThreshold"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+menu {
+	object {
+		x=764
+		y=102
+		width=40
+		height=18
+	}
+	control {
+		chan="$(P)$(D)1:BaselineCutEnable"
+		clr=14
+		bclr=51
+	}
+}
+"text entry" {
+	object {
+		x=407
+		y=101
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)1:GapTime"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=449
+		y=104
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)1:GapTime_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=359
+		y=104
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)1:PeakingTime_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=317
+		y=101
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)1:PeakingTime"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=497
+		y=101
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)1:EnergyThreshold"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=539
+		y=104
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)1:EnergyThreshold_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=587
+		y=101
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)1:MaxWidth"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=629
+		y=104
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)1:MaxWidth_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=81
+		y=104
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)1:TriggerPeakingTime_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=39
+		y=101
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)1:TriggerPeakingTime"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=129
+		y=101
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)1:TriggerGapTime"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=171
+		y=104
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)1:TriggerGapTime_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=261
+		y=104
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)1:TriggerThreshold_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=219
+		y=101
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)1:TriggerThreshold"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=16
+		y=164
+		width=7
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="3"
+	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=965
+		y=164
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)3:BaselineFilterLength_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=854
+		y=164
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)3:BaselineThreshold_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=679
+		y=161
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)3:BaselineCutPercent"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=721
+		y=164
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)3:BaselineCutPercent_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=812
+		y=161
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)3:BaselineThreshold"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+menu {
+	object {
+		x=764
+		y=162
+		width=40
+		height=18
+	}
+	control {
+		chan="$(P)$(D)3:BaselineCutEnable"
+		clr=14
+		bclr=51
+	}
+}
+"text entry" {
+	object {
+		x=407
+		y=161
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)3:GapTime"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=449
+		y=164
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)3:GapTime_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=359
+		y=164
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)3:PeakingTime_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=317
+		y=161
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)3:PeakingTime"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=497
+		y=161
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)3:EnergyThreshold"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=539
+		y=164
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)3:EnergyThreshold_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=587
+		y=161
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)3:MaxWidth"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=629
+		y=164
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)3:MaxWidth_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=81
+		y=164
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)3:TriggerPeakingTime_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=39
+		y=161
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)3:TriggerPeakingTime"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=129
+		y=161
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)3:TriggerGapTime"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=171
+		y=164
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)3:TriggerGapTime_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=261
+		y=164
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)3:TriggerThreshold_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=219
+		y=161
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)3:TriggerThreshold"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=16
+		y=194
+		width=7
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="4"
+	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=965
+		y=194
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)4:BaselineFilterLength_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=854
+		y=194
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)4:BaselineThreshold_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=679
+		y=191
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)4:BaselineCutPercent"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=721
+		y=194
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)4:BaselineCutPercent_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=812
+		y=191
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)4:BaselineThreshold"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+menu {
+	object {
+		x=764
+		y=192
+		width=40
+		height=18
+	}
+	control {
+		chan="$(P)$(D)4:BaselineCutEnable"
+		clr=14
+		bclr=51
+	}
+}
+"text entry" {
+	object {
+		x=407
+		y=191
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)4:GapTime"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=449
+		y=194
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)4:GapTime_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=359
+		y=194
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)4:PeakingTime_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=317
+		y=191
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)4:PeakingTime"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=497
+		y=191
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)4:EnergyThreshold"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=539
+		y=194
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)4:EnergyThreshold_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=587
+		y=191
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)4:MaxWidth"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=629
+		y=194
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)4:MaxWidth_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=81
+		y=194
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)4:TriggerPeakingTime_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=39
+		y=191
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)4:TriggerPeakingTime"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=129
+		y=191
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)4:TriggerGapTime"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=171
+		y=194
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)4:TriggerGapTime_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=261
+		y=194
+		width=40
+		height=14
+	}
+	monitor {
+		chan="$(P)$(D)4:TriggerThreshold_RBV"
+		clr=14
+		bclr=2
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=219
+		y=191
+		width=40
+		height=20
+	}
+	control {
+		chan="$(P)$(D)4:TriggerThreshold"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=1039
+		y=79
+		width=28
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="More"
+	align="horiz. centered"
+}
+menu {
+	object {
+		x=903
+		y=132
+		width=60
+		height=18
+	}
+	control {
+		chan="$(P)$(D)2:BaselineFilterLength"
+		clr=14
+		bclr=51
+	}
+}
+menu {
+	object {
+		x=903
+		y=102
+		width=60
+		height=18
+	}
+	control {
+		chan="$(P)$(D)1:BaselineFilterLength"
+		clr=14
+		bclr=51
+	}
+}
+menu {
+	object {
+		x=903
+		y=162
+		width=60
+		height=18
+	}
+	control {
+		chan="$(P)$(D)3:BaselineFilterLength"
+		clr=14
+		bclr=51
+	}
+}
+menu {
+	object {
+		x=903
+		y=192
+		width=60
+		height=18
+	}
+	control {
+		chan="$(P)$(D)4:BaselineFilterLength"
+		clr=14
+		bclr=51
+	}
+}
+"related display" {
+	object {
+		x=1027
+		y=131
+		width=50
+		height=20
+	}
+	display[0] {
+		label="Low-level DXP parameters"
+		name="dxpLowLevel.adl"
+		args="P=$(P)$(D), R=2:"
+	}
+	display[1] {
+		label="MCA plot"
+		name="simple_mca.adl"
+		args="P=$(P)$(M), M=2"
+	}
+	display[2] {
+		label="Baseline histogram"
+		name="dxp_baseline.adl"
+		args="P=$(P)$(D), R=2:"
+	}
+	display[3] {
+		label="ADC Trace"
+		name="dxp_trace.adl"
+		args="P=$(P)$(D), R=2:"
+	}
+	display[4] {
+		label="ROIs/SCAs"
+		name="dxpROI_SCA32.adl"
+		args="P=$(P),M=$(M),D=$(D),R=2"
+	}
+	clr=14
+	bclr=51
+}
+"related display" {
+	object {
+		x=1027
+		y=101
+		width=50
+		height=20
+	}
+	display[0] {
+		label="Low-level DXP parameters"
+		name="dxpLowLevel.adl"
+		args="P=$(P)$(D), R=1:"
+	}
+	display[1] {
+		label="MCA plot"
+		name="simple_mca.adl"
+		args="P=$(P)$(M), M=1"
+	}
+	display[2] {
+		label="Baseline histogram"
+		name="dxp_baseline.adl"
+		args="P=$(P)$(D), R=1:"
+	}
+	display[3] {
+		label="ADC Trace"
+		name="dxp_trace.adl"
+		args="P=$(P)$(D), R=1:"
+	}
+	display[4] {
+		label="ROIs/SCAs"
+		name="dxpROI_SCA32.adl"
+		args="P=$(P),M=$(M),D=$(D),R=1"
+	}
+	clr=14
+	bclr=51
+}
+"related display" {
+	object {
+		x=1027
+		y=161
+		width=50
+		height=20
+	}
+	display[0] {
+		label="Low-level DXP parameters"
+		name="dxpLowLevel.adl"
+		args="P=$(P)$(D), R=3:"
+	}
+	display[1] {
+		label="MCA plot"
+		name="simple_mca.adl"
+		args="P=$(P)$(M), M=3"
+	}
+	display[2] {
+		label="Baseline histogram"
+		name="dxp_baseline.adl"
+		args="P=$(P)$(D), R=3:"
+	}
+	display[3] {
+		label="ADC Trace"
+		name="dxp_trace.adl"
+		args="P=$(P)$(D), R=3:"
+	}
+	display[4] {
+		label="ROIs/SCAs"
+		name="dxpROI_SCA32.adl"
+		args="P=$(P),M=$(M),D=$(D),R=4"
+	}
+	clr=14
+	bclr=51
+}
+"related display" {
+	object {
+		x=1027
+		y=191
+		width=50
+		height=20
+	}
+	display[0] {
+		label="Low-level DXP parameters"
+		name="dxpLowLevel.adl"
+		args="P=$(P)$(D), R=4:"
+	}
+	display[1] {
+		label="MCA plot"
+		name="simple_mca.adl"
+		args="P=$(P)$(M), M=4"
+	}
+	display[2] {
+		label="Baseline histogram"
+		name="dxp_baseline.adl"
+		args="P=$(P)$(D), R=4:"
+	}
+	display[3] {
+		label="ADC Trace"
+		name="dxp_trace.adl"
+		args="P=$(P)$(D), R=4:"
+	}
+	display[4] {
+		label="ROIs/SCAs"
+		name="dxpROI_SCA32.adl"
+		args="P=$(P),M=$(M),D=$(D),R=4"
+	}
+	clr=14
+	bclr=51
+}
+composite {
+	object {
+		x=12
+		y=225
+		width=1050
+		height=53
+	}
+	"composite name"=""
+	children {
+		"message button" {
+			object {
+				x=40
+				y=225
+				width=80
+				height=18
+			}
+			control {
+				chan="$(P)CopyTriggerPeakingTime"
+				clr=14
+				bclr=51
+			}
+			label="Copy 1->All"
+			press_msg="1"
+		}
+		"message button" {
+			object {
+				x=130
+				y=225
+				width=80
+				height=18
+			}
+			control {
+				chan="$(P)CopyTriggerGapTime"
+				clr=14
+				bclr=51
+			}
+			label="Copy 1->All"
+			press_msg="1"
+		}
+		"message button" {
+			object {
+				x=220
+				y=225
+				width=80
+				height=18
+			}
+			control {
+				chan="$(P)CopyTriggerThreshold"
+				clr=14
+				bclr=51
+			}
+			label="Copy 1->All"
+			press_msg="1"
+		}
+		"message button" {
+			object {
+				x=409
+				y=225
+				width=80
+				height=18
+			}
+			control {
+				chan="$(P)CopyGapTime"
+				clr=14
+				bclr=51
+			}
+			label="Copy 1->All"
+			press_msg="1"
+		}
+		"message button" {
+			object {
+				x=319
+				y=225
+				width=80
+				height=18
+			}
+			control {
+				chan="$(P)CopyPeakingTime"
+				clr=14
+				bclr=51
+			}
+			label="Copy 1->All"
+			press_msg="1"
+		}
+		"message button" {
+			object {
+				x=499
+				y=225
+				width=80
+				height=18
+			}
+			control {
+				chan="$(P)CopyEnergyThreshold"
+				clr=14
+				bclr=51
+			}
+			label="Copy 1->All"
+			press_msg="1"
+		}
+		"message button" {
+			object {
+				x=588
+				y=225
+				width=80
+				height=18
+			}
+			control {
+				chan="$(P)CopyMaxWidth"
+				clr=14
+				bclr=51
+			}
+			label="Copy 1->All"
+			press_msg="1"
+		}
+		"message button" {
+			object {
+				x=681
+				y=225
+				width=80
+				height=18
+			}
+			control {
+				chan="$(P)CopyBaselineCutPercent"
+				clr=14
+				bclr=51
+			}
+			label="Copy 1->All"
+			press_msg="1"
+		}
+		"message button" {
+			object {
+				x=767
+				y=225
+				width=40
+				height=18
+			}
+			control {
+				chan="$(P)CopyBaselineCutEnable"
+				clr=14
+				bclr=51
+			}
+			label="Copy"
+			press_msg="1"
+		}
+		"message button" {
+			object {
+				x=813
+				y=225
+				width=80
+				height=18
+			}
+			control {
+				chan="$(P)CopyBaselineThreshold"
+				clr=14
+				bclr=51
+			}
+			label="Copy 1->All"
+			press_msg="1"
+		}
+		"message button" {
+			object {
+				x=905
+				y=225
+				width=80
+				height=18
+			}
+			control {
+				chan="$(P)CopyBaselineFilterLength"
+				clr=14
+				bclr=51
+			}
+			label="Copy 1->All"
+			press_msg="1"
+		}
+		text {
+			object {
+				x=182
+				y=258
+				width=90
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="File name"
+			align="horiz. right"
+		}
+		"text entry" {
+			object {
+				x=282
+				y=258
+				width=500
+				height=20
+			}
+			control {
+				chan="$(P)SaveSystemFile"
+				clr=14
+				bclr=51
+			}
+			format="string"
+			limits {
+			}
+		}
+		"message button" {
+			object {
+				x=892
+				y=258
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)SaveSystem"
+				clr=14
+				bclr=51
+			}
+			label="Save"
+			press_msg="1"
+		}
+		"text update" {
+			object {
+				x=962
+				y=258
+				width=100
+				height=20
+			}
+			monitor {
+				chan="$(P)SaveSystem_RBV"
+				clr=53
+				bclr=4
+			}
+			clrmod="alarm"
+			format="string"
+			limits {
+			}
+		}
+		text {
+			object {
+				x=792
+				y=258
+				width=90
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Save file"
+			align="horiz. right"
+		}
+		text {
+			object {
+				x=12
+				y=258
+				width=160
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="System settings:"
+		}
+	}
+}
