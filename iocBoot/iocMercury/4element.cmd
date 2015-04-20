@@ -31,21 +31,15 @@ dbLoadTemplate("4element.substitutions")
 
 # Create a netCDF file saving plugin
 NDFileNetCDFConfigure("DXP1NetCDF", 100, 0, DXP1, 0)
-dbLoadRecords("$(ADCORE)/db/NDPluginBase.template","P=dxpMercury:,R=netCDF1:,PORT=DXP1NetCDF,ADDR=0,TIMEOUT=1,NDARRAY_PORT=DXP1,NDARRAY_ADDR=0")
-dbLoadRecords("$(ADCORE)/db/NDFile.template",      "P=dxpMercury:,R=netCDF1:,PORT=DXP1NetCDF,ADDR=0,TIMEOUT=1")
-dbLoadRecords("$(ADCORE)/db/NDFileNetCDF.template","P=dxpMercury:,R=netCDF1:,PORT=DXP1NetCDF,ADDR=0,TIMEOUT=1")
+dbLoadRecords("$(ADCORE)/db/NDFileNetCDF.template","P=dxpMercury:,R=netCDF1:,PORT=DXP1NetCDF,ADDR=0,TIMEOUT=1,NDARRAY_PORT=DXP1")
 
 # Create a TIFF file saving plugin
 NDFileTIFFConfigure("DXP1TIFF", 20, 0, "DXP1", 0)
-dbLoadRecords("$(ADCORE)/db/NDPluginBase.template","P=dxpMercury:,R=TIFF1:,PORT=DXP1TIFF,ADDR=0,TIMEOUT=1,NDARRAY_PORT=DXP1,NDARRAY_ADDR=0")
-dbLoadRecords("$(ADCORE)/db/NDFile.template",      "P=dxpMercury:,R=TIFF1:,PORT=DXP1TIFF,ADDR=0,TIMEOUT=1")
-dbLoadRecords("$(ADCORE)/db/NDFileTIFF.template",  "P=dxpMercury:,R=TIFF1:,PORT=DXP1TIFF,ADDR=0,TIMEOUT=1")
+dbLoadRecords("$(ADCORE)/db/NDFileTIFF.template",  "P=dxpMercury:,R=TIFF1:,PORT=DXP1TIFF,ADDR=0,TIMEOUT=1,NDARRAY_PORT=DXP1")
 
 # Create a NeXus file saving plugin
 NDFileNexusConfigure("DXP1Nexus", 20, 0, "DXP1", 0, 0, 80000)
-dbLoadRecords("$(ADCORE)/db/NDPluginBase.template","P=dxpMercury:,R=Nexus1:,PORT=DXP1Nexus,ADDR=0,TIMEOUT=1,NDARRAY_PORT=DXP1,NDARRAY_ADDR=0")
-dbLoadRecords("$(ADCORE)/db/NDFile.template",      "P=dxpMercury:,R=Nexus1:,PORT=DXP1Nexus,ADDR=0,TIMEOUT=1")
-dbLoadRecords("$(ADCORE)/db/NDFileNexus.template", "P=dxpMercury:,R=Nexus1:,PORT=DXP1Nexus,ADDR=0,TIMEOUT=1")
+dbLoadRecords("$(ADCORE)/db/NDFileNexus.template", "P=dxpMercury:,R=Nexus1:,PORT=DXP1Nexus,ADDR=0,TIMEOUT=1,NDARRAY_PORT=DXP1")
 
 #xiaSetLogLevel(4)
 #asynSetTraceMask DXP1 0 0x11
