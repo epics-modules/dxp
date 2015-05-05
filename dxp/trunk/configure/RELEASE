@@ -12,25 +12,26 @@ SUPPORT=/corvette/home/epics/devel
 -include $(TOP)/../configure/SUPPORT.$(EPICS_HOST_ARCH)
 
 #If using the sequencer, point SNCSEQ at its top directory:
-SNCSEQ=$(SUPPORT)/seq-2-1-10
+SNCSEQ=$(SUPPORT)/seq-2-2-2
 
 ASYN=$(SUPPORT)/asyn-4-26
-AREA_DETECTOR=$(SUPPORT)/areaDetector-2-2
-ADCORE=$(SUPPORT)/areaDetector-2-2/ADCore
-ADBINARIES=$(SUPPORT)/areaDetector-2-2/ADBinaries
+AREA_DETECTOR=$(SUPPORT)/areaDetector-2-3
+ADCORE=$(AREA_DETECTOR)/ADCore
+ADBINARIES=$(AREA_DETECTOR)/ADBinaries
 
 MCA=$(SUPPORT)/mca-7-6
 CAMAC=$(SUPPORT)/camac-2-7
 DXP=$(SUPPORT)/dxp-3-5
 
 # The following are needed only to support the ioc
-CALC=$(SUPPORT)/calc-3-4-1
-SSCAN=$(SUPPORT)/sscan-2-10
-BUSY=$(SUPPORT)/busy-1-6
-AUTOSAVE=$(SUPPORT)/autosave-5-4-2
+CALC=$(SUPPORT)/calc-3-4-2-1
+SSCAN=$(SUPPORT)/sscan-2-10-1
+BUSY=$(SUPPORT)/busy-1-6-1
+AUTOSAVE=$(SUPPORT)/autosave-5-6-2
+DEVIOCSTATS=$(SUPPORT)/devIocStats-3-1-14
 
 # EPICS_BASE usually appears last so other apps can override stuff:
-EPICS_BASE=/corvette/usr/local/epics/base-3.14.12.4
+EPICS_BASE=/corvette/usr/local/epics/base-3.14.12.5
 -include $(TOP)/../configure/EPICS_BASE.$(EPICS_HOST_ARCH)
 
 #Capfast users may need the following definitions
