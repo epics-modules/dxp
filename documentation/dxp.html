@@ -53,6 +53,24 @@
       </tr>
       <tr valign="top">
         <td>
+          3-5</td>
+        <td>
+          20-April-2015</td>
+        <td>
+          <a href="http://cars.uchicago.edu/software/pub/dxpR3-5.tgz">dxpR3-5.tgz</a></td>
+        <td>
+          <a href="http://cars.uchicago.edu/software/pub/dxpStandalone_3-5.tgz">dxpStandalone_3-5.tgz</a>
+        </td>
+        <td>
+          <a href="dxpDoc.html">dxpDoc.html</a><br />
+          <a href="dxpDoc.pdf">dxpDoc.pdf</a></td>
+        <td>
+          <a href="dxpReleaseNotes.html">Release notes</a></td>
+        <td>
+          <a href="dxpKnownProblems.html">Known Problems</a></td>
+      </tr>
+      <tr valign="top">
+        <td>
           3-4</td>
         <td>
           10-December-2014</td>
@@ -388,6 +406,88 @@
           Release needed</th>
         <th>
           Required for</th>
+      </tr>
+      <tr>
+        <td rowspan="10">
+          3-5</td>
+        <td>
+          EPICS base</td>
+        <td>
+          3.14.12.4</td>
+        <td>
+          Base support</td>
+      </tr>
+      <tr>
+        <td>
+          seq</td>
+        <td>
+          2.1.10</td>
+        <td>
+          State notation language sequencer</td>
+      </tr>
+      <tr>
+        <td>
+          areaDetector</td>
+        <td>
+          2-2</td>
+        <td>
+          File-saving plugin support for mapping mode</td>
+      </tr>
+      <tr>
+        <td>
+          calc</td>
+        <td>
+          3-4-1</td>
+        <td>
+          Record support</td>
+      </tr>
+      <tr>
+        <td>
+          busy</td>
+        <td>
+          1-6</td>
+        <td>
+          Busy record support</td>
+      </tr>
+      <tr>
+        <td>
+          sscan</td>
+        <td>
+          2-10</td>
+        <td>
+          Scanning support</td>
+      </tr>
+      <tr>
+        <td>
+          autosave</td>
+        <td>
+          5-4-2</td>
+        <td>
+          Save/restore support</td>
+      </tr>
+      <tr>
+        <td>
+          asyn</td>
+        <td>
+          4-26</td>
+        <td>
+          Driver support</td>
+      </tr>
+      <tr>
+        <td>
+          mca</td>
+        <td>
+          7-6</td>
+        <td>
+          MCA support</td>
+      </tr>
+      <tr>
+        <td>
+          camac</td>
+        <td>
+          2-7</td>
+        <td>
+          CAMAC support</td>
       </tr>
       <tr>
         <td rowspan="10">
@@ -1527,16 +1627,14 @@
       <br />
     </li>
     <li>Place the distribution file in this directory. Then issue the commands (Unix style)
-      <pre>gunzip dxpRX-Y.tar.gz
-
-tar xvf dxpRX-Y.tar
+      <pre>tar xvzf dxpRX-Y.tgz
 </pre>
       where X-Y is the release.</li>
     <li>This creates a &lt;top&gt; application.<br />
       <pre>.../support/dxpRX-Y
 </pre>
     </li>
-    <li>Edit the <tt>config[ure]/RELEASE</tt> file and set the paths to your installation
+    <li>Edit the <tt>configure/RELEASE</tt> file and set the paths to your installation
       of EPICS base and to your versions of supporting modules.</li>
     <li>Run <tt>gnumake</tt> in the top level directory and check for any compilation
       errors.</li>
