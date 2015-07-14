@@ -12,6 +12,6 @@ templates/
 cdCommands
 envPaths
 dllPath.bat
-auto_settings.sav*
+auto_settings*.sav*
 auto_positions.sav*
 
