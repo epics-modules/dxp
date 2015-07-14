@@ -5,6 +5,8 @@
 dbLoadDatabase("$(DXP)/dbd/dxp.dbd")
 dxp_registerRecordDeviceDriver(pdbbase)
 
+# The search path for database files
+epicsEnvSet("EPICS_DB_INCLUDE_PATH", "$(ADCORE)/db")
 
 # The default callback queue in EPICS base is only 2000 bytes. 
 # The dxp detector system needs this to be larger to avoid the error message: 
