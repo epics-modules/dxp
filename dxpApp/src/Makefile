@@ -69,7 +69,7 @@ dxpApp_LIBS += busy
 dxpApp_LIBS_vxWorks += camac
 dxpApp_LIBS += seq pv
 
-include $(ADCORE)/ADApp/commonDriverMakefile
+include $(ADEXAMPLE)/exampleApp/commonDriverMakefile
 
 dxpApp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
