@@ -12,22 +12,30 @@ SUPPORT=/corvette/home/epics/devel
 -include $(TOP)/../configure/SUPPORT.$(EPICS_HOST_ARCH)
 
 #If using the sequencer, point SNCSEQ at its top directory:
-SNCSEQ=$(SUPPORT)/seq-2-2-2
+SNCSEQ=$(SUPPORT)/seq-2-2-3
 
-ASYN=$(SUPPORT)/asyn-4-26
-AREA_DETECTOR=$(SUPPORT)/areaDetector-2-3
-ADCORE=$(AREA_DETECTOR)/ADCore
-ADBINARIES=$(AREA_DETECTOR)/ADBinaries
+# dxp requires areaDetector, and areaDetector/configure already defines
+# ASYN, EV4_BASE, libraries needed for plugins, etc.
+AREA_DETECTOR=$(SUPPORT)/areaDetector-2-5
+-include $(AREA_DETECTOR)/configure/RELEASE_PATHS.local
+
+# Unfortunately RELEASE_PATHS.local above redefines SUPPORT and AREA_DETECTOR
+# and this messes things up on Windows building on a Linux host.
+# Need to redefine them as above.
+-include $(TOP)/../configure/SUPPORT.$(EPICS_HOST_ARCH)
+AREA_DETECTOR=$(SUPPORT)/areaDetector-2-5
+-include $(AREA_DETECTOR)/configure/RELEASE_PATHS.local.$(EPICS_HOST_ARCH)
+-include $(AREA_DETECTOR)/configure/RELEASE_PRODS.local
 
 MCA=$(SUPPORT)/mca-7-6
 CAMAC=$(SUPPORT)/camac-2-7
 DXP=$(SUPPORT)/dxp-3-5
 
 # The following are needed only to support the ioc
-CALC=$(SUPPORT)/calc-3-4-2-1
-SSCAN=$(SUPPORT)/sscan-2-10-1
+CALC=$(SUPPORT)/calc-3-6-1
+SSCAN=$(SUPPORT)/sscan-2-10-2
 BUSY=$(SUPPORT)/busy-1-6-1
-AUTOSAVE=$(SUPPORT)/autosave-5-6-2
+AUTOSAVE=$(SUPPORT)/autosave-5-7-1
 DEVIOCSTATS=$(SUPPORT)/devIocStats-3-1-14
 
 # EPICS_BASE usually appears last so other apps can override stuff:
