@@ -400,7 +400,6 @@ protected:
     int NDDxpReadLLParams;        /** < Force read of values of low-level parameters */
     int NDDxpLLParamNames[DXP_MAX_LL_PARAMS];
     int NDDxpLLParamVals[DXP_MAX_LL_PARAMS];
-    #define LAST_DXP_PARAM NDDxpLLParamVals[DXP_MAX_LL_PARAMS-1]
 
 private:
     /* Data */
@@ -433,11 +432,6 @@ private:
 
 };
 
-/** Number of asyn parameters (asyn commands) this driver supports. This algorithm does NOT include the
-  * low-level parameters whose number we can only determine at run-time.
-  * That value is passed to the constructor. */
-#define NUM_DXP_PARAMS (&LAST_DXP_PARAM - &FIRST_DXP_PARAM + 1)
-
 static void c_shutdown(void* arg)
 {
     NDDxp *pNDDxp = (NDDxp*)arg;
@@ -468,7 +462,7 @@ extern "C" int NDDxpConfig(const char *portName, int nChannels,
 
 /* Note: we use nChannels+1 for maxAddr because the last address is used for "all" channels" */
 NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemory)
-    : asynNDArrayDriver(portName, nChannels + 1, NUM_DXP_PARAMS, maxBuffers, maxMemory,
+    : asynNDArrayDriver(portName, nChannels + 1, maxBuffers, maxMemory,
             asynInt32Mask | asynFloat64Mask | asynInt32ArrayMask | asynFloat64ArrayMask | asynGenericPointerMask | asynOctetMask | asynDrvUserMask,
             asynInt32Mask | asynFloat64Mask | asynInt32ArrayMask | asynFloat64ArrayMask | asynGenericPointerMask | asynOctetMask,
             ASYN_MULTIDEVICE | ASYN_CANBLOCK, 1, 0, 0)
