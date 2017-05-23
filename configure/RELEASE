@@ -8,7 +8,7 @@ TEMPLATE_TOP=$(EPICS_BASE)/templates/makeBaseApp/top
 # define INSTALL_LOCATION_APP here
 #INSTALL_LOCATION_APP=<fullpathname>
 
-SUPPORT=/corvette/home/epics/support
+SUPPORT=/corvette/home/epics/devel
 -include $(TOP)/../configure/SUPPORT.$(EPICS_HOST_ARCH)
 
 #If using the sequencer, point SNCSEQ at its top directory:
@@ -16,14 +16,14 @@ SNCSEQ=$(SUPPORT)/seq-2-2-4
 
 # dxp requires areaDetector, and areaDetector/configure already defines
 # ASYN, EV4_BASE, libraries needed for plugins, etc.
-AREA_DETECTOR=$(SUPPORT)/areaDetector-2-6
+AREA_DETECTOR=$(SUPPORT)/areaDetector-3-0
 -include $(AREA_DETECTOR)/configure/RELEASE_PATHS.local
 
 # Unfortunately RELEASE_PATHS.local above redefines SUPPORT and AREA_DETECTOR
 # and this messes things up on Windows building on a Linux host.
 # Need to redefine them as above.
 -include $(TOP)/../configure/SUPPORT.$(EPICS_HOST_ARCH)
-AREA_DETECTOR=$(SUPPORT)/areaDetector-2-6
+AREA_DETECTOR=$(SUPPORT)/areaDetector-3-0
 -include $(AREA_DETECTOR)/configure/RELEASE_PATHS.local.$(EPICS_HOST_ARCH)
 -include $(AREA_DETECTOR)/configure/RELEASE_PRODS.local
 
@@ -39,7 +39,7 @@ AUTOSAVE=$(SUPPORT)/autosave-5-7-1
 DEVIOCSTATS=$(SUPPORT)/devIocStats-3-1-14
 
 # EPICS_BASE usually appears last so other apps can override stuff:
-EPICS_BASE=/corvette/usr/local/epics/base-3.15.5
+EPICS_BASE=/corvette/usr/local/epics-devel/base-3.15.5
 -include $(TOP)/../configure/EPICS_BASE.$(EPICS_HOST_ARCH)
 
 #Capfast users may need the following definitions
