@@ -1,7 +1,7 @@
 find . -name 'auto_settings*.sav*_*' -exec rm -fv {} \;
 find . -name 'core.*' -exec rm -fv {} \;
 pushd ..
-tar czvf /home/epics/public_html/pub/dxpStandalone_$1.tgz  --exclude '.svn*' \
+tar czvf /home/epics/public_html/pub/dxpStandalone_$1.tgz  \
 asyn-*/db \
 asyn-*/opi/medm \
 mca-*/mcaApp/Db/ \
@@ -18,7 +18,6 @@ dxp-*/dxpApp/firmware \
 dxp-*/dxpApp/op/adl \
 dxp-*/bin/win32-x86-static \
 dxp-*/bin/linux-x86 \
-dxp-*/bin/linux-x86-gcc43 \
 dxp-*/dbd/ \
 dxp-*/iocBoot
 popd
