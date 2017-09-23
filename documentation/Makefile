@@ -16,7 +16,7 @@ install:
 	cp -f *.png /home/epics/web_software/epics
 	cp -f *.jpg /home/epics/web_software/epics
 	cp -f *.pdf /home/epics/web_software/epics
-	cp -rfp dxpDoxygenHTML  /home/epics/web_software/epics/
+	cp -rf dxpDoxygenHTML  /home/epics/web_software/epics/
 
 clean:
 	rm -rf dxpDoxygenHTML/*
