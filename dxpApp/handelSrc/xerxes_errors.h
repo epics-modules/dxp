@@ -1,40 +1,37 @@
 /*
  * Copyright (c) 2004 X-ray Instrumentation Associates
- *               2005-2011 XIA LLC
+ *               2005-2012 XIA LLC
  * All rights reserved
  *
- * Redistribution and use in source and binary forms, 
- * with or without modification, are permitted provided 
+ * Redistribution and use in source and binary forms,
+ * with or without modification, are permitted provided
  * that the following conditions are met:
  *
- *   * Redistributions of source code must retain the above 
- *     copyright notice, this list of conditions and the 
+ *   * Redistributions of source code must retain the above
+ *     copyright notice, this list of conditions and the
  *     following disclaimer.
- *   * Redistributions in binary form must reproduce the 
- *     above copyright notice, this list of conditions and the 
- *     following disclaimer in the documentation and/or other 
+ *   * Redistributions in binary form must reproduce the
+ *     above copyright notice, this list of conditions and the
+ *     following disclaimer in the documentation and/or other
  *     materials provided with the distribution.
- *   * Neither the name of XIA LLC 
- *     nor the names of its contributors may be used to endorse 
- *     or promote products derived from this software without 
+ *   * Neither the name of XIA LLC
+ *     nor the names of its contributors may be used to endorse
+ *     or promote products derived from this software without
  *     specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
- * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
- * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE 
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON 
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR 
- * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
- * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+ * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+ * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+ * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+ * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
- * $Id$
- *
  */
 
 
@@ -43,12 +40,9 @@
 
 #include "xerxesdef.h"
 
-/*
- *  some error codes
- */
 #define DXP_SUCCESS            0
 
-/* I/O level error codes 1-100*/
+/* I/O level error codes 1-100 */
 #define DXP_MDOPEN             1
 #define DXP_MDIO               2
 #define DXP_MDINITIALIZE       3
@@ -65,10 +59,10 @@
 #define DXP_MDINVALIDNAME     14
 #define DXP_MDNOMEM           15
 #define DXP_RW_MISMATCH       16
-#define DXP_REWRITE_FAILURE   17 /** Couldn't set parameter even after n iterations. */
+#define DXP_REWRITE_FAILURE   17 /* Couldn't set parameter even after n iterations. */
 #define DXP_MD_TARGET_ADDR    18
 
-/*  primitive level error codes (due to mdio failures) 101-200*/
+/* Primitive level error codes (due to mdio failures) 101-200 */
 #define DXP_WRITE_TSAR       101
 #define DXP_WRITE_CSR        102
 #define DXP_WRITE_WORD       103
@@ -77,7 +71,7 @@
 #define DXP_READ_BLOCK       106
 #define DXP_DISABLE_LAM      107
 
-/* changed from DXP_CLEAR_LAM to DXP_CLR_LAM due to a conflict with an existing
+/* Changed from DXP_CLEAR_LAM to DXP_CLR_LAM due to a conflict with an existing
  * function pointer
  */
 #define DXP_CLR_LAM          108
@@ -95,9 +89,9 @@
 #define DXP_WRITE_MMU        120
 #define DXP_CHECKSUM         121
 #define DXP_BAD_ADDRESS      122
-#define DXP_BAD_BIT          123 /** Requested bit is out-of-range */
+#define DXP_BAD_BIT          123 /* Requested bit is out-of-range */
 
-/*  DSP/FIPPI level error codes 201-300  */
+/* DSP/FIPPI level error codes 201-300 */
 #define DXP_MEMERROR         201
 #define DXP_DSPRUNERROR      202
 #define DXP_FPGADOWNLOAD     203
@@ -119,10 +113,10 @@
 #define DXP_NOFIPPI			 219
 #define DXP_DSPSLEEP		 220
 #define DXP_TIMEOUT          221
-#define DXP_DSP_RETRY        222 /** DSP failed to download after multiple attempts */
+#define DXP_DSP_RETRY        222 /* DSP failed to download after multiple attempts */
 
 
-/*  configuration errors  301-400  */
+/* Configuration errors  301-400 */
 #define DXP_BAD_PARAM        301
 #define DXP_NODECIMATION     302
 #define DXP_OPEN_FILE        303
@@ -154,14 +148,14 @@
 #define DXP_UNKNOWN_FPGA     329
 #define DXP_FPGA_TIMEOUT     330
 #define DXP_MALFORMED_FILE   331
-#define DXP_UNKNOWN_CT       332 /** Unknown control task */
+#define DXP_UNKNOWN_CT       332 /* Unknown control task */
 #define DXP_APPLY_STATUS     333
-#define DXP_INVALID_LENGTH   334 /** Specified length is invalid */
-#define DXP_NO_SCA           335 /** No SCAs defined for the specified channel */
-#define DXP_FPGA_CRC         336 /** CRC error after FPGA downloaded */
-#define DXP_UNKNOWN_REG      337 /** Unknown register */
+#define DXP_INVALID_LENGTH   334 /* Specified length is invalid */
+#define DXP_NO_SCA           335 /* No SCAs defined for the specified channel */
+#define DXP_FPGA_CRC         336 /* CRC error after FPGA downloaded */
+#define DXP_UNKNOWN_REG      337 /* Unknown register */
 
-/*  host machine errors codes:  401-500 */
+/* Host machine error codes 401-500 */
 #define DXP_NOMEM            401
 #define DXP_CLOSE_FILE       403
 #define DXP_INDEXOOB         404
@@ -175,7 +169,7 @@
 #define DXP_MEMORY_BLK_SIZE  412
 #define DXP_WIN32_API        413
 
-/*  misc error codes:  501-600 */
-#define DXP_LOG_LEVEL		 501	/** Log level invalid */
+/* Misc error codes 501-600 */
+#define DXP_LOG_LEVEL		 501	/* Log level invalid */
 
-#endif						/* Endif for XERXES_ERRORS_H */
+#endif /* XERXES_ERRORS_H */

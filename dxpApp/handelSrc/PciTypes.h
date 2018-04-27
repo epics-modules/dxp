@@ -34,7 +34,7 @@
  *
  * Revision:
  *
- *      04-01-08 : PLX SDK v6.00
+ *      02-01-12 : PLX SDK v7.00
  *
  ******************************************************************************/
 
@@ -44,7 +44,7 @@
 #endif
 
 #if defined(PLX_NT_DRIVER)
-    #include <ntddk.h>          // NT Kernel Mode Driver types
+    #include <ntddk.h>          // NT Kernel Mode Driver (ie PLX Service)
 #endif
 
 #if defined(PLX_MSWINDOWS)
@@ -73,7 +73,7 @@ extern "C" {
 
 
 
-/******************************************
+/*******************************************
  *   Linux Application Level Definitions
  ******************************************/
 #if defined(PLX_LINUX)
@@ -101,7 +101,7 @@ extern "C" {
 
 
 
-/******************************************
+/*******************************************
  *    Linux Kernel Level Definitions
  ******************************************/
 #if defined(PLX_LINUX_DRIVER)
@@ -122,7 +122,7 @@ extern "C" {
 
 
 
-/******************************************
+/*******************************************
  *      Windows Type Definitions
  ******************************************/
 #if defined(PLX_MSWINDOWS)
@@ -132,23 +132,135 @@ extern "C" {
     typedef unsigned short        U16;
     typedef signed long           S32;
     typedef unsigned long         U32;
-#if defined(__GNUC__)
-    typedef signed long long      S64;
-    typedef unsigned long long    U64;
-#else
     typedef signed _int64         S64;
     typedef unsigned _int64       U64;
-#endif /* __GNUC__ */
     typedef INT_PTR               PLX_INT_PTR;        // For 32/64-bit code compatability
     typedef UINT_PTR              PLX_UINT_PTR;
 
     typedef HANDLE                PLX_DRIVER_HANDLE;  // Windows-specific driver handle
     #define PLX_SIZE_64           8
+
+    #if defined(_DEBUG)
+        #define PLX_DEBUG
+    #endif
 #endif
 
 
 
-/******************************************
+/*******************************************
+ *    Windows WDM Driver Compatability
+ ******************************************/
+#if defined(PLX_WDM_DRIVER)
+    // RtlIsNtDdiVersionAvailable supported in Windows Vista & higher
+    #if (WINVER < 0x600)
+        #define RtlIsNtDdiVersionAvailable(ver)     IoIsWdmVersionAvailable( (U8)(ver >> 24), (U8)(ver >> 16) )
+
+        // Windows versions taken from SdkDdkVer.h
+        #define NTDDI_WIN2K                         0x01100000  // WDM=1.10 Winver=5.00
+        #define NTDDI_WINXP                         0x01200000  // WDM=1.20 Winver=5.01
+        #define NTDDI_WS03                          0x01300000  // WDM=1.30 Winver=5.02
+    #endif
+
+    #if (WINVER < 0x601)
+        #define NTDDI_WIN6                          0x06000000
+        #define NTDDI_WIN6SP1                       0x06000100
+        #define NTDDI_VISTA                         NTDDI_WIN6
+        #define NTDDI_WS08                          NTDDI_WIN6SP1
+        #define NTDDI_WIN7                          0x06010000
+    #endif
+
+    #if (WINVER < 0x602)
+        #define NTDDI_WIN8                          0x06020000
+    #endif
+
+    #if (WINVER < 0x601)
+        typedef
+        NTSTATUS
+        DRIVER_INITIALIZE(
+            struct _DRIVER_OBJECT *DriverObject,
+            PUNICODE_STRING RegistryPath
+            );
+
+        typedef
+        VOID
+        DRIVER_UNLOAD(
+            struct _DRIVER_OBJECT *DriverObject
+            );
+
+        typedef
+        NTSTATUS
+        DRIVER_ADD_DEVICE(
+            struct _DRIVER_OBJECT *DriverObject,
+            struct _DEVICE_OBJECT *PhysicalDeviceObject
+            );
+
+        typedef
+        NTSTATUS
+        DRIVER_DISPATCH(
+            struct _DEVICE_OBJECT *DeviceObject,
+            struct _IRP *Irp
+            );
+
+        typedef
+        VOID
+        DRIVER_CANCEL(
+            struct _DEVICE_OBJECT *DeviceObject,
+            struct _IRP *Irp
+            );
+
+        typedef
+        BOOLEAN
+        KSERVICE_ROUTINE(
+            struct _KINTERRUPT *Interrupt,
+            PVOID ServiceContext
+            );
+
+        typedef
+        VOID
+        KDEFERRED_ROUTINE(
+            struct _KDPC *Dpc,
+            PVOID DeferredContext,
+            PVOID SystemArgument1,
+            PVOID SystemArgument2
+            );
+
+        typedef
+        BOOLEAN
+        KSYNCHRONIZE_ROUTINE (
+            PVOID SynchronizeContext
+            );
+
+        typedef
+        NTSTATUS
+        IO_COMPLETION_ROUTINE (
+            PDEVICE_OBJECT DeviceObject,
+            PIRP Irp,
+            PVOID Context
+            );
+
+        typedef
+        VOID
+        IO_WORKITEM_ROUTINE (
+            PDEVICE_OBJECT DeviceObject,
+            PVOID Context
+            );
+
+        typedef
+        VOID
+        REQUEST_POWER_COMPLETE (
+            PDEVICE_OBJECT DeviceObject,
+            UCHAR MinorFunction,
+            POWER_STATE PowerState,
+            PVOID Context,
+            PIO_STATUS_BLOCK IoStatus
+            );
+
+    #endif
+#endif
+
+
+
+/*******************************************
  *        DOS Type Definitions
  ******************************************/
 #if defined(PLX_DOS)
@@ -175,7 +287,7 @@ extern "C" {
 
 
 
-/******************************************
+/*******************************************
  *    Volatile Basic Type Definitions
  ******************************************/
 typedef volatile S8           VS8;

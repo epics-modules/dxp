@@ -34,7 +34,7 @@
  *
  * Revision:
  *
- *     06-01-09 : PLX SDK v6.20
+ *     02-01-13 : PLX SDK v7.00
  *
  ******************************************************************************/
 
@@ -79,19 +79,19 @@ PlxPci_DeviceClose(
 PLX_STATUS EXPORT
 PlxPci_DeviceFind(
     PLX_DEVICE_KEY *pKey,
-    U8              DeviceNumber
+    U16             DeviceNumber
     );
 
 PLX_STATUS EXPORT
 PlxPci_DeviceFindEx(
     PLX_DEVICE_KEY *pKey,
-    U8              DeviceNumber,
+    U16             DeviceNumber,
     PLX_API_MODE    ApiMode,
     PLX_MODE_PROP  *pModeProp
     );
 
 PLX_STATUS EXPORT
-PlxPci_GetI2cPorts(
+PlxPci_I2cGetPorts(
     PLX_API_MODE  ApiMode,
     U32          *pI2cPorts
     );
@@ -144,6 +144,13 @@ PlxPci_ChipTypeSet(
     PLX_DEVICE_OBJECT *pDevice,
     U16                ChipType,
     U8                 Revision
+    );
+
+PLX_STATUS EXPORT
+PlxPci_ChipGetPortMask(
+    U16  PlxChip,
+    U8   PlxRevision,
+    U64 *pPortMask
     );
 
 PLX_STATUS EXPORT
@@ -436,6 +443,12 @@ PlxPci_EepromProbe(
     );
 
 PLX_STATUS EXPORT
+PlxPci_EepromGetAddressWidth(
+    PLX_DEVICE_OBJECT *pDevice,
+    U8                *pWidth
+    );
+
+PLX_STATUS EXPORT
 PlxPci_EepromSetAddressWidth(
     PLX_DEVICE_OBJECT *pDevice,
     U8                 width
@@ -458,28 +471,28 @@ PlxPci_EepromCrcGet(
 PLX_STATUS EXPORT
 PlxPci_EepromReadByOffset(
     PLX_DEVICE_OBJECT *pDevice,
-    U16                offset,
+    U32                offset,
     U32               *pValue
     );
 
 PLX_STATUS EXPORT
 PlxPci_EepromWriteByOffset(
     PLX_DEVICE_OBJECT *pDevice,
-    U16                offset,
+    U32                offset,
     U32                value
     );
 
 PLX_STATUS EXPORT
 PlxPci_EepromReadByOffset_16(
     PLX_DEVICE_OBJECT *pDevice,
-    U16                offset,
+    U32                offset,
     U16               *pValue
     );
 
 PLX_STATUS EXPORT
 PlxPci_EepromWriteByOffset_16(
     PLX_DEVICE_OBJECT *pDevice,
-    U16                offset,
+    U32                offset,
     U16                value
     );
 
@@ -600,7 +613,7 @@ PlxPci_PerformanceCalcStatistics(
 
 
 /******************************************
- *   Multi-Host Switch Related Functions
+ *    Multi-Host Switch Functions
  *****************************************/
 PLX_STATUS EXPORT
 PlxPci_MH_GetProperties(
@@ -617,6 +630,39 @@ PlxPci_MH_MigratePorts(
     BOOLEAN            bResetSrc
     );
 
+
+/******************************************
+ *  PLX Non-Transparent Port Functions
+ *****************************************/
+PLX_STATUS EXPORT
+PlxPci_Nt_ReqIdProbe(
+    PLX_DEVICE_OBJECT *pDevice,
+    BOOLEAN            bRead,
+    U16               *pReqId
+    );
+
+PLX_STATUS EXPORT
+PlxPci_Nt_LutProperties(
+    PLX_DEVICE_OBJECT *pDevice,
+    U16                LutIndex,
+    U16               *pReqId,
+    U32               *pFlags,
+    BOOLEAN           *pbEnabled
+    );
+
+PLX_STATUS EXPORT
+PlxPci_Nt_LutAdd(
+    PLX_DEVICE_OBJECT *pDevice,
+    U16               *pLutIndex,
+    U16                ReqId,
+    U32                flags
+    );
+
+PLX_STATUS EXPORT
+PlxPci_Nt_LutDisable(
+    PLX_DEVICE_OBJECT *pDevice,
+    U16                LutIndex
+    );
 
 
 

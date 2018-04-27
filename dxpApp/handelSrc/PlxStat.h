@@ -34,7 +34,7 @@
  *
  * Revision:
  *
- *      04-01-08 : PLX SDK v6.00
+ *      06-01-11 : PLX SDK v6.50
  *
  ******************************************************************************/
 
@@ -49,10 +49,10 @@ extern "C" {
 /******************************************
 *             Definitions
 ******************************************/
-#define PLX_STATUS_START               0x200   /* Starting status code */
+#define PLX_STATUS_START               0x200   // Starting status code
 
 
-/* API Return Code Values */
+// API Return Code Values
 typedef enum _PLX_STATUS
 {
     ApiSuccess = PLX_STATUS_START,
@@ -93,14 +93,12 @@ typedef enum _PLX_STATUS
     ApiVPDNotSupported,
     ApiDeviceInUse,
     ApiDeviceDisabled,
-    ApiLastError               /* Do not add API errors below this line */
+    ApiPending,
+    ApiObjectNotFound,
+    ApiInvalidState,
+    ApiBufferTooSmall,
+    ApiLastError               // Do not add API errors below this line
 } PLX_STATUS;
-
-
-/* DBG - Added to support legacy code -- will be removed in future release */
-#if !defined(PLX_DOS)
-    typedef PLX_STATUS        RETURN_CODE;
-#endif
 
 
 

@@ -1,40 +1,37 @@
 /*
  * Copyright (c) 2004 X-ray Instrumentation Associates
- *               2005-2011 XIA LLC
+ *               2005-2013 XIA LLC
  * All rights reserved
  *
- * Redistribution and use in source and binary forms, 
- * with or without modification, are permitted provided 
+ * Redistribution and use in source and binary forms,
+ * with or without modification, are permitted provided
  * that the following conditions are met:
  *
- *   * Redistributions of source code must retain the above 
- *     copyright notice, this list of conditions and the 
+ *   * Redistributions of source code must retain the above
+ *     copyright notice, this list of conditions and the
  *     following disclaimer.
- *   * Redistributions in binary form must reproduce the 
- *     above copyright notice, this list of conditions and the 
- *     following disclaimer in the documentation and/or other 
+ *   * Redistributions in binary form must reproduce the
+ *     above copyright notice, this list of conditions and the
+ *     following disclaimer in the documentation and/or other
  *     materials provided with the distribution.
- *   * Neither the name of XIA LLC 
- *     nor the names of its contributors may be used to endorse 
- *     or promote products derived from this software without 
+ *   * Neither the name of XIA LLC
+ *     nor the names of its contributors may be used to endorse
+ *     or promote products derived from this software without
  *     specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
- * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
- * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE 
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON 
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR 
- * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
- * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+ * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+ * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+ * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+ * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
- * $Id$
- *
  */
 
 
@@ -57,7 +54,7 @@
 
 #ifdef XERXES_USE_DLL		/* Linking to a DLL libraries */
 
-#ifdef _WIN32		
+#ifdef _WIN32
 
 #ifdef XERXES_MAKE_DLL
 #define XERXES_EXPORT __declspec(dllexport)
@@ -70,7 +67,7 @@
 #endif					/* Endif for WIN32_VBA */
 
 #else					/* Then we are making a static link library */
-#define XERXES_EXPORT 	
+#define XERXES_EXPORT
 #define XERXES_IMPORT __declspec(dllimport)
 
 #ifndef WIN32_XERXES_VBA		/* Libraries for Visual Basic require STDCALL */
@@ -81,14 +78,14 @@
 
 #endif					/* Endif for XERXES_MAKE_DLL */
 
-#else				
+#else
 
 #ifdef XERXES_MAKE_DLL
-#define XERXES_EXPORT 
+#define XERXES_EXPORT
 #define XERXES_IMPORT extern
 #define XERXES_API
 #else					/* Then we are making a static link library */
-#define XERXES_EXPORT 	
+#define XERXES_EXPORT
 #define XERXES_IMPORT extern
 #define XERXES_API
 #endif					/* Endif for XERXES_MAKE_DLL */
@@ -97,26 +94,26 @@
 
 #else					/* We are using static libraries */
 
-#ifdef _WIN32		
+#ifdef _WIN32
 
 #ifdef XERXES_MAKE_DLL
 #define XERXES_EXPORT __declspec(dllexport)
 #define XERXES_IMPORT extern
-#define XERXES_API    
+#define XERXES_API
 #else					/* Then we are making a static link library */
-#define XERXES_EXPORT 	
+#define XERXES_EXPORT
 #define XERXES_IMPORT extern
-#define XERXES_API    
+#define XERXES_API
 #endif					/* Endif for XERXES_MAKE_DLL */
 
-#else				
+#else
 
 #ifdef XERXES_MAKE_DLL
-#define XERXES_EXPORT 
+#define XERXES_EXPORT
 #define XERXES_IMPORT extern
-#define XERXES_API    
+#define XERXES_API
 #else					/* Then we are making a static link library */
-#define XERXES_EXPORT 	
+#define XERXES_EXPORT
 #define XERXES_IMPORT extern
 #define XERXES_API
 #endif					/* Endif for XERXES_MAKE_DLL */
@@ -139,12 +136,6 @@
 #define _XERXES_PROTO_  1
 #endif
 #endif                /* end of _MSC_VER    */
-
-#ifdef _XERXES_PROTO_
-#define VOID void
-#else
-#define VOID
-#endif               /* end of _XERXES_PROTO_ */
 
 #endif               /* end of _XERXES_SWITCH_*/
 

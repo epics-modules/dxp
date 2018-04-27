@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2011 XIA LLC
+ * Copyright (c) 2005-2016 XIA LLC
  * All rights reserved
  *
  * Redistribution and use in source and binary forms,
@@ -31,9 +31,6 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
- * $Id$
- *
  */
 
 
@@ -41,34 +38,46 @@
 #define __PSL_SATURN_H__
 
 
-/** FUNCTION POINTERS **/
-typedef int (*SetAcqValue_FP)(int detChan, void *value, FirmwareSet *fs,
+/*
+ * Function pointers
+ */
+
+typedef int (*Saturn_SetAcqValue_FP)(int detChan, void *value, FirmwareSet *fs,
                               char *detType, XiaDefaults *defs, double preampGain,
                               Module *m, Detector *det,
                               int detector_chan);
-typedef int (*SynchAcqValue_FP)(int detChan, int det_chan, Module *m,
-                                Detector *det, XiaDefaults *defs);
+typedef int (*Saturn_SynchAcqValue_FP)(int detChan, int det_chan, Module *m,
+								Detector *det, XiaDefaults *defs);
+typedef int (*Saturn_DoRunData_FP)(int detChan, void *value, XiaDefaults *defs);
+
+/*
+ * Structures
+ */
+
+/* A Saturn specific acquisition value */
+typedef struct _Saturn_AcquisitionValue {
+
+  char *           		name;
+  boolean_t        		isDefault;
+  boolean_t        		isSynch;
+  double           		def;
+  Saturn_SetAcqValue_FP setFN;
+  Saturn_SynchAcqValue_FP synchFN;
+
+} Saturn_AcquisitionValue_t;
 
 
+typedef struct _Saturn_RunData {
 
-/** STRUCTURES **/
+  char         		*name;
+  Saturn_DoRunData_FP fn;
 
-/* A generic acquisition value */
-typedef struct _AcquisitionValue
-{
-
-  char *           name;
-  boolean_t        isDefault;
-  boolean_t        isSynch;
-  double           def;
-  SetAcqValue_FP   setFN;
-  SynchAcqValue_FP synchFN;
-
-}
-AcquisitionValue_t;
+} Saturn_RunData;
 
 
-/** MACROS **/
+/*
+ * Macros
+ */
 
 /* This saves us a lot of typing. */
 #define ACQUISITION_VALUE(x) \
@@ -78,22 +87,18 @@ AcquisitionValue_t;
         Module *m, Detector *det, int detector_chan)
 
 
-/** CONSTANTS **/        
-#define MIN_MAXWIDTH        	1
-#define MAX_MAXWIDTH        	255
-#define MAX_NUM_INTERNAL_SCA  16     
-#define DSP_PARAM_MEM_LEN   	256
-        
-/** Memory Management **/
+/*
+ * Constants
+ */
+
+#define MIN_MAXWIDTH         1
+#define MAX_MAXWIDTH         255
+#define MAX_NUM_INTERNAL_SCA 16
+#define DSP_PARAM_MEM_LEN    256
+
+/* Memory Management */
 DXP_MD_ALLOC saturn_psl_md_alloc;
 DXP_MD_FREE  saturn_psl_md_free;
 
-#ifdef USE_XIA_MEM_MANAGER
-#include "xia_mem.h"
-#define saturn_psl_md_alloc(n)  xia_mem_malloc((n), __FILE__, __LINE__)
-#define saturn_psl_md_free(ptr) xia_mem_free(ptr)
-#endif /* USE_XIA_MEM_MANAGER */
 
 #endif /* __PSL_SATURN_H__ */
-
-

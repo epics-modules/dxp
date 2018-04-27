@@ -1,40 +1,39 @@
+/* Prototypes for Handel library routines */
+
 /*
  * Copyright (c) 2004 X-ray Instrumentation Associates
- *               2005-2011 XIA LLC
+ *               2005-2015 XIA LLC
  * All rights reserved
  *
- * Redistribution and use in source and binary forms, 
- * with or without modification, are permitted provided 
+ * Redistribution and use in source and binary forms,
+ * with or without modification, are permitted provided
  * that the following conditions are met:
  *
- *   * Redistributions of source code must retain the above 
- *     copyright notice, this list of conditions and the 
+ *   * Redistributions of source code must retain the above
+ *     copyright notice, this list of conditions and the
  *     following disclaimer.
- *   * Redistributions in binary form must reproduce the 
- *     above copyright notice, this list of conditions and the 
- *     following disclaimer in the documentation and/or other 
+ *   * Redistributions in binary form must reproduce the
+ *     above copyright notice, this list of conditions and the
+ *     following disclaimer in the documentation and/or other
  *     materials provided with the distribution.
- *   * Neither the name of XIA LLC 
- *     nor the names of its contributors may be used to endorse 
- *     or promote products derived from this software without 
+ *   * Neither the name of XIA LLC
+ *     nor the names of its contributors may be used to endorse
+ *     or promote products derived from this software without
  *     specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
- * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
- * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE 
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON 
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR 
- * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
- * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+ * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+ * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+ * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+ * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
- * $Id$
- *
  */
 
 #ifndef XIA_HANDEL_H
@@ -76,6 +75,7 @@ HANDEL_EXPORT int HANDEL_API xiaEnableLogOutput(void);
 HANDEL_EXPORT int HANDEL_API xiaSuppressLogOutput(void);
 HANDEL_EXPORT int HANDEL_API xiaSetLogLevel(int level);
 HANDEL_EXPORT int HANDEL_API xiaSetLogOutput(char *filename);
+HANDEL_EXPORT int HANDEL_API xiaCloseLog(void);
 HANDEL_EXPORT int HANDEL_API xiaNewDetector(char *alias);
 HANDEL_EXPORT int HANDEL_API xiaAddDetectorItem(char *alias, char *name, void *value);
 HANDEL_EXPORT int HANDEL_API xiaModifyDetectorItem(char *alias, char *name, void *value);
@@ -84,7 +84,7 @@ HANDEL_EXPORT int HANDEL_API xiaGetNumDetectors(unsigned int *numDetectors);
 HANDEL_EXPORT int HANDEL_API xiaGetDetectors(char *detectors[]);
 HANDEL_EXPORT int HANDEL_API xiaGetDetectors_VB(unsigned int index, char *alias);
 HANDEL_EXPORT int HANDEL_API xiaRemoveDetector(char *alias);
-  HANDEL_EXPORT int HANDEL_API xiaDetectorFromDetChan(int detChan, char *alias);
+HANDEL_EXPORT int HANDEL_API xiaDetectorFromDetChan(int detChan, char *alias);
 HANDEL_EXPORT int HANDEL_API xiaNewFirmware(char *alias);
 HANDEL_EXPORT int HANDEL_API xiaAddFirmwareItem(char *alias, char *name, void *value);
 HANDEL_EXPORT int HANDEL_API xiaModifyFirmwareItem(char *alias, unsigned short ptrr, char *name, void *value);
@@ -102,7 +102,7 @@ HANDEL_EXPORT int HANDEL_API xiaGetNumModules(unsigned int *numModules);
 HANDEL_EXPORT int HANDEL_API xiaGetModules(char *modules[]);
 HANDEL_EXPORT int HANDEL_API xiaGetModules_VB(unsigned int index, char *alias);
 HANDEL_EXPORT int HANDEL_API xiaRemoveModule(char *alias);
-  HANDEL_EXPORT int HANDEL_API xiaModuleFromDetChan(int detChan, char *alias);
+HANDEL_EXPORT int HANDEL_API xiaModuleFromDetChan(int detChan, char *alias);
 HANDEL_EXPORT int HANDEL_API xiaAddChannelSetElem(unsigned int detChanSet, unsigned int newChan);
 HANDEL_EXPORT int HANDEL_API xiaRemoveChannelSetElem(unsigned int detChan, unsigned int chan);
 HANDEL_EXPORT int HANDEL_API xiaRemoveChannelSet(unsigned int detChan);
@@ -113,7 +113,6 @@ HANDEL_EXPORT int HANDEL_API xiaGetAcquisitionValues(int detChan, char *name, vo
 HANDEL_EXPORT int HANDEL_API xiaRemoveAcquisitionValues(int detChan, char *name);
 HANDEL_EXPORT int HANDEL_API xiaUpdateUserParams(int detChan);
 HANDEL_EXPORT int HANDEL_API xiaGainOperation(int detChan, char *name, void *value);
-HANDEL_EXPORT int HANDEL_API xiaGainChange(int detChan, double deltaGain);
 HANDEL_EXPORT int HANDEL_API xiaGainCalibrate(int detChan, double deltaGain);
 HANDEL_EXPORT int HANDEL_API xiaStartRun(int detChan, unsigned short resume);
 HANDEL_EXPORT int HANDEL_API xiaStopRun(int detChan);
@@ -128,40 +127,16 @@ HANDEL_EXPORT int HANDEL_API xiaGetNumParams(int detChan, unsigned short *value)
 HANDEL_EXPORT int HANDEL_API xiaGetParamData(int detChan, char *name, void *value);
 HANDEL_EXPORT int HANDEL_API xiaGetParamName(int detChan, unsigned short index, char *name);
 HANDEL_EXPORT int HANDEL_API xiaBoardOperation(int detChan, char *name, void *value);
-  HANDEL_EXPORT int HANDEL_API xiaMemoryOperation(int detChan, char *name, void *value);
-HANDEL_EXPORT int HANDEL_API xiaCommandOperation(int detChan, byte_t cmd, 
+HANDEL_EXPORT int HANDEL_API xiaMemoryOperation(int detChan, char *name, void *value);
+HANDEL_EXPORT int HANDEL_API xiaCommandOperation(int detChan, byte_t cmd,
 												unsigned int lenS, byte_t *send,
 												unsigned int lenR, byte_t *recv);
-HANDEL_EXPORT int HANDEL_API xiaFitGauss(long data[], int lower, int upper, float *pos, float *fwhm);
-HANDEL_EXPORT int HANDEL_API xiaFindPeak(long *data, int numBins, float thresh, int *lower, int *upper);
 HANDEL_EXPORT int HANDEL_API xiaExit(void);
 
-HANDEL_EXPORT int HANDEL_API xiaBuildErrorTable(void);
+HANDEL_EXPORT int HANDEL_API xiaSetIOPriority(int pri);
 
-  HANDEL_EXPORT int HANDEL_API xiaSetIOPriority(int pri);
-
-  HANDEL_EXPORT void HANDEL_API xiaGetVersionInfo(int *rel, int *min, int *maj,
+HANDEL_EXPORT void HANDEL_API xiaGetVersionInfo(int *rel, int *min, int *maj,
 												  char *pretty);
-
-  HANDEL_EXPORT int HANDEL_API xiaMemStatistics(unsigned long *total,
-												unsigned long *current,
-												unsigned long *peak);
-  HANDEL_EXPORT void HANDEL_API xiaMemSetCheckpoint(void);
-  HANDEL_EXPORT void HANDEL_API xiaMemLeaks(char *out);
-
-#ifdef __MEM_DBG__
-
-#include <crtdbg.h>
-
-HANDEL_EXPORT void xiaSetReportMode(void);
-HANDEL_EXPORT void xiaMemCheckpoint(int pass);
-HANDEL_EXPORT void xiaReport(char *message);
-HANDEL_EXPORT void xiaMemDumpAllObjectsSince(void);
-HANDEL_EXPORT int xiaDumpMemoryLeaks(void);
-HANDEL_EXPORT void xiaEndMemDbg(void);
-HANDEL_EXPORT int xiaCheckMemory(void);
-
-#endif /* __MEM_DBG__ */
 
 #ifdef _DEBUG
 
@@ -170,8 +145,6 @@ HANDEL_EXPORT void HANDEL_API xiaDumpDSPParameters(int detChan, char *fileName);
 HANDEL_EXPORT void HANDEL_API xiaDumpFirmwareStruct(char *fileName);
 HANDEL_EXPORT void HANDEL_API xiaDumpModuleStruct(char *fileName);
 HANDEL_EXPORT void HANDEL_API xiaDumpDefaultsStruct(char *fileName);
-
-  HANDEL_EXPORT void HANDEL_API xiaUnitTests(unsigned short tests);
 
 #endif /* _DEBUG */
 
@@ -186,6 +159,7 @@ HANDEL_EXPORT int HANDEL_API xiaEnableLogOutput();
 HANDEL_EXPORT int HANDEL_API xiaSuppressLogOutput();
 HANDEL_EXPORT int HANDEL_API xiaSetLogLevel();
 HANDEL_EXPORT int HANDEL_API xiaSetLogOutput();
+HANDEL_EXPORT int HANDEL_API xiaCloseLog();
 HANDEL_EXPORT int HANDEL_API xiaNewDetector();
 HANDEL_EXPORT int HANDEL_API xiaAddDetectorItem();
 HANDEL_EXPORT int HANDEL_API xiaModifyDetectorItem();
@@ -220,8 +194,8 @@ HANDEL_EXPORT int HANDEL_API xiaSetAcquisitionValues();
 HANDEL_EXPORT int HANDEL_API xiaGetAcquisitionValues();
 HANDEL_EXPORT int HANDEL_API xiaRemoveAcquisitionValues();
 HANDEL_EXPORT int HANDEL_API xiaUpdateUserParams();
-HANDEL_EXPORT int HANDEL_API xiaGainChange();
 HANDEL_EXPORT int HANDEL_API xiaGainCalibrate();
+HANDEL_EXPORT int HANDEL_API xiaGainOperation();
 HANDEL_EXPORT int HANDEL_API xiaStartRun();
 HANDEL_EXPORT int HANDEL_API xiaStopRun();
 HANDEL_EXPORT int HANDEL_API xiaGetRunData();
@@ -235,21 +209,14 @@ HANDEL_EXPORT int HANDEL_API xiaGetNumParams();
 HANDEL_EXPORT int HANDEL_API xiaGetParamData();
 HANDEL_EXPORT int HANDEL_API xiaGetParamName();
 HANDEL_EXPORT int HANDEL_API xiaBoardOperation();
-  HANDEL_EXPORT int HANDEL_API xiaMemoryOperation();
-  HANDEL_EXPORT int HANDEL_API xiaCommandOperation();
-HANDEL_EXPORT int HANDEL_API xiaFitGauss();
-HANDEL_EXPORT int HANDEL_API xiaFindPeak();
+HANDEL_EXPORT int HANDEL_API xiaMemoryOperation();
+HANDEL_EXPORT int HANDEL_API xiaCommandOperation();
 HANDEL_EXPORT int HANDEL_API xiaExit();
 
-HANDEL_EXPORT int HANDEL_API xiaBuildErrorTable();
 
-  HANDEL_EXPORT int HANDEL_API xiaSetIOPriority();
+HANDEL_EXPORT int HANDEL_API xiaSetIOPriority();
 
-  HANDEL_EXPORT void HANDEL_API xiaGetVersionInfo();
-
-  HANDEL_EXPORT int HANDEL_API xiaMemStatistics();
-  HANDEL_EXPORT void HANDEL_API xiaMemSetCheckpoint();
-  HANDEL_EXPORT void HANDEL_API xiaMemLeaks();
+HANDEL_EXPORT void HANDEL_API xiaGetVersionInfo();
 
 #ifdef _DEBUG
 
@@ -336,17 +303,6 @@ DXP_MD_SUPPRESS_LOG  handel_md_suppress_log;
 DXP_MD_SET_LOG_LEVEL handel_md_set_log_level;
 
 
-#define XIA_BEFORE		0
-#define XIA_AFTER			1
-
-
-/* Memory allocation macro wrappers */
-#ifdef USE_XIA_MEM_MANAGER
-#include "xia_mem.h"
-#define handel_md_alloc(n)   xia_mem_malloc((n), __FILE__, __LINE__)
-#define handel_md_free(ptr)  xia_mem_free(ptr)
-#endif /* USE_XIA_MEM_MANAGER */
-
 /* Detector-type constants */
 #define XIA_DET_UNKNOWN	0x0000
 #define XIA_DET_RESET	0x0001
@@ -359,12 +315,12 @@ extern boolean_t isHandelInit;
 /*
  *	Define the head of the Detector list
  */
-extern Detector *xiaDetectorHead;  
+extern Detector *xiaDetectorHead;
 
 /*
  *	Define the head of the Firmware Sets LL
  */
-extern FirmwareSet *xiaFirmwareSetHead;  
+extern FirmwareSet *xiaFirmwareSetHead;
 
 /*
  *	Define the head of the XiaDefaults LL
@@ -386,5 +342,11 @@ extern Module *xiaModuleHead;
 #define isListEmpty(x)		(((x) == NULL) ? TRUE_ : FALSE_)
 #define getListNext(x)		((x)->next)
 #define getListPrev(x)		((x)->prev)
+
+
+struct MoistureReading {
+    int status;
+    unsigned long value;
+};
 
 #endif						/* Endif for XIA_HANDEL_H */

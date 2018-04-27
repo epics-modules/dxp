@@ -1,40 +1,37 @@
 /*
  * Copyright (c) 2004 X-ray Instrumentation Associates
- *               2005-2011 XIA LLC
+ *               2005-2012 XIA LLC
  * All rights reserved
  *
- * Redistribution and use in source and binary forms, 
- * with or without modification, are permitted provided 
+ * Redistribution and use in source and binary forms,
+ * with or without modification, are permitted provided
  * that the following conditions are met:
  *
- *   * Redistributions of source code must retain the above 
- *     copyright notice, this list of conditions and the 
+ *   * Redistributions of source code must retain the above
+ *     copyright notice, this list of conditions and the
  *     following disclaimer.
- *   * Redistributions in binary form must reproduce the 
- *     above copyright notice, this list of conditions and the 
- *     following disclaimer in the documentation and/or other 
+ *   * Redistributions in binary form must reproduce the
+ *     above copyright notice, this list of conditions and the
+ *     following disclaimer in the documentation and/or other
  *     materials provided with the distribution.
- *   * Neither the name of XIA LLC 
- *     nor the names of its contributors may be used to endorse 
- *     or promote products derived from this software without 
+ *   * Neither the name of XIA LLC
+ *     nor the names of its contributors may be used to endorse
+ *     or promote products derived from this software without
  *     specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
- * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
- * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE 
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON 
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR 
- * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
- * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+ * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+ * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+ * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+ * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
- * $Id$
- *
  */
 
 
@@ -52,31 +49,24 @@
  */
 PSL_STATIC int PSL_API pslValidateModule(Module *module);
 PSL_STATIC int PSL_API pslValidateDefaults(XiaDefaults *defaults);
-PSL_STATIC int PSL_API pslDownloadFirmware(int detChan, char *type, char *file, 
+PSL_STATIC int PSL_API pslDownloadFirmware(int detChan, char *type, char *file,
                                            Module *m, char *rawFilename,
                                            XiaDefaults *defs);
 PSL_STATIC int PSL_API pslSetAcquisitionValues(int detChan, char *name,
                                                void *value,
-                                               XiaDefaults *defaults, 
-                                               FirmwareSet *firmwareSet, 
-                                               CurrentFirmware *currentFirmware, 
-                                               char *detectorType, 
+                                               XiaDefaults *defaults,
+                                               FirmwareSet *firmwareSet,
+                                               CurrentFirmware *currentFirmware,
+                                               char *detectorType,
                                                Detector *detector,
                                                int detector_chan, Module *m,
 											   int modChan);
 PSL_STATIC int PSL_API pslGetAcquisitionValues(int detChan, char *name,
-											   void *value, 
+											   void *value,
 											   XiaDefaults *defaults);
 PSL_STATIC int PSL_API pslGainOperation(int detChan, char *name, void *value,
-                                        Detector *detector, int detector_chan,
-                                        XiaDefaults *defaults,
-                                        CurrentFirmware *currentFirmware,
-                                        char *detectorType, Module *m);
-PSL_STATIC int PSL_API pslGainChange(int detChan, double deltaGain, 
-									 XiaDefaults *defaults, 
-									 CurrentFirmware *currentFirmware, 
-									 char *detectorType, Detector *detector,
-                                     int detector_chan, Module *m, int modChan);
+										Detector *det, int modChan, Module *m,
+										XiaDefaults *defs);
 PSL_STATIC int PSL_API pslGainCalibrate(int detChan, Detector *det, int modChan,
 										Module *m, XiaDefaults *defs,
 										double deltaGain);
@@ -85,9 +75,6 @@ PSL_STATIC int pslStartRun(int detChan, unsigned short resume,
 PSL_STATIC int pslStopRun(int detChan, Module *m);
 PSL_STATIC int PSL_API pslGetRunData(int detChan, char *name, void *value,
 									 XiaDefaults *defaults, Module *m);
-PSL_STATIC int pslSetPolarity(int detChan, Detector *det, int detectorChannel,
-							  XiaDefaults *defs, Module *m);
-PSL_STATIC int PSL_API pslSetDetectorTypeValue(int detChan, Detector *detector, int detectorChannel, XiaDefaults *defaults);
 PSL_STATIC int PSL_API pslGetDefaultAlias(char *alias, char **names,
                                           double *values);
 PSL_STATIC unsigned int PSL_API pslGetNumDefaults(void);
@@ -96,11 +83,13 @@ PSL_STATIC int PSL_API pslGetParameter(int detChan, const char *name,
 PSL_STATIC int PSL_API pslSetParameter(int detChan, const char *name,
                                        unsigned short value);
 PSL_STATIC int PSL_API pslUserSetup(int detChan, XiaDefaults *defaults,
-                                    FirmwareSet *firmwareSet, 
+                                    FirmwareSet *firmwareSet,
 									CurrentFirmware *currentFirmware,
                                     char *detectorType, Detector *detector,
                                     int detector_chan, Module *m, int modChan);
-PSL_STATIC int PSL_API pslDoSpecialRun(int detChan, char *name, void *info, 
+PSL_STATIC int PSL_API pslModuleSetup(int detChan, XiaDefaults *defaults,
+                              Module *m);
+PSL_STATIC int PSL_API pslDoSpecialRun(int detChan, char *name, void *info,
                                        XiaDefaults *defaults,
                                        Detector *detector, int detector_chan);
 PSL_STATIC int PSL_API pslGetSpecialRunData(int detChan, char *name,

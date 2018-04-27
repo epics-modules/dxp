@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2004 X-ray Instrumentation Associates
- *               2005-2011 XIA LLC
+ *               2005-2013 XIA LLC
  * All rights reserved
  *
  * Redistribution and use in source and binary forms, 
@@ -32,8 +32,6 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
  * SUCH DAMAGE.
- *
- * $Id$
  *
  *
  *    Following are prototypes for dxp driver routines
@@ -124,12 +122,6 @@
 #define _DXP_PROTO_  1
 #endif
 #endif                /* end of _MSC_VER    */
-
-#ifdef _DXP_PROTO_
-#define VOID void
-#else
-#define VOID
-#endif               /* end of _DXP_PROTO_ */
 
 #endif               /* end of _DXP_SWITCH_*/
 

@@ -1,40 +1,37 @@
 /*
  * Copyright (c) 2004 X-ray Instrumentation Associates
- *               2005-2011 XIA LLC
+ *               2005-2015 XIA LLC
  * All rights reserved
  *
- * Redistribution and use in source and binary forms, 
- * with or without modification, are permitted provided 
+ * Redistribution and use in source and binary forms,
+ * with or without modification, are permitted provided
  * that the following conditions are met:
  *
- *   * Redistributions of source code must retain the above 
- *     copyright notice, this list of conditions and the 
+ *   * Redistributions of source code must retain the above
+ *     copyright notice, this list of conditions and the
  *     following disclaimer.
- *   * Redistributions in binary form must reproduce the 
- *     above copyright notice, this list of conditions and the 
- *     following disclaimer in the documentation and/or other 
+ *   * Redistributions in binary form must reproduce the
+ *     above copyright notice, this list of conditions and the
+ *     following disclaimer in the documentation and/or other
  *     materials provided with the distribution.
- *   * Neither the name of XIA LLC 
- *     nor the names of its contributors may be used to endorse 
- *     or promote products derived from this software without 
+ *   * Neither the name of XIA LLC
+ *     nor the names of its contributors may be used to endorse
+ *     or promote products derived from this software without
  *     specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
- * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
- * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE 
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON 
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR 
- * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
- * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+ * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+ * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+ * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+ * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
- * $Id$
- *
  */
 
 
@@ -74,8 +71,6 @@ typedef struct Xia_Io_Functions Xia_Io_Functions;
  */
 typedef void (*DXP_MD_ERROR_CONTROL)(char *, int *);
 typedef void (*DXP_MD_ERROR)(char *, char *, int *, char *, int);
-
-/* Added new logging func pointers 8/22/01 -- PJF */
 typedef void (*DXP_MD_WARNING)(char *, char *, char *, int);
 typedef void (*DXP_MD_INFO)(char *, char *, char *, int);
 typedef void (*DXP_MD_DEBUG)(char *, char *, char *, int);
@@ -90,11 +85,10 @@ typedef int (*DXP_MD_ENABLE_LOG)(void);
 typedef int (*DXP_MD_SET_LOG_LEVEL)(int);
 typedef void (*DXP_MD_LOG)(int, char *, char *, int, char *, int);
 typedef int (*DXP_MD_SET_PRIORITY)(int *);
-typedef char * (*DXP_MD_FGETS)(char *s, int size, FILE *stream); 
+typedef char * (*DXP_MD_FGETS)(char *s, int size, FILE *stream);
 typedef char * (*DXP_MD_TMP_PATH)(void);
 typedef void (*DXP_MD_CLEAR_TMP)(void);
 typedef char * (*DXP_MD_PATH_SEP)(void);
-typedef int (*DXP_MD_PROCESS_MSGS)(void);
 
 struct Xia_Util_Functions {
   DXP_MD_ERROR dxp_md_error;
@@ -115,7 +109,6 @@ struct Xia_Util_Functions {
   DXP_MD_TMP_PATH dxp_md_tmp_path;
   DXP_MD_CLEAR_TMP dxp_md_clear_tmp;
   DXP_MD_PATH_SEP dxp_md_path_separator;
-  DXP_MD_PROCESS_MSGS dxp_md_process_msgs;
 };
 typedef struct Xia_Util_Functions Xia_Util_Functions;
 

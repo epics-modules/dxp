@@ -31,7 +31,7 @@
  *
  * Revision:
  *
- *      06-01-08 : PLX SDK v6.00
+ *      05-01-12 : PLX SDK v7.00
  *
  ******************************************************************************/
 
@@ -41,9 +41,15 @@
 /**********************************************
 *       Automatic selection for Windows
 **********************************************/
-#if defined(_WIN32) || defined(_WIN64) || defined(CYGWIN32)
+#if defined(_WIN32) || defined(_WIN64)
     #if !defined(PLX_LITTLE_ENDIAN) && !defined(PLX_BIG_ENDIAN)
         #define PLX_LITTLE_ENDIAN
+    #endif
+
+    #if defined(_WIN64)
+        #define PLX_CPU_BITS    64
+    #else
+        #define PLX_CPU_BITS    32
     #endif
 
     #define PLX_MSWINDOWS

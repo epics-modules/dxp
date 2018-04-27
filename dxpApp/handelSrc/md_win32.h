@@ -1,40 +1,37 @@
 /*
  * Copyright (c) 2004 X-ray Instrumentation Associates
- *               2005-2011 XIA LLC
+ *               2005-2015 XIA LLC
  * All rights reserved
  *
- * Redistribution and use in source and binary forms, 
- * with or without modification, are permitted provided 
+ * Redistribution and use in source and binary forms,
+ * with or without modification, are permitted provided
  * that the following conditions are met:
  *
- *   * Redistributions of source code must retain the above 
- *     copyright notice, this list of conditions and the 
+ *   * Redistributions of source code must retain the above
+ *     copyright notice, this list of conditions and the
  *     following disclaimer.
- *   * Redistributions in binary form must reproduce the 
- *     above copyright notice, this list of conditions and the 
- *     following disclaimer in the documentation and/or other 
+ *   * Redistributions in binary form must reproduce the
+ *     above copyright notice, this list of conditions and the
+ *     following disclaimer in the documentation and/or other
  *     materials provided with the distribution.
- *   * Neither the name of XIA LLC 
- *     nor the names of its contributors may be used to endorse 
- *     or promote products derived from this software without 
+ *   * Neither the name of XIA LLC
+ *     nor the names of its contributors may be used to endorse
+ *     or promote products derived from this software without
  *     specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
- * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
- * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE 
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON 
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR 
- * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
- * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+ * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+ * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+ * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+ * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
- * $Id$
- *
  */
 
 
@@ -53,16 +50,6 @@
 #define MD_IO_CLOSE 3
 
 
-#ifndef EXCLUDE_CAMAC
-XIA_MD_STATIC int XIA_MD_API dxp_md_initialize(unsigned int *, char *);
-XIA_MD_STATIC int XIA_MD_API dxp_md_open(char *, int *);
-XIA_MD_STATIC int XIA_MD_API dxp_md_open_bcn(int *, int *, int *, int *);
-XIA_MD_STATIC int XIA_MD_API dxp_md_io(int *camChan, unsigned int *function,
-                                       unsigned long *addr, void *data,
-                                       unsigned int *length);
-XIA_MD_STATIC int XIA_MD_API dxp_md_close(int *camChan);
-#endif /* EXCLUDE_CAMAC */
-
 #ifndef EXCLUDE_EPP
 XIA_MD_STATIC int XIA_MD_API dxp_md_epp_initialize(unsigned int *, char *);
 XIA_MD_STATIC int XIA_MD_API dxp_md_epp_open(char *, int *);
@@ -75,7 +62,7 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_epp_close(int *camChan);
 #ifndef EXCLUDE_USB
 XIA_MD_STATIC int XIA_MD_API dxp_md_usb_initialize(unsigned int *maxMod, char *dllName);
 XIA_MD_STATIC int XIA_MD_API dxp_md_usb_open(char *ioname, int *camChan);
-XIA_MD_STATIC int XIA_MD_API dxp_md_usb_io(int *camChan, unsigned int *function, 
+XIA_MD_STATIC int XIA_MD_API dxp_md_usb_io(int *camChan, unsigned int *function,
                                            unsigned long *address, void *data,
                                            unsigned int *length);
 XIA_MD_STATIC int XIA_MD_API dxp_md_usb_close(int *camChan);
@@ -86,7 +73,7 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_usb_close(int *camChan);
 XIA_MD_STATIC int  dxp_md_usb2_initialize(unsigned int *maxMod,
                                           char *dllName);
 XIA_MD_STATIC int  dxp_md_usb2_open(char *ioname, int *camChan);
-XIA_MD_STATIC int  dxp_md_usb2_io(int *camChan, unsigned int *function, 
+XIA_MD_STATIC int  dxp_md_usb2_io(int *camChan, unsigned int *function,
                                   unsigned long *address, void *data,
                                   unsigned int *length);
 XIA_MD_STATIC int  dxp_md_usb2_close(int *camChan);
@@ -97,7 +84,7 @@ XIA_MD_STATIC int  dxp_md_usb2_close(int *camChan);
 XIA_MD_STATIC int XIA_MD_API dxp_md_serial_initialize(unsigned int *maxMod, char *dllName);
 XIA_MD_STATIC int XIA_MD_API dxp_md_serial_open(char *ioname, int *camChan);
 XIA_MD_STATIC int XIA_MD_API dxp_md_serial_io(int *camChan,
-                                              unsigned int *function, 
+                                              unsigned int *function,
                                               unsigned long *address, void *data,
                                               unsigned int *length);
 XIA_MD_STATIC int XIA_MD_API dxp_md_serial_close(int *camChan);
@@ -122,13 +109,6 @@ XIA_MD_STATIC char * dxp_md_fgets(char *s, int length, FILE *stream);
 XIA_MD_STATIC char * dxp_md_tmp_path(void);
 XIA_MD_STATIC void dxp_md_clear_tmp(void);
 XIA_MD_STATIC char * dxp_md_path_separator(void);
-XIA_MD_STATIC int XIA_MD_API dxp_md_process_msgs(void);
-
-
-#ifndef EXCLUDE_CAMAC
-XIA_MD_IMPORT int XIA_MD_API xia_camxfr(short *camadr, short func, long nbytes, short mode, short *buf);
-XIA_MD_IMPORT int XIA_MD_API xia_caminit(short *buf);
-#endif /* EXCLUDE_CAMAC */
 
 #ifndef EXLCUDE_EPP
 XIA_MD_IMPORT int XIA_MD_API DxpInitPortAddress(int );
@@ -153,7 +133,7 @@ XIA_MD_IMPORT int XIA_MD_API xia_usb_read(long address, long nWords,
                                           char *device, unsigned short *data);
 XIA_MD_IMPORT int XIA_MD_API xia_usb_write(long address, long nWords,
                                            char *device, unsigned short *data);
-  
+
 #endif /* EXCLUDE_USB */
 
 
