@@ -12,13 +12,12 @@ include $(TOP)/configure/CONFIG
 LIBRARY_IOC_Linux    += handel
 LIBRARY_IOC_WIN32    += handel
 
-ifeq ($(LINUX_USB_INSTALLED), YES)
+USR_CFLAGS +=          -DEXCLUDE_XUP -DEXCLUDE_SERIAL -DEXCLUDE_VEGA -DEXCLUDE_UDXPS
 USR_CFLAGS_Linux    += -DEXCLUDE_XMAP -DEXCLUDE_PLX -DLINUX
-else
-USR_CFLAGS_Linux    += -DEXCLUDE_USB -DEXCLUDE_USB2 -DEXCLUDE_XMAP -DEXCLUDE_PLX -DEXCLUDE_MERCURY -DLINUX
+USR_CFLAGS_Linux    += -Wno-unused-but-set-variable
+ifneq ($(LINUX_USB_INSTALLED), YES)
+USR_CFLAGS_Linux    += -DEXCLUDE_USB -DEXCLUDE_USB2 -DEXCLUDE_XMAP -DEXCLUDE_PLX -DEXCLUDE_MERCURY
 endif
-USR_CFLAGS_WIN32    +=
-USR_CFLAGS +=          -DEXCLUDE_SERIAL -DEXCLUDE_VEGA
 USR_CFLAGS_WIN32    += -DHANDEL_USE_DLL -DHANDEL_MAKE_DLL -DWIN32
 ifeq ($(STATIC_BUILD), YES)
 USR_CFLAGS          += -DXIA_STATIC_BUILD
@@ -36,6 +35,7 @@ handel_SRCS_WIN32 += xia_epp.c xia_plx.c xia_usb.c xia_usb2.c md_win32.c
 handel_SRCS_Linux += xia_epp_linux.c md_linux.c
 
 handel_SRCS += xerxes.c
+handel_SRCS += xerxes_io.c
 handel_SRCS += md_log.c
 handel_SRCS += handel.c
 handel_SRCS += fdd.c
