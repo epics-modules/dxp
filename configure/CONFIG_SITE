@@ -1,6 +1,9 @@
 # To make a standalone distribution uncomment this line
 #  STATIC_BUILD=YES
 
+# Uncomment this line if you have libusb-0.1 installed on your Linux system
+#LINUX_USB_INSTALLED=YES
+
 # Use site-specific definitions from areaDetector to find HDF5, etc.
 -include $(AREA_DETECTOR)/configure/CONFIG_SITE
 
