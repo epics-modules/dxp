@@ -1,14 +1,14 @@
 
 file {
-	name="/home/epics/devel/dxp/dxpApp/op/adl/dxpLowLevel.adl"
-	version=030102
+	name="/home/epics/devel/dxp-4-0/dxpApp/op/adl/dxpLowLevel.adl"
+	version=030109
 }
 display {
 	object {
-		x=132
-		y=73
-		width=2000
-		height=1050
+		x=1043
+		y=69
+		width=2260
+		height=1040
 	}
 	clr=14
 	bclr=4
@@ -89,9 +89,9 @@ display {
 }
 text {
 	object {
-		x=690
+		x=632
 		y=6
-		width=179
+		width=1000
 		height=25
 	}
 	"basic attribute" {
@@ -99,2673 +99,6 @@ text {
 	}
 	textix="$(P)$(R)"
 	align="horiz. centered"
-}
-menu {
-	object {
-		x=91
-		y=7
-		width=80
-		height=20
-	}
-	control {
-		chan="$(P)$(R)ReadLLParams.SCAN"
-		clr=14
-		bclr=51
-	}
-}
-"message button" {
-	object {
-		x=22
-		y=7
-		width=64
-		height=20
-	}
-	control {
-		chan="$(P)$(R)ReadLLParams.PROC"
-		clr=14
-		bclr=51
-	}
-	label="Read"
-	press_msg="1"
-}
-text {
-	object {
-		x=176
-		y=7
-		width=70
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Read parameters"
-}
-rectangle {
-	object {
-		x=14
-		y=2
-		width=320
-		height=30
-	}
-	"basic attribute" {
-		clr=14
-		fill="outline"
-	}
-}
-composite {
-	object {
-		x=14
-		y=37
-		width=315
-		height=995
-	}
-	"composite name"=""
-	children {
-		composite {
-			object {
-				x=14
-				y=37
-				width=315
-				height=245
-			}
-			"composite name"=""
-			children {
-				"text update" {
-					object {
-						x=139
-						y=39
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL0Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=114
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL3Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=139
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL4Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=164
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL5Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=189
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL6Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=214
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL7Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=239
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL8Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=264
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL9Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=64
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL1Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=89
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL2Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=37
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL0Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=112
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL3Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=137
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL4Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=162
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL5Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=187
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL6Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=212
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL7Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=237
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL8Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=262
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL9Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=62
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL1Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=87
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL2Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=39
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL0Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=114
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL3Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=139
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL4Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=164
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL5Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=189
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL6Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=214
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL7Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=239
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL8Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=264
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL9Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=64
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL1Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=89
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL2Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=39
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL0Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=114
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL3Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=139
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL4Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=164
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL5Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=189
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL6Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=214
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL7Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=239
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL8Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=264
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL9Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=64
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL1Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=89
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL2Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-			}
-		}
-		composite {
-			object {
-				x=14
-				y=287
-				width=315
-				height=245
-			}
-			"composite name"=""
-			children {
-				"text update" {
-					object {
-						x=139
-						y=289
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL10Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=364
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL13Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=389
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL14Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=414
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL15Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=439
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL16Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=464
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL17Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=489
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL18Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=514
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL19Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=314
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL11Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=339
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL12Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=287
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL10Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=362
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL13Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=387
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL14Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=412
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL15Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=437
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL16Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=462
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL17Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=487
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL18Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=512
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL19Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=312
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL11Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=337
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL12Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=289
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL10Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=364
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL13Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=389
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL14Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=414
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL15Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=439
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL16Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=464
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL17Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=489
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL18Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=514
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL19Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=314
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL11Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=339
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL12Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=289
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL10Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=364
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL13Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=389
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL14Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=414
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL15Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=439
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL16Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=464
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL17Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=489
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL18Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=514
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL19Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=314
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL11Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=339
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL12Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-			}
-		}
-		composite {
-			object {
-				x=14
-				y=537
-				width=315
-				height=245
-			}
-			"composite name"=""
-			children {
-				"text update" {
-					object {
-						x=139
-						y=539
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL20Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=614
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL23Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=639
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL24Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=664
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL25Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=689
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL26Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=714
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL27Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=739
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL28Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=764
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL29Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=564
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL21Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=589
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL22Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=537
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL20Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=612
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL23Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=637
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL24Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=662
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL25Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=687
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL26Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=712
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL27Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=737
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL28Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=762
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL29Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=562
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL21Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=587
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL22Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=539
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL20Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=614
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL23Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=639
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL24Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=664
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL25Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=689
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL26Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=714
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL27Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=739
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL28Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=764
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL29Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=564
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL21Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=589
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL22Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=539
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL20Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=614
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL23Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=639
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL24Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=664
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL25Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=689
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL26Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=714
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL27Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=739
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL28Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=764
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL29Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=564
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL21Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=589
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL22Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-			}
-		}
-		composite {
-			object {
-				x=14
-				y=787
-				width=315
-				height=245
-			}
-			"composite name"=""
-			children {
-				"text update" {
-					object {
-						x=139
-						y=789
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL30Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=864
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL33Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=889
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL34Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=914
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL35Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=939
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL36Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=964
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL37Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=989
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL38Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=1014
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL39Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=814
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL31Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=139
-						y=839
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL32Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=787
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL30Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=862
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL33Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=887
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL34Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=912
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL35Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=937
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL36Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=962
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL37Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=987
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL38Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=1012
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL39Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=812
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL31Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text entry" {
-					object {
-						x=269
-						y=837
-						width=60
-						height=20
-					}
-					control {
-						chan="$(P)$(R)LL32Val"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=789
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL30Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=864
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL33Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=889
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL34Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=914
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL35Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=939
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL36Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=964
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL37Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=989
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL38Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=1014
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL39Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=814
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL31Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=14
-						y=839
-						width=120
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL32Name"
-						clr=14
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=789
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL30Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=864
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL33Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=889
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL34Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=914
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL35Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=939
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL36Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=964
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL37Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=989
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL38Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=1014
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL39Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=814
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL31Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-				"text update" {
-					object {
-						x=204
-						y=839
-						width=60
-						height=15
-					}
-					monitor {
-						chan="$(P)$(R)LL32Val_RBV"
-						clr=54
-						bclr=3
-					}
-					align="horiz. right"
-					format="hexadecimal"
-					limits {
-					}
-				}
-			}
-		}
-	}
 }
 composite {
 	object {
@@ -10614,6 +7947,2711 @@ composite {
 }
 composite {
 	object {
+		x=352
+		y=8
+		width=275
+		height=20
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=352
+				y=8
+				width=210
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Number of parameters:"
+		}
+		"text update" {
+			object {
+				x=567
+				y=8
+				width=60
+				height=20
+			}
+			monitor {
+				chan="$(P)$(R)NumLLParams"
+				clr=53
+				bclr=3
+			}
+			limits {
+			}
+		}
+	}
+}
+composite {
+	object {
+		x=14
+		y=2
+		width=320
+		height=30
+	}
+	"composite name"=""
+	children {
+		menu {
+			object {
+				x=91
+				y=7
+				width=80
+				height=20
+			}
+			control {
+				chan="$(P)$(R)ReadLLParams.SCAN"
+				clr=14
+				bclr=51
+			}
+		}
+		"message button" {
+			object {
+				x=22
+				y=7
+				width=64
+				height=20
+			}
+			control {
+				chan="$(P)$(R)ReadLLParams.PROC"
+				clr=14
+				bclr=51
+			}
+			label="Read"
+			press_msg="1"
+		}
+		text {
+			object {
+				x=176
+				y=7
+				width=150
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Read parameters"
+		}
+		rectangle {
+			object {
+				x=14
+				y=2
+				width=320
+				height=30
+			}
+			"basic attribute" {
+				clr=14
+				fill="outline"
+			}
+		}
+	}
+}
+composite {
+	object {
+		x=14
+		y=37
+		width=315
+		height=995
+	}
+	"composite name"=""
+	children {
+		"text update" {
+			object {
+				x=139
+				y=39
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL0Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=139
+				y=114
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL3Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=139
+				y=139
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL4Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=139
+				y=164
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL5Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=139
+				y=189
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL6Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=139
+				y=214
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL7Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=139
+				y=239
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL8Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=139
+				y=264
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL9Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=139
+				y=64
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL1Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=139
+				y=89
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL2Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=269
+				y=37
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL0Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=269
+				y=112
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL3Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=269
+				y=137
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL4Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=269
+				y=162
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL5Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=269
+				y=187
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL6Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=269
+				y=212
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL7Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=269
+				y=237
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL8Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=269
+				y=262
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL9Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=269
+				y=62
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL1Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=269
+				y=87
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL2Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=14
+				y=39
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL0Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=14
+				y=114
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL3Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=14
+				y=139
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL4Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=14
+				y=164
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL5Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=14
+				y=189
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL6Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=14
+				y=214
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL7Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=14
+				y=239
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL8Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=14
+				y=264
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL9Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=14
+				y=64
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL1Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=14
+				y=89
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL2Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=204
+				y=39
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL0Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=204
+				y=114
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL3Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=204
+				y=139
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL4Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=204
+				y=164
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL5Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=204
+				y=189
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL6Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=204
+				y=214
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL7Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=204
+				y=239
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL8Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=204
+				y=264
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL9Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=204
+				y=64
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL1Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=204
+				y=89
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL2Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		composite {
+			object {
+				x=14
+				y=287
+				width=315
+				height=245
+			}
+			"composite name"=""
+			children {
+				"text update" {
+					object {
+						x=139
+						y=289
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL10Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=139
+						y=364
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL13Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=139
+						y=389
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL14Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=139
+						y=414
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL15Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=139
+						y=439
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL16Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=139
+						y=464
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL17Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=139
+						y=489
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL18Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=139
+						y=514
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL19Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=139
+						y=314
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL11Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=139
+						y=339
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL12Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=287
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL10Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=362
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL13Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=387
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL14Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=412
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL15Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=437
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL16Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=462
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL17Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=487
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL18Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=512
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL19Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=312
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL11Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=337
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL12Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=289
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL10Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=364
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL13Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=389
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL14Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=414
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL15Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=439
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL16Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=464
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL17Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=489
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL18Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=514
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL19Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=314
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL11Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=339
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL12Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=289
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL10Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=364
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL13Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=389
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL14Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=414
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL15Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=439
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL16Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=464
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL17Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=489
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL18Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=514
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL19Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=314
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL11Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=339
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL12Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+			}
+		}
+		composite {
+			object {
+				x=14
+				y=537
+				width=315
+				height=245
+			}
+			"composite name"=""
+			children {
+				"text update" {
+					object {
+						x=139
+						y=539
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL20Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=139
+						y=614
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL23Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=139
+						y=639
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL24Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=139
+						y=664
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL25Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=139
+						y=689
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL26Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=139
+						y=714
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL27Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=139
+						y=739
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL28Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=139
+						y=764
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL29Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=139
+						y=564
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL21Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=139
+						y=589
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL22Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=537
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL20Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=612
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL23Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=637
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL24Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=662
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL25Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=687
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL26Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=712
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL27Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=737
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL28Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=762
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL29Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=562
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL21Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=587
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL22Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=539
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL20Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=614
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL23Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=639
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL24Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=664
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL25Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=689
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL26Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=714
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL27Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=739
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL28Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=764
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL29Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=564
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL21Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=589
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL22Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=539
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL20Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=614
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL23Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=639
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL24Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=664
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL25Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=689
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL26Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=714
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL27Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=739
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL28Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=764
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL29Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=564
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL21Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=589
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL22Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+			}
+		}
+		composite {
+			object {
+				x=14
+				y=787
+				width=315
+				height=245
+			}
+			"composite name"=""
+			children {
+				"text update" {
+					object {
+						x=139
+						y=789
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL30Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=139
+						y=864
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL33Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=139
+						y=889
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL34Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=139
+						y=914
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL35Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=139
+						y=939
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL36Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=139
+						y=964
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL37Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=139
+						y=989
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL38Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=139
+						y=1014
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL39Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=139
+						y=814
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL31Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=139
+						y=839
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL32Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=787
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL30Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=862
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL33Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=887
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL34Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=912
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL35Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=937
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL36Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=962
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL37Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=987
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL38Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=1012
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL39Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=812
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL31Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text entry" {
+					object {
+						x=269
+						y=837
+						width=60
+						height=20
+					}
+					control {
+						chan="$(P)$(R)LL32Val"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=789
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL30Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=864
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL33Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=889
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL34Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=914
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL35Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=939
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL36Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=964
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL37Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=989
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL38Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=1014
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL39Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=814
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL31Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=14
+						y=839
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL32Name"
+						clr=14
+						bclr=4
+					}
+					align="horiz. right"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=789
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL30Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=864
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL33Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=889
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL34Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=914
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL35Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=939
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL36Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=964
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL37Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=989
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL38Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=1014
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL39Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=814
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL31Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+				"text update" {
+					object {
+						x=204
+						y=839
+						width=60
+						height=15
+					}
+					monitor {
+						chan="$(P)$(R)LL32Val_RBV"
+						clr=54
+						bclr=3
+					}
+					align="horiz. right"
+					format="hexadecimal"
+					limits {
+					}
+				}
+			}
+		}
+	}
+}
+composite {
+	object {
 		x=1294
 		y=37
 		width=315
@@ -13227,10 +13265,1930 @@ composite {
 		}
 	}
 }
+"text update" {
+	object {
+		x=1739
+		y=39
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL200Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=114
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL203Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=139
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL204Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=164
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL205Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=189
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL206Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=214
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL207Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=239
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL208Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=264
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL209Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=64
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL201Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=89
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL202Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=37
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL200Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=112
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL203Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=137
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL204Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=162
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL205Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=187
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL206Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=212
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL207Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=237
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL208Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=262
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL209Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=62
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL201Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=87
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL202Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=39
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL200Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=114
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL203Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=139
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL204Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=164
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL205Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=189
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL206Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=214
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL207Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=239
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL208Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=264
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL209Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=64
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL201Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=89
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL202Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=39
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL200Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=114
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL203Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=139
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL204Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=164
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL205Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=189
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL206Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=214
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL207Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=239
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL208Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=264
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL209Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=64
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL201Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=89
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL202Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=289
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL210Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=364
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL213Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=389
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL214Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=414
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL215Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=439
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL216Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=464
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL217Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=489
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL218Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=514
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL219Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=314
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL211Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=339
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL212Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=287
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL210Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=362
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL213Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=387
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL214Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=412
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL215Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=437
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL216Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=462
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL217Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=487
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL218Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=512
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL219Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=312
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL211Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=337
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL212Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=289
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL210Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=364
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL213Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=389
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL214Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=414
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL215Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=439
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL216Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=464
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL217Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=489
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL218Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=514
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL219Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=314
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL211Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=339
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL212Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=289
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL210Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=364
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL213Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=389
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL214Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=414
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL215Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=439
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL216Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=464
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL217Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=489
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL218Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=514
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL219Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=314
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL211Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=339
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL212Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=539
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL220Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=614
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL223Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=639
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL224Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=664
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL225Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=689
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL226Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=714
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL227Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=739
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL228Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=764
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL229Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=564
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL221Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1739
+		y=589
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL222Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=537
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL220Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=612
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL223Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=637
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL224Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=662
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL225Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=687
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL226Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=712
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL227Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=737
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL228Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=762
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL229Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=562
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL221Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=1869
+		y=587
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)$(R)LL222Val"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=539
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL220Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=614
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL223Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=639
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL224Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=664
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL225Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=689
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL226Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=714
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL227Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=739
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL228Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=764
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL229Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=564
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL221Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1614
+		y=589
+		width=120
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL222Name"
+		clr=14
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=539
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL220Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=614
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL223Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=639
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL224Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=664
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL225Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=689
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL226Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=714
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL227Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=739
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL228Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=764
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL229Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=564
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL221Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=1804
+		y=589
+		width=60
+		height=15
+	}
+	monitor {
+		chan="$(P)$(R)LL222Val_RBV"
+		clr=54
+		bclr=3
+	}
+	align="horiz. right"
+	format="hexadecimal"
+	limits {
+	}
+}
 composite {
 	object {
 		x=1614
-		y=37
+		y=787
 		width=315
 		height=245
 	}
@@ -13239,12 +15197,12 @@ composite {
 		"text update" {
 			object {
 				x=1739
-				y=39
+				y=789
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL200Val_RBV"
+				chan="$(P)$(R)LL230Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -13255,12 +15213,12 @@ composite {
 		"text update" {
 			object {
 				x=1739
-				y=114
+				y=864
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL203Val_RBV"
+				chan="$(P)$(R)LL233Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -13271,12 +15229,12 @@ composite {
 		"text update" {
 			object {
 				x=1739
-				y=139
+				y=889
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL204Val_RBV"
+				chan="$(P)$(R)LL234Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -13287,12 +15245,12 @@ composite {
 		"text update" {
 			object {
 				x=1739
-				y=164
+				y=914
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL205Val_RBV"
+				chan="$(P)$(R)LL235Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -13303,12 +15261,12 @@ composite {
 		"text update" {
 			object {
 				x=1739
-				y=189
+				y=939
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL206Val_RBV"
+				chan="$(P)$(R)LL236Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -13319,12 +15277,12 @@ composite {
 		"text update" {
 			object {
 				x=1739
-				y=214
+				y=964
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL207Val_RBV"
+				chan="$(P)$(R)LL237Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -13335,12 +15293,12 @@ composite {
 		"text update" {
 			object {
 				x=1739
-				y=239
+				y=989
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL208Val_RBV"
+				chan="$(P)$(R)LL238Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -13351,12 +15309,12 @@ composite {
 		"text update" {
 			object {
 				x=1739
-				y=264
+				y=1014
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL209Val_RBV"
+				chan="$(P)$(R)LL239Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -13367,12 +15325,12 @@ composite {
 		"text update" {
 			object {
 				x=1739
-				y=64
+				y=814
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL201Val_RBV"
+				chan="$(P)$(R)LL231Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -13383,12 +15341,12 @@ composite {
 		"text update" {
 			object {
 				x=1739
-				y=89
+				y=839
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL202Val_RBV"
+				chan="$(P)$(R)LL232Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -13399,12 +15357,663 @@ composite {
 		"text entry" {
 			object {
 				x=1869
+				y=787
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL230Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=1869
+				y=862
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL233Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=1869
+				y=887
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL234Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=1869
+				y=912
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL235Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=1869
+				y=937
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL236Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=1869
+				y=962
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL237Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=1869
+				y=987
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL238Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=1869
+				y=1012
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL239Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=1869
+				y=812
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL231Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=1869
+				y=837
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL232Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1614
+				y=789
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL230Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1614
+				y=864
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL233Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1614
+				y=889
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL234Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1614
+				y=914
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL235Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1614
+				y=939
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL236Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1614
+				y=964
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL237Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1614
+				y=989
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL238Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1614
+				y=1014
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL239Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1614
+				y=814
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL231Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1614
+				y=839
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL232Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1804
+				y=789
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL230Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1804
+				y=864
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL233Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1804
+				y=889
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL234Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1804
+				y=914
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL235Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1804
+				y=939
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL236Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1804
+				y=964
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL237Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1804
+				y=989
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL238Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1804
+				y=1014
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL239Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1804
+				y=814
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL231Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1804
+				y=839
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL232Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+	}
+}
+composite {
+	object {
+		x=1934
+		y=37
+		width=315
+		height=995
+	}
+	"composite name"=""
+	children {
+		"text update" {
+			object {
+				x=2059
+				y=39
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL240Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2059
+				y=114
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL243Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2059
+				y=139
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL244Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2059
+				y=164
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL245Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2059
+				y=189
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL246Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2059
+				y=214
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL247Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2059
+				y=239
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL248Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2059
+				y=264
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL249Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2059
+				y=64
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL241Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2059
+				y=89
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL242Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=2189
 				y=37
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL200Val"
+				chan="$(P)$(R)LL240Val"
 				clr=14
 				bclr=51
 			}
@@ -13413,13 +16022,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=112
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL203Val"
+				chan="$(P)$(R)LL243Val"
 				clr=14
 				bclr=51
 			}
@@ -13428,13 +16037,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=137
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL204Val"
+				chan="$(P)$(R)LL244Val"
 				clr=14
 				bclr=51
 			}
@@ -13443,13 +16052,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=162
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL205Val"
+				chan="$(P)$(R)LL245Val"
 				clr=14
 				bclr=51
 			}
@@ -13458,13 +16067,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=187
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL206Val"
+				chan="$(P)$(R)LL246Val"
 				clr=14
 				bclr=51
 			}
@@ -13473,13 +16082,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=212
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL207Val"
+				chan="$(P)$(R)LL247Val"
 				clr=14
 				bclr=51
 			}
@@ -13488,13 +16097,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=237
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL208Val"
+				chan="$(P)$(R)LL248Val"
 				clr=14
 				bclr=51
 			}
@@ -13503,13 +16112,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=262
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL209Val"
+				chan="$(P)$(R)LL249Val"
 				clr=14
 				bclr=51
 			}
@@ -13518,13 +16127,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=62
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL201Val"
+				chan="$(P)$(R)LL241Val"
 				clr=14
 				bclr=51
 			}
@@ -13533,13 +16142,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=87
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL202Val"
+				chan="$(P)$(R)LL242Val"
 				clr=14
 				bclr=51
 			}
@@ -13548,13 +16157,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=39
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL200Name"
+				chan="$(P)$(R)LL240Name"
 				clr=14
 				bclr=4
 			}
@@ -13564,13 +16173,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=114
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL203Name"
+				chan="$(P)$(R)LL243Name"
 				clr=14
 				bclr=4
 			}
@@ -13580,13 +16189,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=139
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL204Name"
+				chan="$(P)$(R)LL244Name"
 				clr=14
 				bclr=4
 			}
@@ -13596,13 +16205,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=164
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL205Name"
+				chan="$(P)$(R)LL245Name"
 				clr=14
 				bclr=4
 			}
@@ -13612,13 +16221,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=189
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL206Name"
+				chan="$(P)$(R)LL246Name"
 				clr=14
 				bclr=4
 			}
@@ -13628,13 +16237,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=214
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL207Name"
+				chan="$(P)$(R)LL247Name"
 				clr=14
 				bclr=4
 			}
@@ -13644,13 +16253,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=239
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL208Name"
+				chan="$(P)$(R)LL248Name"
 				clr=14
 				bclr=4
 			}
@@ -13660,13 +16269,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=264
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL209Name"
+				chan="$(P)$(R)LL249Name"
 				clr=14
 				bclr=4
 			}
@@ -13676,13 +16285,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=64
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL201Name"
+				chan="$(P)$(R)LL241Name"
 				clr=14
 				bclr=4
 			}
@@ -13692,13 +16301,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=89
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL202Name"
+				chan="$(P)$(R)LL242Name"
 				clr=14
 				bclr=4
 			}
@@ -13708,13 +16317,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=39
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL200Val_RBV"
+				chan="$(P)$(R)LL240Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -13725,13 +16334,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=114
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL203Val_RBV"
+				chan="$(P)$(R)LL243Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -13742,13 +16351,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=139
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL204Val_RBV"
+				chan="$(P)$(R)LL244Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -13759,13 +16368,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=164
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL205Val_RBV"
+				chan="$(P)$(R)LL245Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -13776,13 +16385,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=189
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL206Val_RBV"
+				chan="$(P)$(R)LL246Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -13793,13 +16402,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=214
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL207Val_RBV"
+				chan="$(P)$(R)LL247Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -13810,13 +16419,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=239
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL208Val_RBV"
+				chan="$(P)$(R)LL248Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -13827,13 +16436,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=264
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL209Val_RBV"
+				chan="$(P)$(R)LL249Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -13844,13 +16453,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=64
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL201Val_RBV"
+				chan="$(P)$(R)LL241Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -13861,13 +16470,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=89
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL202Val_RBV"
+				chan="$(P)$(R)LL242Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -13876,26 +16485,15 @@ composite {
 			limits {
 			}
 		}
-	}
-}
-composite {
-	object {
-		x=1614
-		y=287
-		width=315
-		height=245
-	}
-	"composite name"=""
-	children {
 		"text update" {
 			object {
-				x=1739
+				x=2059
 				y=289
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL210Val_RBV"
+				chan="$(P)$(R)LL250Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -13905,13 +16503,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1739
+				x=2059
 				y=364
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL213Val_RBV"
+				chan="$(P)$(R)LL253Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -13921,13 +16519,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1739
+				x=2059
 				y=389
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL214Val_RBV"
+				chan="$(P)$(R)LL254Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -13937,13 +16535,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1739
+				x=2059
 				y=414
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL215Val_RBV"
+				chan="$(P)$(R)LL255Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -13953,13 +16551,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1739
+				x=2059
 				y=439
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL216Val_RBV"
+				chan="$(P)$(R)LL256Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -13969,13 +16567,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1739
+				x=2059
 				y=464
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL217Val_RBV"
+				chan="$(P)$(R)LL257Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -13985,13 +16583,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1739
+				x=2059
 				y=489
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL218Val_RBV"
+				chan="$(P)$(R)LL258Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -14001,13 +16599,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1739
+				x=2059
 				y=514
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL219Val_RBV"
+				chan="$(P)$(R)LL259Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -14017,13 +16615,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1739
+				x=2059
 				y=314
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL211Val_RBV"
+				chan="$(P)$(R)LL251Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -14033,13 +16631,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1739
+				x=2059
 				y=339
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL212Val_RBV"
+				chan="$(P)$(R)LL252Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -14049,13 +16647,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=287
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL210Val"
+				chan="$(P)$(R)LL250Val"
 				clr=14
 				bclr=51
 			}
@@ -14064,13 +16662,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=362
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL213Val"
+				chan="$(P)$(R)LL253Val"
 				clr=14
 				bclr=51
 			}
@@ -14079,13 +16677,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=387
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL214Val"
+				chan="$(P)$(R)LL254Val"
 				clr=14
 				bclr=51
 			}
@@ -14094,13 +16692,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=412
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL215Val"
+				chan="$(P)$(R)LL255Val"
 				clr=14
 				bclr=51
 			}
@@ -14109,13 +16707,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=437
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL216Val"
+				chan="$(P)$(R)LL256Val"
 				clr=14
 				bclr=51
 			}
@@ -14124,13 +16722,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=462
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL217Val"
+				chan="$(P)$(R)LL257Val"
 				clr=14
 				bclr=51
 			}
@@ -14139,13 +16737,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=487
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL218Val"
+				chan="$(P)$(R)LL258Val"
 				clr=14
 				bclr=51
 			}
@@ -14154,13 +16752,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=512
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL219Val"
+				chan="$(P)$(R)LL259Val"
 				clr=14
 				bclr=51
 			}
@@ -14169,13 +16767,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=312
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL211Val"
+				chan="$(P)$(R)LL251Val"
 				clr=14
 				bclr=51
 			}
@@ -14184,13 +16782,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=337
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL212Val"
+				chan="$(P)$(R)LL252Val"
 				clr=14
 				bclr=51
 			}
@@ -14199,13 +16797,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=289
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL210Name"
+				chan="$(P)$(R)LL250Name"
 				clr=14
 				bclr=4
 			}
@@ -14215,13 +16813,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=364
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL213Name"
+				chan="$(P)$(R)LL253Name"
 				clr=14
 				bclr=4
 			}
@@ -14231,13 +16829,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=389
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL214Name"
+				chan="$(P)$(R)LL254Name"
 				clr=14
 				bclr=4
 			}
@@ -14247,13 +16845,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=414
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL215Name"
+				chan="$(P)$(R)LL255Name"
 				clr=14
 				bclr=4
 			}
@@ -14263,13 +16861,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=439
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL216Name"
+				chan="$(P)$(R)LL256Name"
 				clr=14
 				bclr=4
 			}
@@ -14279,13 +16877,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=464
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL217Name"
+				chan="$(P)$(R)LL257Name"
 				clr=14
 				bclr=4
 			}
@@ -14295,13 +16893,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=489
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL218Name"
+				chan="$(P)$(R)LL258Name"
 				clr=14
 				bclr=4
 			}
@@ -14311,13 +16909,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=514
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL219Name"
+				chan="$(P)$(R)LL259Name"
 				clr=14
 				bclr=4
 			}
@@ -14327,13 +16925,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=314
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL211Name"
+				chan="$(P)$(R)LL251Name"
 				clr=14
 				bclr=4
 			}
@@ -14343,13 +16941,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=339
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL212Name"
+				chan="$(P)$(R)LL252Name"
 				clr=14
 				bclr=4
 			}
@@ -14359,13 +16957,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=289
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL210Val_RBV"
+				chan="$(P)$(R)LL250Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -14376,13 +16974,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=364
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL213Val_RBV"
+				chan="$(P)$(R)LL253Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -14393,13 +16991,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=389
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL214Val_RBV"
+				chan="$(P)$(R)LL254Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -14410,13 +17008,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=414
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL215Val_RBV"
+				chan="$(P)$(R)LL255Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -14427,13 +17025,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=439
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL216Val_RBV"
+				chan="$(P)$(R)LL256Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -14444,13 +17042,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=464
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL217Val_RBV"
+				chan="$(P)$(R)LL257Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -14461,13 +17059,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=489
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL218Val_RBV"
+				chan="$(P)$(R)LL258Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -14478,13 +17076,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=514
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL219Val_RBV"
+				chan="$(P)$(R)LL259Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -14495,13 +17093,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=314
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL211Val_RBV"
+				chan="$(P)$(R)LL251Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -14512,13 +17110,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=339
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL212Val_RBV"
+				chan="$(P)$(R)LL252Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -14527,64 +17125,15 @@ composite {
 			limits {
 			}
 		}
-	}
-}
-composite {
-	object {
-		x=1636
-		y=795
-		width=275
-		height=20
-	}
-	"composite name"=""
-	children {
-		text {
-			object {
-				x=1636
-				y=795
-				width=210
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Number of parameters:"
-		}
 		"text update" {
 			object {
-				x=1851
-				y=795
-				width=60
-				height=20
-			}
-			monitor {
-				chan="$(P)$(R)NumLLParams"
-				clr=53
-				bclr=3
-			}
-			limits {
-			}
-		}
-	}
-}
-composite {
-	object {
-		x=1614
-		y=537
-		width=315
-		height=245
-	}
-	"composite name"=""
-	children {
-		"text update" {
-			object {
-				x=1739
+				x=2059
 				y=539
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL220Val_RBV"
+				chan="$(P)$(R)LL260Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -14594,13 +17143,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1739
+				x=2059
 				y=614
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL223Val_RBV"
+				chan="$(P)$(R)LL263Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -14610,13 +17159,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1739
+				x=2059
 				y=639
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL224Val_RBV"
+				chan="$(P)$(R)LL264Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -14626,13 +17175,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1739
+				x=2059
 				y=664
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL225Val_RBV"
+				chan="$(P)$(R)LL265Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -14642,13 +17191,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1739
+				x=2059
 				y=689
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL226Val_RBV"
+				chan="$(P)$(R)LL266Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -14658,13 +17207,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1739
+				x=2059
 				y=714
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL227Val_RBV"
+				chan="$(P)$(R)LL267Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -14674,13 +17223,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1739
+				x=2059
 				y=739
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL228Val_RBV"
+				chan="$(P)$(R)LL268Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -14690,13 +17239,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1739
+				x=2059
 				y=764
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL229Val_RBV"
+				chan="$(P)$(R)LL269Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -14706,13 +17255,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1739
+				x=2059
 				y=564
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL221Val_RBV"
+				chan="$(P)$(R)LL261Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -14722,13 +17271,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1739
+				x=2059
 				y=589
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL222Val_RBV"
+				chan="$(P)$(R)LL262Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -14738,13 +17287,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=537
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL220Val"
+				chan="$(P)$(R)LL260Val"
 				clr=14
 				bclr=51
 			}
@@ -14753,13 +17302,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=612
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL223Val"
+				chan="$(P)$(R)LL263Val"
 				clr=14
 				bclr=51
 			}
@@ -14768,13 +17317,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=637
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL224Val"
+				chan="$(P)$(R)LL264Val"
 				clr=14
 				bclr=51
 			}
@@ -14783,13 +17332,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=662
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL225Val"
+				chan="$(P)$(R)LL265Val"
 				clr=14
 				bclr=51
 			}
@@ -14798,13 +17347,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=687
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL226Val"
+				chan="$(P)$(R)LL266Val"
 				clr=14
 				bclr=51
 			}
@@ -14813,13 +17362,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=712
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL227Val"
+				chan="$(P)$(R)LL267Val"
 				clr=14
 				bclr=51
 			}
@@ -14828,13 +17377,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=737
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL228Val"
+				chan="$(P)$(R)LL268Val"
 				clr=14
 				bclr=51
 			}
@@ -14843,13 +17392,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=762
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL229Val"
+				chan="$(P)$(R)LL269Val"
 				clr=14
 				bclr=51
 			}
@@ -14858,13 +17407,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=562
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL221Val"
+				chan="$(P)$(R)LL261Val"
 				clr=14
 				bclr=51
 			}
@@ -14873,13 +17422,13 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=1869
+				x=2189
 				y=587
 				width=60
 				height=20
 			}
 			control {
-				chan="$(P)$(R)LL222Val"
+				chan="$(P)$(R)LL262Val"
 				clr=14
 				bclr=51
 			}
@@ -14888,13 +17437,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=539
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL220Name"
+				chan="$(P)$(R)LL260Name"
 				clr=14
 				bclr=4
 			}
@@ -14904,13 +17453,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=614
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL223Name"
+				chan="$(P)$(R)LL263Name"
 				clr=14
 				bclr=4
 			}
@@ -14920,13 +17469,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=639
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL224Name"
+				chan="$(P)$(R)LL264Name"
 				clr=14
 				bclr=4
 			}
@@ -14936,13 +17485,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=664
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL225Name"
+				chan="$(P)$(R)LL265Name"
 				clr=14
 				bclr=4
 			}
@@ -14952,13 +17501,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=689
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL226Name"
+				chan="$(P)$(R)LL266Name"
 				clr=14
 				bclr=4
 			}
@@ -14968,13 +17517,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=714
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL227Name"
+				chan="$(P)$(R)LL267Name"
 				clr=14
 				bclr=4
 			}
@@ -14984,13 +17533,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=739
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL228Name"
+				chan="$(P)$(R)LL268Name"
 				clr=14
 				bclr=4
 			}
@@ -15000,13 +17549,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=764
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL229Name"
+				chan="$(P)$(R)LL269Name"
 				clr=14
 				bclr=4
 			}
@@ -15016,13 +17565,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=564
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL221Name"
+				chan="$(P)$(R)LL261Name"
 				clr=14
 				bclr=4
 			}
@@ -15032,13 +17581,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1614
+				x=1934
 				y=589
 				width=120
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL222Name"
+				chan="$(P)$(R)LL262Name"
 				clr=14
 				bclr=4
 			}
@@ -15048,13 +17597,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=539
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL220Val_RBV"
+				chan="$(P)$(R)LL260Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -15065,13 +17614,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=614
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL223Val_RBV"
+				chan="$(P)$(R)LL263Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -15082,13 +17631,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=639
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL224Val_RBV"
+				chan="$(P)$(R)LL264Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -15099,13 +17648,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=664
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL225Val_RBV"
+				chan="$(P)$(R)LL265Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -15116,13 +17665,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=689
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL226Val_RBV"
+				chan="$(P)$(R)LL266Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -15133,13 +17682,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=714
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL227Val_RBV"
+				chan="$(P)$(R)LL267Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -15150,13 +17699,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=739
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL228Val_RBV"
+				chan="$(P)$(R)LL268Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -15167,13 +17716,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=764
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL229Val_RBV"
+				chan="$(P)$(R)LL269Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -15184,13 +17733,13 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=564
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL221Val_RBV"
+				chan="$(P)$(R)LL261Val_RBV"
 				clr=54
 				bclr=3
 			}
@@ -15201,13 +17750,653 @@ composite {
 		}
 		"text update" {
 			object {
-				x=1804
+				x=2124
 				y=589
 				width=60
 				height=15
 			}
 			monitor {
-				chan="$(P)$(R)LL222Val_RBV"
+				chan="$(P)$(R)LL272Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2059
+				y=789
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL270Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2059
+				y=864
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL273Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2059
+				y=889
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL274Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2059
+				y=914
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL275Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2059
+				y=939
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL276Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2059
+				y=964
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL277Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2059
+				y=989
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL278Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2059
+				y=1014
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL279Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2059
+				y=814
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL271Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2059
+				y=839
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL272Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=2189
+				y=787
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL270Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=2189
+				y=862
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL273Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=2189
+				y=887
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL274Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=2189
+				y=912
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL275Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=2189
+				y=937
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL276Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=2189
+				y=962
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL277Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=2189
+				y=987
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL278Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=2189
+				y=1012
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL279Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=2189
+				y=812
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL271Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=2189
+				y=837
+				width=60
+				height=20
+			}
+			control {
+				chan="$(P)$(R)LL272Val"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1934
+				y=789
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL270Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1934
+				y=864
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL273Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1934
+				y=889
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL274Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1934
+				y=914
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL275Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1934
+				y=939
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL276Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1934
+				y=964
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL277Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1934
+				y=989
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL278Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1934
+				y=1014
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL279Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1934
+				y=814
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL271Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=1934
+				y=839
+				width=120
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL272Name"
+				clr=14
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2124
+				y=789
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL270Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2124
+				y=864
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL273Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2124
+				y=889
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL274Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2124
+				y=914
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL275Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2124
+				y=939
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL276Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2124
+				y=964
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL277Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2124
+				y=989
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL278Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2124
+				y=1014
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL279Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2124
+				y=814
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL271Val_RBV"
+				clr=54
+				bclr=3
+			}
+			align="horiz. right"
+			format="hexadecimal"
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=2124
+				y=839
+				width=60
+				height=15
+			}
+			monitor {
+				chan="$(P)$(R)LL272Val_RBV"
 				clr=54
 				bclr=3
 			}
