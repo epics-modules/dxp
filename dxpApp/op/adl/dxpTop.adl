@@ -1,7 +1,7 @@
 
 file {
-	name="/home/epics/devel/dxp/dxpApp/op/adl/dxpTop.adl"
-	version=030102
+	name="/home/epics/devel/dxp-4-0/dxpApp/op/adl/dxpTop.adl"
+	version=030109
 }
 display {
 	object {
@@ -157,14 +157,9 @@ text {
 		height=20
 	}
 	display[0] {
-		label="DXP2X 4-element MED"
-		name="4element_dxp.adl"
-		args="P=dxp2X:, M=mca, D=dxp"
-	}
-	display[1] {
-		label="DXP2X 16-element MED"
-		name="16element_dxp.adl"
-		args="P=dxp2X:, M=mca, D=dxp"
+		label="MicroDXP"
+		name="microDXP.adl"
+		args="P=microDXP:, M=mca1, D=dxp1:"
 	}
 	clr=14
 	bclr=4
@@ -197,13 +192,13 @@ text {
 	object {
 		x=130
 		y=112
-		width=50
+		width=80
 		height=20
 	}
 	"basic attribute" {
 		clr=14
 	}
-	textix="DXP2X"
+	textix="MicroDXP"
 }
 text {
 	object {
