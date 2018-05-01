@@ -8,7 +8,7 @@ display {
 		x=220
 		y=155
 		width=765
-		height=735
+		height=700
 	}
 	clr=14
 	bclr=4
@@ -1156,278 +1156,6 @@ text {
 	textix="Fine gain"
 	align="horiz. right"
 }
-text {
-	object {
-		x=109
-		y=650
-		width=150
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="System settings"
-}
-text {
-	object {
-		x=54
-		y=700
-		width=90
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Save file"
-	align="horiz. right"
-}
-"message button" {
-	object {
-		x=154
-		y=700
-		width=60
-		height=20
-	}
-	control {
-		chan="$(P)SaveSystem"
-		clr=14
-		bclr=51
-	}
-	label="Save"
-	press_msg="1"
-}
-"text update" {
-	object {
-		x=224
-		y=700
-		width=100
-		height=20
-	}
-	monitor {
-		chan="$(P)SaveSystem_RBV"
-		clr=53
-		bclr=4
-	}
-	clrmod="alarm"
-	format="string"
-	limits {
-	}
-}
-"text entry" {
-	object {
-		x=109
-		y=675
-		width=255
-		height=20
-	}
-	control {
-		chan="$(P)SaveSystemFile"
-		clr=14
-		bclr=51
-	}
-	format="string"
-	limits {
-	}
-}
-text {
-	object {
-		x=14
-		y=675
-		width=90
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="File name"
-	align="horiz. right"
-}
-rectangle {
-	object {
-		x=4
-		y=645
-		width=370
-		height=85
-	}
-	"basic attribute" {
-		clr=54
-		fill="outline"
-		width=2
-	}
-}
-text {
-	object {
-		x=505
-		y=614
-		width=130
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="PARSET/GENSET"
-}
-rectangle {
-	object {
-		x=380
-		y=609
-		width=380
-		height=85
-	}
-	"basic attribute" {
-		clr=54
-		fill="outline"
-		width=2
-	}
-}
-"message button" {
-	object {
-		x=685
-		y=637
-		width=60
-		height=20
-	}
-	control {
-		chan="$(P)$(D)SavePARSET"
-		clr=14
-		bclr=51
-	}
-	label="Save"
-	press_msg="1"
-}
-"text update" {
-	object {
-		x=541
-		y=637
-		width=74
-		height=20
-	}
-	monitor {
-		chan="$(P)$(D)PARSET_RBV"
-		clr=54
-		bclr=3
-	}
-	format="string"
-	limits {
-	}
-}
-text {
-	object {
-		x=396
-		y=637
-		width=60
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="PARSET"
-	align="horiz. right"
-}
-"message button" {
-	object {
-		x=685
-		y=662
-		width=60
-		height=20
-	}
-	control {
-		chan="$(P)$(D)SaveGENSET"
-		clr=14
-		bclr=51
-	}
-	label="Save"
-	press_msg="1"
-}
-"text update" {
-	object {
-		x=541
-		y=662
-		width=74
-		height=20
-	}
-	monitor {
-		chan="$(P)$(D)GENSET_RBV"
-		clr=54
-		bclr=3
-	}
-	format="string"
-	limits {
-	}
-}
-text {
-	object {
-		x=396
-		y=662
-		width=60
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="GENSET"
-	align="horiz. right"
-}
-"text entry" {
-	object {
-		x=461
-		y=637
-		width=75
-		height=22
-	}
-	control {
-		chan="$(P)$(D)PARSET"
-		clr=14
-		bclr=51
-	}
-	limits {
-	}
-}
-"text entry" {
-	object {
-		x=461
-		y=662
-		width=75
-		height=22
-	}
-	control {
-		chan="$(P)$(D)GENSET"
-		clr=14
-		bclr=51
-	}
-	limits {
-	}
-}
-"message button" {
-	object {
-		x=620
-		y=637
-		width=60
-		height=20
-	}
-	control {
-		chan="$(P)$(D)LoadPARSET"
-		clr=14
-		bclr=51
-	}
-	label="Load"
-	press_msg="1"
-}
-"message button" {
-	object {
-		x=620
-		y=662
-		width=60
-		height=20
-	}
-	control {
-		chan="$(P)$(D)LoadGENSET"
-		clr=14
-		bclr=51
-	}
-	label="Load"
-	press_msg="1"
-}
 "text entry" {
 	object {
 		x=648
@@ -2142,5 +1870,104 @@ text {
 	}
 	align="horiz. right"
 	limits {
+	}
+}
+text {
+	object {
+		x=495
+		y=617
+		width=150
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="System settings"
+}
+text {
+	object {
+		x=430
+		y=667
+		width=90
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Save file"
+	align="horiz. right"
+}
+"message button" {
+	object {
+		x=530
+		y=667
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)SaveSystem"
+		clr=14
+		bclr=51
+	}
+	label="Save"
+	press_msg="1"
+}
+"text update" {
+	object {
+		x=600
+		y=667
+		width=100
+		height=20
+	}
+	monitor {
+		chan="$(P)SaveSystem_RBV"
+		clr=53
+		bclr=4
+	}
+	clrmod="alarm"
+	format="string"
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=485
+		y=642
+		width=255
+		height=20
+	}
+	control {
+		chan="$(P)SaveSystemFile"
+		clr=14
+		bclr=51
+	}
+	format="string"
+	limits {
+	}
+}
+text {
+	object {
+		x=390
+		y=642
+		width=90
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="File name"
+	align="horiz. right"
+}
+rectangle {
+	object {
+		x=380
+		y=612
+		width=380
+		height=85
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
 	}
 }
