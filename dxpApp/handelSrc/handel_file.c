@@ -2174,6 +2174,7 @@ static int writeUSB2(FILE *fp, Module *m)
     return XIA_SUCCESS;
 }
 
+#ifndef EXCLUDE_SERIAL
 static int writeSerial(FILE *fp, Module *m)
 {
     ASSERT(fp != NULL);
@@ -2195,3 +2196,4 @@ static int writeSerial(FILE *fp, Module *m)
 
     return XIA_SUCCESS;
 }
+#endif
