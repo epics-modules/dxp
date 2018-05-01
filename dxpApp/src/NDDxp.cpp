@@ -111,6 +111,11 @@ typedef enum {
 } NDDxpOutputMode_t;
 
 typedef enum {
+    NDDxpPreampReset,
+    NDDxpPreampRC
+} NDDxpPreamp_t;
+
+typedef enum {
     NDDxpTraceADC, 
     NDDxpTraceBaselineHistory,
     NDDxpTraceTriggerFilter, 
@@ -235,15 +240,9 @@ typedef struct moduleStatistics {
   * DXPSCA$(N)Counts
 */
 
-/* INI file and internal settings parameters */
+/* INI file parameters */
 #define NDDxpSaveSystemFileString           "DxpSaveSystemFile"
 #define NDDxpSaveSystemString               "DxpSaveSystem"
-#define NDDxpPARSETString                   "DxpPARSET"
-#define NDDxpLoadPARSETString               "DxpLoadPARSET"
-#define NDDxpSavePARSETString               "DxpSavePARSET"
-#define NDDxpGENSETString                   "DxpGENSET"
-#define NDDxpLoadGENSETString               "DxpLoadGENSET"
-#define NDDxpSaveGENSETString               "DxpSaveGENSET"
 
 /* Low-level DXP parameters */
 #define NDDxpNumLLParamsString              "DxpNumLLParams"
@@ -381,12 +380,6 @@ protected:
     /* INI file parameters */
     int NDDxpSaveSystemFile;
     int NDDxpSaveSystem;
-    int NDDxpPARSET;
-    int NDDxpLoadPARSET;
-    int NDDxpSavePARSET;
-    int NDDxpGENSET;
-    int NDDxpLoadGENSET;
-    int NDDxpSaveGENSET;
 
     /* Commands from MCA interface */
     int mcaData;                   /* int32Array, write/read */
@@ -424,6 +417,7 @@ private:
     epicsFloat64 *tmpStats;
 
     NDDxpModel_t deviceType;
+    NDDxpPreamp_t preampType;
     int nCards;
     int nChannels;
     int supportsMapping;
@@ -591,12 +585,6 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     /* INI file parameters */
     createParam(NDDxpSaveSystemFileString,         asynParamOctet,   &NDDxpSaveSystemFile);
     createParam(NDDxpSaveSystemString,             asynParamInt32,   &NDDxpSaveSystem);
-    createParam(NDDxpPARSETString,                 asynParamInt32,   &NDDxpPARSET);
-    createParam(NDDxpLoadPARSETString,             asynParamInt32,   &NDDxpLoadPARSET);
-    createParam(NDDxpSavePARSETString,             asynParamInt32,   &NDDxpSavePARSET);
-    createParam(NDDxpGENSETString,                 asynParamInt32,   &NDDxpGENSET);
-    createParam(NDDxpLoadGENSETString,             asynParamInt32,   &NDDxpLoadGENSET);
-    createParam(NDDxpSaveGENSETString,             asynParamInt32,   &NDDxpSaveGENSET);
 
     /* Commands from MCA interface */
     createParam(mcaDataString,                     asynParamInt32Array, &mcaData);
@@ -739,13 +727,18 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
         if (xiastatus != XIA_SUCCESS) printf("Error calling xiaSetParameter for RUNTASKS");
     }
     
-    /* On the MicroDXP read the list of peaking times */
-    unsigned short numPeakingTimes;
-    /* Read out number of peaking times to pre-allocate peaking time array */
-    xiastatus = xiaBoardOperation(0, "get_number_pt_per_fippi", &numPeakingTimes);
-    this->numPeakingTimes = numPeakingTimes;
-    this->peakingTimes = (double *)malloc(this->numPeakingTimes * sizeof(double));
-    xiastatus = xiaBoardOperation(0, "get_current_peaking_times", this->peakingTimes);
+    if (this->deviceType == NDDxpModelMicroDXP) {
+        /* On the MicroDXP read the list of peaking times */
+        unsigned short usTemp;
+        /* Read out number of peaking times to pre-allocate peaking time array */
+        xiastatus = xiaBoardOperation(0, "get_number_pt_per_fippi", &usTemp);
+        this->numPeakingTimes = usTemp;
+        this->peakingTimes = (double *)malloc(this->numPeakingTimes * sizeof(double));
+        xiastatus = xiaBoardOperation(0, "get_current_peaking_times", this->peakingTimes);
+        /* Read the pre-amp type */
+        xiastatus = xiaBoardOperation(0, "get_preamp_type", &usTemp);
+        this->preampType = (NDDxpPreamp_t)usTemp;
+    }
 
     /* Start up acquisition thread */
     setDoubleParam(NDDxpPollTime, 0.001);
@@ -1343,12 +1336,18 @@ asynStatus NDDxp::setDxpParam(asynUser *pasynUser, int addr, int function, doubl
         }
         status = this->xia_checkError(pasynUser, xiastatus, "setting detector polarity");
     } else if (function == NDDxpResetDelay) {
-        if (this->deviceType != NDDxpModelMicroDXP) {
+        if (this->deviceType == NDDxpModelMicroDXP) {
+            if (this->preampType == NDDxpPreampReset) {
+                xiastatus = xiaSetAcquisitionValues(channel, "preamp_value", &dvalue);
+            }
+        } else {
             xiastatus = xiaSetAcquisitionValues(channel, "reset_delay", &dvalue);
         }
     } else if (function == NDDxpDecayTime) {
         if (this->deviceType == NDDxpModelMicroDXP) {
-            xiastatus = xiaSetAcquisitionValues(channel, "preamp_value", &dvalue);
+              if (this->preampType == NDDxpPreampRC) {
+                  xiastatus = xiaSetAcquisitionValues(channel, "preamp_value", &dvalue);
+              }
         } else {
             xiastatus = xiaSetAcquisitionValues(channel, "decay_time", &dvalue);
         }
@@ -2150,9 +2149,11 @@ asynStatus NDDxp::getDxpParams(asynUser *pasynUser, int addr)
         setIntegerParam(channel, NDDxpDetectorPolarity, (int)dvalue);
         if (this->deviceType == NDDxpModelMicroDXP) {
             xiaGetAcquisitionValues(channel, "preamp_value", &dvalue);
-            // NOTE: Should only set one or the other depending on the preamp type
-            setDoubleParam(channel, NDDxpDecayTime, dvalue);
-            setDoubleParam(channel, NDDxpResetDelay, dvalue);
+            if (this->preampType == NDDxpPreampRC) {
+                setDoubleParam(channel, NDDxpDecayTime, dvalue);
+            } else {
+                setDoubleParam(channel, NDDxpResetDelay, dvalue);
+            }
         } else {
             xiaGetAcquisitionValues(channel, "decay_time", &dvalue);
             setDoubleParam(channel, NDDxpDecayTime, dvalue);
