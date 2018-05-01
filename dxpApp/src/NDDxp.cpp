@@ -1,6 +1,6 @@
 /* NDDxp.cpp
  *
- * Driver for XIA DSP modules (Saturn, DXP4C2X, xMAP, and Mercury 
+ * Driver for XIA DSP modules (Saturn, MicroDXP, xMAP, and Mercury 
  * 
  * Mark Rivers
  * University of Chicago
@@ -50,9 +50,9 @@
 #define MAPPING_CLOCK_PERIOD     320e-9
 
 /* It is much easier to define a maximum fixed number of low-level DXP parameters.
- * The actual maximum is currently 224 for the xMAP, so this is safe for now, and is
+ * The actual maximum is currently 273 for the MicroDXP, so this is safe for now, and is
  * easy to increase in the future */
-#define DXP_MAX_LL_PARAMS        230
+#define DXP_MAX_LL_PARAMS        300
 
 /** < The maximum number of bytes in the 2MB mapping mode buffer */
 #define MAPPING_BUFFER_SIZE 2097152
@@ -73,7 +73,7 @@ typedef enum {
     NDDxpModelXMAP, 
     NDDxpModelMercury,
     NDDxpModelSaturn, 
-    NDDxpModel4C2X
+    NDDxpModelMicroDXP
 } NDDxpModel_t;
 
 typedef enum {
@@ -197,6 +197,8 @@ typedef struct moduleStatistics {
 
 /* High-level DXP parameters */
 #define NDDxpPeakingTimeString              "DxpPeakingTime"
+#define NDDxpFastPeakingTimesString         "DxpFastPeakingTimes"
+#define NDDxpSlowPeakingTimesString         "DxpSlowPeakingTimes"
 #define NDDxpDynamicRangeString             "DxpDynamicRange"
 #define NDDxpTriggerThresholdString         "DxpTriggerThreshold"
 #define NDDxpBaselineThresholdString        "DxpBaselineThreshold"
@@ -206,6 +208,8 @@ typedef struct moduleStatistics {
 #define NDDxpMCABinWidthString              "DxpMCABinWidth"
 #define NDDxpMaxEnergyString                "DxpMaxEnergy"
 #define NDDxpPreampGainString               "DxpPreampGain"
+#define NDDxpGainString                     "DxpGain"
+#define NDDxpFineGainString                 "DxpFineGain"
 #define NDDxpNumMCAChannelsString           "DxpNumMCAChannels"
 #define NDDxpDetectorPolarityString         "DxpDetectorPolarity"
 #define NDDxpResetDelayString               "DxpResetDelay"
@@ -233,9 +237,15 @@ typedef struct moduleStatistics {
   * DXPSCA$(N)Counts
 */
 
-/* INI file parameters */
+/* INI file and internal settings parameters */
 #define NDDxpSaveSystemFileString           "DxpSaveSystemFile"
 #define NDDxpSaveSystemString               "DxpSaveSystem"
+#define NDDxpPARSETString                   "DxpPARSET"
+#define NDDxpLoadPARSETString               "DxpLoadPARSET"
+#define NDDxpSavePARSETString               "DxpSavePARSET"
+#define NDDxpGENSETString                   "DxpGENSET"
+#define NDDxpLoadGENSETString               "DxpLoadGENSET"
+#define NDDxpSaveGENSETString               "DxpSaveGENSET"
 
 /* Low-level DXP parameters */
 #define NDDxpNumLLParamsString              "DxpNumLLParams"
@@ -253,6 +263,8 @@ public:
     virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
     virtual asynStatus writeFloat64(asynUser *pasynUser, epicsFloat64 value);
     virtual asynStatus readInt32Array(asynUser *pasynUser, epicsInt32 *value, size_t nElements, size_t *nIn);
+    virtual asynStatus readEnum(asynUser *pasynUser, char *strings[], int values[], int severities[], 
+                                size_t nElements, size_t *nIn);
     void report(FILE *fp, int details);
 
     /* Local methods to this class */
@@ -334,6 +346,8 @@ protected:
 
     /* High-level DXP parameters */
     int NDDxpPeakingTime;
+    int NDDxpFastPeakingTimes;
+    int NDDxpSlowPeakingTimes;
     int NDDxpDynamicRange;
     int NDDxpTriggerThreshold;
     int NDDxpBaselineThreshold;
@@ -343,6 +357,8 @@ protected:
     int NDDxpMCABinWidth;
     int NDDxpMaxEnergy;            /** < Maximum energy */
     int NDDxpPreampGain;
+    int NDDxpGain;
+    int NDDxpFineGain;
     int NDDxpNumMCAChannels;
     int NDDxpDetectorPolarity;
     int NDDxpResetDelay;
@@ -371,6 +387,12 @@ protected:
     /* INI file parameters */
     int NDDxpSaveSystemFile;
     int NDDxpSaveSystem;
+    int NDDxpPARSET;
+    int NDDxpLoadPARSET;
+    int NDDxpSavePARSET;
+    int NDDxpGENSET;
+    int NDDxpLoadGENSET;
+    int NDDxpSaveGENSET;
 
     /* Commands from MCA interface */
     int mcaData;                   /* int32Array, write/read */
@@ -412,6 +434,9 @@ private:
     int nChannels;
     int supportsMapping;
     int channelsPerCard;
+    
+    int numPeakingTimes;
+    double *peakingTimes;
 
     epicsEvent *cmdStartEvent;
     epicsEvent *cmdStopEvent;
@@ -463,8 +488,8 @@ extern "C" int NDDxpConfig(const char *portName, int nChannels,
 /* Note: we use nChannels+1 for maxAddr because the last address is used for "all" channels" */
 NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemory)
     : asynNDArrayDriver(portName, nChannels + 1, maxBuffers, maxMemory,
-            asynInt32Mask | asynFloat64Mask | asynInt32ArrayMask | asynFloat64ArrayMask | asynGenericPointerMask | asynOctetMask | asynDrvUserMask,
-            asynInt32Mask | asynFloat64Mask | asynInt32ArrayMask | asynFloat64ArrayMask | asynGenericPointerMask | asynOctetMask,
+            asynInt32Mask | asynFloat64Mask | asynInt32ArrayMask | asynFloat64ArrayMask | asynGenericPointerMask | asynOctetMask | asynEnumMask | asynDrvUserMask,
+            asynInt32Mask | asynFloat64Mask | asynInt32ArrayMask | asynFloat64ArrayMask | asynGenericPointerMask | asynOctetMask | asynEnumMask,
             ASYN_MULTIDEVICE | ASYN_CANBLOCK, 1, 0, 0)
 {
     int status = asynSuccess;
@@ -524,6 +549,8 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
 
     /* High-level DXP parameters */
     createParam(NDDxpPeakingTimeString,            asynParamFloat64, &NDDxpPeakingTime);
+    createParam(NDDxpFastPeakingTimesString,       asynParamInt32,   &NDDxpFastPeakingTimes);
+    createParam(NDDxpSlowPeakingTimesString,       asynParamInt32,   &NDDxpSlowPeakingTimes);
     createParam(NDDxpDynamicRangeString,           asynParamFloat64, &NDDxpDynamicRange);
     createParam(NDDxpTriggerThresholdString,       asynParamFloat64, &NDDxpTriggerThreshold);
     createParam(NDDxpBaselineThresholdString,      asynParamFloat64, &NDDxpBaselineThreshold);
@@ -533,6 +560,8 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     createParam(NDDxpMCABinWidthString,            asynParamFloat64, &NDDxpMCABinWidth);
     createParam(NDDxpMaxEnergyString,              asynParamFloat64, &NDDxpMaxEnergy);
     createParam(NDDxpPreampGainString,             asynParamFloat64, &NDDxpPreampGain);
+    createParam(NDDxpGainString,                   asynParamFloat64, &NDDxpGain);
+    createParam(NDDxpFineGainString,               asynParamFloat64, &NDDxpFineGain);
     createParam(NDDxpNumMCAChannelsString,         asynParamInt32,   &NDDxpNumMCAChannels);
     createParam(NDDxpDetectorPolarityString,       asynParamInt32,   &NDDxpDetectorPolarity);
     createParam(NDDxpResetDelayString,             asynParamFloat64, &NDDxpResetDelay);
@@ -570,6 +599,12 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     /* INI file parameters */
     createParam(NDDxpSaveSystemFileString,         asynParamOctet,   &NDDxpSaveSystemFile);
     createParam(NDDxpSaveSystemString,             asynParamInt32,   &NDDxpSaveSystem);
+    createParam(NDDxpPARSETString,                 asynParamInt32,   &NDDxpPARSET);
+    createParam(NDDxpLoadPARSETString,             asynParamInt32,   &NDDxpLoadPARSET);
+    createParam(NDDxpSavePARSETString,             asynParamInt32,   &NDDxpSavePARSET);
+    createParam(NDDxpGENSETString,                 asynParamInt32,   &NDDxpGENSET);
+    createParam(NDDxpLoadGENSETString,             asynParamInt32,   &NDDxpLoadGENSET);
+    createParam(NDDxpSaveGENSETString,             asynParamInt32,   &NDDxpSaveGENSET);
 
     /* Commands from MCA interface */
     createParam(mcaDataString,                     asynParamInt32Array, &mcaData);
@@ -639,7 +674,7 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
         this->supportsMapping = 1;
         setIntegerParam(NDDxpMaxSCAs, 64);
         break;
-    case NDDxpModel4C2X:
+    case NDDxpModelMicroDXP:
         this->supportsMapping = 0;
         setIntegerParam(NDDxpMaxSCAs, 16);
         break;
@@ -711,6 +746,14 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
         xiastatus = xiaSetParameter(0, "RUNTASKS", runTasks);
         if (xiastatus != XIA_SUCCESS) printf("Error calling xiaSetParameter for RUNTASKS");
     }
+    
+    /* On the MicroDXP read the list of peaking times */
+    unsigned short numPeakingTimes;
+    /* Read out number of peaking times to pre-allocate peaking time array */
+    xiastatus = xiaBoardOperation(0, "get_number_pt_per_fippi", &numPeakingTimes);
+    this->numPeakingTimes = numPeakingTimes;
+    this->peakingTimes = (double *)malloc(this->numPeakingTimes * sizeof(double));
+    xiastatus = xiaBoardOperation(0, "get_current_peaking_times", this->peakingTimes);
 
     /* Start up acquisition thread */
     setDoubleParam(NDDxpPollTime, 0.001);
@@ -892,6 +935,10 @@ asynStatus NDDxp::writeInt32( asynUser *pasynUser, epicsInt32 value)
     {
         this->setLLDxpParam(pasynUser, addr, value);
     }
+    else if ((function == NDDxpFastPeakingTimes) ||
+             (function == NDDxpSlowPeakingTimes)) {
+        this->setDxpParam(pasynUser, addr, NDDxpPeakingTime, double(value));
+    }
     else if (function == NDDxpSaveSystem) 
     {
         if (value) {
@@ -949,6 +996,8 @@ asynStatus NDDxp::writeFloat64( asynUser *pasynUser, epicsFloat64 value)
         (function == NDDxpADCPercentRule) ||
         (function == NDDxpMaxEnergy) ||
         (function == NDDxpPreampGain) ||
+        (function == NDDxpGain) ||
+        (function == NDDxpFineGain) ||
         (function == NDDxpDetectorPolarity) ||
         (function == NDDxpResetDelay) ||
         (function == NDDxpDecayTime) ||
@@ -1052,6 +1101,38 @@ asynStatus NDDxp::readInt32Array(asynUser *pasynUser, epicsInt32 *value, size_t 
     return(status);
 }
 
+asynStatus NDDxp::readEnum(asynUser *pasynUser, char *strings[], int values[], int severities[], 
+                           size_t nElements, size_t *nIn)
+{
+    int function = pasynUser->reason;
+    char tempString[100];
+    int i;
+    //static const char *functionName = "readEnum";
+
+    if (function == NDDxpFastPeakingTimes) {
+        for (i=0; (i<this->numPeakingTimes) && (i<(int)nElements); i++) {
+            values[i] = i;
+            severities[i] = 0;
+            sprintf(tempString, "%.2f", this->peakingTimes[i]);
+            if (strings[i]) free(strings[i]);
+            strings[i] = epicsStrDup(tempString);
+        }
+        *nIn = i;
+        return asynSuccess;
+    }
+    if (function == NDDxpSlowPeakingTimes) {
+        for (i=0; (i<this->numPeakingTimes-16) && (i<(int)nElements); i++) {
+            values[i] = i+16;
+            severities[i] = 0;
+            sprintf(tempString, "%.2f", this->peakingTimes[i+16]);
+            if (strings[i]) free(strings[i]);
+            strings[i] = epicsStrDup(tempString);
+        }
+        *nIn = i;
+        return asynSuccess;
+    }
+    return asynError;
+}
 
 int NDDxp::getChannel(asynUser *pasynUser, int *addr)
 {
@@ -1074,8 +1155,7 @@ asynStatus NDDxp::apply(int channel, int forceApply)
     asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
         "%s:%s: enter channel=%d, forceApply=%d\n",
         driverName, functionName, channel, forceApply);
-    if ((this->deviceType == NDDxpModel4C2X) ||
-        (this->deviceType == NDDxpModelSaturn)) return(asynSuccess);
+    if (this->deviceType == NDDxpModelSaturn) return(asynSuccess);
 
     getIntegerParam(NDDxpAutoApply, &autoApply);
     if (!autoApply && !forceApply) {
@@ -1167,20 +1247,19 @@ asynStatus NDDxp::setPresets(asynUser *pasynUser, int addr)
             break;
     }
 
-    if ((this->deviceType == NDDxpModelXMAP) ||
-        (this->deviceType == NDDxpModelMercury)){
-        xiaSetAcquisitionValues(channel, "preset_type", &presetType);
-        xiaSetAcquisitionValues(channel, "preset_value", &presetValue);
-        this->apply(channel);
-    } else {
+    if (this->deviceType == NDDxpModelSaturn) {
         if (strcmp(presetString, "error") == 0) {
             asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                "%s:%s: error, preset events and triggers are only available on the xMAP and Mercury\n",
+                "%s:%s: error, preset events and triggers are not available on the Saturn\n",
                 driverName, functionName);
             status = asynError;
         } else {            
             xiaSetAcquisitionValues(channel, presetString, &presetValue);
         }
+    } else {
+        xiaSetAcquisitionValues(channel, "preset_type", &presetType);
+        xiaSetAcquisitionValues(channel, "preset_value", &presetValue);
+        this->apply(channel);
     }
     asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
         "%s:%s: addr=%d channel=%d set presets mode=%d, value=%f\n",
@@ -1200,7 +1279,7 @@ asynStatus NDDxp::setDxpParam(asynUser *pasynUser, int addr, int function, doubl
     unsigned long runActive=0;
     double dvalue=value;
     int numMcaChannels;
-    int xiastatus;
+    int xiastatus=0;
     int bin;
     double binEnergyEV;
     asynStatus status=asynSuccess;
@@ -1216,8 +1295,20 @@ asynStatus NDDxp::setDxpParam(asynUser *pasynUser, int addr, int function, doubl
     xiaStopRun(channel);
 
     if (function == NDDxpPeakingTime) {
-        xiastatus = xiaSetAcquisitionValues(channel, "peaking_time", &dvalue);
-        status = this->xia_checkError(pasynUser, xiastatus, "setting peaking_time");
+        if (this->deviceType == NDDxpModelMicroDXP) {
+            // The peaking time cannot be changed directly on the MicroDXP, it is changed by selecting a PARSET
+            // The value passed to this function is not the peaking time but rather an index into the 
+            // peaking times table.
+            xiastatus = xiaSetAcquisitionValues(0, "parset", &dvalue);
+printf("set parset=%f status=%d\n", dvalue, xiastatus);
+            setDoubleParam(NDDxpPeakingTime, this->peakingTimes[(int)dvalue]);
+            unsigned short parsetAndGenset = AV_MEM_PARSET | AV_MEM_GENSET;
+            xiastatus = xiaBoardOperation(0, "apply", (void*)&parsetAndGenset);
+printf("did apply status=%d\n", xiastatus);
+        } else {
+            xiastatus = xiaSetAcquisitionValues(channel, "peaking_time", &dvalue);
+            status = this->xia_checkError(pasynUser, xiastatus, "setting peaking_time");
+        }
         /* Sometimes the gap time is rejected because the peaking time has not yet been 
          * accepted, so we set it again here */
         getDoubleParam(addr, NDDxpGapTime, &dvalue);
@@ -1225,12 +1316,14 @@ asynStatus NDDxp::setDxpParam(asynUser *pasynUser, int addr, int function, doubl
             (this->deviceType == NDDxpModelMercury)) {
             /* On the xMAP the parameter that can be written is minimum_gap_time */
             xiastatus = xiaSetAcquisitionValues(channel, "minimum_gap_time", &dvalue);
-            status = this->xia_checkError(pasynUser, xiastatus, "minimum_gap_time");
-        } else {
-           /* On the Saturn and DXP2X it is gap_time */
+        } else if (this->deviceType == NDDxpModelSaturn) {
+            /* On the Saturn and it is gap_time */
             xiastatus = xiaSetAcquisitionValues(channel, "gap_time", &dvalue);
-            status = this->xia_checkError(pasynUser, xiastatus, "setting gap_time");
+        } else if (this->deviceType == NDDxpModelMicroDXP) {
+            /* On the MicroDXP it is energy_gap_time */
+            xiastatus = xiaSetAcquisitionValues(channel, "energy_gap_time", &dvalue);
         }
+        status = this->xia_checkError(pasynUser, xiastatus, "setting gap time");
     } else if (function == NDDxpDynamicRange) {
         /* dynamic_range is only supported on the xMAP and Mercury */
         if ((this->deviceType == NDDxpModelXMAP) || 
@@ -1260,31 +1353,61 @@ asynStatus NDDxp::setDxpParam(asynUser *pasynUser, int addr, int function, doubl
         xiastatus = xiaSetAcquisitionValues(channel, "calibration_energy", &dvalue);
         status = this->xia_checkError(pasynUser, xiastatus, "setting calibration_energy");
     } else if (function == NDDxpADCPercentRule) {
-        xiastatus = xiaSetAcquisitionValues(channel, "adc_percent_rule", &dvalue);
-        status = this->xia_checkError(pasynUser, xiastatus, "setting adc_percent_rule");
+        if (this->deviceType != NDDxpModelMicroDXP) {
+            xiastatus = xiaSetAcquisitionValues(channel, "adc_percent_rule", &dvalue);
+            status = this->xia_checkError(pasynUser, xiastatus, "setting adc_percent_rule");
+        }
     } else if (function == NDDxpPreampGain) {
-        xiastatus = xiaSetAcquisitionValues(channel, "preamp_gain", &dvalue);
-        status = this->xia_checkError(pasynUser, xiastatus, "setting preamp_gain");
+        if (this->deviceType != NDDxpModelMicroDXP) {
+            xiastatus = xiaSetAcquisitionValues(channel, "preamp_gain", &dvalue);
+            status = this->xia_checkError(pasynUser, xiastatus, "setting preamp_gain");
+        }
+    } else if (function == NDDxpGain) {
+        if (this->deviceType == NDDxpModelMicroDXP) {
+            xiastatus = xiaSetAcquisitionValues(channel, "gain", &dvalue);
+            status = this->xia_checkError(pasynUser, xiastatus, "setting gain");
+        }
+    } else if (function == NDDxpFineGain) {
+        if (this->deviceType == NDDxpModelMicroDXP) {
+            xiastatus = xiaSetAcquisitionValues(channel, "gain_trim", &dvalue);
+            status = this->xia_checkError(pasynUser, xiastatus, "setting gain_trim");
+        }
     } else if (function == NDDxpDetectorPolarity) {
-        xiastatus = xiaSetAcquisitionValues(channel, "detector_polarity", &dvalue);
-        status = this->xia_checkError(pasynUser, xiastatus, "setting detector_polarity");
+        if (this->deviceType == NDDxpModelMicroDXP) {
+            xiastatus = xiaSetAcquisitionValues(channel, "polarity", &dvalue);
+        } else {
+            xiastatus = xiaSetAcquisitionValues(channel, "detector_polarity", &dvalue);
+        }
+        status = this->xia_checkError(pasynUser, xiastatus, "setting detector polarity");
     } else if (function == NDDxpResetDelay) {
-        xiastatus = xiaSetAcquisitionValues(channel, "reset_delay", &dvalue);
+        if (this->deviceType != NDDxpModelMicroDXP) {
+            xiastatus = xiaSetAcquisitionValues(channel, "reset_delay", &dvalue);
+        }
     } else if (function == NDDxpDecayTime) {
-        xiastatus = xiaSetAcquisitionValues(channel, "decay_time", &dvalue);
+        if (this->deviceType == NDDxpModelMicroDXP) {
+            xiastatus = xiaSetAcquisitionValues(channel, "preamp_value", &dvalue);
+        } else {
+            xiastatus = xiaSetAcquisitionValues(channel, "decay_time", &dvalue);
+        }
     } else if (function == NDDxpGapTime) {
         if ((this->deviceType == NDDxpModelXMAP) || 
             (this->deviceType == NDDxpModelMercury)) {
-            /* On the xMAP and Mercury the parameter that can be written is minimum_gap_time */
+            /* On the xMAP the parameter that can be written is minimum_gap_time */
             xiastatus = xiaSetAcquisitionValues(channel, "minimum_gap_time", &dvalue);
-            status = this->xia_checkError(pasynUser, xiastatus, "minimum_gap_time");
-        } else {
-           /* On the Saturn and DXP2X it is gap_time */
+        } else if (this->deviceType == NDDxpModelSaturn) {
+            /* On the Saturn and it is gap_time */
             xiastatus = xiaSetAcquisitionValues(channel, "gap_time", &dvalue);
-            status = this->xia_checkError(pasynUser, xiastatus, "setting gap_time");
+        } else if (this->deviceType == NDDxpModelMicroDXP) {
+            /* On the MicroDXP it is energy_gap_time */
+            xiastatus = xiaSetAcquisitionValues(channel, "energy_gap_time", &dvalue);
         }
+        status = this->xia_checkError(pasynUser, xiastatus, "setting gap time");
     } else if (function == NDDxpTriggerPeakingTime) {
-         xiastatus = xiaSetAcquisitionValues(channel, "trigger_peaking_time", &dvalue);
+         if (this->deviceType == NDDxpModelMicroDXP) {
+            xiastatus = xiaSetAcquisitionValues(channel, "trigger_peak_time", &dvalue);
+         } else {
+            xiastatus = xiaSetAcquisitionValues(channel, "trigger_peaking_time", &dvalue);
+         }
          status = this->xia_checkError(pasynUser, xiastatus, "setting trigger_peaking_time");
     } else if (function == NDDxpTriggerGapTime) {
         xiastatus = xiaSetAcquisitionValues(channel, "trigger_gap_time", &dvalue);
@@ -1293,25 +1416,28 @@ asynStatus NDDxp::setDxpParam(asynUser *pasynUser, int addr, int function, doubl
         if ((this->deviceType == NDDxpModelXMAP) || 
             (this->deviceType == NDDxpModelMercury)) {
             xiastatus = xiaSetAcquisitionValues(channel, "baseline_average", &dvalue);
-            status = this->xia_checkError(pasynUser, xiastatus, "setting baseline_average");
-        } else {
+        } else if (this->deviceType == NDDxpModelSaturn) {
             xiastatus = xiaSetAcquisitionValues(channel, "baseline_filter_length", &dvalue);
-            status = this->xia_checkError(pasynUser, xiastatus, "setting baseline_filter_length");
+        } else if (this->deviceType == NDDxpModelMicroDXP) {
+            xiastatus = xiaSetAcquisitionValues(channel, "baseline_length", &dvalue);
         }
+        status = this->xia_checkError(pasynUser, xiastatus, "setting baseline filter length");
     } else if (function == NDDxpMaxWidth) {
-        xiastatus = xiaSetAcquisitionValues(channel, "maxwidth", &dvalue);
+        if (this->deviceType == NDDxpModelMicroDXP) {
+            xiastatus = xiaSetAcquisitionValues(channel, "max_width", &dvalue);
+        } else {
+            xiastatus = xiaSetAcquisitionValues(channel, "maxwidth", &dvalue);
+        }
         status = this->xia_checkError(pasynUser, xiastatus, "setting maxwidth");
     } else if (function == NDDxpBaselineCut) {
-        /* The xMAP and Mercury do not support this yet */
-        if ((this->deviceType != NDDxpModelXMAP) && 
-            (this->deviceType != NDDxpModelMercury)) {
+        /* Only the Saturn supports this */
+        if (this->deviceType == NDDxpModelSaturn) {
             xiastatus = xiaSetAcquisitionValues(channel, "baseline_cut", &dvalue);
             status = this->xia_checkError(pasynUser, xiastatus, "setting baseline_cut");
         }
     } else if (function == NDDxpEnableBaselineCut) {
-        /* The xMAP and Mercury do not support this yet */
-        if ((this->deviceType != NDDxpModelXMAP) && 
-            (this->deviceType != NDDxpModelMercury)) {
+        /* Only the Saturn supports this */
+        if (this->deviceType == NDDxpModelSaturn) {
             xiastatus = xiaSetAcquisitionValues(channel, "enable_baseline_cut", &dvalue);
             status = this->xia_checkError(pasynUser, xiastatus, "setting enable_baseline_cut");
         }
@@ -1335,14 +1461,16 @@ asynStatus NDDxp::setDxpParam(asynUser *pasynUser, int addr, int function, doubl
         dvalue = value * 1000. / numMcaChannels;
         xiastatus = xiaSetAcquisitionValues(channel, "mca_bin_width", &dvalue);
         status = this->xia_checkError(pasynUser, xiastatus, "setting mca_bin_width");
-        /* We always make the calibration energy be 50% of MaxEnergy */
-        dvalue = value * 1000. / 2.;
-        xiastatus = xiaSetAcquisitionValues(channel, "calibration_energy", &dvalue);
-        status = this->xia_checkError(pasynUser, xiastatus, "setting calibration_energy");
-        /* Must re-apply the ADC percent rule when changing calibration energy */
-        getDoubleParam(addr, NDDxpADCPercentRule, &dvalue);
-        xiastatus = xiaSetAcquisitionValues(channel, "adc_percent_rule", &dvalue);
-        status = this->xia_checkError(pasynUser, xiastatus, "setting adc_percent_rule");
+        if (this->deviceType != NDDxpModelMicroDXP) {
+            /* We always make the calibration energy be 50% of MaxEnergy */
+            dvalue = value * 1000. / 2.;
+            xiastatus = xiaSetAcquisitionValues(channel, "calibration_energy", &dvalue);
+            status = this->xia_checkError(pasynUser, xiastatus, "setting calibration_energy");
+            /* Must re-apply the ADC percent rule when changing calibration energy */
+            getDoubleParam(addr, NDDxpADCPercentRule, &dvalue);
+            xiastatus = xiaSetAcquisitionValues(channel, "adc_percent_rule", &dvalue);
+            status = this->xia_checkError(pasynUser, xiastatus, "setting adc_percent_rule");
+        } 
         
         /* create a waveform which contain the value (in keV) of all the energy bins in the spectrum */
         binEnergyEV = value / numMcaChannels;
@@ -1961,29 +2089,50 @@ asynStatus NDDxp::getDxpParams(asynUser *pasynUser, int addr)
         setDoubleParam(channel, NDDxpEnergyThreshold, dvalue);
         xiaGetAcquisitionValues(channel, "peaking_time", &dvalue);
         setDoubleParam(channel, NDDxpPeakingTime, dvalue);
-        xiaGetAcquisitionValues(channel, "gap_time", &dvalue);
+        if (this->deviceType == NDDxpModelMicroDXP) {
+            xiaGetAcquisitionValues(channel, "energy_gap_time", &dvalue);
+        } else {
+            xiaGetAcquisitionValues(channel, "gap_time", &dvalue);
+        }
         setDoubleParam(channel, NDDxpGapTime, dvalue);
         xiaGetAcquisitionValues(channel, "trigger_threshold", &dvalue);
         /* Convert trigger threshold from eV to keV */
         dvalue = dvalue / 1000.;
         setDoubleParam(channel, NDDxpTriggerThreshold, dvalue);
-        xiaGetAcquisitionValues(channel, "trigger_peaking_time", &dvalue);
+        if (this->deviceType == NDDxpModelMicroDXP) {
+            xiaGetAcquisitionValues(channel, "trigger_peak_time", &dvalue);
+        } else {
+            xiaGetAcquisitionValues(channel, "trigger_peaking_time", &dvalue);
+        }
         setDoubleParam(channel, NDDxpTriggerPeakingTime, dvalue);
         xiaGetAcquisitionValues(channel, "trigger_gap_time", &dvalue);
         setDoubleParam(channel, NDDxpTriggerGapTime, dvalue);
-        xiaGetAcquisitionValues(channel, "preamp_gain", &dvalue);
-        setDoubleParam(channel, NDDxpPreampGain, dvalue);
+        if (this->deviceType == NDDxpModelMicroDXP) {
+            xiaGetAcquisitionValues(channel, "gain", &dvalue);
+            setDoubleParam(channel, NDDxpGain, dvalue);
+            xiaGetAcquisitionValues(channel, "gain_trim", &dvalue);
+            setDoubleParam(channel, NDDxpFineGain, dvalue);
+        } else {        
+            xiaGetAcquisitionValues(channel, "preamp_gain", &dvalue);
+            setDoubleParam(channel, NDDxpPreampGain, dvalue);
+        }
         if ((this->deviceType == NDDxpModelXMAP) ||
-            (this->deviceType == NDDxpModelMercury)){
+            (this->deviceType == NDDxpModelMercury)) {
            xiaGetAcquisitionValues(channel, "baseline_average", &dvalue);
-        } else {
+        } else if (this->deviceType == NDDxpModelSaturn) {
            xiaGetAcquisitionValues(channel, "baseline_filter_length", &dvalue);
+        } else if (this->deviceType == NDDxpModelMicroDXP) {
+           xiaGetAcquisitionValues(channel, "baseline_length", &dvalue);
         }
         setIntegerParam(channel, NDDxpBaselineAverage, (int)dvalue);
         xiaGetAcquisitionValues(channel, "baseline_threshold", &dvalue);
         dvalue/= 1000.;  /* Convert to keV */
         setDoubleParam(channel, NDDxpBaselineThreshold, dvalue);
-        xiaGetAcquisitionValues(channel, "maxwidth", &dvalue);
+        if (this->deviceType == NDDxpModelMicroDXP) {
+            xiaGetAcquisitionValues(channel, "max_width", &dvalue);
+        } else {
+            xiaGetAcquisitionValues(channel, "maxwidth", &dvalue);
+        }
         setDoubleParam(channel, NDDxpMaxWidth, dvalue);
         if (this->deviceType == NDDxpModelMercury){
             xiaGetAcquisitionValues(channel, "trigger_output", &dvalue);
@@ -1991,18 +2140,21 @@ asynStatus NDDxp::getDxpParams(asynUser *pasynUser, int addr)
             xiaGetAcquisitionValues(channel, "livetime_output", &dvalue);
             setIntegerParam(channel, NDDxpLiveTimeOutput, (int)dvalue);
         }
-        if ((this->deviceType == NDDxpModelXMAP) ||
-            (this->deviceType == NDDxpModelMercury)){
-            setDoubleParam(channel, NDDxpBaselineCut, 0.0);
-            setIntegerParam(channel, NDDxpEnableBaselineCut, 0);
-        } else {
+        if (this->deviceType == NDDxpModelSaturn) {
             xiaGetAcquisitionValues(channel, "baseline_cut", &dvalue);
             setDoubleParam(channel, NDDxpBaselineCut, dvalue);
             xiaGetAcquisitionValues(channel, "enable_baseline_cut", &dvalue);
             setIntegerParam(channel, NDDxpEnableBaselineCut, (int)dvalue);
+        } else {
+            setDoubleParam(channel, NDDxpBaselineCut, 0.0);
+            setIntegerParam(channel, NDDxpEnableBaselineCut, 0);
         }
-        xiaGetAcquisitionValues(channel, "adc_percent_rule", &dvalue);
-        setDoubleParam(channel, NDDxpADCPercentRule, dvalue);
+        if (this->deviceType == NDDxpModelMicroDXP) {
+            // Is there anything equivalent to adc_percent_rule for the MicroDXP?
+        } else {
+            xiaGetAcquisitionValues(channel, "adc_percent_rule", &dvalue);
+            setDoubleParam(channel, NDDxpADCPercentRule, dvalue);
+        }
         if ((this->deviceType == NDDxpModelXMAP) ||
             (this->deviceType == NDDxpModelMercury)){
             xiaGetAcquisitionValues(channel, "dynamic_range", &dvalue);
@@ -2010,10 +2162,14 @@ asynStatus NDDxp::getDxpParams(asynUser *pasynUser, int addr)
         /* Convert from eV to keV */
         dvalue /= 1000.;
         setDoubleParam(channel, NDDxpDynamicRange, dvalue);
-        xiaGetAcquisitionValues(channel, "calibration_energy", &dvalue);
-        /* Convert from eV to keV */
-        dvalue /= 1000.;
-        setDoubleParam(channel, NDDxpCalibrationEnergy, dvalue);
+        if (this->deviceType == NDDxpModelMicroDXP) {
+            // Is there anything equivalent to calibration_energy for the MicroDXP?
+        } else {
+            xiaGetAcquisitionValues(channel, "calibration_energy", &dvalue);
+            /* Convert from eV to keV */
+            dvalue /= 1000.;
+            setDoubleParam(channel, NDDxpCalibrationEnergy, dvalue);
+        }
         xiaGetAcquisitionValues(channel, "mca_bin_width", &mcaBinWidth);
         /* Convert from eV to keV */
         mcaBinWidth /= 1000.;
@@ -2023,12 +2179,23 @@ asynStatus NDDxp::getDxpParams(asynUser *pasynUser, int addr)
         /* Compute emax from mcaBinWidth and mcaNumChannels */
         emax = numMcaChannels * mcaBinWidth;
         setDoubleParam(channel, NDDxpMaxEnergy, emax);
-        xiaGetAcquisitionValues(channel, "detector_polarity", &dvalue);
+        if (this->deviceType == NDDxpModelMicroDXP) {
+            xiaGetAcquisitionValues(channel, "polarity", &dvalue);
+        } else {
+            xiaGetAcquisitionValues(channel, "detector_polarity", &dvalue);
+        }
         setIntegerParam(channel, NDDxpDetectorPolarity, (int)dvalue);
-        xiaGetAcquisitionValues(channel, "decay_time", &dvalue);
-        setDoubleParam(channel, NDDxpDecayTime, dvalue);
-        xiaGetAcquisitionValues(channel, "reset_delay", &dvalue);
-        setDoubleParam(channel, NDDxpResetDelay, dvalue);
+        if (this->deviceType == NDDxpModelMicroDXP) {
+            xiaGetAcquisitionValues(channel, "preamp_value", &dvalue);
+            // NOTE: Should only set one or the other depending on the preamp type
+            setDoubleParam(channel, NDDxpDecayTime, dvalue);
+            setDoubleParam(channel, NDDxpResetDelay, dvalue);
+        } else {
+            xiaGetAcquisitionValues(channel, "decay_time", &dvalue);
+            setDoubleParam(channel, NDDxpDecayTime, dvalue);
+            xiaGetAcquisitionValues(channel, "reset_delay", &dvalue);
+            setDoubleParam(channel, NDDxpResetDelay, dvalue);
+        }
         
         /* If this is an xMAP or Mercury and this is channel 0 then read the mapping parameters */
         if ((channel == 0) && 
@@ -2773,7 +2940,7 @@ int NDDxp::getModuleType()
     /* This function returns an enum of type DXP_MODULE_TYPE for the module type.
      * It returns the type of the first module in the system.
      * IMPORTANT ASSUMPTION: It is assumed that a single EPICS IOC will only
-     * be controlling a single type of XIA module (xMAP, Mercury, Saturn, DXP2X)
+     * be controlling a single type of XIA module (xMAP, Mercury, Saturn, MicroDXP)
      * If there is an error it returns -1.
      */
     char module_alias[MAXALIAS_LEN];
@@ -2784,13 +2951,13 @@ int NDDxp::getModuleType()
     status |= xiaGetModules_VB(0, module_alias);
     /* Get the module type for this module */
     status |= xiaGetModuleItem(module_alias, "module_type", module_type);
-    /* Get the module type for this module */
+    /* Get the number of channels per module for this module */
     status |= xiaGetModuleItem(module_alias, "number_of_channels", &this->channelsPerCard);
     if (status) return -1;
     /* Look for known module types */
     if (strcmp(module_type, "xmap") == 0) return(NDDxpModelXMAP);
     if (strcmp(module_type, "dxpx10p") == 0) return(NDDxpModelSaturn);
-    if (strcmp(module_type, "dxp4c2x") == 0) return(NDDxpModel4C2X);
+    if (strcmp(module_type, "udxp") == 0) return(NDDxpModelMicroDXP);
     if (strcmp(module_type, "mercury") == 0) return(NDDxpModelMercury);
     return -1;
 }
