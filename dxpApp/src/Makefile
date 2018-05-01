@@ -55,7 +55,11 @@ include $(ADCORE)/ADApp/commonDriverMakefile
 
 dxpApp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
-dxpApp_LIBS_WIN32 += DLPORTIO PlxApi
+ifeq (win32-x86, $(findstring win32-x86, $(T_A)))
+  dxpApp_LIBS_WIN32   += DLPORTIO
+endif
+
+dxpApp_LIBS_WIN32 += PlxApi
 ifeq ($(LINUX_USB_INSTALLED), YES)
 dxpApp_SYS_LIBS_Linux += usb
 endif
