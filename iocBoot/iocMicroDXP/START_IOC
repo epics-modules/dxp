@@ -1,0 +1,7 @@
+# Tell medm where to look for .adl files.  Edit the following line, or comment it
+# out if the environment variable is already set
+setenv EPICS_DISPLAY_PATH /home/epics/epics_devel/all
+medm -x -macro "P=dxpMercury:, D=dxp:, M=mca"  4element_dxp.adl &
+# Use startWithIopl3 for EPP on systems that support it
+#startWithIopl3 ../../bin/linux-x86/dxpApp st.cmd
+../../bin/linux-x86/dxpApp 4element.cmd
