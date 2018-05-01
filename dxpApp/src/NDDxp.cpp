@@ -197,8 +197,6 @@ typedef struct moduleStatistics {
 
 /* High-level DXP parameters */
 #define NDDxpPeakingTimeString              "DxpPeakingTime"
-#define NDDxpFastPeakingTimesString         "DxpFastPeakingTimes"
-#define NDDxpSlowPeakingTimesString         "DxpSlowPeakingTimes"
 #define NDDxpDynamicRangeString             "DxpDynamicRange"
 #define NDDxpTriggerThresholdString         "DxpTriggerThreshold"
 #define NDDxpBaselineThresholdString        "DxpBaselineThreshold"
@@ -263,8 +261,6 @@ public:
     virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
     virtual asynStatus writeFloat64(asynUser *pasynUser, epicsFloat64 value);
     virtual asynStatus readInt32Array(asynUser *pasynUser, epicsInt32 *value, size_t nElements, size_t *nIn);
-    virtual asynStatus readEnum(asynUser *pasynUser, char *strings[], int values[], int severities[], 
-                                size_t nElements, size_t *nIn);
     void report(FILE *fp, int details);
 
     /* Local methods to this class */
@@ -346,8 +342,6 @@ protected:
 
     /* High-level DXP parameters */
     int NDDxpPeakingTime;
-    int NDDxpFastPeakingTimes;
-    int NDDxpSlowPeakingTimes;
     int NDDxpDynamicRange;
     int NDDxpTriggerThreshold;
     int NDDxpBaselineThreshold;
@@ -488,8 +482,8 @@ extern "C" int NDDxpConfig(const char *portName, int nChannels,
 /* Note: we use nChannels+1 for maxAddr because the last address is used for "all" channels" */
 NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemory)
     : asynNDArrayDriver(portName, nChannels + 1, maxBuffers, maxMemory,
-            asynInt32Mask | asynFloat64Mask | asynInt32ArrayMask | asynFloat64ArrayMask | asynGenericPointerMask | asynOctetMask | asynEnumMask | asynDrvUserMask,
-            asynInt32Mask | asynFloat64Mask | asynInt32ArrayMask | asynFloat64ArrayMask | asynGenericPointerMask | asynOctetMask | asynEnumMask,
+            asynInt32Mask | asynFloat64Mask | asynInt32ArrayMask | asynFloat64ArrayMask | asynGenericPointerMask | asynOctetMask | asynDrvUserMask,
+            asynInt32Mask | asynFloat64Mask | asynInt32ArrayMask | asynFloat64ArrayMask | asynGenericPointerMask | asynOctetMask,
             ASYN_MULTIDEVICE | ASYN_CANBLOCK, 1, 0, 0)
 {
     int status = asynSuccess;
@@ -549,8 +543,6 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
 
     /* High-level DXP parameters */
     createParam(NDDxpPeakingTimeString,            asynParamFloat64, &NDDxpPeakingTime);
-    createParam(NDDxpFastPeakingTimesString,       asynParamInt32,   &NDDxpFastPeakingTimes);
-    createParam(NDDxpSlowPeakingTimesString,       asynParamInt32,   &NDDxpSlowPeakingTimes);
     createParam(NDDxpDynamicRangeString,           asynParamFloat64, &NDDxpDynamicRange);
     createParam(NDDxpTriggerThresholdString,       asynParamFloat64, &NDDxpTriggerThreshold);
     createParam(NDDxpBaselineThresholdString,      asynParamFloat64, &NDDxpBaselineThreshold);
@@ -935,10 +927,6 @@ asynStatus NDDxp::writeInt32( asynUser *pasynUser, epicsInt32 value)
     {
         this->setLLDxpParam(pasynUser, addr, value);
     }
-    else if ((function == NDDxpFastPeakingTimes) ||
-             (function == NDDxpSlowPeakingTimes)) {
-        this->setDxpParam(pasynUser, addr, NDDxpPeakingTime, double(value));
-    }
     else if (function == NDDxpSaveSystem) 
     {
         if (value) {
@@ -1099,39 +1087,6 @@ asynStatus NDDxp::readInt32Array(asynUser *pasynUser, epicsInt32 *value, size_t 
         "%s:%s: exit\n",
         driverName, functionName);
     return(status);
-}
-
-asynStatus NDDxp::readEnum(asynUser *pasynUser, char *strings[], int values[], int severities[], 
-                           size_t nElements, size_t *nIn)
-{
-    int function = pasynUser->reason;
-    char tempString[100];
-    int i;
-    //static const char *functionName = "readEnum";
-
-    if (function == NDDxpFastPeakingTimes) {
-        for (i=0; (i<this->numPeakingTimes) && (i<(int)nElements); i++) {
-            values[i] = i;
-            severities[i] = 0;
-            sprintf(tempString, "%.2f", this->peakingTimes[i]);
-            if (strings[i]) free(strings[i]);
-            strings[i] = epicsStrDup(tempString);
-        }
-        *nIn = i;
-        return asynSuccess;
-    }
-    if (function == NDDxpSlowPeakingTimes) {
-        for (i=0; (i<this->numPeakingTimes-16) && (i<(int)nElements); i++) {
-            values[i] = i+16;
-            severities[i] = 0;
-            sprintf(tempString, "%.2f", this->peakingTimes[i+16]);
-            if (strings[i]) free(strings[i]);
-            strings[i] = epicsStrDup(tempString);
-        }
-        *nIn = i;
-        return asynSuccess;
-    }
-    return asynError;
 }
 
 int NDDxp::getChannel(asynUser *pasynUser, int *addr)
@@ -1297,14 +1252,22 @@ asynStatus NDDxp::setDxpParam(asynUser *pasynUser, int addr, int function, doubl
     if (function == NDDxpPeakingTime) {
         if (this->deviceType == NDDxpModelMicroDXP) {
             // The peaking time cannot be changed directly on the MicroDXP, it is changed by selecting a PARSET
-            // The value passed to this function is not the peaking time but rather an index into the 
-            // peaking times table.
+            // Find the closest peaking time to the requested one
+            double minDiff=1e9;
+            double diff;
+            int minIndex=0;
+            for (int i=0; i<this->numPeakingTimes; i++) {
+                diff = fabs(this->peakingTimes[i] - value);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    minIndex = i;
+                }
+            }
+            dvalue = minIndex;
             xiastatus = xiaSetAcquisitionValues(0, "parset", &dvalue);
-printf("set parset=%f status=%d\n", dvalue, xiastatus);
-            setDoubleParam(NDDxpPeakingTime, this->peakingTimes[(int)dvalue]);
+            setDoubleParam(NDDxpPeakingTime, this->peakingTimes[minIndex]);
             unsigned short parsetAndGenset = AV_MEM_PARSET | AV_MEM_GENSET;
             xiastatus = xiaBoardOperation(0, "apply", (void*)&parsetAndGenset);
-printf("did apply status=%d\n", xiastatus);
         } else {
             xiastatus = xiaSetAcquisitionValues(channel, "peaking_time", &dvalue);
             status = this->xia_checkError(pasynUser, xiastatus, "setting peaking_time");
