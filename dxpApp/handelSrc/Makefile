@@ -18,6 +18,9 @@ USR_CFLAGS_Linux    += -Wno-unused-but-set-variable
 ifneq ($(LINUX_USB_INSTALLED), YES)
 USR_CFLAGS_Linux    += -DEXCLUDE_USB -DEXCLUDE_USB2 -DEXCLUDE_XMAP -DEXCLUDE_PLX -DEXCLUDE_MERCURY
 endif
+ifeq (windows-x64, $(findstring windows-x64, $(T_A)))
+  USR_CFLAGS_WIN32   += -DEXCLUDE_EPP
+endif
 USR_CFLAGS_WIN32    += -DHANDEL_USE_DLL -DHANDEL_MAKE_DLL -DWIN32
 ifeq ($(STATIC_BUILD), YES)
 USR_CFLAGS          += -DXIA_STATIC_BUILD
@@ -56,16 +59,22 @@ handel_SRCS += handel_xerxes.c
 handel_SRCS += xia_assert.c
 handel_SRCS += xia_file.c
 
-handel_LIBS_WIN32        += DLPORTIO PlxApi
-handel_LIBS_cygwin32     += DLPORTIO PlxApi
-handel_SYS_LIBS_WIN32    += setupapi User32
-handel_SYS_LIBS_cygwin32 += setupapi User32
+ifeq (win32-x86, $(findstring win32-x86, $(T_A)))
+  handel_LIBS_WIN32   += DLPORTIO PlxApi
+endif
+handel_LIBS_WIN32     += PlxApi
+handel_SYS_LIBS_WIN32 += setupapi User32
 handel_LIBS += $(EPICS_BASE_IOC_LIBS)
-LIB_INSTALLS_WIN32    += ../DLPORTIO.lib ../PlxApi.lib
-LIB_INSTALLS_cygwin32 += ../DLPORTIO.lib ../PlxApi.lib
-BIN_INSTALLS_WIN32    += ../PlxApi631.dll ../dlportio.dll
-BIN_INSTALLS_cygwin32 += ../PlxApi631.dll ../dlportio.dll 
-BIN_INSTALLS_WIN32    += ../Plx9054.sys  ../xmap9054.inf ../port95nt.exe ../ezusb.sys ../xiausb.inf ../cyusb.sys ../cyusbme.sys ../xia_usb2.inf
+
+ifeq (win32-x86, $(findstring win32-x86, $(T_A)))
+  BIN_INSTALLS   += ../plxapi711.dll
+  LIB_INSTALLS   += ../PlxApi.lib
+endif
+ifeq (windows-x64, $(findstring windows-x64, $(T_A)))
+  BIN_INSTALLS   += ../x64/plxapi711_x64.dll
+  LIB_INSTALLS   += ../x64/PlxApi.lib
+endif
+
 INC += xia_common.h
 INC += xia_xerxes.h
 INC += xerxes_generic.h
