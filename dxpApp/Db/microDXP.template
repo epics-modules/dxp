@@ -1,0 +1,101 @@
+# Menu for peaking time choices.  These values are created by the driver at run-time
+
+record(mbbo, "$(P)$(R)FastPeakingTimes") {
+  field(DTYP, "asynInt32")
+  field(OUT,  "$(IO)DxpFastPeakingTimes")
+}
+
+record(mbbi, "$(P)$(R)FastPeakingTimes_RBV") {
+  field(DTYP, "asynInt32")
+  field(INP,  "$(IO)DxpFastPeakingTimes")
+  field(SCAN, "I/O Intr")
+}
+
+record(mbbo, "$(P)$(R)SlowPeakingTimes") {
+  field(DTYP, "asynInt32")
+  field(OUT,  "$(IO)DxpSlowPeakingTimes")
+}
+
+record(mbbi, "$(P)$(R)SlowPeakingTimes_RBV") {
+  field(DTYP, "asynInt32")
+  field(INP,  "$(IO)DxpSlowPeakingTimes")
+  field(SCAN, "I/O Intr")
+}
+
+# Gain
+record(ao, "$(P)$(R)Gain") {
+  field(DESC, "Gain")
+  field(DTYP, "asynFloat64")
+  field(OUT,  "$(IO)DxpGain")
+  field(PREC, "2")
+  field(PINI, "YES")
+}
+
+record(ai, "$(P)$(R)Gain_RBV") {
+  field(DESC, "Gain")
+  field(DTYP, "asynFloat64")
+  field(INP,  "$(IO)DxpGain")
+  field(PREC, "2")
+  field(SCAN, "I/O Intr")
+}
+
+# Fine gain
+record(ao, "$(P)$(R)FineGain") {
+  field(DESC, "Fine gain")
+  field(DTYP, "asynFloat64")
+  field(OUT,  "$(IO)DxpFineGain")
+  field(PREC, "2")
+  field(PINI, "YES")
+}
+
+record(ai, "$(P)$(R)FineGain_RBV") {
+  field(DESC, "Fine gain")
+  field(DTYP, "asynFloat64")
+  field(INP,  "$(IO)DxpFineGain")
+  field(PREC, "2")
+  field(SCAN, "I/O Intr")
+}
+
+# PARSET
+record(longout, "$(P)$(R)PARSET") {
+  field(DTYP, "asynInt32")
+  field(OUT,  "$(IO)DxpPARSET")
+}
+
+record(longin, "$(P)$(R)PARSET_RBV") {
+  field(DTYP, "asynInt32")
+  field(INP,  "$(IO)DxpPARSET")
+  field(SCAN, "I/O Intr")
+}
+
+record(bo, "$(P)$(R)LoadPARSET") {
+  field(DTYP, "asynInt32")
+  field(OUT,  "$(IO)DxpLoadPARSET")
+}
+
+record(bo, "$(P)$(R)SavePARSET") {
+  field(DTYP, "asynInt32")
+  field(OUT,  "$(IO)DxpSavePARSET")
+}
+
+# GENSET
+record(longout, "$(P)$(R)GENSET") {
+  field(DTYP, "asynInt32")
+  field(OUT,  "$(IO)DxpGENSET")
+}
+
+record(longin, "$(P)$(R)GENSET_RBV") {
+  field(DTYP, "asynInt32")
+  field(INP,  "$(IO)DxpGENSET")
+  field(SCAN, "I/O Intr")
+}
+
+record(bo, "$(P)$(R)LoadGENSET") {
+  field(DTYP, "asynInt32")
+  field(OUT,  "$(IO)DxpLoadGENSET")
+}
+
+record(bo, "$(P)$(R)SaveGENSET") {
+  field(DTYP, "asynInt32")
+  field(OUT,  "$(IO)DxpSaveGENSET")
+}
