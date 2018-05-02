@@ -10,15 +10,40 @@
     <h1 style="text-align: center">
       dxp Release Notes</h1>
   </div>
+  <h2 style="text-align: center">
+    Release 5-0 (XXX-May-2018)<br />
+  </h2>
   <p>
-    See <a href="dxpKnownProblems.html">known problems</a> for information on problems
-    in each release.</p>
+    Upgraded the XIA Handel library from 1.1.11 to 1.2.19. This version is 64-bit compatible,
+    so dxp is no longer limited to being built as a 32-bit application.</p>
+  <p>
+    Updated the included Plx library for the xMAP from 6.3.1 to 7.1.1.</p>
+  <p>
+    Added support for the MicroDXP. This is a board-level product sold to OEMs to embed
+    in their products. It is used in some Ketek SDD detectors and in some Vortex electronics
+    from Hitachi. It is similar to the Saturn, i.e. it is a single-element system that
+    does not support mapping. It does not have a Gate input.</p>
+  <p>
+    Removed support for the CAMAC DXP4C2X. It is no longer supported by Handel and is
+    probably no longer in use anywhere.</p>
+  <p>
+    Handel no longer officially supports the EPP (Enhanced Parallel Port) interface
+    to the old Vortex and Saturn modules. Some old Vortex blue boxes from Radiant only
+    supported the EPP interface. It is getting hard to find computers that still support
+    the EPP interface, and the third-party Windows software used (DLPORTIO) is no longer
+    supported and is only available in a 32-bit version. dxp R5-0 still supports the
+    EPP interface on Linux and on 32-bit Windows. (NEED TO TEST).</p>
+  <p>
+    Handel no longer officially supports the USB-1.0 interface to the old Saturn modules.
+    The third-party Windows software used is no longer supported and is only available
+    in 32-bit version. dxp R5-0 still supports the USB-1.0 interface on Linux and 32-bit
+    Windows. (NEED TO TEST).</p>
   <h2 style="text-align: center">
     Release 4-0 (23-May-2017)<br />
   </h2>
   <p>
-    Changes for areaDetector/ADCore R3-0.  These are internal changes only, and should not 
-    affect startup scripts or OPI screens.</p>
+    Changes for areaDetector/ADCore R3-0. These are internal changes only, and should
+    not affect startup scripts or OPI screens.</p>
   <h2 style="text-align: center">
     Release 3-6 (23-May-2017)<br />
   </h2>
