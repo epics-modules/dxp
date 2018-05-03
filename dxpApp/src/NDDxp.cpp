@@ -412,7 +412,7 @@ protected:
 
 private:
     /* Data */
-    epicsUInt32 **pMcaRaw;
+    unsigned long **pMcaRaw;
     epicsUInt32 *pMapRaw;
     epicsFloat64 *tmpStats;
 
@@ -682,10 +682,10 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     this->stoppedEvent = new epicsEvent();
 
     /* Allocate a memory pointer for each of the channels */
-    this->pMcaRaw = (epicsUInt32**) calloc(this->nChannels, sizeof(epicsUInt32*));
+    this->pMcaRaw = (unsigned long**) calloc(this->nChannels, sizeof(unsigned long*));
     /* Allocate a memory area for each spectrum */
     for (ch=0; ch<this->nChannels; ch++) {
-        this->pMcaRaw[ch] = (epicsUInt32*)calloc(MAX_MCA_BINS, sizeof(epicsUInt32));
+        this->pMcaRaw[ch] = (unsigned long*)calloc(MAX_MCA_BINS, sizeof(unsigned long));
     }
     
     this->tmpStats = (epicsFloat64*)calloc(28, sizeof(epicsFloat64));
@@ -847,10 +847,10 @@ asynStatus NDDxp::writeInt32( asynUser *pasynUser, epicsInt32 value)
             if (channel == DXP_ALL) {
                 for (i=0; i<this->nChannels; i++) {
                     setIntegerParam(i, NDDxpErased, 1);
-                    memset(this->pMcaRaw[i], 0, numChans * sizeof(epicsUInt32));
+                    memset(this->pMcaRaw[i], 0, numChans * sizeof(pMcaRaw[0][0]));
                 }
             } else {
-                memset(this->pMcaRaw[addr], 0, numChans * sizeof(epicsUInt32));
+                memset(this->pMcaRaw[addr], 0, numChans * sizeof(pMcaRaw[0][0]));
             }
             /* Need to call getAcquisitionStatistics to set elapsed values to 0 */
             this->getAcquisitionStatistics(pasynUser, addr);
@@ -1012,6 +1012,7 @@ asynStatus NDDxp::readInt32Array(asynUser *pasynUser, epicsInt32 *value, size_t 
     int channel;
     int nBins, acquiring,mode;
     int ch;
+    int i;
     const char *functionName = "readInt32Array";
 
     channel = this->getChannel(pasynUser, &addr);
@@ -1066,7 +1067,9 @@ asynStatus NDDxp::readInt32Array(asynUser *pasynUser, epicsInt32 *value, size_t 
                  *  copied to the buffer pointed to by pMcaRaw. */
             }
         }
-        memcpy(value, pMcaRaw[addr], nBins * sizeof(epicsUInt32));
+        for (i=0; i<nBins; i++) {
+            value[i] = pMcaRaw[addr][i];
+        }
     } 
     else {
             asynPrint(pasynUser, ASYN_TRACE_ERROR,
@@ -2367,7 +2370,7 @@ asynStatus NDDxp::getMcaData(asynUser *pasynUser, int addr)
         * For most devices this means getting 1 channel spectrum here.
         * For the XMAP we get all 4 channels on the board in one go here */
         CALLHANDEL( xiaGetRunData(addr, "mca", this->pMcaRaw[addr]),"xiaGetRunData")
-        asynPrintIO(pasynUser, ASYN_TRACEIO_DRIVER, (const char *)pMcaRaw[addr], nChannels*sizeof(epicsUInt32),
+        asynPrintIO(pasynUser, ASYN_TRACEIO_DRIVER, (const char *)pMcaRaw[addr], nChannels*sizeof(pMcaRaw[0][0]),
             "%s::%s Got MCA spectrum channel:%d ptr:%p\n",
             driverName, functionName, channel, pMcaRaw[addr]);
 
@@ -2396,7 +2399,7 @@ asynStatus NDDxp::getMappingData()
     int xiastatus;
     int arrayCallbacks;
     NDDataType_t dataType;
-    int buf = 0, channel, i, k;
+    int buf = 0, channel, i, k, l;
     NDArray *pArray=NULL;
     epicsUInt32 *pIn=NULL;
     epicsUInt32 *pStats;
@@ -2462,7 +2465,9 @@ asynStatus NDDxp::getMappingData()
             for (i=0; i<this->channelsPerCard; i++) {
                 k = channel + i;
                 nChans = pMapRaw[pixelOffset + 8 + i];
-                memcpy(pMcaRaw[k], &pMapRaw[dataOffset], nChans*sizeof(epicsUInt32));
+                for (l=0; l<nChans; l++) {
+                    pMcaRaw[k][l] = pMapRaw[dataOffset + l];
+                }
                 dataOffset += nChans;
                 pStats = &pMapRaw[pixelOffset + 32 + i*8];
                 realTime        = (pStats[0] + (pStats[1]<<16)) * MAPPING_CLOCK_PERIOD;
