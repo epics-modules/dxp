@@ -172,14 +172,12 @@ static char *PATH_SEP = "/";
 
 void Sleep(DWORD sleep_msec)
 {
-    int				sec;
-    int				usec;
+    struct timespec ts;
 
-    sec = sleep_msec / 1000;
-    usec = (sleep_msec - (sec * 1000)) * 1000;
+    ts.tv_sec = sleep_msec / 1000;
+    ts.tv_nsec = (sleep_msec - (ts.tv_sec * 1000)) * 1000000;
 
-    sleep(sec);
-    usleep(usec);
+    nanosleep(&ts, 0);
 }
 
 
@@ -530,7 +528,7 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_epp_io(int* camChan, unsigned int* function,
         } else {
             /* Perform long reads and writes if in program address space (24-bit) */
             /* Allocate memory */
-            temp = (unsigned long *) dxp_md_alloc(sizeof(unsigned short)*(*length));
+            temp = (unsigned long *) dxp_md_alloc(sizeof(unsigned long)*(*length));
             if (*function == MD_IO_READ) {
                 rstat = DxpReadBlocklong(next_addr, temp, (int) *length/2);
                 /* reverse the byte order for the EPPLIB library */
