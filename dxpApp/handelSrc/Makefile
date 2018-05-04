@@ -18,9 +18,7 @@ USR_CFLAGS_Linux    += -Wno-unused-but-set-variable
 ifneq ($(LINUX_USB_INSTALLED), YES)
 USR_CFLAGS_Linux    += -DEXCLUDE_USB -DEXCLUDE_USB2 -DEXCLUDE_XMAP -DEXCLUDE_PLX -DEXCLUDE_MERCURY
 endif
-ifeq (windows-x64, $(findstring windows-x64, $(T_A)))
-  USR_CFLAGS_WIN32   += -DEXCLUDE_EPP
-endif
+USR_CFLAGS_WIN32    += -DEXCLUDE_EPP
 USR_CFLAGS_WIN32    += -DHANDEL_USE_DLL -DHANDEL_MAKE_DLL -DWIN32
 ifeq ($(STATIC_BUILD), YES)
 USR_CFLAGS          += -DXIA_STATIC_BUILD
@@ -59,9 +57,6 @@ handel_SRCS += handel_xerxes.c
 handel_SRCS += xia_assert.c
 handel_SRCS += xia_file.c
 
-ifeq (win32-x86, $(findstring win32-x86, $(T_A)))
-  handel_LIBS_WIN32   += DLPORTIO PlxApi
-endif
 handel_LIBS_WIN32     += PlxApi
 handel_SYS_LIBS_WIN32 += setupapi User32
 handel_LIBS += $(EPICS_BASE_IOC_LIBS)
