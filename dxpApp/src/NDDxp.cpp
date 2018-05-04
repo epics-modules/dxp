@@ -54,11 +54,8 @@
  * easy to increase in the future */
 #define DXP_MAX_LL_PARAMS        300
 
-/** < The maximum number of bytes in the 2MB mapping mode buffer */
-#define MAPPING_BUFFER_SIZE 2097152
-/** < The XMAP buffer takes up 2MB of 16bit words. Unfortunatly the transfer over PCI
-  * uses 32bit words, so the data we receive from from the Handel library is 2x2MB. */
-#define XMAP_BUFFER_READ_SIZE 2*MAPPING_BUFFER_SIZE
+/** < The maximum number of 16-bit words in the mapping mode buffer */
+#define MAPPING_BUFFER_WORDS 1048576
 #define MEGABYTE             1048576
 
 #define CALLHANDEL( handel_call, msg ) { \
@@ -413,7 +410,8 @@ protected:
 private:
     /* Data */
     unsigned long **pMcaRaw;
-    epicsUInt32 *pMapRaw;
+    unsigned long *pMapTemp;
+    epicsUInt16 *pMapRaw;
     epicsFloat64 *tmpStats;
 
     NDDxpModel_t deviceType;
@@ -710,8 +708,9 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     /* Allocate a buffer for the baseline energy array */
     this->baselineEnergyBuffer = (epicsFloat64 *)malloc(this->baselineLength * sizeof(epicsFloat64));
 
-    /* Allocating a temporary buffer for use in mapping mode. */
-    this->pMapRaw = (epicsUInt32*)malloc(XMAP_BUFFER_READ_SIZE);
+    /* Allocating temporary buffers for use in mapping mode. */
+    this->pMapTemp = (unsigned long*)malloc(MAPPING_BUFFER_WORDS * sizeof(unsigned long));
+    this->pMapRaw = (epicsUInt16*)malloc(MAPPING_BUFFER_WORDS * sizeof(epicsUInt16));
     
     /* Allocate an internal buffer long enough to hold all the energy values in a spectrum */
     this->spectrumXAxisBuffer = (epicsFloat64*)calloc(MAX_MCA_BINS, sizeof(epicsFloat64));
@@ -2247,7 +2246,7 @@ asynStatus NDDxp::getDxpParams(asynUser *pasynUser, int addr)
 
                 /* In list mode Handel returns an error reading buffer_len, so hardcode it */
                 if (collectMode == NDDxpModeListMapping) {
-                    bufLen = MAPPING_BUFFER_SIZE / 2;
+                    bufLen = MAPPING_BUFFER_WORDS;
                 } 
                 else {
                     bufLen = 0;
@@ -2401,9 +2400,8 @@ asynStatus NDDxp::getMappingData()
     NDDataType_t dataType;
     int buf = 0, channel, i, k, l;
     NDArray *pArray=NULL;
-    epicsUInt32 *pIn=NULL;
-    epicsUInt32 *pStats;
-    epicsUInt16 *pOut=NULL;
+    epicsUInt16 *pOut=0;
+    epicsUInt16 *pStats;
     int mappingMode, pixelOffset, dataOffset, events, triggers, nChans;
     double realTime, triggerLiveTime, energyLiveTime, icr, ocr;
     size_t dims[2];
@@ -2433,7 +2431,7 @@ asynStatus NDDxp::getMappingData()
 
         /* The buffer is full so read it out */
         epicsTimeGetCurrent(&now);
-        xiastatus = xiaGetRunData(channel, NDDxpBufferString[buf], this->pMapRaw);
+        xiastatus = xiaGetRunData(channel, NDDxpBufferString[buf], this->pMapTemp);
         status = xia_checkError(this->pasynUserSelf, xiastatus, "GetRunData mapping");
         epicsTimeGetCurrent(&after);
         readoutTime = epicsTimeDiffInSeconds(&after, &now);
@@ -2447,12 +2445,18 @@ asynStatus NDDxp::getMappingData()
         if (buf == 0) this->currentBuf[channel] = 1;
         else this->currentBuf[channel] = 0;
         callParamCallbacks();
+        /* xisGetRunData requires an unsigned long buffer, but the data are actually only 16 bits.
+         * Convert to 16-bit data here */
+        for (i=0; i<arraySize; i++) {
+            pMapRaw[i] = (epicsUInt16) pMapTemp[i];
+        }
+    
         asynPrint(this->pasynUserSelf, ASYN_TRACEIO_DRIVER, 
             "%s::%s Got data! size=%.3fMB (%d) dt=%.3fs speed=%.3fMB/s\n",
             driverName, functionName, MBbufSize, arraySize, readoutTime, readoutBurstRate);
         asynPrint(this->pasynUserSelf, ASYN_TRACEIO_DRIVER, 
-            "%s::%s channel=%d, bufferNumber=%d, firstPixel=%d, numPixels=%d\n",
-            driverName, functionName, channel, pMapRaw[5], pMapRaw[9], pMapRaw[8]);
+            "%s::%s channel=%d, tag0=0x%x, tag1=0x%x, headerSize=%d, mappingMode=%d, runNumber=%d, bufferNumber=%d, bufferID=%d, numPixels=%d, firstPixel=%d\n",
+            driverName, functionName, channel, pMapRaw[0], pMapRaw[1], pMapRaw[2], pMapRaw[3], pMapRaw[4], pMapRaw[5], pMapRaw[7], pMapRaw[8], pMapRaw[9]);
     
         /* If this is MCA mapping mode then copy the spectral data for the first pixel
          * in this buffer to the mcaRaw buffers.
@@ -2501,23 +2505,15 @@ asynStatus NDDxp::getMappingData()
         {
             /* Now rearrange the data and do the callbacks */
             /* If this is the first module then allocate an NDArray for the callback */
-            if (channel == 0)
-            {
+            if (channel == 0) {
                dims[0] = arraySize;
                dims[1] = this->nCards;
                pArray = this->pNDArrayPool->alloc(2, dims, dataType, 0, NULL );
                pOut = (epicsUInt16 *)pArray->pData;
             }
             
-            /* First get rid of the empty parts of the 32 bit words. The Handel library
-             * provides a 4MB 32 bit/word wide buffer, but the only data is in the low-order
-             * 16 bits of each word. So we strip off the empty top 16 bits of each 32 bit
-             * word. */
-            pIn = this->pMapRaw;
-            for (i=0; i<arraySize; i++)
-            {
-                *pOut++ = (epicsUInt16) *pIn++;
-            }
+            memcpy(pOut, pMapRaw, arraySize * sizeof(epicsUInt16));
+            pOut += arraySize;
         }
     }
     if (arrayCallbacks) 
