@@ -55,10 +55,6 @@ include $(ADCORE)/ADApp/commonDriverMakefile
 
 dxpApp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
-ifeq (win32-x86, $(findstring win32-x86, $(T_A)))
-  dxpApp_LIBS_WIN32   += DLPORTIO
-endif
-
 dxpApp_LIBS_WIN32 += PlxApi
 ifeq ($(LINUX_USB_INSTALLED), YES)
 dxpApp_SYS_LIBS_Linux += usb
@@ -74,8 +70,8 @@ dxpApp_SYS_LIBS_WIN32    += setupapi
 #test_scas3_LIBS += handel asyn
 #test_scas3_SYS_LIBS_Linux += usb
 #test_scas3_LIBS += $(EPICS_BASE_IOC_LIBS)
-#test_scas3_LIBS_WIN32 += DLPORTIO PlxApi
-#test_scas3_SYS_LIBS_cygwin32 += DLPORTIO PlxApi
+#test_scas3_LIBS_WIN32 += PlxApi
+#test_scas3_SYS_LIBS_cygwin32 += PlxApi
 #test_scas3_SYS_LIBS_cygwin32 += setupapi
 #test_scas3_SYS_LIBS_cygwin32 += $(CYGWIN_RPC_LIB)
 #test_scas3_SYS_LIBS_WIN32 += setupapi
