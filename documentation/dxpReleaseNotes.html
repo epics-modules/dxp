@@ -11,7 +11,7 @@
       dxp Release Notes</h1>
   </div>
   <h2 style="text-align: center">
-    Release 5-0 (XXX-May-2018)<br />
+    Release 5-0 (4-May-2018)<br />
   </h2>
   <p>
     Upgraded the XIA Handel library from 1.1.11 to 1.2.19. This version is 64-bit compatible,
@@ -27,17 +27,105 @@
     Removed support for the CAMAC DXP4C2X. It is no longer supported by Handel and is
     probably no longer in use anywhere.</p>
   <p>
-    Handel no longer officially supports the EPP (Enhanced Parallel Port) interface
-    to the old Vortex and Saturn modules. Some old Vortex blue boxes from Radiant only
-    supported the EPP interface. It is getting hard to find computers that still support
-    the EPP interface, and the third-party Windows software used (DLPORTIO) is no longer
-    supported and is only available in a 32-bit version. dxp R5-0 still supports the
-    EPP interface on Linux and on 32-bit Windows. (NEED TO TEST).</p>
+    Some old Vortex blue boxes from Radiant only have the EPP (Enhanced Parallel Port)
+    interface. The third-party Windows software that Handel uses for EPP (DLPORTIO)
+    is no longer supported or available. dxp R5-0 supports the EPP interface on 32-bit
+    and 64-bit Linux only.</p>
   <p>
-    Handel no longer officially supports the USB-1.0 interface to the old Saturn modules.
-    The third-party Windows software used is no longer supported and is only available
-    in 32-bit version. dxp R5-0 still supports the USB-1.0 interface on Linux and 32-bit
-    Windows. (NEED TO TEST).</p>
+    Some old Vortex blue boxes from SII/Radiant have a USB-1.0 interface and not USB-2.0.
+    The third-party Windows software used for USB-1.0 is no longer supported or available.
+    dxp R5-0 supports the USB-1.0 interface on 32-bit and 64-bit Linux only.</p>
+  <p>
+    The following table shows the status of the support and testing in R5-0 for the
+    different modules and interfaces.</p>
+  <table border="1" summary="Module support and testing status for R5-0">
+    <tbody>
+      <tr>
+        <th>
+          Module and interface</th>
+        <th>
+          Linux 32-bit</th>
+        <th>
+          Linux 64-bit</th>
+        <th>
+          Windows 32-bit</th>
+        <th>
+          Windows 64-bit</th>
+      </tr>
+      <tr>
+        <td>
+          MicroDXP</td>
+        <td>
+          Supported, tested</td>
+        <td>
+          Supported, tested</td>
+        <td>
+          Supported, not tested</td>
+        <td>
+          Supported, tested</td>
+      </tr>
+      <tr>
+        <td>
+          Saturn/Vortex USB-2.0</td>
+        <td>
+          Supported, tested</td>
+        <td>
+          Supported, tested</td>
+        <td>
+          Supported, not tested</td>
+        <td>
+          Supported, tested</td>
+      </tr>
+      <tr>
+        <td>
+          Saturn/Vortex USB-1.0</td>
+        <td>
+          Supported, tested</td>
+        <td>
+          Supported, tested</td>
+        <td>
+          Not supported</td>
+        <td>
+          Not supported</td>
+      </tr>
+      <tr>
+        <td>
+          Saturn/Vortex EPP</td>
+        <td>
+          Supported, tested</td>
+        <td>
+          Supported, tested</td>
+        <td>
+          Not supported</td>
+        <td>
+          Not supported</td>
+      </tr>
+      <tr>
+        <td>
+          Mercury USB-2.0</td>
+        <td>
+          Supported, tested</td>
+        <td>
+          Supported, tested</td>
+        <td>
+          Supported, not tested</td>
+        <td>
+          Supported, tested</td>
+      </tr>
+      <tr>
+        <td>
+          xMAP</td>
+        <td>
+          Not supported</td>
+        <td>
+          Not supported</td>
+        <td>
+          Supported, not tested</td>
+        <td>
+          Supported, not tested</td>
+      </tr>
+    </tbody>
+  </table>
   <h2 style="text-align: center">
     Release 4-0 (23-May-2017)<br />
   </h2>
