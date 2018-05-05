@@ -10,9 +10,9 @@
     <h1>
       DXP - EPICS software for XIA Digital Signal Processing Systems</h1>
     <h2>
-      Release 4-0</h2>
+      Release 5-0</h2>
     <h2>
-      May 23, 2017</h2>
+      May 4, 2018</h2>
     <h2>
       Mark Rivers</h2>
     <h2>
@@ -31,7 +31,8 @@
         <li><a href="#dxpLowLevel">dxpLowLevel.template</a></li>
         <li><a href="#dxpSystem">dxpSystem.template</a></li>
         <li><a href="#dxpSaturn">dxpSaturn.template</a></li>
-        <li><a href="#Saturn_medm">Saturn medm screens</a></li>
+        <li><a href="#microDXP">microDXP.template</a></li>
+        <li><a href="#single_element_medm">Single-element detector medm screens</a></li>
         <li><a href="#dxpMED">dxpMED.template</a></li>
         <li><a href="#multielement_medm">Multi-element detector medm screens</a></li>
         <li><a href="#dxpMapping">dxpMapping.template</a></li>
@@ -42,15 +43,14 @@
       <ul>
         <li><a href="#Installing_Windows">Windows</a></li>
         <li><a href="#Installing_Linux">Linux</a></li>
-        <li><a href="#Installing_vxWorks">vxWorks</a></li>
       </ul>
     </li>
     <li><a href="#Running">Running</a>
       <ul>
         <li><a href="#Running_Saturn">Saturn</a></li>
+        <li><a href="#Running_MicroDXP">MicroDXP</a></li>
         <li><a href="#Running_xMAP">xMAP</a></li>
         <li><a href="#Running_Mercury">Mercury</a></li>
-        <li><a href="#Running_DXP2X">DXP2X</a></li>
       </ul>
     </li>
     <li><a href="#Performance">Performance</a></li>
@@ -68,17 +68,19 @@
     DXP supports the following hardware:</p>
   <ul>
     <li>The xMAP, which is a 4-channel PXI card. The PXI crate is typically connected
-      to a Windows PC with a PCI/PXI fiber-optic bridge, but can also be controlled by
-      a CPU processor card in the PXI crate itself.</li>
+      to a Windows PC with a PCI/PXI copper or fiber-optic bridge, but can also be controlled
+      by a CPU processor card in the PXI crate itself.</li>
     <li>The Mercury (single channel) and Mercury4 (4 channel) standalone desktop units
       that communicate over the USB 2.0 port. They both have similar mapping features
       to the xMAP. Where the term Mercury is used in this document it applies to both
       the Mercury and Mercury4 unless otherwise stated.</li>
     <li>The Saturn, which is a standalone desktop unit that communicates over the PC Enhanced
-      Parallel Port (EPP) or USB port. The Vortex detector from SII (formerly Radiant)
-      is an OEM version of the Saturn, and it also works with this software.</li>
-    <li>The DXP2X, which is a single-width CAMAC module. Each module contains 2 or 4 channels
-      with similar pulse-processing electronics to the Saturn.</li>
+      Parallel Port (EPP) or USB port. The Vortex detector from Hitachi (formerly SII
+      and Radiant) is an OEM version of the Saturn, and it also works with this software.</li>
+    <li>The MicroDXP, which is a board-level product sold to OEMs to embed in their products.
+      It is used in some Ketek SDD detectors and in some Vortex electronics from Hitachi.
+      It is similar to the Saturn, i.e. it is a single-element system that does not support
+      mapping. It does not have a Gate input.</li>
   </ul>
   <p>
     DXP currently supports this hardware under the following operating systems and interfaces:</p>
@@ -87,15 +89,13 @@
       PCI/PXI adapter, or with a CPU card running Windows directly in the PXI crate.
     </li>
     <li>The Mercury with the EPICS IOC running on Windows or Linux using the USB 2.0 interface.</li>
-    <li>The Saturn with the EPICS IOC running on Windows or Linux, using the EPP parallel
-      port, USB 1.0, or USB 2.0 interfaces.</li>
-    <li>The DXP2X with the EPICS IOC running on vxWorks, using the Kinetic Systems 2917/3922
-      VME to CAMAC interface. Other CAMAC interfaces that have software support for the
-      ESONE standard CAMAC library calls should also work, but have not been tested.</li>
+    <li>The Saturn with the EPICS IOC running on Windows with the USB-2.0 interface or
+      on Linux using the EPP parallel port, USB 1.0, or USB 2.0 interfaces.</li>
+    <li>The MicroDXP on Windows or Linux using the USB-2.0 interface.</li>
   </ul>
   <p>
-    On Windows both the EPICS win32-x86 (Microsoft VC++ compiler) and cygwin-x86 (gcc
-    compiler) architectures are supported.</p>
+    On Windows the EPICS win32-x86 (32-bit) and windows-x64 (64-bit) architectures are
+    supported. These architectures use the Microsoft VC++ compiler.</p>
   <p>
     The features of the EPICS software, compared with software available from XIA are:</p>
   <ul>
@@ -109,11 +109,9 @@
       it allows the DXP control and data acquisition to be integrated with other hardware
       and software. For example, a control software program can move a motor, command
       the DXP to acquire data, and write the data to disk.</li>
-    <li>A single software package supports the xMAP, Mercury, Saturn, and DXP2X.</li>
-    <li>The Saturn and Mercury can be run from Windows and Linux, while the XIA control
-      programs only run on Windows.</li>
-    <li>The DXP2X support uses the standard XIA Handel library, while the XIA MESA package
-      uses an old LabView interface.</li>
+    <li>A single software package supports the xMAP, Mercury, Saturn, and MicroDXP.</li>
+    <li>The Saturn, Mercury, and MicroDXP can be run from Windows and Linux, while the
+      XIA control programs only run on Windows.</li>
   </ul>
   <h2 id="Architecture">
     Architecture</h2>
@@ -123,7 +121,7 @@
     <li>An <a href="http://www.aps.anl.gov/epics/modules/soft/asyn/">asyn port driver</a>.
       This driver is implements a class called <a href="dxpDoxygenHTML/class_n_d_dxp.html">
         NDDxp</a>, which is derived from the <a href="http://cars.uchicago.edu/software/epics/areaDetectorDoc.html#asynNDArrayDriver">
-          asynNDArrayDriver</a> and <a href="http://www.aps.anl.gov/epics/modules/soft/asyn/R4-14/asynPortDriver.html">
+          asynNDArrayDriver</a> and <a href="http://www.aps.anl.gov/epics/modules/soft/asyn/R4-33/asynPortDriver.html">
             asynPortDriver</a> base C++ classes. The driver communicates with the hardware
       using the <a href="Handel_API_012902_branch2.pdf">XIA Handel library</a>, which
       in turn communicates with the <a href="http://www.xia.com/Manuals/XIA_Host_Software_Manual.pdf">
@@ -145,8 +143,8 @@
       modes on the xMAP and Mercury.</li>
     <li>Databases for single-element and multi-element detector systems.</li>
     <li>medm display screens for single-element and multi-element detector systems.</li>
-    <li>Example IOC boot directories for the Saturn and Mercury on Windows and Linux,
-      for the xMAP on Windows, and for the DXP2X on vxWorks.</li>
+    <li>Example IOC boot directories for the Saturn, Mercury, and MicroDXP on Windows
+      and Linux, for the xMAP on Windows.</li>
   </ul>
   <p>
     The overall architecture of the EPICS DXP software is shown in the diagram below.
@@ -188,7 +186,7 @@
   </ol>
   <p>
     Steps 1-3 apply to both output records and to input records. Steps 4 and 5 typically
-    only apply to output records, and step 7 only to input records. If there is no auto_settings*.sav
+    only apply to output records, and step 6 only to input records. If there is no auto_settings*.sav
     file then most of the DXP parameter records will obtain their initial values from
     the .ini file. Thus, by deleting the auto_settings*.sav file one can force EPICS
     to use the same parameters that have been saved into an .ini file, for example by
@@ -207,229 +205,297 @@
     <tbody>
       <tr>
         <td align="center" colspan="3">
-          <b>Records in dxpHighLevel.template</b></td>
+          <b>Records in dxpHighLevel.template</b>
+        </td>
       </tr>
       <tr>
         <th>
-          Record Name</th>
+          Record Name
+        </th>
         <th>
-          Record Type</th>
+          Record Type
+        </th>
         <th>
-          Description</th>
+          Description
+        </th>
       </tr>
       <tr>
         <td align="center" colspan="3">
-          <b>Trigger Filter Records</b></td>
+          <b>Trigger Filter Records</b>
+        </td>
       </tr>
       <tr valign="top">
         <td>
           TriggerPeakingTime<br />
-          TriggerPeakingTime_RBV</td>
+          TriggerPeakingTime_RBV
+        </td>
         <td>
           ao<br />
-          ai</td>
+          ai
+        </td>
         <td>
           The peaking time in microseconds for the trigger (fast) filter. The trigger filter
-          is used to detect input pulses.</td>
+          is used to detect input pulses.
+        </td>
       </tr>
       <tr valign="top">
         <td>
           TriggerGapTime<br />
-          TriggerGapTime_RBV</td>
+          TriggerGapTime_RBV
+        </td>
         <td>
           ao<br />
-          ai</td>
+          ai
+        </td>
         <td>
           The gap time in microseconds for the fast filter. This gap time is generally set
-          to 0.</td>
+          to 0.
+        </td>
       </tr>
       <tr valign="top">
         <td>
           TriggerThreshold<br />
-          TriggerThreshold_RBV</td>
+          TriggerThreshold_RBV
+        </td>
         <td>
           ao<br />
-          ai</td>
+          ai
+        </td>
         <td>
-          The threshold in keV for the trigger filter.</td>
+          The threshold in keV for the trigger filter.
+        </td>
       </tr>
       <tr>
         <td align="center" colspan="3">
-          <b>Energy Filter Records</b></td>
+          <b>Energy Filter Records</b>
+        </td>
       </tr>
       <tr valign="top">
         <td>
           PeakingTime<br />
-          PeakingTime_RBV</td>
+          PeakingTime_RBV
+        </td>
         <td>
           ao<br />
-          ai</td>
+          ai
+        </td>
         <td>
           The peaking time in microseconds for the energy (slow) filter. The energy filter
           is used to measure the energy of the input pulses. Increasing this time will generally
-          improve the energy resolution at the expense of decreased throughput.</td>
+          improve the energy resolution at the expense of decreased throughput. On the MicroDXP
+          there are a fixed number of peaking times, and each is associated with a PARSET
+          configuration file stored in non-volatile memory on the MicroDXP. The driver finds
+          the PARSET with the closest peaking time to that requested and loads that PARSET.
+          This may change some of the other parameters, so that their readback values will
+          no longer agree with the EPICS setpoints. If it is desired to use the current EPICS
+          values then type Return in those fields to send the EPICS values to the device.
+        </td>
       </tr>
       <tr valign="top">
         <td>
           GapTime<br />
-          GapTime_RBV</td>
+          GapTime_RBV
+        </td>
         <td>
           ao<br />
-          ai</td>
+          ai
+        </td>
         <td>
           The gap time in microseconds for the energy filter. The gap time is set to reflect
-          the rise time of the input signal.</td>
+          the rise time of the input signal.
+        </td>
       </tr>
       <tr valign="top">
         <td>
           EnergyThreshold<br />
-          EnergyThreshold_RBV</td>
+          EnergyThreshold_RBV
+        </td>
         <td>
           ao<br />
-          ai</td>
+          ai
+        </td>
         <td>
           The threshold in keV for the energy filter. This should generally be set to 0 except
-          for soft x-ray spectroscopy.</td>
+          for soft x-ray spectroscopy.
+        </td>
       </tr>
       <tr valign="top">
         <td>
           MaxWidth<br />
-          MaxWidth_RBV</td>
+          MaxWidth_RBV
+        </td>
         <td>
           ao<br />
-          ai</td>
+          ai
+        </td>
         <td>
-          Maximum peak width in microseconds for pileup inspection. </td>
+          Maximum peak width in microseconds for pileup inspection.
+        </td>
       </tr>
       <tr>
         <td align="center" colspan="3">
-          <b>Baseline Records</b></td>
+          <b>Baseline Records</b>
+        </td>
       </tr>
       <tr valign="top">
         <td>
           BaselineFilterLength<br />
-          BaselineFilterLength_RBV</td>
+          BaselineFilterLength_RBV
+        </td>
         <td>
           mbbo<br />
-          longin</td>
+          longin
+        </td>
         <td>
           The length of the baseline filter in samples. Menu values are powers of 2 from 8
-          to 2048.</td>
+          to 2048.
+        </td>
       </tr>
       <tr valign="top">
         <td>
           BaselineThreshold<br />
-          BaselineThreshold_RBV</td>
+          BaselineThreshold_RBV
+        </td>
         <td>
           ao<br />
-          ai</td>
+          ai
+        </td>
         <td>
-          The threshold in keV for the baseline filter.</td>
+          The threshold in keV for the baseline filter.
+        </td>
       </tr>
       <tr valign="top">
         <td>
           BaselineCutPercent<br />
-          BaselineCutPercent_RBV</td>
+          BaselineCutPercent_RBV
+        </td>
         <td>
           ao<br />
-          ai</td>
+          ai
+        </td>
         <td>
           The baseline cut value, in percent units of the baseline histogram. Baseline values
           outside the cut range will not be used in computing the baseline average, but they
           will still be included in the baseline histogram. <i>Note: this parameter only applies
-            to the Saturn and DXP2X, it is not used on the xMAP or Mercury.</i></td>
+            to the Saturn, it is not used on the xMAP, Mercury or MicroDXP.</i>
+        </td>
       </tr>
       <tr valign="top">
         <td>
           BaselineCutEnable<br />
-          BaselineCutEnable_RBV</td>
+          BaselineCutEnable_RBV
+        </td>
         <td>
           bo<br />
-          bi</td>
+          bi
+        </td>
         <td>
           A flag to enable or disable the baseline cut. <i>Note: this parameter only applies
-            to the Saturn and DXP2X, it is not used on the xMAP or Mercury.</i></td>
+            to the Saturn, it is not used on the xMAP, Mercury or MicroDXP.</i>
+        </td>
       </tr>
       <tr>
         <td align="center" colspan="3">
-          <b>Pre-amp and Energy Range Records</b></td>
+          <b>Pre-amp and Energy Range Records</b>
+        </td>
       </tr>
       <tr valign="top">
         <td>
           PreampGain<br />
-          PreampGain_RBV</td>
+          PreampGain_RBV
+        </td>
         <td>
           ao<br />
-          ai</td>
+          ai
+        </td>
         <td>
           The gain of the detector pre-amp in mV/keV. Setting this value accurately is important,
           because it allows the DXP software to be correctly internally calibrated. PreampGain
           should be adjusted so that the requested MaxEnergy value agrees with the actual
-          energy of the last MCA channel.</td>
+          energy of the last MCA channel. Not used on the MicroDXP
+        </td>
       </tr>
       <tr valign="top">
         <td>
           DetectorPolarity<br />
-          DetectorPolarity_RBV</td>
+          DetectorPolarity_RBV
+        </td>
         <td>
           bo<br />
-          bi</td>
+          bi
+        </td>
         <td>
           Pre-amp polarity (not high-voltage polarity). 0=Negative, 1=Positive. Positive polarity
           means an x-ray pulse causes an increase in the pre-amp voltage output. This is normally
           defined in the .ini file, but is accessible to EPICS to allow quick determination
-          of the correct polarity.</td>
+          of the correct polarity.
+        </td>
       </tr>
       <tr valign="top">
         <td>
           ResetDelay<br />
-          ResetDelay_RBV</td>
+          ResetDelay_RBV
+        </td>
         <td>
           ao<br />
-          ai</td>
+          ai
+        </td>
         <td>
           For reset pre-amps the time in microseconds to recover after a pre-amp reset. <i>Note:
             older xMAPs (before revision D) should use 10 microseconds, newer xMAPs (revision
-            D and later) can use 1 microsecond.</i></td>
+            D and later) can use 1 microsecond.</i>
+        </td>
       </tr>
       <tr valign="top">
         <td>
           DecayTime<br />
-          DecayTime_RBV</td>
+          DecayTime_RBV
+        </td>
         <td>
           ao<br />
-          ai</td>
+          ai
+        </td>
         <td>
-          For RC pre-amps the characteristic decay time in microseconds.</td>
+          For RC pre-amps the characteristic decay time in microseconds.
+        </td>
       </tr>
       <tr valign="top">
         <td>
           MaxEnergy<br />
-          MaxEnergy_RBV</td>
+          MaxEnergy_RBV
+        </td>
         <td>
           ao<br />
-          ai</td>
+          ai
+        </td>
         <td>
           The energy of the last channel in the spectrum in keV. If the actual energy of the
           last channel, determined by performing an MCA energy calibration, is not equal to
-          this value, then one should modify the value of PrempGain.</td>
+          this value, then one should modify the value of PrempGain (or Gain/FineGain on the
+          MicroDXP).
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          MCABinWidth_RBV</td>
+          MCABinWidth_RBV
+        </td>
         <td>
-          ai</td>
+          ai
+        </td>
         <td>
           The width of each bin in the MCA spectrum in keV. This is computed from PreampGain,
-          MaxEnergy, and the NUSE field of the MCA record.</td>
+          MaxEnergy, and the NUSE field of the MCA record.
+        </td>
       </tr>
       <tr valign="top">
         <td>
           ADCPercentRule<br />
-          ADCPercentRule_RBV</td>
+          ADCPercentRule_RBV
+        </td>
         <td>
           ao<br />
-          ai</td>
+          ai
+        </td>
         <td>
           The percent of the range of the input ADC that should be used for pulses whose energy
           is at the energy of the CalibrationEnergy, which the driver automatically sets to
@@ -437,39 +503,50 @@
           for reset pre-amplifiers and 30-50% for RC pre-amplifiers. The goal is to digitize
           the baseline noise into a few ADC bits (look at the ADC trace), but not have the
           value so large that the input signal drifts out of the ADC range too often (look
-          at the number of drift ups and drift downs, NUMDRUPS0 and NUMDRDOS0).</td>
+          at the number of drift ups and drift downs, NUMDRUPS0 and NUMDRDOS0). Not used on
+          the MicroDXP.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          CalibrationEnergy_RBV</td>
+          CalibrationEnergy_RBV
+        </td>
         <td>
-          ai</td>
+          ai
+        </td>
         <td>
           The energy at which the ADCPercentRule applies. The EPICS driver automatically sets
-          this to MaxEnergy/2.</td>
+          this to MaxEnergy/2. Not used on the MicroDXP.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          DynamicRange_RBV</td>
+          DynamicRange_RBV
+        </td>
         <td>
-          ai</td>
+          ai
+        </td>
         <td>
           The dynamic range of the ADC. This is computed from PreampGain, MaxEnergy, and ADCPercentRule.
+          Not used on the MicroDXP.
         </td>
       </tr>
       <tr>
         <td align="center" colspan="3">
-          <b>Preset Counting Records</b></td>
+          <b>Preset Counting Records</b>
+        </td>
       </tr>
       <tr valign="top">
         <td>
           PresetMode<br />
-          PresetMode_RBV</td>
+          PresetMode_RBV
+        </td>
         <td>
           mbbo<br />
-          mbbi</td>
+          mbbi
+        </td>
         <td>
-          The preset counting mode. On the xMAP and Mercury the choices are:
+          The preset counting mode. On the xMAP, Mercury, and MicroDXP the choices are:
           <ul>
             <li>"No preset" Count until acquisition is stopped manually.</li>
             <li>"Real time" Count for a preset real time. The real time is set by the PRTM field
@@ -479,127 +556,164 @@
             <li>"Events" The preset number of events is set by the PresetEvents record.</li>
             <li>"Triggers" The preset number of triggers is set by the PresetTriggers record.</li>
           </ul>
-          On the Saturn and the DXP2X only the first 3 choices are available; "Events" and
-          "Triggers" are not supported.<br />
+          On the Saturn only the first 3 choices are available; "Events" and "Triggers" are
+          not supported.<br />
           The preset real time and preset live time are controlled by the .PRTM and .PLTM
-          fields of the corresponding MCA record.</td>
+          fields of the corresponding MCA record.
+        </td>
       </tr>
       <tr valign="top">
         <td>
           PresetEvents<br />
-          PresetEvents_RBV</td>
+          PresetEvents_RBV
+        </td>
         <td>
           longout<br />
-          longin</td>
+          longin
+        </td>
         <td>
           The number of events to count for. Events are x-rays that were processed by the
           energy filter, and includes underflow and overflow events that are not actually
-          present in the spectrum.</td>
+          present in the spectrum.
+        </td>
       </tr>
       <tr valign="top">
         <td>
           PresetTriggers<br />
-          PresetTriggers_RBV</td>
+          PresetTriggers_RBV
+        </td>
         <td>
           longout<br />
-          longin</td>
+          longin
+        </td>
         <td>
           The number of triggers to count for. Triggers are x-rays that were processed by
           the trigger filter, and includes pileups and other events that are not actually
-          present in the spectrum.</td>
+          present in the spectrum.
+        </td>
       </tr>
       <tr>
         <td align="center" colspan="3">
-          <b>Counting Statistics Records</b></td>
+          <b>Counting Statistics Records</b>
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          ElapsedRealTime</td>
+          ElapsedRealTime
+        </td>
         <td>
-          ai</td>
+          ai
+        </td>
         <td>
           The elapsed real time. This is the same information as in the .ERTM field of the
-          corresponding MCA record.</td>
+          corresponding MCA record.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          ElapsedLiveTime</td>
+          ElapsedLiveTime
+        </td>
         <td>
-          ai</td>
+          ai
+        </td>
         <td>
           The elapsed live time. This is the same information as in the .ELTM field of the
-          corresponding MCA record.</td>
+          corresponding MCA record.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          ElapsedTriggerLiveTime</td>
+          ElapsedTriggerLiveTime
+        </td>
         <td>
-          ai</td>
+          ai
+        </td>
         <td>
-          The elapsed live time for the trigger filter.</td>
+          The elapsed live time for the trigger filter.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          Triggers</td>
+          Triggers
+        </td>
         <td>
-          longin</td>
+          longin
+        </td>
         <td>
-          The number of trigger filter events.</td>
+          The number of trigger filter events.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          Events</td>
+          Events
+        </td>
         <td>
-          longin</td>
+          longin
+        </td>
         <td>
-          The number of energy filter events.</td>
+          The number of energy filter events.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          Underflows</td>
+          Underflows
+        </td>
         <td>
-          longin</td>
+          longin
+        </td>
         <td>
           The number of underflow events, which are events that would be in channels less
-          than 0.</td>
+          than 0.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          Overflows</td>
+          Overflows
+        </td>
         <td>
-          longin</td>
+          longin
+        </td>
         <td>
           The number of overflow events, which are events that would be in channels greater
-          than the last channel in the spectrum.</td>
+          than the last channel in the spectrum.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          InputCountRate</td>
+          InputCountRate
+        </td>
         <td>
-          ai</td>
+          ai
+        </td>
         <td>
           The input count rate (ICR), which is the same as Triggers/ElapsedTriggerLiveTime.
         </td>
       </tr>
       <tr valign="top">
         <td>
-          OutputCountRate</td>
+          OutputCountRate
+        </td>
         <td>
-          ai</td>
+          ai
+        </td>
         <td>
-          The output count rate (OCR), which is the same as Events/ElapsedRealTime.</td>
+          The output count rate (OCR), which is the same as Events/ElapsedRealTime.
+        </td>
       </tr>
       <tr>
         <td align="center" colspan="3">
-          <b>Mercury Auxiliary Output Control Records)</b></td>
+          <b>Mercury Auxiliary Output Control Records)</b>
+        </td>
       </tr>
       <tr valign="top">
         <td>
           TriggerOutput<br />
-          TriggerOutput_RBV</td>
+          TriggerOutput_RBV
+        </td>
         <td>
           mbbo<br />
-          mbbi</td>
+          mbbi
+        </td>
         <td>
           The signal to output on the Trigger Output front-panel auxiliary output line. The
           choices are:
@@ -615,10 +729,12 @@
       <tr valign="top">
         <td>
           LiveTimeOutput<br />
-          LiveTimeOutput_RBV</td>
+          LiveTimeOutput_RBV
+        </td>
         <td>
           mbbo<br />
-          mbbi</td>
+          mbbi
+        </td>
         <td>
           The signal to output on the Livetime Output front-panel auxiliary output line. The
           choices are:
@@ -633,28 +749,35 @@
       </tr>
       <tr>
         <td align="center" colspan="3">
-          <b>Mapping Records (for xMAP and Mercury)</b></td>
+          <b>Mapping Records (for xMAP and Mercury)</b>
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          CurrentPixel</td>
+          CurrentPixel
+        </td>
         <td>
-          longin</td>
+          longin
+        </td>
         <td>
           The current pixel in the mapping run in MCA mapping and SCA mapping modes. In List
           mapping mode this is the number of bytes in the current mapping buffer. This value
           applies to the entire moduel, not to each channel, so it is only updated for the
-          first channel on the module.</td>
+          first channel on the module.
+        </td>
       </tr>
       <tr>
         <td align="center" colspan="3">
-          <b>Diagnostic Trace Records</b></td>
+          <b>Diagnostic Trace Records</b>
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          BaselineHistogram</td>
+          BaselineHistogram
+        </td>
         <td>
-          waveform</td>
+          waveform
+        </td>
         <td>
           The baseline histogram array. The array is read from the hardware when this record
           is processed. The baseline histogram provides a valuable diagnostic of the electronic
@@ -665,20 +788,25 @@
       </tr>
       <tr valign="top">
         <td>
-          BaselineEnergyArray</td>
+          BaselineEnergyArray
+        </td>
         <td>
-          waveform</td>
+          waveform
+        </td>
         <td>
           The energy values for the baseline histogram. This array is used to provide a calibrated
-          X-axis when plotting the BaselineHistogram.</td>
+          X-axis when plotting the BaselineHistogram.
+        </td>
       </tr>
       <tr valign="top">
         <td>
           TraceMode<br />
-          TraceMode_RBV</td>
+          TraceMode_RBV
+        </td>
         <td>
           mbbo<br />
-          mbbi</td>
+          mbbi
+        </td>
         <td>
           The type of diagnostic trace information to return in the TraceData record. On the
           xMAP and Mercury the choices are:
@@ -691,42 +819,50 @@
             <li>"Baseline samples" The recent baseline samples.</li>
             <li>"Energy samples" The recent energy samples.</li>
           </ul>
-          On the Saturn and the DXP2X only the first 2 choices are available, "ADC" and "Baseline
-          history".</td>
+          On the Saturn only the first 2 choices are available, "ADC" and "Baseline history".
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          TraceData</td>
+          TraceData
+        </td>
         <td>
-          waveform</td>
+          waveform
+        </td>
         <td>
           The diagnostic trace data. The array is read from the hardware when this record
           is processed. The type of diagnostic trace data to read is selected with TraceMode,
           and the time per sample is selected with TraceTime. <i>Note: this record should not
             be processed while normal data acquisition is in progress or it will slow things
-            down.</i></td>
-      </tr>
-      <tr valign="top">
-        <td>
-          TraceTime<br />
-          TraceTime_RBV</td>
-        <td>
-          ao<br />
-          ai</td>
-        <td>
-          The time per sample in microseconds for the TraceData array. The minimum time depends
-          on the hardware type; it is 0.1 microseconds for the 20 MHz Saturn and DXP2X, .05
-          microseconds for the 40MHz Saturn, and 0.02 microseconds for the xMAP and Mercury.
+            down.</i>
         </td>
       </tr>
       <tr valign="top">
         <td>
-          TraceTimeArray</td>
+          TraceTime<br />
+          TraceTime_RBV
+        </td>
         <td>
-          waveform</td>
+          ao<br />
+          ai
+        </td>
+        <td>
+          The time per sample in microseconds for the TraceData array. The minimum time depends
+          on the hardware type; it is 0.1 microseconds for the 20 MHz Saturn, .05 microseconds
+          for the 40MHz Saturn, and 0.02 microseconds for the xMAP and Mercury.
+        </td>
+      </tr>
+      <tr valign="top">
+        <td>
+          TraceTimeArray
+        </td>
+        <td>
+          waveform
+        </td>
         <td>
           The time values for the trace data. This array is used to provide a calibrated X-axis
-          when plotting the TraceData.</td>
+          when plotting the TraceData.
+        </td>
       </tr>
     </tbody>
   </table>
@@ -734,7 +870,7 @@
     dxpSCA_16.template and dxpSCA_32.template</h3>
   <p>
     The following records are defined in the databases dxpSCA_16.template and dxpSCA_32.template.
-    They control the 16 (Saturn and DXP2X) or 32 (xMAP and Mercury) single-channel-analyzers
+    They control the 16 (Saturn and MicroDXP) or 32 (xMAP and Mercury) single-channel-analyzers
     (SCAs) for each channel. Each SCA is defined by a low channel and a high channel.
     In normal MCA Spectra mode the counts in each SCA are computed by the DXP firmware
     when acquisition completes. This is essentially the same information as in the MCA
@@ -743,7 +879,7 @@
     the map. This mode is faster than full spectrum mapping, and also uses much less
     disk space. The SCA definitions are also used on the Saturn (when it is equipped
     with the optional SCA mapping hardware and firmware) and Mercury for hardware ROI
-    mapping. The Saturn and Mercury put out a pulse a TTL output line when an x-ray
+    mapping. The Saturn and Mercury put out a pulse on a TTL output line when an x-ray
     falls within the channel range of that SCA. This allows very fast mapping, since
     there is no need to read the spectrum at each point in the scan. The Saturn has
     16 such TTL output lines, the Mercury has 14 lines, and the Mercury4 has 24 lines
@@ -760,42 +896,53 @@
     <tbody>
       <tr>
         <td align="center" colspan="3">
-          <b>Records in dxpSCA_16.template and dxpSCA_32.template</b></td>
+          <b>Records in dxpSCA_16.template and dxpSCA_32.template</b>
+        </td>
       </tr>
       <tr>
         <th>
-          Record Name</th>
+          Record Name
+        </th>
         <th>
-          Record Type</th>
+          Record Type
+        </th>
         <th>
-          Description</th>
+          Description
+        </th>
       </tr>
       <tr valign="top">
         <td>
           SCA$(N)Low<br />
-          SCA$(N)Low_RBV</td>
+          SCA$(N)Low_RBV
+        </td>
         <td>
           longout<br />
-          longin</td>
+          longin
+        </td>
         <td>
-          The low channel for SCA $(N). Actual record names are SCA0Low, SCA1Low, etc.</td>
+          The low channel for SCA $(N). Actual record names are SCA0Low, SCA1Low, etc.
+        </td>
       </tr>
       <tr valign="top">
         <td>
           SCA$(N)High<br />
-          SCA$(N)High_RBV</td>
+          SCA$(N)High_RBV
+        </td>
         <td>
           longout<br />
-          longin</td>
+          longin
+        </td>
         <td>
           The high channel for SCA $(N). Actual record names are SCA0High, SCA1High, etc.
         </td>
       </tr>
       <tr valign="top">
         <td>
-          SCA$(N)Counts</td>
+          SCA$(N)Counts
+        </td>
         <td>
-          longin</td>
+          longin
+        </td>
         <td>
           The total counts for SCA $(N). Actual record names are SCA0Counts, SCA1Counts, etc.
         </td>
@@ -815,9 +962,9 @@
     each parameter, and a longout record which allows the parameter to be modified.
     Note that all parameters have a corresponding longout record, but some parameters
     are inherently read-only, so their longout records actually do nothing. The driver
-    currently hardcodes a maximum of 230 low-level parameters, which is more than the
-    number used by any of the existing firmware (224 is the current maximum, for the
-    xMAP reset firmware). If a future firmware version has more parameters than this,
+    currently hardcodes a maximum of 300 low-level parameters, which is more than the
+    number used by any of the existing firmware (273 is the current maximum, for the
+    MicroDXP firmware). If a future firmware version has more parameters than this,
     then a single constant in the driver will need to be increased, and more records
     will need to be added to dxpLowLevel.template.</p>
   <p>
@@ -829,59 +976,77 @@
     <tbody>
       <tr>
         <td align="center" colspan="3">
-          <b>Records in dxpLowLevel.template</b></td>
+          <b>Records in dxpLowLevel.template</b>
+        </td>
       </tr>
       <tr>
         <th>
-          Record Name</th>
+          Record Name
+        </th>
         <th>
-          Record Type</th>
+          Record Type
+        </th>
         <th>
-          Description</th>
+          Description
+        </th>
       </tr>
       <tr valign="top">
         <td>
-          NumLLParams</td>
+          NumLLParams
+        </td>
         <td>
-          longin</td>
+          longin
+        </td>
         <td>
-          The actual number of low-level parameters.</td>
+          The actual number of low-level parameters.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          ReadLLParams</td>
+          ReadLLParams
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
           Writing 1 to this record will read all of the low-level parameters for this channel.
         </td>
       </tr>
       <tr valign="top">
         <td>
-          LL$(N)Name</td>
+          LL$(N)Name
+        </td>
         <td>
-          stringin</td>
+          stringin
+        </td>
         <td>
           The firmware name for low-level parameter $(N), N=0 to NumLLParams-1. Actual record
-          names are LL0Name, LL1Name, etc.</td>
+          names are LL0Name, LL1Name, etc.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          LL$(N)Val_RBV</td>
+          LL$(N)Val_RBV
+        </td>
         <td>
-          longin</td>
+          longin
+        </td>
         <td>
           The readback value for low-level parameter $(N), N=0 to NumLLParams-1. Actual record
-          names are LL0Val_RBV, LL1Val_RBV, etc.</td>
+          names are LL0Val_RBV, LL1Val_RBV, etc.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          LL$(N)Val</td>
+          LL$(N)Val
+        </td>
         <td>
-          longout</td>
+          longout
+        </td>
         <td>
           The output value for low-level parameter $(N), N=0 to NumLLParams-1. Actual record
-          names are LL0Val, LL1Val, etc.</td>
+          names are LL0Val, LL1Val, etc.
+        </td>
       </tr>
     </tbody>
   </table>
@@ -890,39 +1055,48 @@
   <p>
     The following records are defined in the database dxpSystem.template. One instance
     of this database is loaded for each DXP system, since they control system-wide parameters.
-    This database is loaded for both single-element (e.g. Saturn and Mercury) and multi-element
-    (e.g. DXP2X, xMAP, and Mercury4) systems. All of the record names in the template
+    This database is loaded for both single-element (Saturn, Mercury, and MicroDXP)
+    and multi-element (xMAP, and Mercury4) systems. All of the record names in the template
     file are preceeded by the macro parameter $(P), the prefix for this detector system.</p>
   <table border="1" cellpadding="5">
     <tbody>
       <tr>
         <td align="center" colspan="3">
-          <b>Records in dxpSystem.template</b></td>
+          <b>Records in dxpSystem.template</b>
+        </td>
       </tr>
       <tr>
         <th>
-          Record Name</th>
+          Record Name
+        </th>
         <th>
-          Record Type</th>
+          Record Type
+        </th>
         <th>
-          Description</th>
+          Description
+        </th>
       </tr>
       <tr valign="top">
         <td>
-          MaxSCAs</td>
+          MaxSCAs
+        </td>
         <td>
-          longin</td>
+          longin
+        </td>
         <td>
           The maximum number of SCAs that the system supports. The maximum on the Saturn and
-          DXP2X is 16, and on the xMAP and Mercury the maximum is 64.</td>
+          MicroDXP is 16, and on the xMAP and Mercury the maximum is 64.
+        </td>
       </tr>
       <tr valign="top">
         <td>
           NumSCAs<br />
-          NumSCAs_RBV</td>
+          NumSCAs_RBV
+        </td>
         <td>
           longout<br />
-          longin</td>
+          longin
+        </td>
         <td>
           The number of SCAs (ROIs) to use. The records for each SCA are defined in the database
           dxpSCA_16.template and dxpSCA_32.template. While the xMAP and Mercury support 64
@@ -935,28 +1109,34 @@
           system if NumSCAs is 32 then 512 records must process if the SCA data have changed.
           This was measured to take about 300ms. If very short acquisition times are being
           used, and the SCA data are not actually required by the application, then setting
-          NumSCAs to 1 will signficantly improve performance.</td>
+          NumSCAs to 1 will signficantly improve performance.
+        </td>
       </tr>
       <tr valign="top">
         <td>
           PollTime<br />
-          PollTime_RBV</td>
+          PollTime_RBV
+        </td>
         <td>
           bo<br />
-          ao</td>
+          ao
+        </td>
         <td>
           The EPICS driver rapidly polls the hardware when acquisition is active to detect
           when acquisition is complete. This record controls the poll time, which is typically
           .001 to .01 seconds. Decreasing the time decreases latency at the expense of more
           CPU time, and there is a minimum time required to poll the hardware. <i>Note: polling
             too fast can overload the system. I recommend 0.001 for the xMAP, 0.005 for the
-            Mercury, and 0.010 for the Saturn.</i></td>
+            Mercury, and 0.010 for the Saturn and MicroDXP.</i>
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          SaveSystemFile</td>
+          SaveSystemFile
+        </td>
         <td>
-          waveform</td>
+          waveform
+        </td>
         <td>
           The name of a file in which to save the system information. This file is created
           by the XIA Handel software, and is the ".ini" file format used in the call to xiaInit()
@@ -964,33 +1144,42 @@
           programs (xManager, ProSpect) and EPICS. This is a waveform record with type DBF_UCHAR
           and length 256, rather than a stringout record, so that file paths/names longer
           than 40 characters can be used. Client applications must convert the file name to
-          an unsigned char array when writing to this field.</td>
+          an unsigned char array when writing to this field.
+        </td>
       </tr>
       <tr valign="top">
         <td>
           SaveSystem<br />
-          SaveSystem_RBV</td>
+          SaveSystem_RBV
+        </td>
         <td>
           bo<br />
-          bi</td>
+          bi
+        </td>
         <td>
           Writing 1 to this record causes the system information to be written to the file
-          specified by SaveSystemFile.</td>
+          specified by SaveSystemFile.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          EnableClientWait</td>
+          EnableClientWait
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
           This record enables waiting for a client when acquisition completes. It can be used
-          to wait for a client application to save data to disk, etc. </td>
+          to wait for a client application to save data to disk, etc.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          SetClientWait</td>
+          SetClientWait
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
           This record sets the ClientWait record to Busy if EnableClientWait is set to Enable.
           This record is processed by EraseStart and StartAll in the dxpMED.template database.
@@ -998,12 +1187,15 @@
       </tr>
       <tr valign="top">
         <td>
-          ClientWait</td>
+          ClientWait
+        </td>
         <td>
-          busy</td>
+          busy
+        </td>
         <td>
           This record forces processing to wait until a client clears it after acquisition
-          starts when EnableClientWait is set to Enable.</td>
+          starts when EnableClientWait is set to Enable.
+        </td>
       </tr>
     </tbody>
   </table>
@@ -1029,8 +1221,25 @@
     <li>TraceTime. The NELM field is redefined from the 4096 value in dxpHighLevel.template
       to 4000, because that is the size of the trace array on the Saturn.</li>
   </ul>
-  <h3 id="Saturn_medm">
-    Saturn medm screens</h3>
+  <h3 id="MicroDXP">
+    microDXP.template</h3>
+  <p>
+    The following records are defined in the database microDXP.template. One instance
+    of this database is loaded for a MicroDXP system.</p>
+  <p>
+    All of the record names in the template file are preceeded by the macro parameters
+    $(P)$(R), where $(P) is the prefix for this detector system, and $(R) is the name
+    of this specific channel.
+  </p>
+  <ul>
+    <li>Gain. The analog gain for the signal input. This is used in place of the PreampGain
+      on the MicroDXP. Increasing this value moves the peaks to higher channel numbers.
+      Typical values are in the range of 5-50.</li>
+    <li>FineGain The analog fine-gain for the input signal. Increasing this value moves
+      the peaks to higher channel numbers.</li>
+  </ul>
+  <h3 id="single_element_medm">
+    Single element detector medm screens</h3>
   <p>
     The following is the top-level medm screen for the DXP software. It loads the screens
     for each of the example IOCs.</p>
@@ -1096,20 +1305,34 @@
   <p style="text-align: center">
     <img alt="dxp_trace.png" src="dxp_trace.png" /></p>
   <hr />
+  <p>
+    The following is a screen shot of the medm screen provided for the MicroDXP. Only
+    the top-level screen is different from the Saturn, all of the other screens are
+    the same.</p>
+  <hr />
+  <h3 style="text-align: center">
+    microDXP.adl</h3>
+  <p>
+    Main control screen for MicroDXP.</p>
+  <p style="text-align: center">
+    <img alt="microDXP.png" src="microDXP.png" width="100%" /></p>
+  <p>
+  </p>
+  <hr />
   <h3 id="dxpMED">
     dxpMED.template</h3>
   <p>
     The following records are defined in the database dxpMED.template (MED stands for
     Multi-Element Detector). One instance of this database is loaded for each multi-element
-    (i.e. DXP2X, xMAP, and Mercury4) DXP system, since they control system-wide parameters.
-    Only the records in this database that are intended for use by EPICS clients are
-    documented here. Records that are not intended to be accessed from clients are not
-    documented, since they may be changed in the future. Records in this database are
-    implemented in several ways. Some are connected to an MCA record that is configured
-    with a special address that signifies that it controls all detector channels. That
-    record communicates directly with the driver. Other records are implemented in a
-    State Notation Language program which monitors the system-wide records like PresetMode,
-    and copies them to the individual detector records.</p>
+    (xMAP, and Mercury4) DXP system, since they control system-wide parameters. Only
+    the records in this database that are intended for use by EPICS clients are documented
+    here. Records that are not intended to be accessed from clients are not documented,
+    since they may be changed in the future. Records in this database are implemented
+    in several ways. Some are connected to an MCA record that is configured with a special
+    address that signifies that it controls all detector channels. That record communicates
+    directly with the driver. Other records are implemented in a State Notation Language
+    program which monitors the system-wide records like PresetMode, and copies them
+    to the individual detector records.</p>
   <p>
     All of the record names in the template file are preceeded by the macro parameter
     $(P), the prefix for this detector system.</p>
@@ -1117,25 +1340,32 @@
     <tbody>
       <tr>
         <td align="center" colspan="3">
-          <b>Records in dxpMED.template</b></td>
+          <b>Records in dxpMED.template</b>
+        </td>
       </tr>
       <tr>
         <th>
-          Record Name</th>
+          Record Name
+        </th>
         <th>
-          Record Type</th>
+          Record Type
+        </th>
         <th>
-          Description</th>
+          Description
+        </th>
       </tr>
       <tr>
         <td align="center" colspan="3">
-          <b>SNL Status Records</b></td>
+          <b>SNL Status Records</b>
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          SNL_Connected</td>
+          SNL_Connected
+        </td>
         <td>
-          bi</td>
+          bi
+        </td>
         <td>
           This record will be 1 ("Connected") when the SNL program has connected to all of
           the PVs. If it is 0 ("Not connected") then there is a problem with the SNL program.
@@ -1143,52 +1373,68 @@
       </tr>
       <tr>
         <td align="center" colspan="3">
-          <b>Acquisition Control Records</b></td>
+          <b>Acquisition Control Records</b>
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          EraseAll</td>
+          EraseAll
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
-          Writing 1 to this record erases all of the MCA records in this system.</td>
+          Writing 1 to this record erases all of the MCA records in this system.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          EraseStart</td>
+          EraseStart
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
           Writing 1 to this record erases and starts acquisition on all of the MCA records
-          in this system. In the mapping modes it starts a new mapping run.</td>
+          in this system. In the mapping modes it starts a new mapping run.
+        </td>
       </tr>
       <tr valign="top">
         <td style="height: 31px">
-          StartAll</td>
+          StartAll
+        </td>
         <td style="height: 31px">
-          bo</td>
+          bo
+        </td>
         <td style="height: 31px">
           Writing 1 to this record starts acquisition on all of the MCA records in this system
           without first erasing any existing spectra. In the mapping modes it starts a new
-          mapping run.</td>
+          mapping run.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          StopAll</td>
+          StopAll
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
-          Writing 1 to this record stops acquisition in MCA and mapping modes.</td>
+          Writing 1 to this record stops acquisition in MCA and mapping modes.
+        </td>
       </tr>
       <tr>
         <td align="center" colspan="3">
-          <b>Preset Control Records</b></td>
+          <b>Preset Control Records</b>
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          PresetMode</td>
+          PresetMode
+        </td>
         <td>
-          mbbo</td>
+          mbbo
+        </td>
         <td>
           The preset counting mode. On the xMAP and Mercury the choices are:
           <ul>
@@ -1201,105 +1447,134 @@
               is set by the PresetEvents record.</li>
             <li>"Triggers" The preset number of triggers is set by the PresetTriggers record.</li>
           </ul>
-          On the DXP2X only the first 3 choices are available, "Events" and "Triggers" are
-          not supported. The preset counting modes only apply in normal MCA Spectra mode,
-          they do not apply in any of the mapping modes.</td>
+          The preset counting modes only apply in normal MCA Spectra mode, they do not apply
+          in any of the mapping modes.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          PresetReal</td>
+          PresetReal
+        </td>
         <td>
-          ao</td>
+          ao
+        </td>
         <td>
-          The preset real time.</td>
+          The preset real time.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          PresetLive</td>
+          PresetLive
+        </td>
         <td>
-          ao</td>
+          ao
+        </td>
         <td>
           The preset live time. Note that since each channel on a module will typically have
           a different count rate (and hence different dead time), the channels will in general
-          all stop counting at different times.</td>
+          all stop counting at different times.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          PresetEvents</td>
+          PresetEvents
+        </td>
         <td>
-          longout</td>
+          longout
+        </td>
         <td>
           The number of events to count for. Note that counting on a module stops whenever
-          any channel on that module reaches this value.</td>
+          any channel on that module reaches this value.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          PresetTriggers</td>
+          PresetTriggers
+        </td>
         <td>
-          longout</td>
+          longout
+        </td>
         <td>
           The number of triggers to count for. Note that counting on a module stops whenever
-          any channel on that module reaches this value.</td>
+          any channel on that module reaches this value.
+        </td>
       </tr>
       <tr>
         <td align="center" colspan="3">
-          <b>Status/Statistics Records</b></td>
+          <b>Status/Statistics Records</b>
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          StatusAll</td>
+          StatusAll
+        </td>
         <td>
-          ai</td>
+          ai
+        </td>
         <td>
           Processing this record causes the status information (Acquiring, ElapsedReal, etc.)
           to be read. For maximum performance with short count times this record should have
           .SCAN=Passive. When this record is Passive the status information will still be
-          read once when acquisition completes in normal MCA mode.</td>
+          read once when acquisition completes in normal MCA mode.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          ReadAll</td>
+          ReadAll
+        </td>
         <td>
-          ai</td>
+          ai
+        </td>
         <td>
           Processing this record causes the MCA spectra to be read. For maximum performance
           with short count times this record should have .SCAN=Passive. When this record is
           Passive the MCA spectra will still be read once when acquisition completes in normal
           MCA mode. However, in order for the MCA spectra update in the MCA mapping mode this
-          record must be set to periodically process (e.g. "2 second").</td>
+          record must be set to periodically process (e.g. "2 second").
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          Acquiring</td>
+          Acquiring
+        </td>
         <td>
-          bi</td>
+          bi
+        </td>
         <td>
           Acquisition status, 0=Done, 1=Acquiring. Acquiring will be 1 if any channel is acquiring.
         </td>
       </tr>
       <tr valign="top">
         <td>
-          ElapsedReal</td>
+          ElapsedReal
+        </td>
         <td>
-          ai</td>
+          ai
+        </td>
         <td>
           The elapsed real time. This value is the maximum of the elapsed real time of all
-          system channels.</td>
+          system channels.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          ElapsedLive</td>
+          ElapsedLive
+        </td>
         <td>
-          ai</td>
+          ai
+        </td>
         <td>
           The elapsed live time. This value is the maximum of the elapsed live time of all
-          system channels.</td>
+          system channels.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          DeadTime</td>
+          DeadTime
+        </td>
         <td>
-          ai</td>
+          ai
+        </td>
         <td>
           The dead time. This value is the average of the dead time of all system channels.
           The dead time of each MCA is the cumulative dead time since the MCA was last erased.
@@ -1307,200 +1582,252 @@
       </tr>
       <tr valign="top">
         <td>
-          IDeadTime</td>
+          IDeadTime
+        </td>
         <td>
-          ai</td>
+          ai
+        </td>
         <td>
           The instantaneous dead time. This value is the average of the intantaneous dead
           time of all system channels. The instantaneous dead time of each MCA is the dead
-          time in the interval since the MCA status was last read.</td>
+          time in the interval since the MCA status was last read.
+        </td>
       </tr>
       <tr>
         <td align="center" colspan="3">
-          <b>High-Level Parameter Records</b></td>
+          <b>High-Level Parameter Records</b>
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          CopyTriggerPeakingTime</td>
+          CopyTriggerPeakingTime
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
           Writing 1 to this record copies the TriggerPeakingTime from channel 1 to all channels.
         </td>
       </tr>
       <tr valign="top">
         <td>
-          CopyTriggerGapTime</td>
+          CopyTriggerGapTime
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
           Writing 1 to this record copies the TriggerGapTime from channel 1 to all channels.
         </td>
       </tr>
       <tr valign="top">
         <td>
-          CopyTriggerThreshold</td>
+          CopyTriggerThreshold
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
           Writing 1 to this record copies the TriggerThreshold from channel 1 to all channels.
         </td>
       </tr>
       <tr valign="top">
         <td>
-          CopyPeakingTime</td>
+          CopyPeakingTime
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
           Writing 1 to this record copies the PeakingTime from channel 1 to all channels.
         </td>
       </tr>
       <tr valign="top">
         <td>
-          CopyGapTime</td>
+          CopyGapTime
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
-          Writing 1 to this record copies the GapTime from channel 1 to all channels.</td>
+          Writing 1 to this record copies the GapTime from channel 1 to all channels.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          CopyEnergyThreshold</td>
+          CopyEnergyThreshold
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
           Writing 1 to this record copies the EnergyThreshold from channel 1 to all channels.
         </td>
       </tr>
       <tr valign="top">
         <td>
-          CopyMaxWidth</td>
+          CopyMaxWidth
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
-          Writing 1 to this record copies the MaxWidth from channel 1 to all channels.</td>
+          Writing 1 to this record copies the MaxWidth from channel 1 to all channels.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          CopyBaselineCutPercent</td>
+          CopyBaselineCutPercent
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
           Writing 1 to this record copies the BaselineCutPercent from channel 1 to all channels.
         </td>
       </tr>
       <tr valign="top">
         <td>
-          CopyBaselineCutEnable</td>
+          CopyBaselineCutEnable
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
           Writing 1 to this record copies the BaselineCutEnable from channel 1 to all channels.
         </td>
       </tr>
       <tr valign="top">
         <td>
-          CopyBaselineThreshold</td>
+          CopyBaselineThreshold
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
           Writing 1 to this record copies the BaselineThreshold from channel 1 to all channels.
         </td>
       </tr>
       <tr valign="top">
         <td>
-          CopyBaselineFilterLength</td>
+          CopyBaselineFilterLength
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
           Writing 1 to this record copies the BaselineFilterLength from channel 1 to all channels.
         </td>
       </tr>
       <tr valign="top">
         <td>
-          CopyPreampGain</td>
+          CopyPreampGain
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
           Writing 1 to this record copies the PreampGain from channel 1 to all channels.
         </td>
       </tr>
       <tr valign="top">
         <td>
-          CopyDetectorPolarity</td>
+          CopyDetectorPolarity
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
           Writing 1 to this record copies the DetectorPolarity from channel 1 to all channels.
         </td>
       </tr>
       <tr valign="top">
         <td>
-          CopyResetDelay</td>
+          CopyResetDelay
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
           Writing 1 to this record copies the ResetDelay from channel 1 to all channels.
         </td>
       </tr>
       <tr valign="top">
         <td>
-          CopyDecayTime</td>
+          CopyDecayTime
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
-          Writing 1 to this record copies the DecayTime from channel 1 to all channels.</td>
+          Writing 1 to this record copies the DecayTime from channel 1 to all channels.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          CopyMaxEnergy</td>
+          CopyMaxEnergy
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
-          Writing 1 to this record copies the MaxEnergy from channel 1 to all channels.</td>
+          Writing 1 to this record copies the MaxEnergy from channel 1 to all channels.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          CopyADCPercentRule</td>
+          CopyADCPercentRule
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
           Writing 1 to this record copies the ADCPercentRule from channel 1 to all channels.
         </td>
       </tr>
       <tr>
         <td align="center" colspan="3">
-          <b>Low-Level Parameter Records</b></td>
+          <b>Low-Level Parameter Records</b>
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          ReadLLParams</td>
+          ReadLLParams
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
           Writing 1 to this record reads the low-level parameters for all channels. <i>Note:
             this record should be set to Passive during normal data acquisition, or it will
-            slow things down.</i></td>
+            slow things down.</i>
+        </td>
       </tr>
       <tr>
         <td align="center" colspan="3">
-          <b>Trace and Diagnostic Records</b></td>
+          <b>Trace and Diagnostic Records</b>
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          ReadBaselineHistograms</td>
+          ReadBaselineHistograms
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
           Writing 1 to this record reads the BaselineHistogram for all channels. <i>Note: this
             record should be set to Passive during normal data acquisition, or it will slow
-            things down.</i></td>
+            things down.</i>
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          TraceModes</td>
+          TraceModes
+        </td>
         <td>
-          mbbo</td>
+          mbbo
+        </td>
         <td>
           This record sets the TraceMode for each channel. On the xMAP and Mercury the choices
           are:
@@ -1513,57 +1840,72 @@
             <li>"Baseline samples" The recent baseline samples.</li>
             <li>"Energy samples" The recent energy samples.</li>
           </ul>
-          On the DXP2X only the first 2 choices are available, "ADC" and "Baseline history".
         </td>
       </tr>
       <tr valign="top">
         <td>
-          TraceTimes</td>
+          TraceTimes
+        </td>
         <td>
-          ai</td>
+          ai
+        </td>
         <td>
-          The time per sample in microseconds for the TraceData arrays.</td>
+          The time per sample in microseconds for the TraceData arrays.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          ReadTraces</td>
+          ReadTraces
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
           Writing 1 to this record reads the TraceData for all channels. <i>Note: this record
             should be set to Passive during normal data acquisition, or it will slow things
-            down.</i></td>
+            down.</i>
+        </td>
       </tr>
       <tr>
         <td align="center" colspan="3">
-          <b>ROI and SCA Records</b></td>
+          <b>ROI and SCA Records</b>
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          CopyROIChannel</td>
+          CopyROIChannel
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
           Writing 1 to this record copies all ROIs from channel 1 to all channels on a channel-by-channel
-          basis.</td>
+          basis.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          CopyROIEnergy</td>
+          CopyROIEnergy
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
           Writing 1 to this record copies all ROIs from channel 1 to all channels on an energy-by-energy
-          basis, i.e. using the energy calibration information for each MCA.</td>
+          basis, i.e. using the energy calibration information for each MCA.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          CopyROI_SCA</td>
+          CopyROI_SCA
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
           Writing 1 to this record copies every ROI for every channel to the corresponding
-          SCA.</td>
+          SCA.
+        </td>
       </tr>
     </tbody>
   </table>
@@ -1571,7 +1913,7 @@
     Multi-element detector medm screens</h3>
   <p>
     The following are screen shots of the medm screens provided for multi-element detectors,
-    e.g. xMAP, Mercury, and DXP4C2X.</p>
+    e.g. xMAP and Mercury.</p>
   <p>
   </p>
   <hr />
@@ -1692,27 +2034,34 @@
     <tbody>
       <tr>
         <td align="center" colspan="3">
-          <b>Records in dxpMapping.template</b></td>
+          <b>Records in dxpMapping.template</b>
+        </td>
       </tr>
       <tr>
         <th>
-          Record Name</th>
+          Record Name
+        </th>
         <th>
-          Record Type</th>
+          Record Type
+        </th>
         <th>
-          Description</th>
+          Description
+        </th>
       </tr>
       <tr>
         <td align="center" colspan="3">
-          <b>Mapping Mode Control Records</b></td>
+          <b>Mapping Mode Control Records</b>
+        </td>
       </tr>
       <tr valign="top">
         <td>
           CollectMode<br />
-          CollectMode_RBV</td>
+          CollectMode_RBV
+        </td>
         <td>
           mbbo<br />
-          mbbi</td>
+          mbbi
+        </td>
         <td>
           Selects the collection mode for the system. The choices are:
           <ul>
@@ -1734,10 +2083,12 @@
       <tr valign="top">
         <td>
           ListMode<br />
-          ListMode_RBV</td>
+          ListMode_RBV
+        </td>
         <td>
           mbbo<br />
-          mbbi</td>
+          mbbi
+        </td>
         <td>
           Selects the list mode variant when CollectMode="List mapping". The choices are:
           <ul>
@@ -1753,10 +2104,12 @@
       <tr valign="top">
         <td>
           PixelAdvanceMode<br />
-          PixelAdvanceMode_RBV</td>
+          PixelAdvanceMode_RBV
+        </td>
         <td>
           mbbo<br />
-          mbbi</td>
+          mbbi
+        </td>
         <td>
           Selects the pixel advance mode for system. The choices are:
           <ul>
@@ -1778,9 +2131,11 @@
       </tr>
       <tr valign="top">
         <td>
-          NextPixel</td>
+          NextPixel
+        </td>
         <td>
-          bo</td>
+          bo
+        </td>
         <td>
           Writing 1 to this record causes the system to advance to the next pixel in MCA mapping
           or SCA mapping modes. This is a "software" pixel advance, and can be issued any
@@ -1790,23 +2145,28 @@
       <tr valign="top">
         <td>
           PixelsPerRun<br />
-          PixelsPerRun_RBV</td>
+          PixelsPerRun_RBV
+        </td>
         <td>
           longout<br />
-          longin</td>
+          longin
+        </td>
         <td>
           The total number of pixels to acquire in one "run" when acquisition starts. If this
           value is -1 then there is no preset number of pixels, and acquisition will continue
           forever until it is stopped manually with StopAll. This value only applies in MCA
-          mapping and SCA mapping modes, not in List mapping mode.</td>
+          mapping and SCA mapping modes, not in List mapping mode.
+        </td>
       </tr>
       <tr valign="top">
         <td>
           PixelsPerBuffer<br />
-          PixelsPerBuffer_RBV</td>
+          PixelsPerBuffer_RBV
+        </td>
         <td>
           longout<br />
-          longin</td>
+          longin
+        </td>
         <td>
           The number of pixels per buffer. If AutoPixelsPerBuffer=Manual, then this value
           is used, rather than using the maximum possible value computed when AutoPixelsPerBuffer=Auto.
@@ -1815,15 +2175,18 @@
           per pixel is relatively long then decreasing PixelsPerBuffer will result in more
           frequent updates of the MCA and statistics displays. Setting this value too low
           when doing rapid mapping can result in buffer overflow. PixelsPerBuffer_RBV always
-          contains the actual number of pixels per buffer. </td>
+          contains the actual number of pixels per buffer.
+        </td>
       </tr>
       <tr valign="top">
         <td>
           AutoPixelsPerBuffer<br />
-          AutoPixelsPerBuffer_RBV</td>
+          AutoPixelsPerBuffer_RBV
+        </td>
         <td>
           mbbo<br />
-          mbbi</td>
+          mbbi
+        </td>
         <td>
           Flag controlling how the number of pixels per buffer is determined. Choices are
           0=Manual and 1=Auto. If Manual is selected then the number of pixels per buffer
@@ -1833,9 +2196,11 @@
       </tr>
       <tr valign="top">
         <td>
-          BufferSize_RBV</td>
+          BufferSize_RBV
+        </td>
         <td>
-          longin</td>
+          longin
+        </td>
         <td>
           The size of the buffer being used in units of 16-bit words. This will be the first
           dimension of the array passed to the plugins when a buffer is read out. The maximum
@@ -1845,76 +2210,93 @@
       <tr valign="top">
         <td>
           IgnoreGate<br />
-          IgnoreGate_RBV</td>
+          IgnoreGate_RBV
+        </td>
         <td>
           mbbo<br />
-          mbbi</td>
+          mbbi
+        </td>
         <td>
           Flag controlling whether the Gate input signal is used to inhibit counting. Choices
           are 0=No and 1=Yes. If IgnoreGate=Yes then the Gate input can be used as a pixel
           advance signal, but its high or low state will not influence whether counting is
           enabled, i.e. only the transitions are significant. If IgnoreGate=No then counting
           will be inhibited when the Gate input is low (if InputLogicPolarity=Normal) or high
-          (if InputLogicPolarity=Inverted). </td>
+          (if InputLogicPolarity=Inverted).
+        </td>
       </tr>
       <tr valign="top">
         <td>
           InputLogicPolarity<br />
-          InputLogicPolarity_RBV</td>
+          InputLogicPolarity_RBV
+        </td>
         <td>
           mbbo<br />
-          mbbi</td>
+          mbbi
+        </td>
         <td>
           Flag controlling the polarity of the Gate input signal. Choices are 0=Normal, 1=Inverted.
           In Normal mode a low level on the Gate input inhibits counting (if IgnoreGate=No)
           and a high-to-low transition performs a pixel advance (if PixelAdvanceMode=Gate).
           In Inverted mode these levels are the opposite, i.e. a high level inhibits counting
-          and a low-to-high transition performs a pixel advance. </td>
+          and a low-to-high transition performs a pixel advance.
+        </td>
       </tr>
       <tr valign="top">
         <td>
           SyncCount<br />
-          SyncCount_RBV</td>
+          SyncCount_RBV
+        </td>
         <td>
           longout<br />
-          longin</td>
+          longin
+        </td>
         <td>
           The divisor used on the Sync input for pixel advance if PixelAdvanceMode=Sync. Allowed
           values are 1 to 65,535. This value can be used to divide the Sync clock. For example,
           if the Sync input were connected to the pulse output of a stepper motor controller,
           then setting SyncCount=10 would perform a pixel advance on every 10'th stepper motor
           pulse. SyncCount=1 results in no clock division, i.e. every Sync input pulse results
-          in a pixel advance. </td>
+          in a pixel advance.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          ReadRate_RBV</td>
+          ReadRate_RBV
+        </td>
         <td>
-          ai</td>
+          ai
+        </td>
         <td>
           The burst read rate in MBytes/s measured when reading the mapping data from each
-          module. </td>
+          module.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          MBytesRead_RBV</td>
+          MBytesRead_RBV
+        </td>
         <td>
-          ai</td>
+          ai
+        </td>
         <td>
           The total number of MBytes of mapping data read from all modules since the IOC started.
         </td>
       </tr>
       <tr>
         <td align="center" colspan="3">
-          <b>Parameter Download Control Records</b></td>
+          <b>Parameter Download Control Records</b>
+        </td>
       </tr>
       <tr valign="top">
         <td>
           AutoApply<br />
-          AutoApply_RBV</td>
+          AutoApply_RBV
+        </td>
         <td>
           mbbo<br />
-          mbbi</td>
+          mbbi
+        </td>
         <td>
           Flag controlling whether parameters are automatically downloaded to the hardware
           ("apply" operation) each time a parameter is changed, or whether they are only downloaded
@@ -1949,18 +2331,22 @@
           </ol>
           This performance optimization was added in R3-0, and reduces the time to copy ROIs
           from several minutes in previous releases to less than 2 seconds in R3-0 for a 16-channel
-          xMAP system. </td>
+          xMAP system.
+        </td>
       </tr>
       <tr valign="top">
         <td>
-          Apply</td>
+          Apply
+        </td>
         <td>
-          longout</td>
+          longout
+        </td>
         <td>
           Writing 1 to this record forces an "apply" operation, downloading the parameters
           for all channels to the hardware. This is not needed if AutoApply=Yes, but it can
           greatly improve performance to set AutoApply=No and write to this record after modifying
-          a large number of parameters. </td>
+          a large number of parameters.
+        </td>
       </tr>
     </tbody>
   </table>
@@ -2266,49 +2652,24 @@ IDL> iplot, h, yrange=[1,1e3], /ylog
     Installing the EPICS DXP software</h2>
   <p>
     To install the EPICS DXP software first decide whether you want to build the EPICS
-    DXP software from source code, or install the pre-built binaries. Most users will
-    just download the pre-built binaries. The Windows binaries should run on almost
-    any version of Windows. The Linux binaries are built with Redhat Fedora kernel 2.6.27
-    and gcc version 4.3.0. These binaries should run on many recent versions of Linux,
-    but this has not been extensively tested.</p>
+    DXP software from source code, or install the pre-built binaries (Windows only).
+  </p>
   <p>
     Building from the source code requires downloading <a href="http://www.aps.anl.gov/epics/base/index.php">
       EPICS base</a> and all of the required <a href="http://www.aps.anl.gov/aod/bcda/synApps/index.php">
-        synApps components</a>. To build from source code on Windows for the win32-x86
-    architecture requires Microsoft Visual Studio .NET 2003 or later, plus perl and
-    make. To build from source code on Windows for the cygwin32-x86 architecture requires
-    the gcc, g++, perl and make packages from Cygwin. It is beyond the scope of this
-    document to describe how to build the source code. Consult other EPICS documentation
-    for this.</p>
+        synApps components</a>. It is beyond the scope of this document to describe
+    how to build the source code. Consult other EPICS documentation for this.</p>
   <p>
-    The DXP software provides example IOC directories, iocBoot/iocSaturn, iocBoot/iocXMAP,
-    iocBoot/iocMercury, and iocBoot/iocDXP2X. These create EPICS process variables with
-    names like dxpSaturn:dxp1.PKTIM, where dxpSaturn is the "prefix" for the process
-    variable names, dxp1 is the DXP record name, and PKTIM is the field name. The default
-    prefixes are dxpSaturn:, dxpXMAP:, dxpMercury, and dxp2X:. These prefixes would
-    be OK for installations where there will be at most one IOC of a given type on the
-    subnet. However, in many cases there will be the possibility of more than one DXP
-    module running EPICS on the same subnet. If this is the case then it is essential
-    that each one use a different prefix, because EPICS process variable names must
-    be unique on a subnet. The following is how to give your IOC a unique prefix, and
-    still be able to upgrade the EPICS software easily. It is recommended that you follow
-    these instructions even if you don't have name conflicts on your subnet, so that
-    files you edit are in a directory that will not be overwritten when you upgrade
-    the EPICS software.</p>
-  <ul>
-    <li>Make a copy of the iocSaturn, iocXMAP, iocMercury, or iocDXP2X directory. Let's
-      assume you have a Saturn and will make your prefix be APSSat1:, so a good name for
-      the directory would be iocAPSSat1.</li>
-    <li>Edit all files in that directory (including st.cmd, and START_IOC*), changing
-      all occurances of dxpSaturn: to APSSat1:.</li>
-    <li>If you have created any higher-level medm screens that load the medm screens in
-      this package, you will need to edit them to pass the new prefix, APSSat1:</li>
-    <li>The next time you unpack a new version of the EPICS DXP software it will overwrite
-      the iocSaturn directory. However, if you have made your own new directory, APSSat1/,
-      that will not be modified.</li>
-    <li>For the multi-element systems (iocXMAP, iocMercury, iocDXP2X) the files to be
-      edited include, for example, 4element.cmd, 4element.substitutions, and START_EPICS.</li>
-  </ul>
+    The DXP software provides example IOC directories, iocBoot/iocSaturn, iocBoot/iocMicroDXP,
+    iocBoot/iocXMAP, iocBoot/iocMercury. These create EPICS process variables with names
+    like dxpSaturn:dxp1.PKTIM, where dxpSaturn is the "prefix" for the process variable
+    names, dxp1 is the DXP record name, and PKTIM is the field name. The default prefixes
+    are dxpSaturn:, microDXP:. dxpXMAP:, and dxpMercury. These prefixes would be OK
+    for installations where there will be at most one IOC of a given type on the subnet.
+    However, in many cases there will be the possibility of more than one DXP module
+    running EPICS on the same subnet. If this is the case then it is essential that
+    each one use a different prefix, because EPICS process variable names must be unique
+    on a subnet.</p>
   <p>
     The EPICS DXP application uses the EPICS save/restore facility. This means that
     all of the important parameters that you might change when running the DXP software
@@ -2322,224 +2683,115 @@ IDL> iplot, h, yrange=[1,1e3], /ylog
   <p>
     The DXP IOC application and EPICS clients both need to be able to start the EPICS
     caRepeater application. This application is built as part of EPICS base. If you
-    are installing the Linux or Windows prebuilt versions of the DXP software you can
-    obtain caRepeater as part of the <a href="http://cars.uchicago.edu/software/pub/EPICS_WIN32_binaries.zip">
-      EPICS WIN32 binaries</a> or <a href="http://cars.uchicago.edu/software/pub/EPICS_Linux_binaries.tar">
-        EPICS Linux binaries</a> from our Web site. Unpack these directories into a
-    directory on your computer, and put that directory into your PATH environment variable.
-    That way EPICS will be able to find caRepeater. It will also provide many useful
-    EPICS shell utilities, such as caput, caget, camonitor, etc. The IDL ezcaIDL.dll
-    and ezcaIDL.so shareable libraries are also in that distribution.</p>
+    are installing the Windows prebuilt versions of the DXP software you can obtain
+    caRepeater as part of the <a href="https://epics.anl.gov/distributions/win32/">EPICS
+      Windows Tools package, which includes medm.</a> Put the installation directory
+    into your PATH environment variable. That way EPICS will be able to find caRepeater.
+    It will also provide many useful EPICS shell utilities, such as caput, caget, camonitor,
+    etc.</p>
   <h3 id="Installing_Windows">
     Installing the DXP software on Windows</h3>
   <p>
-    To install the EPICS DXP software with a Saturn, Mercury, or xMAP on a Windows PC
-    do the following:</p>
+    To install the EPICS DXP software with a Saturn, MicroDXP, Mercury, or xMAP on a
+    Windows PC do the following:</p>
   <ul>
-    <li>Install the <a href="http://www.driverlinx.com">Windows Port IO Driver</a> from
-      Scientific Software Tools. This is a software driver that lets Windows applications
-      communicate with I/O ports, including the Enhanced Parallel Port. Although this
-      is only needed to communicate with the EPP port, the driver must be installed even
-      if the EPP port will not be used, because the EPICS dxpApp application is linked
-      with that DLL. The driver (port95NT.exe and dlportio.sys) is also included in the
-      handelSrc/ (source version) and bin/win32-x86 (pre-built binary version) directories
-      in the DXP distribution. It can also be found in the Handel source code distribution
-      which is available through the <a href="http://www.xia.com/Software/downloads">XIA
-        software downloads</a> Web site. The driver is found in the redist/drivers/usb1
-      directory.</li>
-    <li>To use the parallel port (EPP) interface on older Saturns and SII Vortex units:
+    <li>To use the USB 2.0 interface with the Saturn, MicroDXP or Mercury:
       <ul>
-        <li>Configure the parallel port to be in EPP mode. This requires entering the BIOS
-          setup screen on the computer before the operating system boots. The menus will differ
-          from one computer to another, but it is necessary to set the parallel port to EPP
-          mode. Other modes will not work.</li>
-      </ul>
-    </li>
-    <li>To use the USB 1.0 interface with the Saturn:
-      <ul>
-        <li>Install the <a href="http://www.xia.com/DXP_Saturn_Software.html">ProSpect</a>
-          from XIA. This will install the required Windows driver for the USB 1.0 Saturn.
-          The driver (ezusb.sys, xiausb.inf) is also included in the handelSrc/ (source version)
-          and bin/win32-x86 (pre-built binary version) directories in the DXP distribution.
-          The driver can also be found in the Handel source code distribution which is available
-          through the <a href="http://www.xia.com/Software/downloads">XIA software downloads</a>
-          Web site. The driver is found in the redist/drivers/usb1 directory.</li>
-      </ul>
-    </li>
-    <li>To use the USB 2.0 interface with the Saturn or Mercury:
-      <ul>
-        <li>Install the <a href="http://www.xia.com/DXP_Saturn_Software.html">ProSpect</a>
-          from XIA. This will install the required Windows EZ-USB driver for the USB 2.0 Saturn.
-          The driver (cyusb.sys, cyusbme.sys, xia_usb2.inf) is also included in the handelSrc/
-          (source version) and bin/win32-x86 (pre-built binary version) directories in the
-          DXP distribution. The driver can also be found in the Handel source code distribution
-          which is available through the <a href="http://www.xia.com/Software/downloads">XIA
-            software downloads</a> Web site. The driver is found in the redist/drivers/usb2
-          directory.</li>
+        <li>Install the latest version of Prospect for the appropriate model from <a href="http://xia.com">
+          XIA</a>. This will install the required Windows drivers for the USB 2.0 interface.</li>
       </ul>
     </li>
     <li>For an xMAP system do the following:
       <ul>
         <li>Install the PCI/PXI converter from National Instruments.</li>
         <li>Install the National Instruments driver software.</li>
-        <li>Install the latest version of the xManager software from XIA. This will install
-          the Plx driver that is used to communicate with the xMAP modules. It will also run
-          a Configuration Wizard that will create an initial .ini file with the correct PCI
-          bus and slot addresses for your system. You can copy that file to the iocXMAP directory
-          or edit one of the .ini files there that most closely matches your system configuration
-          (xmap4.ini, xmap8.ini, etc.). It is useful to have xManager available on the computer
-          to compare with the EPICS software. The driver (Plx9054.sys, xia9054.inf) is also
-          included in the handelSrc/ (source version) and bin/win32-x86 (pre-built binary
-          version) directories in the DXP distribution. </li>
+        <li>Install the latest version of the xManager software from <a href="http://xia.com">
+          XIA</a>. This will install the Plx driver that is used to communicate with the xMAP
+          modules. It will also run a Configuration Wizard that will create an initial .ini
+          file with the correct PCI bus and slot addresses for your system. You can copy that
+          file to the iocXMAP directory or edit one of the .ini files there that most closely
+          matches your system configuration (xmap4.ini, xmap8.ini, etc.). It is useful to
+          have xManager available on the computer to compare with the EPICS software.</li>
       </ul>
     </li>
-    <li>Chose whether to use the Cygwin (cygwin-x86) or native Windows (win32-x86) version
-      of the EPICS software. The main reason to use Cygwin is to run the saveData utility,
-      which will save EPICS scan data to disk. This utility does not currently run under
-      the native Windows version because it lacks the Sun RPC library.</li>
-    <li>If using Cygwin then install the basic <a href="http://www.cygwin.com">Cygwin
-      package</a>. Cygwin is a public domain package that provides Unix-like programming
-      libraries and commands on Windows. When using the Cygwin install program use all
-      of the default settings, which will install just the basic package into C:\Cywgin.</li>
     <li>If you want to run the medm display program on the Windows PC, which is recommended
-      in most cases, you need to install <a href="http://www.hummingbird.com/products/nc/exceed/index.html?cks=y">
-        Exceed</a>. Exceed is a commercial X-Windows package from Hummingbird. After installing
-      Exceed you need to install the <a href="http://www.aps.anl.gov/epics/download/distributions/index.php">
-        EPICS Win32 Extensions</a>, which contain medm. Note that medm works with some
-      non-commercial versions of X windows servers for Windows, but Exceed is guaranteed
-      to work.</li>
-    <li>Download <a href="http://cars.uchicago.edu/software/epics/dxp.html">the latest
-      standalone release</a> of the EPICS DXP software, containing Cygwin and native Windows
-      binaries.</li>
-    <li>Unpack that distribution into a directory such as C:\EPICS or C:\Program Files\EPICS.
-      The distribution file, dxpStandlone_XXX.tgz can be unpacked using WinZip, or with
-      the gunzip and tar utilities that come with Cygwin. To use the Cygwin tools:
-      <pre>      $ cd /cygdrive/c/epics         # Or wherever you have chosen to put the EPICS software
-      $ tar xzvf dxpStandalone_3-0.tgz    # Unpack the tar file.
-      </pre>
-    </li>
-    <li>Make sure that the .bat files in iocBoot/ioc*/ have execute permission. This can
-      be done by running the Cygwin bash shell and typing
-      <pre>      $ cd iocBoot/iocSaturn
-      $ chmod +x *.bat
-      </pre>
-      This is necessary because these files may not have this permission, depending on
-      how they were unpacked from the distribution.</li>
-    <li>Copy all of the medm .adl files into a single directory. This is simpler than
-      defining EPICS_DISPLAY_PATH to point to all of the required directories. For example,
-      if you decide to put the .adl files in C:\epics_adls, and if you unpacked the dxp
-      tar file distribution into C:\epics, then type the following commands at the Cygwin
-      bash shell prompt:
-      <pre>      $ mkdir /cygdrive/c/epics_adls
-      $ find /cygdrive/c/epics -name '*.adl' -exec cp -f -p -v {} /cygdrive/c/epics_adls \;
-      </pre>
-      Define the environment variable EPICS_DISPLAY_PATH to point to C:\epics_adls. For
-      the Windows shell use the Windows&nbsp;Control&nbsp;Panel/System/Advanced/Environment&nbsp;Variables.
-      For the Cygwin shell edit your .bashrc file.</li>
-    <li>If you look at that batch file, you will see a line that temporarily sets the
-      environment variable PATH to C:\cygwin\bin. You may want to add this directory permanently
-      to your Windows path for Windows shells. Again, use the Windows&nbsp;Control&nbsp;Panel/System/Advanced/Environment&nbsp;Variables.
-      Modify the definition according to where you have installed Cygwin. Note that the
-      PATH will be set to automatically include that directory when running the Cygwin
-      bash shell.</li>
+      in most cases, you need to install an X11 server. MobaXterm provides a free version
+      which works well, and OpenText Exceed is a commercial package that also works well.
+      After installing Exceed you need to install the <a href="https://epics.anl.gov/distributions/win32/">
+        EPICS Windows Tools</a>, which contain medm.</li>
+    <li>Download <a href="https://github.com/epics-modules/dxp">source code from Github</a>
+      or <a href="http://cars.uchicago.edu/software/epics/dxp.html">the latest standalone
+        release</a> of the EPICS DXP software, containing pre-built Windows binaries.</li>
+    <li>If using the pre-built version unpack that distribution into a directory such
+      as C:\EPICS or C:\Program Files\EPICS.</li>
+    <li>Copy all of the medm .adl files into a single directory, for example C:\EPICS\adls.
+      This is simpler than defining EPICS_DISPLAY_PATH to point to all of the required
+      directories. Define the environment variable EPICS_DISPLAY_PATH to point to C:\EPICS\adls.
+      Use the Windows&nbsp;Control&nbsp;Panel/System/Advanced/Environment&nbsp;Variables.</li>
     <li>If you installed pre-built binaries, rather than building from source, then edit
       the envPaths file in iocBoot/iocSaturn. Change the paths to the locations of the
       directories on your system. Don't worry about the path for directories that don't
       exist, like SNCSEQ, EPICS_BASE, etc.</li>
   </ul>
   <p>
-    The DXP software uses the EPICS areaDetector module for the file-saving plugins
-    that are used in mapping modes. Some of these plugins use Windows DLLs. These DLLs
-    are provided with the prebuilt version of the DXP software, in the areaDetector/bin/win32-x86
-    or cygwin-x86 directories. Windows needs to be able to find these DLLs when you
-    run the DXP software. The easiest way to do this is to put the path to the DLLs
-    in your Windows PATH environment variable. This is done in the example startup scripts
-    in the iocBoot directories.</p>
-  <p>
     The XIA software is very slow when downloading the firmware files (.fdd files) to
     the hardware when the files reside on a remote file system. It is best to put the
     FDD files on a local file system, particularly when using an xMAP system with multiple
     xMAP modules.</p>
-  <p>
-    There is a known problem with EPICS clients losing connections to a Cygwin IOC when
-    they subscribe to a large number of array callbacks. This can happen with DXP application,
-    since clients may subscribe to callbacks from many MCA records. This can affect
-    any client, such as IDL, medm, the EPICS sscan record, Python, etc. It is a serious
-    problem that appears to be a bug in Cygwin itself. Hopefully it will be tracked
-    down and fixed in the future. If you do not need to use the saveData function in
-    the DXP IOC itself, then you can work around this problem by using the win32-x86
-    version of the DXP software.</p>
   <h3 id="Installing_Linux">
     Installing the DXP software on Linux</h3>
   <p>
-    To use the EPICS DXP software with a Saturn or Mercury on a Linux computer do the
-    following:</p>
+    To use the EPICS DXP software with a Saturn, MicroDXP, or Mercury on a Linux computer
+    do the following:</p>
   <ul>
     <li>To use the USB 1.0 or USB 2.0 interface:
       <ul>
-        <li>Install the latest version (0.1.12 or later) of <a href="http://libusb.sourceforge.net">
-          libusb from SourceForge</a>. This software must be installed using the root account.
-          The version of libusb that comes with some Linux systems is older, and often will
-          not work, so install this more recent version.</li>
+        <li>Install the libusb-devel package using your system's package manager.</li>
       </ul>
     </li>
-    <li>Download <a href="http://cars.uchicago.edu/software/epics/dxp.html">the latest
-      standalone release</a>, of the EPICS DXP software, containing Linux binaries.</li>
-    <li>Unpack that distribution into a directory such as /usr/local/epics. The distribution
-      file, dxpStandalone_XXX.tgz can be unpacked using the Linux tar utility, e.g.:
-      <pre>      tar xvzf dxpStandalone_3-0.tgz
-      </pre>
+    <li>To use the EPP interface the machine must have a parallel port that is capable
+      of operating in EPP mode.
+      <ul>
+        <li>Reboot the machine and enter the BIOS configuration screen. Configure the parallel
+          port to operate in EPP mode.</li>
+      </ul>
     </li>
+    <li>Download <a href="https://github.com/epics-modules/dxp">the latest source code
+      release</a>, of the DXP software. You will need to build that with EPICS base and
+      other synApps modules, including areaDetector/ADSupport and ADCore. The procedure
+      for building from source is beyond the scope of this document.</li>
     <li>Copy all of the medm .adl files into a single directory. This is simpler than
       defining EPICS_DISPLAY_PATH to point to all of the required directories. For example,
-      if you decide to put the .adl files in /home/epics/epics_adls, and if you unpacked
-      the dxp tar file distribution into /home/epics/epics, then type the following commands
-      at the shell prompt:
+      if you decide to put the .adl files in /home/epics/epics_adls, and if your synApps
+      distribution including dxp is in /home/epics/epics/synApps/support, then type the
+      following commands at the shell prompt:
       <pre>      $ mkdir /home/epics/epics_adls
-      $ find /home/epics/epics -name '*.adl' -exec cp -f -p -v {} /home/epics/epics_adls \;
+      $ find /home/epics/synApps/support -name '*.adl' -exec cp -f -p -v {} /home/epics/epics_adls \;
       </pre>
       Define the environment variable EPICS_DISPLAY_PATH to point to /home/epics/epics_adls.
       Do this by editing your .cshrc or .bashrc file.</li>
     <li>Access to the EPP I/O port on Linux requires root privilege. This can be done
-      in any of following 3 ways:
+      in any of following 2 ways:
       <ol>
-        <li>Prefered method. The EPICS DXP software on Linux contains a program called startWithIopl3.
-          This program calls iopl(3) as root, and then reverts back to the non-root account
-          to run dxpApp. NOTE: This method does not work on some versions of Linux, probably
-          because of SELinux protections that prevent processes started with execv() from
-          inheriting the iopl(3) permissions. To use this method the application startWithIopl3
-          must be installed as suid root. Do this as follows:
-          <pre>> cd bin/linux-x86
-> su root
- (password)
-> chmod +s startWithIopl3
-> exit
-</pre>
-          The dxpApp application can then be run without root privilege as follows:
-          <pre>          > cd iocBoot/iocSaturn
-          > ../../bin/linux-x86/startWithIopl3 ../../bin/linux-x86/dxpApp st.cmd
-          </pre>
-          You can also copy startWithIopl3 to a directory like /usr/local/bin or ~/bin that
-          is in your PATH. That way it can be run without having to specify the path. </li>
-        <li>Not as good. Install the dxpApp application as suid root. Do this as follows:
+        <li>Better method. Install the dxpApp application as suid root. Do this as follows:
           <pre>          > cd bin/linux-x86
           > su root
           (password)
-          > chmod +s /bin/linux-x86/dxpApp
+          > chmod +s /bin/linux-x86_64/dxpApp
           > exit
           </pre>
           The dxpApp application can then be run without root priviledge as follows:
           <pre>          > cd iocBoot/iocSaturn
-          > ../../bin/linux-x86/dxpApp st.cmd
+          > ../../bin/linux-x86_64/dxpApp st.cmd
           </pre>
         </li>
-        <li>Least desirable method. Run dxpApp as root:
+        <li>Less desirable method. Run dxpApp as root:
           <pre>          > cd iocBoot/iocSaturn
           > su root
           (password)
-          > ../../bin/linux-x86/dxpApp st.cmd
+          > ../../bin/linux-x86_64/dxpApp st.cmd
           or
-          > sudo ../../bin/linux-x86/dxpApp st.cmd
+          > sudo ../../bin/linux-x86_64/dxpApp st.cmd
           </pre>
         </li>
       </ol>
@@ -2547,47 +2799,13 @@ IDL> iplot, h, yrange=[1,1e3], /ylog
     <li>USB devices on Linux are automatically created with read-only permission for non-root
       users by default. In order to run the dxpApp application without root privilege
       it is necessary to change the device permissions. Because these devices are created
-      dynamically when the Saturn or Mercury is connected, this cannot just be done once
-      statically. Rather it requires using the "hotplug" or "udev" facilities on Linux
-      to have the device permissions set correctly each time the device connects. More
-      recent Linux kernels use the "udev" facility, older kernels use the "hotplug" facility.
-      I do not know exactly which kernel version the switch to udev was done, but I do
-      know from my systems that 2.6.9 uses hotplug while 2.6.22 uses udev. If the directory
-      /etc/hotplug exists then the system is presumably using hotplug. In that case the
-      directory /dev/bus/usb will probably not exist, only /proc/bus/usb will exist.
-      <br />
-      Here is a recipe for older systems using hotplug.
+      dynamically when the Saturn, MicroDXP, or Mercury is connected, this cannot just
+      be done once statically. Rather it requires using the "udev" facility on Linux to
+      have the device permissions set correctly each time the device connects. To use
+      udev to allow non-root access to the devices do the following:
       <ol>
-        <li>Add the following lines to the file /etc/hotplug/usb.usermap
-          <pre># XIA Saturn
-usbsaturn  0x0003  0x10e9  0x0700  0x0000  0x0000  0x00  0x00  0x00  0x00  0x00  0x00  0x00000000
-usbsaturn  0x0003  0x10e9  0x0701  0x0000  0x0000  0x00  0x00  0x00  0x00  0x00  0x00  0x00000000
-usbsaturn  0x0003  0x10e9  0x0702  0x0000  0x0000  0x00  0x00  0x00  0x00  0x00  0x00  0x00000000
-usbsaturn  0x0003  0x10e9  0x0703  0x0000  0x0000  0x00  0x00  0x00  0x00  0x00  0x00  0x00000000
-        </pre>
-          These lines instruct the hotplug facility to run the script /etc/hotplug/usb/usbsaturn
-          whenever the Saturn or Mercury is added to the system. 10e9 is the vendor ID for
-          XIA. 0700 and 0701 are the product IDs for the USB 1.1 and USB 2.0 versions of the
-          Saturn. 0702 and 0703 are the product IDs for the Mercury and Mercury4.</li>
-        <li>Create the file /etc/hotplug/usb/usbsaturn containing the following lines:
-          <pre>          #!/bin/bash
-
-          if [ "${ACTION}" = "add" ] &amp;&amp; [ -f "${DEVICE}" ]
-          then
-                  chmod 666 "${DEVICE}"
-          fi
-          </pre>
-        </li>
-      </ol>
-      This script tells hotplug to set the permissions on the XIA USB device to 666 (owner,
-      group, and world read/write):
-      <pre>         [root@vincent usb]# ls -lt /proc/bus/usb/001/021
-         -rw-rw-rw-  1 root root 134 Jan  8 12:20 /proc/bus/usb/001/021
-      </pre>
-      Here is a recipe for newer systems using udev.
-      <ol>
-        <li>Create a file in /etc/udev/rules.d called, for example, "80-saturn.rules". Put
-          the following lines in this file.
+        <li>Create a file in /etc/udev/rules.d called, for example, "80-xia.rules". Put the
+          following lines in this file.
           <pre>           
 SUBSYSTEM=="usb",ACTION=="add",ATTRS{idVendor}=="10e9",ATTRS{idProduct}=="0700",MODE="0666"
 SUBSYSTEM=="usb",ACTION=="add",ATTRS{idVendor}=="10e9",ATTRS{idProduct}=="0701",MODE="0666"
@@ -2598,7 +2816,10 @@ SUBSYSTEM=="usb",ACTION=="add",ATTRS{idVendor}=="10e9",ATTRS{idProduct}=="0703",
           to 666 (owner, group and world read/write) for the Saturn or Mercury whenever it
           is added to the system. 10e9 is the vendor ID for XIA. 0700 and 0701 are the product
           IDs for the USB 1.1 and USB 2.0 versions of the Saturn. 0702 and 0703 are the product
-          IDs for the Mercury and Mercury4. Note that the 10e9 ID is case sensitive!<br />
+          IDs for the Mercury and Mercury4. Note that the 10e9 ID is case sensitive! For other
+          models (MicroDXP from Hitachi or Ketek for example) use the lsusb command to see
+          what the vendor ID and product ID is for the device when it is plugged into the
+          system. Create a new line in the 80-xia.rules containing those values.<br />
           Note that the Linux "udev" facility has been evolving quite rapidly. The above lines
           work on a relatively recent Linux kernel (2.6.27). On older kernels the following
           syntax was required:
@@ -2622,8 +2843,8 @@ SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}==
       However, on some Linux versions libusb uses /proc/bus/usb by default, rather than
       /dev/bus/usb, so the permissions set by udev will not have the desired affect. This
       can be fixed by defining the environment variable USB_DEVFS_PATH to be /dev/bus/usb.
-      In fact I now add the following command to the EPICS IOC startup script (st.cmd)
-      on Linux when using USB, just before the xiaInit command:
+      One can add the following command to the EPICS IOC startup script (st.cmd) on Linux
+      when using USB, just before the xiaInit command:
       <pre>        # On Linux execute the following command so that libusb uses /dev/bus/usb
         # as the file system for the USB device.  
         # On some Linux systems it uses /proc/bus/usb instead, but udev
@@ -2638,16 +2859,7 @@ SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}==
       </pre>
       This is necessary because these files may not have this permission, depending on
       how they were unpacked from the distribution.</li>
-    <li>If you installed pre-built binaries, rather than building from source, then edit
-      the envPaths file in iocBoot/iocSaturn or iocBoot/iocMercury. Change the paths to
-      the locations of the directories on your system. Don't worry about the path for
-      directories that don't exist, like SNCSEQ, EPICS_BASE, etc.</li>
   </ul>
-  <h3 id="Installing_DXP2X">
-    Installing the DXP software for the DXP2X</h3>
-  <p>
-    The DXP4C2X CAMAC module is supported under vxWorks. It works with the Kinetic Systems
-    3922/2922 VME to CAMAC adapter.</p>
   <h2 id="Running">
     Running the EPICS DXP software</h2>
   <h3 id="Running_Saturn">
@@ -2660,30 +2872,6 @@ SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}==
       correct the firmware for the Saturn speed (20MHz or 40MHz) and pre-amp type (reset
       or RC). Uncomment the correct lines for the interface you are using (EPP, USB 1.0
       or USB 2.0).</li>
-    <li>Edit the saturn.ini to set the polarity, the pre-amp gain, and the time after
-      reset (for reset pre-amps) or the RC time constant (for RC pre-amps). Consult the
-      <a href="Saturn_User_Manual.pdf">Saturn User's Manual</a> for information on how
-      to determine and set these parameters. The saturn.ini file will contain lines like
-      the following:
-      <pre>      type_value = 10.
-      channel0_gain = 1.7
-      channel0_polarity = +
-      </pre>
-      <ul>
-        <li>The type_value is the transient settling time after a reset in microseconds for
-          reset pre-amps. It is the RC time constant in microseconds for RC pre-amps. 10 microseconds
-          is a reasonable value for both of these to start with.</li>
-        <li>The gain is specified in mV/keV, and is used so that the energy units in the DXP
-          software are correct. Most pre-amps are in the 1-4 mV/keV range. The best way to
-          set this value is to set the EMAX parameter (energy of last channel) in EPICS, and
-          see how well it agrees with reality when you calibrate the spectrum with a known
-          source. Then iteratively edit the saturn.ini file and restart EPICS until the actual
-          EMAX matches the requested one. Getting it to within a few percent is fine, since
-          you will do accurate calibration of the EPICS MCA spectra when you collect data.</li>
-        <li>The polarity can be "+" or "-". A positive polarity means that an x-ray pulse
-          produces a voltage step with a rising edge.</li>
-      </ul>
-    </li>
     <li>Make sure that the switch inside the Saturn is set for the correct pre-amp type.
       The switch is labeled "RAMP" for reset pre-amps and "OFFSET" for RC pre-amps.</li>
     <li>Connect the parallel port or USB cable from the Saturn to the PC, and turn on
@@ -2698,11 +2886,16 @@ SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}==
       <pre>      > cd iocBoot/iocSaturn
       > ./START_IOC
       </pre>
-      You may need to edit the START_IOC script depending on how you chose to solve the
-      root priviledge problem, and whether startWithIopl3 is in your path. You should
-      see the EPICS IOC commands, and you should hear clicking sounds from the Saturn.
-      If everything works correctly, you can then begin to collect and display spectra.</li>
+      You should see the EPICS IOC commands, and you should hear clicking sounds from
+      the Saturn. If everything works correctly, you can then begin to collect and display
+      spectra.</li>
   </ul>
+  <h3 id="Running_MicroDXP">
+    Running the MicroDXP</h3>
+  <p>
+    The iocBoot/iocMicroDXP contains a file called KETEK_DPP2_usb2.ini. You may need
+    to edit this file, although I have used it unchanged for both a Ketek and Hitachi
+    Vortex MicroDXP. The IOC is started the same way as for the Saturn above.</p>
   <h3 id="Running_xMAP">
     Running the xMAP</h3>
   <p>
@@ -2712,33 +2905,26 @@ SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}==
     <li>There are startup scripts and template files for systems with 4 or 16 channels
       (1 or 4 xMAP modules). If you have a different number of channels you will need
       to create new files.</li>
-    <li>You can manually start the software by doing the following in the Cygwin bash
+    <li>You can manually start the software by doing the following in the Windows cmd
       shell:
-      <pre>        cd iocBoot/iocXMAP  # Or the new directory you created
-        ../../bin/cygin-x86/dxpApp.exe 16element.cmd  # Or 4element.cmd, etc.
+      <pre>        cd iocBoot\iocXMAP  # Or the new directory you created
+        ..\..\bin\windows-x64\dxpApp.exe 16element.cmd  # Or 4element.cmd, etc.
      </pre>
     </li>
-    <li>You can also start the EPICS IOC and medm by running the batch file iocBoot/iocXMAP/START_IOC_Cygwin.bat
-      or START_IOC_WIN32.bat. This can be done by double clicking on the icon for this
-      file. You should see the EPICS IOC commands in a Windows command shell, and you
-      should hear clicking sounds from the xMAPS. If everything works correctly, you can
-      then begin to collect and display spectra. You may need to edit these batch files
-      to set the prefix for your IOC, the location of your medm adl files, etc.</li>
+    <li>You can also start the EPICS IOC and medm by running the batch file iocBoot/iocXMAP/START_IOC_WIN32.bat.
+      This can be done by double clicking on the icon for this file. You should see the
+      EPICS IOC commands in a Windows command shell, and you should hear clicking sounds
+      from the xMAPS. If everything works correctly, you can then begin to collect and
+      display spectra. You may need to edit these batch files to set the prefix for your
+      IOC, the location of your medm adl files, etc.</li>
     <li>You can do scans and save complete spectra with the EPICS sscan and saveData facilities.</li>
   </ul>
   <h3 id="Running_Mercury">
     Running the Mercury</h3>
   <p>
-    The Mercury can be run under Linux (linux-x86 or linux-x86_64) or Windows (cygwin-x86
-    or win32). As with the Saturn and xMAP described above there is an example mercury4.ini,
-    and there are example startup scripts (START_IOC for Linux, and START_IOC_Cygwin
-    and START_IOC_WIN32 for Windows).</p>
-  <h3 id="Running_DXP2X">
-    Running the DXP2X</h3>
-  <p>
-    The DXP2X is run under vxWorks. There is an example IOC for the DXP2X with startup
-    ini files and scripts for 4 and 16 element systems. The ini file will need to be
-    edited for the CAMAC address of the modules in your system.</p>
+    The Mercury can be run under Linux or Windows. As with the Saturn and xMAP described
+    above there is an example mercury4.ini, and there are example startup scripts (START_IOC
+    for Linux, and START_IOC_WIN32 for Windows).</p>
   <h2 id="Performance">
     Performance</h2>
   <h3>
@@ -2750,7 +2936,8 @@ SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}==
   <ul>
     <li>Both cygwin-x86 and win32-x86 architectures on Windows. However, spectra were
       only saved to disk when testing with the cygwin-x86 architecture, because win32-x86
-      does not currently support the saveData software.</li>
+      did not support the saveData software at the time of these tests. saveData is now
+      supported on both win32-x86 and windows-x64.</li>
     <li>2048 channel spectra</li>
     <li>0.01 second acquisition time, in order to attain real data but with minimal overhead.</li>
     <li>EPICS scan records.
@@ -2786,307 +2973,440 @@ SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}==
       <tbody>
         <tr style="text-align: center">
           <th>
-            XIA system</th>
+            XIA system
+          </th>
           <th>
-            EPICS arch</th>
+            EPICS arch
+          </th>
           <th>
-            Number of detectors</th>
+            Number of detectors
+          </th>
           <th>
-            Seconds/1000 scan points</th>
+            Seconds/1000 scan points
+          </th>
           <th>
-            Scan points/second</th>
+            Scan points/second
+          </th>
           <th>
-            Total spectra/second</th>
+            Total spectra/second
+          </th>
           <th>
-            Data rate (MB/second)</th>
+            Data rate (MB/second)
+          </th>
         </tr>
         <tr valign="top">
           <td>
-            DXP4C2X</td>
+            DXP4C2X
+          </td>
           <td>
-            vxWorks-ppc604</td>
+            vxWorks-ppc604
+          </td>
           <td>
-            4 (1 DXP4C2X)</td>
+            4 (1 DXP4C2X)
+          </td>
           <td>
-            217.0</td>
+            217.0
+          </td>
           <td>
-            4.6</td>
+            4.6
+          </td>
           <td>
-            18.4</td>
+            18.4
+          </td>
           <td>
-            0.15</td>
+            0.15
+          </td>
         </tr>
         <tr valign="top">
           <td>
-            DXP4C2X</td>
+            DXP4C2X
+          </td>
           <td>
-            vxWorks-ppc604</td>
+            vxWorks-ppc604
+          </td>
           <td>
-            16 (4 DXP4C2X)</td>
+            16 (4 DXP4C2X)
+          </td>
           <td>
-            1250.0</td>
+            1250.0
+          </td>
           <td>
-            0.8</td>
+            0.8
+          </td>
           <td>
-            12.8</td>
+            12.8
+          </td>
           <td>
-            0.10</td>
+            0.10
+          </td>
         </tr>
         <tr valign="top">
           <td>
-            Saturn (EPP)</td>
+            Saturn (EPP)
+          </td>
           <td>
-            cygwin-x86</td>
+            cygwin-x86
+          </td>
           <td>
-            1</td>
+            1
+          </td>
           <td>
-            32.5</td>
+            32.5
+          </td>
           <td>
-            30.8</td>
+            30.8
+          </td>
           <td>
-            30.8</td>
+            30.8
+          </td>
           <td>
-            0.25</td>
+            0.25
+          </td>
         </tr>
         <tr valign="top">
           <td>
-            Saturn (EPP)</td>
+            Saturn (EPP)
+          </td>
           <td>
-            win32-x86</td>
+            win32-x86
+          </td>
           <td>
-            1</td>
+            1
+          </td>
           <td>
-            28.0</td>
+            28.0
+          </td>
           <td>
-            35.7</td>
+            35.7
+          </td>
           <td>
-            35.7</td>
+            35.7
+          </td>
           <td>
-            0.29</td>
+            0.29
+          </td>
         </tr>
         <tr valign="top">
           <td>
-            Saturn (EPP)</td>
+            Saturn (EPP)
+          </td>
           <td>
-            linux-x86</td>
+            linux-x86
+          </td>
           <td>
-            1</td>
+            1
+          </td>
           <td>
-            29.8</td>
+            29.8
+          </td>
           <td>
-            33.6</td>
+            33.6
+          </td>
           <td>
-            33.6</td>
+            33.6
+          </td>
           <td>
-            0.27</td>
+            0.27
+          </td>
         </tr>
         <tr valign="top">
           <td>
-            Saturn (USB 1.0)</td>
+            Saturn (USB 1.0)
+          </td>
           <td>
-            cygwin-x86</td>
+            cygwin-x86
+          </td>
           <td>
-            1</td>
+            1
+          </td>
           <td>
-            65.1</td>
+            65.1
+          </td>
           <td>
-            15.4</td>
+            15.4
+          </td>
           <td>
-            15.4</td>
+            15.4
+          </td>
           <td>
-            0.13</td>
+            0.13
+          </td>
         </tr>
         <tr valign="top">
           <td>
-            Saturn (USB 1.0)</td>
+            Saturn (USB 1.0)
+          </td>
           <td>
-            win32-x86</td>
+            win32-x86
+          </td>
           <td>
-            1</td>
+            1
+          </td>
           <td>
-            67.1</td>
+            67.1
+          </td>
           <td>
-            14.9</td>
+            14.9
+          </td>
           <td>
-            14.9</td>
+            14.9
+          </td>
           <td>
-            0.12</td>
+            0.12
+          </td>
         </tr>
         <tr valign="top">
           <td>
-            Saturn (USB 1.0)</td>
+            Saturn (USB 1.0)
+          </td>
           <td>
-            linux-x86</td>
+            linux-x86
+          </td>
           <td>
-            1</td>
+            1
+          </td>
           <td>
-            49.2</td>
+            49.2
+          </td>
           <td>
-            20.3</td>
+            20.3
+          </td>
           <td>
-            20.3</td>
+            20.3
+          </td>
           <td>
-            0.17</td>
+            0.17
+          </td>
         </tr>
         <tr valign="top">
           <td>
-            Saturn (USB 2.0)</td>
+            Saturn (USB 2.0)
+          </td>
           <td>
-            cygwin-x86</td>
+            cygwin-x86
+          </td>
           <td>
-            1</td>
+            1
+          </td>
           <td>
-            27.3</td>
+            27.3
+          </td>
           <td>
-            36.6</td>
+            36.6
+          </td>
           <td>
-            36.6</td>
+            36.6
+          </td>
           <td>
-            0.30</td>
+            0.30
+          </td>
         </tr>
         <tr valign="top">
           <td>
-            Saturn (USB 2.0)</td>
+            Saturn (USB 2.0)
+          </td>
           <td>
-            win32-x86</td>
+            win32-x86
+          </td>
           <td>
-            1</td>
+            1
+          </td>
           <td>
-            22.8</td>
+            22.8
+          </td>
           <td>
-            43.9</td>
+            43.9
+          </td>
           <td>
-            43.9</td>
+            43.9
+          </td>
           <td>
-            0.36</td>
+            0.36
+          </td>
         </tr>
         <tr valign="top">
           <td>
-            Saturn (USB 2.0)</td>
+            Saturn (USB 2.0)
+          </td>
           <td>
-            linux-x86</td>
+            linux-x86
+          </td>
           <td>
-            1</td>
+            1
+          </td>
           <td>
-            21.9 </td>
+            21.9
+          </td>
           <td>
-            45.7</td>
+            45.7
+          </td>
           <td>
-            45.7</td>
+            45.7
+          </td>
           <td>
-            0.37</td>
+            0.37
+          </td>
         </tr>
         <tr valign="top">
           <td>
-            Mercury</td>
+            Mercury
+          </td>
           <td>
-            cygwin-x86</td>
+            cygwin-x86
+          </td>
           <td>
-            4</td>
+            4
+          </td>
           <td>
-            56.1 </td>
+            56.1
+          </td>
           <td>
-            17.8</td>
+            17.8
+          </td>
           <td>
-            71.3</td>
+            71.3
+          </td>
           <td>
-            0.58</td>
+            0.58
+          </td>
         </tr>
         <tr valign="top">
           <td>
-            Mercury</td>
+            Mercury
+          </td>
           <td>
-            win32-x86</td>
+            win32-x86
+          </td>
           <td>
-            4</td>
+            4
+          </td>
           <td>
-            52.2 </td>
+            52.2
+          </td>
           <td>
-            19.2</td>
+            19.2
+          </td>
           <td>
-            76.6</td>
+            76.6
+          </td>
           <td>
-            0.63</td>
+            0.63
+          </td>
         </tr>
         <tr valign="top">
           <td>
-            Mercury</td>
+            Mercury
+          </td>
           <td>
-            linux-x86</td>
+            linux-x86
+          </td>
           <td>
-            4</td>
+            4
+          </td>
           <td>
-            53.5 </td>
+            53.5
+          </td>
           <td>
-            18.7</td>
+            18.7
+          </td>
           <td>
-            74.8</td>
+            74.8
+          </td>
           <td>
-            0.61</td>
+            0.61
+          </td>
         </tr>
         <tr valign="top">
           <td>
-            xMAP</td>
+            xMAP
+          </td>
           <td>
-            cygwin-x86</td>
+            cygwin-x86
+          </td>
           <td>
-            4 (1 xMAP)</td>
+            4 (1 xMAP)
+          </td>
           <td>
-            31.2</td>
+            31.2
+          </td>
           <td>
-            32.0</td>
+            32.0
+          </td>
           <td>
-            128.2</td>
+            128.2
+          </td>
           <td>
-            1.05</td>
+            1.05
+          </td>
         </tr>
         <tr valign="top">
           <td>
-            xMAP</td>
+            xMAP
+          </td>
           <td>
-            win32-x86</td>
+            win32-x86
+          </td>
           <td>
-            4 (1 xMAP)</td>
+            4 (1 xMAP)
+          </td>
           <td>
-            27.2</td>
+            27.2
+          </td>
           <td>
-            36.5</td>
+            36.5
+          </td>
           <td>
-            146.0</td>
+            146.0
+          </td>
           <td>
-            1.20</td>
+            1.20
+          </td>
         </tr>
         <tr valign="top">
           <td>
-            xMAP</td>
+            xMAP
+          </td>
           <td>
-            cygwin-x86</td>
+            cygwin-x86
+          </td>
           <td>
-            16 (4 xMAPs)</td>
+            16 (4 xMAPs)
+          </td>
           <td>
-            122.2</td>
+            122.2
+          </td>
           <td>
-            8.2</td>
+            8.2
+          </td>
           <td>
-            130.9</td>
+            130.9
+          </td>
           <td>
-            1.07</td>
+            1.07
+          </td>
         </tr>
         <tr valign="top">
           <td>
-            xMAP</td>
+            xMAP
+          </td>
           <td>
-            win32-x86</td>
+            win32-x86
+          </td>
           <td>
-            16 (4 xMAPs)</td>
+            16 (4 xMAPs)
+          </td>
           <td>
-            86.1</td>
+            86.1
+          </td>
           <td>
-            11.6</td>
+            11.6
+          </td>
           <td>
-            185.8</td>
+            185.8
+          </td>
           <td>
-            1.52</td>
+            1.52
+          </td>
         </tr>
       </tbody>
     </table>
@@ -3122,219 +3442,315 @@ SUBSYSTEM=="usb_device",ACTION=="add",SYSFS{idVendor}=="10e9",SYSFS{idProduct}==
       <tbody>
         <tr style="text-align: center">
           <th>
-            XIA system</th>
+            XIA system
+          </th>
           <th>
-            EPICS arch</th>
+            EPICS arch
+          </th>
           <th>
-            Mapping mode</th>
+            Mapping mode
+          </th>
           <th>
-            Number of detectors</th>
+            Number of detectors
+          </th>
           <th>
-            Seconds/2000 scan points</th>
+            Seconds/2000 scan points
+          </th>
           <th>
-            Scan points/second</th>
+            Scan points/second
+          </th>
           <th>
-            Total spectra or SCAs/second</th>
+            Total spectra or SCAs/second
+          </th>
           <th>
-            Data rate (MB/second)</th>
+            Data rate (MB/second)
+          </th>
         </tr>
         <tr valign="top">
           <td>
-            Mercury</td>
+            Mercury
+          </td>
           <td>
-            cygwin-x86</td>
+            cygwin-x86
+          </td>
           <td>
-            MCA</td>
+            MCA
+          </td>
           <td>
-            4</td>
+            4
+          </td>
           <td>
-            7.4 </td>
+            7.4
+          </td>
           <td>
-            270.2</td>
+            270.2
+          </td>
           <td>
-            1081.1</td>
+            1081.1
+          </td>
           <td>
-            4.59</td>
+            4.59
+          </td>
         </tr>
         <tr valign="top">
           <td>
-            Mercury</td>
+            Mercury
+          </td>
           <td>
-            win32-x86</td>
+            win32-x86
+          </td>
           <td>
-            MCA</td>
+            MCA
+          </td>
           <td>
-            4</td>
+            4
+          </td>
           <td>
-            7.4 </td>
+            7.4
+          </td>
           <td>
-            270.2</td>
+            270.2
+          </td>
           <td>
-            1081.1</td>
+            1081.1
+          </td>
           <td>
-            4.59</td>
+            4.59
+          </td>
         </tr>
         <tr valign="top">
           <td>
-            Mercury</td>
+            Mercury
+          </td>
           <td>
-            linux-x86</td>
+            linux-x86
+          </td>
           <td>
-            MCA</td>
+            MCA
+          </td>
           <td>
-            4</td>
+            4
+          </td>
           <td>
-            5.2 </td>
+            5.2
+          </td>
           <td>
-            384.6</td>
+            384.6
+          </td>
           <td>
-            1538.5</td>
+            1538.5
+          </td>
           <td>
-            6.54</td>
+            6.54
+          </td>
         </tr>
         <tr valign="top">
           <td>
-            xMAP</td>
+            xMAP
+          </td>
           <td>
-            cygwin-x86</td>
+            cygwin-x86
+          </td>
           <td>
-            MCA</td>
+            MCA
+          </td>
           <td>
-            4 (1 xMAP)</td>
+            4 (1 xMAP)
+          </td>
           <td>
-            1.8</td>
+            1.8
+          </td>
           <td>
-            1111.1</td>
+            1111.1
+          </td>
           <td>
-            4444.4</td>
+            4444.4
+          </td>
           <td>
-            18.9</td>
+            18.9
+          </td>
         </tr>
         <tr valign="top">
           <td>
-            xMAP</td>
+            xMAP
+          </td>
           <td>
-            win32-x86</td>
+            win32-x86
+          </td>
           <td>
-            MCA</td>
+            MCA
+          </td>
           <td>
-            4 (1 xMAP)</td>
+            4 (1 xMAP)
+          </td>
           <td>
-            1.8</td>
+            1.8
+          </td>
           <td>
-            1111.1</td>
+            1111.1
+          </td>
           <td>
-            4444.4</td>
+            4444.4
+          </td>
           <td>
-            18.9</td>
+            18.9
+          </td>
         </tr>
         <tr valign="top">
           <td>
-            xMAP</td>
+            xMAP
+          </td>
           <td>
-            cygwin-x86</td>
+            cygwin-x86
+          </td>
           <td>
-            MCA</td>
+            MCA
+          </td>
           <td>
-            16 (4 xMAPs)</td>
+            16 (4 xMAPs)
+          </td>
           <td>
-            7.4</td>
+            7.4
+          </td>
           <td>
-            270.3</td>
+            270.3
+          </td>
           <td>
-            4324.3</td>
+            4324.3
+          </td>
           <td>
-            18.2</td>
+            18.2
+          </td>
         </tr>
         <tr valign="top">
           <td>
-            xMAP</td>
+            xMAP
+          </td>
           <td>
-            win32-x86</td>
+            win32-x86
+          </td>
           <td>
-            MCA</td>
+            MCA
+          </td>
           <td>
-            16 (4 xMAPs)</td>
+            16 (4 xMAPs)
+          </td>
           <td>
-            7.0</td>
+            7.0
+          </td>
           <td>
-            285.7</td>
+            285.7
+          </td>
           <td>
-            4571.4</td>
+            4571.4
+          </td>
           <td>
-            19.3</td>
+            19.3
+          </td>
         </tr>
         <tr valign="top">
           <td>
-            xMAP</td>
+            xMAP
+          </td>
           <td>
-            cygwin-x86</td>
+            cygwin-x86
+          </td>
           <td>
-            SCA</td>
+            SCA
+          </td>
           <td>
-            4 (1 xMAP)</td>
+            4 (1 xMAP)
+          </td>
           <td>
-            0.2</td>
+            0.2
+          </td>
           <td>
-            10000</td>
+            10000
+          </td>
           <td>
-            1,280,000</td>
+            1,280,000
+          </td>
           <td>
-            5.0</td>
+            5.0
+          </td>
         </tr>
         <tr valign="top">
           <td>
-            xMAP</td>
+            xMAP
+          </td>
           <td>
-            win32-x86</td>
+            win32-x86
+          </td>
           <td>
-            SCA</td>
+            SCA
+          </td>
           <td>
-            4 (1 xMAP)</td>
+            4 (1 xMAP)
+          </td>
           <td>
-            0.2</td>
+            0.2
+          </td>
           <td>
-            10000</td>
+            10000
+          </td>
           <td>
-            1,280,000</td>
+            1,280,000
+          </td>
           <td>
-            5.0</td>
+            5.0
+          </td>
         </tr>
         <tr valign="top">
           <td>
-            xMAP</td>
+            xMAP
+          </td>
           <td>
-            cygwin-x86</td>
+            cygwin-x86
+          </td>
           <td>
-            SCA</td>
+            SCA
+          </td>
           <td>
-            16 (4 xMAPs)</td>
+            16 (4 xMAPs)
+          </td>
           <td>
-            0.2</td>
+            0.2
+          </td>
           <td>
-            10000</td>
+            10000
+          </td>
           <td>
-            5,120,000</td>
+            5,120,000
+          </td>
           <td>
-            20.0</td>
+            20.0
+          </td>
         </tr>
         <tr valign="top">
           <td>
-            xMAP</td>
+            xMAP
+          </td>
           <td>
-            win32-x86</td>
+            win32-x86
+          </td>
           <td>
-            SCA</td>
+            SCA
+          </td>
           <td>
-            16 (4 xMAPs)</td>
+            16 (4 xMAPs)
+          </td>
           <td>
-            0.2</td>
+            0.2
+          </td>
           <td>
-            10000</td>
+            10000
+          </td>
           <td>
-            5,120,000</td>
+            5,120,000
+          </td>
           <td>
-            20.0</td>
+            20.0
+          </td>
         </tr>
       </tbody>
     </table>
