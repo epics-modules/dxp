@@ -1,0 +1,1310 @@
+4 0 0
+beginScreenProperties
+major 4
+minor 0
+release 0
+x 1351
+y 113
+w 1935
+h 945
+font "helvetica-medium-r-18.0"
+ctlFont "helvetica-medium-r-8.0"
+btnFont "helvetica-medium-r-18.0"
+fgColor index 14
+bgColor index 4
+textColor index 14
+ctlFgColor1 index 30
+ctlFgColor2 index 32
+ctlBgColor1 index 34
+ctlBgColor2 index 35
+topShadowColor index 37
+botShadowColor index 44
+snapToGrid
+gridSize 5
+endScreenProperties
+
+
+# (Rectangle)
+object activeRectangleClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 39
+y 39
+w 359
+h 39
+lineColor index 54
+fill
+fillColor index 54
+lineWidth 0
+endObjectProperties
+
+# (X-Y Graph)
+object xyGraphClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 391
+y 114
+w 380
+h 159
+# Appearance
+border
+graphTitle "$(P)$(D)1"
+xLabel "Time (usec)"
+yLabel "ADC units"
+fgColor index 14
+bgColor index 2
+gridColor index 14
+font "helvetica-medium-r-10.0"
+# Operating Modes
+plotMode "plotLastNPts"
+nPts 1
+#  X axis properties
+showXAxis
+xAxisSrc "AutoScale"
+xLablePrecision 1
+#  Y axis properties
+showYAxis
+yAxisSrc "AutoScale"
+#  Trace Properties
+numTraces 1
+xPv {
+  0 "$(P)$(D)1:TraceTimeArray"
+}
+yPv {
+  0 "$(P)$(D)1:TraceData"
+}
+plotStyle {
+  0 "line"
+}
+plotUpdateMode {
+  0 "x"
+}
+plotSymbolType {
+  0 "circle"
+}
+plotColor {
+  0 index 27
+}
+endObjectProperties
+
+# (X-Y Graph)
+object xyGraphClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 391
+y 303
+w 380
+h 159
+# Appearance
+border
+graphTitle "$(P)$(D)2"
+xLabel "Time (usec)"
+yLabel "ADC units"
+fgColor index 14
+bgColor index 2
+gridColor index 14
+font "helvetica-medium-r-10.0"
+# Operating Modes
+plotMode "plotLastNPts"
+nPts 1
+#  X axis properties
+showXAxis
+xAxisSrc "AutoScale"
+xLablePrecision 1
+#  Y axis properties
+showYAxis
+yAxisSrc "AutoScale"
+#  Trace Properties
+numTraces 1
+xPv {
+  0 "$(P)$(D)2:TraceTimeArray"
+}
+yPv {
+  0 "$(P)$(D)2:TraceData"
+}
+plotStyle {
+  0 "line"
+}
+plotUpdateMode {
+  0 "x"
+}
+plotSymbolType {
+  0 "circle"
+}
+plotColor {
+  0 index 27
+}
+endObjectProperties
+
+# (X-Y Graph)
+object xyGraphClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 391
+y 681
+w 380
+h 159
+# Appearance
+border
+graphTitle "$(P)$(D)4"
+xLabel "Time (usec)"
+yLabel "ADC units"
+fgColor index 14
+bgColor index 2
+gridColor index 14
+font "helvetica-medium-r-10.0"
+# Operating Modes
+plotMode "plotLastNPts"
+nPts 1
+#  X axis properties
+showXAxis
+xAxisSrc "AutoScale"
+xLablePrecision 1
+#  Y axis properties
+showYAxis
+yAxisSrc "AutoScale"
+#  Trace Properties
+numTraces 1
+xPv {
+  0 "$(P)$(D)4:TraceTimeArray"
+}
+yPv {
+  0 "$(P)$(D)4:TraceData"
+}
+plotStyle {
+  0 "line"
+}
+plotUpdateMode {
+  0 "x"
+}
+plotSymbolType {
+  0 "circle"
+}
+plotColor {
+  0 index 27
+}
+endObjectProperties
+
+# (X-Y Graph)
+object xyGraphClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 391
+y 492
+w 380
+h 159
+# Appearance
+border
+graphTitle "$(P)$(D)3"
+xLabel "Time (usec)"
+yLabel "ADC units"
+fgColor index 14
+bgColor index 2
+gridColor index 14
+font "helvetica-medium-r-10.0"
+# Operating Modes
+plotMode "plotLastNPts"
+nPts 1
+#  X axis properties
+showXAxis
+xAxisSrc "AutoScale"
+xLablePrecision 1
+#  Y axis properties
+showYAxis
+yAxisSrc "AutoScale"
+#  Trace Properties
+numTraces 1
+xPv {
+  0 "$(P)$(D)3:TraceTimeArray"
+}
+yPv {
+  0 "$(P)$(D)3:TraceData"
+}
+plotStyle {
+  0 "line"
+}
+plotUpdateMode {
+  0 "x"
+}
+plotSymbolType {
+  0 "circle"
+}
+plotColor {
+  0 index 27
+}
+endObjectProperties
+
+# (Static Text)
+object activeXTextClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 576
+y 97
+w 10
+h 20
+font "helvetica-medium-r-8.0"
+fgColor index 54
+useDisplayBg
+value {
+ "1"
+}
+endObjectProperties
+
+# (Static Text)
+object activeXTextClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 576
+y 286
+w 10
+h 20
+font "helvetica-medium-r-8.0"
+fgColor index 54
+useDisplayBg
+value {
+ "2"
+}
+endObjectProperties
+
+# (Static Text)
+object activeXTextClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 576
+y 475
+w 10
+h 20
+font "helvetica-medium-r-8.0"
+fgColor index 54
+useDisplayBg
+value {
+ "3"
+}
+endObjectProperties
+
+# (Static Text)
+object activeXTextClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 576
+y 664
+w 10
+h 20
+font "helvetica-medium-r-8.0"
+fgColor index 54
+useDisplayBg
+value {
+ "4"
+}
+endObjectProperties
+
+# (X-Y Graph)
+object xyGraphClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 776
+y 21
+w 380
+h 159
+# Appearance
+border
+graphTitle "$(P)$(D)5"
+xLabel "Time (usec)"
+yLabel "ADC units"
+fgColor index 14
+bgColor index 2
+gridColor index 14
+font "helvetica-medium-r-10.0"
+# Operating Modes
+plotMode "plotLastNPts"
+nPts 1
+#  X axis properties
+showXAxis
+xAxisSrc "AutoScale"
+xLablePrecision 1
+#  Y axis properties
+showYAxis
+yAxisSrc "AutoScale"
+#  Trace Properties
+numTraces 1
+xPv {
+  0 "$(P)$(D)5:TraceTimeArray"
+}
+yPv {
+  0 "$(P)$(D)5:TraceData"
+}
+plotStyle {
+  0 "line"
+}
+plotUpdateMode {
+  0 "x"
+}
+plotSymbolType {
+  0 "circle"
+}
+plotColor {
+  0 index 27
+}
+endObjectProperties
+
+# (X-Y Graph)
+object xyGraphClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 776
+y 399
+w 380
+h 159
+# Appearance
+border
+graphTitle "$(P)$(D)7"
+xLabel "Time (usec)"
+yLabel "ADC units"
+fgColor index 14
+bgColor index 2
+gridColor index 14
+font "helvetica-medium-r-10.0"
+# Operating Modes
+plotMode "plotLastNPts"
+nPts 1
+#  X axis properties
+showXAxis
+xAxisSrc "AutoScale"
+xLablePrecision 1
+#  Y axis properties
+showYAxis
+yAxisSrc "AutoScale"
+#  Trace Properties
+numTraces 1
+xPv {
+  0 "$(P)$(D)7:TraceTimeArray"
+}
+yPv {
+  0 "$(P)$(D)7:TraceData"
+}
+plotStyle {
+  0 "line"
+}
+plotUpdateMode {
+  0 "x"
+}
+plotSymbolType {
+  0 "circle"
+}
+plotColor {
+  0 index 27
+}
+endObjectProperties
+
+# (X-Y Graph)
+object xyGraphClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 776
+y 588
+w 380
+h 159
+# Appearance
+border
+graphTitle "$(P)$(D)8"
+xLabel "Time (usec)"
+yLabel "ADC units"
+fgColor index 14
+bgColor index 2
+gridColor index 14
+font "helvetica-medium-r-10.0"
+# Operating Modes
+plotMode "plotLastNPts"
+nPts 1
+#  X axis properties
+showXAxis
+xAxisSrc "AutoScale"
+xLablePrecision 1
+#  Y axis properties
+showYAxis
+yAxisSrc "AutoScale"
+#  Trace Properties
+numTraces 1
+xPv {
+  0 "$(P)$(D)8:TraceTimeArray"
+}
+yPv {
+  0 "$(P)$(D)8:TraceData"
+}
+plotStyle {
+  0 "line"
+}
+plotUpdateMode {
+  0 "x"
+}
+plotSymbolType {
+  0 "circle"
+}
+plotColor {
+  0 index 27
+}
+endObjectProperties
+
+# (X-Y Graph)
+object xyGraphClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 776
+y 210
+w 380
+h 159
+# Appearance
+border
+graphTitle "$(P)$(D)6"
+xLabel "Time (usec)"
+yLabel "ADC units"
+fgColor index 14
+bgColor index 2
+gridColor index 14
+font "helvetica-medium-r-10.0"
+# Operating Modes
+plotMode "plotLastNPts"
+nPts 1
+#  X axis properties
+showXAxis
+xAxisSrc "AutoScale"
+xLablePrecision 1
+#  Y axis properties
+showYAxis
+yAxisSrc "AutoScale"
+#  Trace Properties
+numTraces 1
+xPv {
+  0 "$(P)$(D)6:TraceTimeArray"
+}
+yPv {
+  0 "$(P)$(D)6:TraceData"
+}
+plotStyle {
+  0 "line"
+}
+plotUpdateMode {
+  0 "x"
+}
+plotSymbolType {
+  0 "circle"
+}
+plotColor {
+  0 index 27
+}
+endObjectProperties
+
+# (X-Y Graph)
+object xyGraphClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 776
+y 777
+w 380
+h 159
+# Appearance
+border
+graphTitle "$(P)$(D)9"
+xLabel "Time (usec)"
+yLabel "ADC units"
+fgColor index 14
+bgColor index 2
+gridColor index 14
+font "helvetica-medium-r-10.0"
+# Operating Modes
+plotMode "plotLastNPts"
+nPts 1
+#  X axis properties
+showXAxis
+xAxisSrc "AutoScale"
+xLablePrecision 1
+#  Y axis properties
+showYAxis
+yAxisSrc "AutoScale"
+#  Trace Properties
+numTraces 1
+xPv {
+  0 "$(P)$(D)9:TraceTimeArray"
+}
+yPv {
+  0 "$(P)$(D)9:TraceData"
+}
+plotStyle {
+  0 "line"
+}
+plotUpdateMode {
+  0 "x"
+}
+plotSymbolType {
+  0 "circle"
+}
+plotColor {
+  0 index 27
+}
+endObjectProperties
+
+# (Static Text)
+object activeXTextClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 961
+y 4
+w 10
+h 20
+font "helvetica-medium-r-8.0"
+fgColor index 54
+useDisplayBg
+value {
+ "5"
+}
+endObjectProperties
+
+# (Static Text)
+object activeXTextClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 961
+y 193
+w 10
+h 20
+font "helvetica-medium-r-8.0"
+fgColor index 54
+useDisplayBg
+value {
+ "6"
+}
+endObjectProperties
+
+# (Static Text)
+object activeXTextClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 961
+y 382
+w 10
+h 20
+font "helvetica-medium-r-8.0"
+fgColor index 54
+useDisplayBg
+value {
+ "7"
+}
+endObjectProperties
+
+# (Static Text)
+object activeXTextClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 961
+y 571
+w 10
+h 20
+font "helvetica-medium-r-8.0"
+fgColor index 54
+useDisplayBg
+value {
+ "8"
+}
+endObjectProperties
+
+# (Static Text)
+object activeXTextClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 961
+y 760
+w 10
+h 20
+font "helvetica-medium-r-8.0"
+fgColor index 54
+useDisplayBg
+value {
+ "9"
+}
+endObjectProperties
+
+# (X-Y Graph)
+object xyGraphClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 1546
+y 395
+w 380
+h 159
+# Appearance
+border
+graphTitle "$(P)$(D)16"
+xLabel "Time (usec)"
+yLabel "ADC units"
+fgColor index 14
+bgColor index 2
+gridColor index 14
+font "helvetica-medium-r-10.0"
+# Operating Modes
+plotMode "plotLastNPts"
+nPts 1
+#  X axis properties
+showXAxis
+xAxisSrc "AutoScale"
+xLablePrecision 1
+#  Y axis properties
+showYAxis
+yAxisSrc "AutoScale"
+#  Trace Properties
+numTraces 1
+xPv {
+  0 "$(P)$(D)16:TraceTimeArray"
+}
+yPv {
+  0 "$(P)$(D)16:TraceData"
+}
+plotStyle {
+  0 "line"
+}
+plotUpdateMode {
+  0 "x"
+}
+plotSymbolType {
+  0 "circle"
+}
+plotColor {
+  0 index 27
+}
+endObjectProperties
+
+# (Static Text)
+object activeXTextClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 1726
+y 378
+w 20
+h 20
+font "helvetica-medium-r-8.0"
+fgColor index 54
+useDisplayBg
+value {
+ "16"
+}
+endObjectProperties
+
+# (X-Y Graph)
+object xyGraphClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 4
+y 403
+w 380
+h 159
+# Appearance
+border
+graphTitle "$(P)$(D)15"
+xLabel "Time (usec)"
+yLabel "ADC units"
+fgColor index 14
+bgColor index 2
+gridColor index 14
+font "helvetica-medium-r-10.0"
+# Operating Modes
+plotMode "plotLastNPts"
+nPts 1
+#  X axis properties
+showXAxis
+xAxisSrc "AutoScale"
+xLablePrecision 1
+#  Y axis properties
+showYAxis
+yAxisSrc "AutoScale"
+#  Trace Properties
+numTraces 1
+xPv {
+  0 "$(P)$(D)15:TraceTimeArray"
+}
+yPv {
+  0 "$(P)$(D)15:TraceData"
+}
+plotStyle {
+  0 "line"
+}
+plotUpdateMode {
+  0 "x"
+}
+plotSymbolType {
+  0 "circle"
+}
+plotColor {
+  0 index 27
+}
+endObjectProperties
+
+# (Static Text)
+object activeXTextClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 184
+y 386
+w 20
+h 20
+font "helvetica-medium-r-8.0"
+fgColor index 54
+useDisplayBg
+value {
+ "15"
+}
+endObjectProperties
+
+# (X-Y Graph)
+object xyGraphClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 6
+y 205
+w 380
+h 159
+# Appearance
+border
+graphTitle "$(P)$(D)14"
+xLabel "Time (usec)"
+yLabel "ADC units"
+fgColor index 14
+bgColor index 2
+gridColor index 14
+font "helvetica-medium-r-10.0"
+# Operating Modes
+plotMode "plotLastNPts"
+nPts 1
+#  X axis properties
+showXAxis
+xAxisSrc "AutoScale"
+xLablePrecision 1
+#  Y axis properties
+showYAxis
+yAxisSrc "AutoScale"
+#  Trace Properties
+numTraces 1
+xPv {
+  0 "$(P)$(D)14:TraceTimeArray"
+}
+yPv {
+  0 "$(P)$(D)14:TraceData"
+}
+plotStyle {
+  0 "line"
+}
+plotUpdateMode {
+  0 "x"
+}
+plotSymbolType {
+  0 "circle"
+}
+plotColor {
+  0 index 27
+}
+endObjectProperties
+
+# (Static Text)
+object activeXTextClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 186
+y 188
+w 20
+h 20
+font "helvetica-medium-r-8.0"
+fgColor index 54
+useDisplayBg
+value {
+ "14"
+}
+endObjectProperties
+
+# (X-Y Graph)
+object xyGraphClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 1161
+y 492
+w 380
+h 159
+# Appearance
+border
+graphTitle "$(P)$(D)12"
+xLabel "Time (usec)"
+yLabel "ADC units"
+fgColor index 14
+bgColor index 2
+gridColor index 14
+font "helvetica-medium-r-10.0"
+# Operating Modes
+plotMode "plotLastNPts"
+nPts 1
+#  X axis properties
+showXAxis
+xAxisSrc "AutoScale"
+xLablePrecision 1
+#  Y axis properties
+showYAxis
+yAxisSrc "AutoScale"
+#  Trace Properties
+numTraces 1
+xPv {
+  0 "$(P)$(D)12:TraceTimeArray"
+}
+yPv {
+  0 "$(P)$(D)12:TraceData"
+}
+plotStyle {
+  0 "line"
+}
+plotUpdateMode {
+  0 "x"
+}
+plotSymbolType {
+  0 "circle"
+}
+plotColor {
+  0 index 27
+}
+endObjectProperties
+
+# (X-Y Graph)
+object xyGraphClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 1161
+y 681
+w 380
+h 159
+# Appearance
+border
+graphTitle "$(P)$(D)13"
+xLabel "Time (usec)"
+yLabel "ADC units"
+fgColor index 14
+bgColor index 2
+gridColor index 14
+font "helvetica-medium-r-10.0"
+# Operating Modes
+plotMode "plotLastNPts"
+nPts 1
+#  X axis properties
+showXAxis
+xAxisSrc "AutoScale"
+xLablePrecision 1
+#  Y axis properties
+showYAxis
+yAxisSrc "AutoScale"
+#  Trace Properties
+numTraces 1
+xPv {
+  0 "$(P)$(D)13:TraceTimeArray"
+}
+yPv {
+  0 "$(P)$(D)13:TraceData"
+}
+plotStyle {
+  0 "line"
+}
+plotUpdateMode {
+  0 "x"
+}
+plotSymbolType {
+  0 "circle"
+}
+plotColor {
+  0 index 27
+}
+endObjectProperties
+
+# (X-Y Graph)
+object xyGraphClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 1161
+y 114
+w 380
+h 159
+# Appearance
+border
+graphTitle "$(P)$(D)10"
+xLabel "Time (usec)"
+yLabel "ADC units"
+fgColor index 14
+bgColor index 2
+gridColor index 14
+font "helvetica-medium-r-10.0"
+# Operating Modes
+plotMode "plotLastNPts"
+nPts 1
+#  X axis properties
+showXAxis
+xAxisSrc "AutoScale"
+xLablePrecision 1
+#  Y axis properties
+showYAxis
+yAxisSrc "AutoScale"
+#  Trace Properties
+numTraces 1
+xPv {
+  0 "$(P)$(D)10:TraceTimeArray"
+}
+yPv {
+  0 "$(P)$(D)10:TraceData"
+}
+plotStyle {
+  0 "line"
+}
+plotUpdateMode {
+  0 "x"
+}
+plotSymbolType {
+  0 "circle"
+}
+plotColor {
+  0 index 27
+}
+endObjectProperties
+
+# (Static Text)
+object activeXTextClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 1341
+y 97
+w 20
+h 20
+font "helvetica-medium-r-8.0"
+fgColor index 54
+useDisplayBg
+value {
+ "10"
+}
+endObjectProperties
+
+# (Static Text)
+object activeXTextClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 1341
+y 475
+w 20
+h 20
+font "helvetica-medium-r-8.0"
+fgColor index 54
+useDisplayBg
+value {
+ "12"
+}
+endObjectProperties
+
+# (Static Text)
+object activeXTextClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 1341
+y 664
+w 20
+h 20
+font "helvetica-medium-r-8.0"
+fgColor index 54
+useDisplayBg
+value {
+ "13"
+}
+endObjectProperties
+
+# (X-Y Graph)
+object xyGraphClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 1161
+y 303
+w 380
+h 159
+# Appearance
+border
+graphTitle "$(P)$(D)11"
+xLabel "Time (usec)"
+yLabel "ADC units"
+fgColor index 14
+bgColor index 2
+gridColor index 14
+font "helvetica-medium-r-10.0"
+# Operating Modes
+plotMode "plotLastNPts"
+nPts 1
+#  X axis properties
+showXAxis
+xAxisSrc "AutoScale"
+xLablePrecision 1
+#  Y axis properties
+showYAxis
+yAxisSrc "AutoScale"
+#  Trace Properties
+numTraces 1
+xPv {
+  0 "$(P)$(D)11:TraceTimeArray"
+}
+yPv {
+  0 "$(P)$(D)11:TraceData"
+}
+plotStyle {
+  0 "line"
+}
+plotUpdateMode {
+  0 "x"
+}
+plotSymbolType {
+  0 "circle"
+}
+plotColor {
+  0 index 27
+}
+endObjectProperties
+
+# (Static Text)
+object activeXTextClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 1341
+y 286
+w 20
+h 20
+font "helvetica-medium-r-8.0"
+fgColor index 54
+useDisplayBg
+value {
+ "11"
+}
+endObjectProperties
+
+# (Static Text)
+object activeXTextClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 49
+y 40
+w 341
+h 40
+font "helvetica-medium-r-8.0"
+fontAlign "center"
+fgColor index 0
+useDisplayBg
+value {
+ "16 Element Trace"
+}
+endObjectProperties
+
+# (Static Text)
+object activeXTextClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 43
+y 622
+w 105
+h 20
+font "helvetica-medium-r-8.0"
+fgColor index 14
+useDisplayBg
+value {
+ "Read Rate:"
+}
+endObjectProperties
+
+# (Static Text)
+object activeXTextClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 43
+y 647
+w 210
+h 20
+font "helvetica-medium-r-8.0"
+fgColor index 14
+useDisplayBg
+value {
+ "Time per point (usec):"
+}
+endObjectProperties
+
+# (Text Control)
+object activeXTextDspClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 262
+y 647
+w 60
+h 20
+controlPv "$(P)TraceTimes"
+font "helvetica-medium-r-8.0"
+smartRefresh
+fastUpdate
+fgColor index 14
+bgColor index 51
+editable
+autoHeight
+format decimal
+motifWidget
+nullColor index 32
+useHexPrefix
+objType "controls"
+newPos
+endObjectProperties
+
+# (Static Text)
+object activeXTextClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 43
+y 672
+w 100
+h 20
+font "helvetica-medium-r-8.0"
+fgColor index 14
+useDisplayBg
+value {
+ "Trace mode"
+}
+endObjectProperties
+
+# (Message Button)
+object activeMessageButtonClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 238
+y 622
+w 80
+h 20
+fgColor index 14
+onColor index 51
+offColor index 51
+topShadowColor index 0
+botShadowColor index 14
+controlPv "$(P)ReadTraces.PROC"
+pressValue "1"
+releaseValue 
+onLabel "Read Once"
+offLabel "Read Once"
+3d
+useEnumNumeric
+font "helvetica-medium-r-10.0"
+endObjectProperties
+
+# (Menu Button)
+object activeMenuButtonClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 151
+y 623
+w 80
+h 18
+fgColor index 14
+bgColor index 51
+inconsistentColor index 12
+topShadowColor index 2
+botShadowColor index 12
+controlPv "$(P)ReadTraces.SCAN"
+indicatorPv "$(P)ReadTraces.SCAN"
+font "helvetica-medium-r-10.0"
+endObjectProperties
+
+# (Menu Button)
+object activeMenuButtonClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 151
+y 673
+w 120
+h 18
+fgColor index 14
+bgColor index 51
+inconsistentColor index 12
+topShadowColor index 2
+botShadowColor index 12
+controlPv "$(P)TraceModes"
+indicatorPv "$(P)TraceModes"
+font "helvetica-medium-r-10.0"
+endObjectProperties
+
