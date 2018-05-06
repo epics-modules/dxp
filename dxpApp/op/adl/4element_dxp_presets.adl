@@ -1,12 +1,12 @@
 
 file {
-	name="/home/epics/devel/dxp/dxpApp/op/adl/4element_dxp_presets.adl"
-	version=030102
+	name="/home/epics/devel/dxp-4-0/dxpApp/op/adl/4element_dxp_presets.adl"
+	version=030109
 }
 display {
 	object {
-		x=87
-		y=340
+		x=230
+		y=254
 		width=500
 		height=210
 	}
@@ -100,9 +100,9 @@ rectangle {
 }
 text {
 	object {
-		x=88
+		x=94
 		y=10
-		width=324
+		width=312
 		height=25
 	}
 	"basic attribute" {
@@ -263,9 +263,9 @@ menu {
 }
 text {
 	object {
-		x=241
+		x=232
 		y=49
-		width=42
+		width=60
 		height=20
 	}
 	"basic attribute" {
@@ -277,9 +277,9 @@ text {
 }
 text {
 	object {
-		x=246
+		x=240
 		y=71
-		width=28
+		width=40
 		height=20
 	}
 	"basic attribute" {
@@ -351,9 +351,9 @@ text {
 }
 text {
 	object {
-		x=166
+		x=157
 		y=49
-		width=42
+		width=60
 		height=20
 	}
 	"basic attribute" {
@@ -365,9 +365,9 @@ text {
 }
 text {
 	object {
-		x=171
+		x=165
 		y=71
-		width=28
+		width=40
 		height=20
 	}
 	"basic attribute" {
@@ -439,9 +439,9 @@ text {
 }
 text {
 	object {
-		x=415
+		x=412
 		y=49
-		width=54
+		width=60
 		height=20
 	}
 	"basic attribute" {
@@ -453,9 +453,9 @@ text {
 }
 text {
 	object {
-		x=422
+		x=410
 		y=71
-		width=36
+		width=60
 		height=20
 	}
 	"basic attribute" {
@@ -527,9 +527,9 @@ text {
 }
 text {
 	object {
-		x=320
+		x=317
 		y=49
-		width=54
+		width=60
 		height=20
 	}
 	"basic attribute" {
@@ -541,9 +541,9 @@ text {
 }
 text {
 	object {
-		x=327
+		x=305
 		y=71
-		width=36
+		width=80
 		height=20
 	}
 	"basic attribute" {

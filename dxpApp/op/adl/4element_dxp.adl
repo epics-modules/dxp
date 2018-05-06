@@ -1,7 +1,7 @@
 
 file {
-	name="/home/epics/devel/dxp/dxpApp/op/adl/4element_dxp.adl"
-	version=030107
+	name="/home/epics/devel/dxp-4-0/dxpApp/op/adl/4element_dxp.adl"
+	version=030109
 }
 display {
 	object {
@@ -102,7 +102,7 @@ text {
 	object {
 		x=127
 		y=3
-		width=333
+		width=312
 		height=25
 	}
 	"basic attribute" {
@@ -250,7 +250,7 @@ text {
 	object {
 		x=403
 		y=44
-		width=70
+		width=140
 		height=20
 	}
 	"basic attribute" {
@@ -262,7 +262,7 @@ text {
 	object {
 		x=403
 		y=244
-		width=70
+		width=40
 		height=20
 	}
 	"basic attribute" {
@@ -324,7 +324,7 @@ text {
 	object {
 		x=403
 		y=269
-		width=110
+		width=120
 		height=20
 	}
 	"basic attribute" {
@@ -336,7 +336,7 @@ text {
 	object {
 		x=402
 		y=69
-		width=70
+		width=150
 		height=20
 	}
 	"basic attribute" {
@@ -453,7 +453,7 @@ text {
 	object {
 		x=403
 		y=94
-		width=70
+		width=120
 		height=20
 	}
 	"basic attribute" {
@@ -480,7 +480,7 @@ text {
 	object {
 		x=403
 		y=144
-		width=70
+		width=110
 		height=20
 	}
 	"basic attribute" {
@@ -582,7 +582,7 @@ text {
 	object {
 		x=403
 		y=119
-		width=70
+		width=130
 		height=20
 	}
 	"basic attribute" {
@@ -594,7 +594,7 @@ text {
 	object {
 		x=403
 		y=219
-		width=70
+		width=140
 		height=20
 	}
 	"basic attribute" {
@@ -673,7 +673,7 @@ text {
 	object {
 		x=403
 		y=194
-		width=70
+		width=100
 		height=20
 	}
 	"basic attribute" {
@@ -712,7 +712,7 @@ text {
 	object {
 		x=195
 		y=162
-		width=60
+		width=70
 		height=20
 	}
 	"basic attribute" {
@@ -802,7 +802,7 @@ text {
 	object {
 		x=150
 		y=394
-		width=110
+		width=150
 		height=20
 	}
 	"basic attribute" {
@@ -882,7 +882,7 @@ text {
 	object {
 		x=150
 		y=446
-		width=130
+		width=160
 		height=20
 	}
 	"basic attribute" {
@@ -1032,7 +1032,7 @@ text {
 	object {
 		x=195
 		y=263
-		width=90
+		width=60
 		height=20
 	}
 	"basic attribute" {
@@ -1059,7 +1059,7 @@ text {
 	object {
 		x=195
 		y=290
-		width=90
+		width=80
 		height=20
 	}
 	"basic attribute" {
@@ -1190,7 +1190,7 @@ text {
 	object {
 		x=150
 		y=523
-		width=90
+		width=100
 		height=20
 	}
 	"basic attribute" {
@@ -1223,59 +1223,48 @@ text {
 	}
 	textix="Collection mode"
 }
-composite {
+text {
+	object {
+		x=116
+		y=108
+		width=60
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Status"
+}
+text {
+	object {
+		x=70
+		y=108
+		width=40
+		height=20
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)Acquiring"
+	}
+	textix="Done"
+	align="horiz. right"
+}
+text {
 	object {
 		x=20
 		y=108
-		width=156
+		width=90
 		height=20
 	}
-	"composite name"=""
-	children {
-		text {
-			object {
-				x=116
-				y=108
-				width=60
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Status"
-		}
-		text {
-			object {
-				x=70
-				y=108
-				width=40
-				height=20
-			}
-			"basic attribute" {
-				clr=21
-			}
-			"dynamic attribute" {
-				vis="if zero"
-				chan="$(P)Acquiring"
-			}
-			textix="Done"
-			align="horiz. right"
-		}
-		text {
-			object {
-				x=20
-				y=108
-				width=90
-				height=20
-			}
-			"basic attribute" {
-				clr=18
-			}
-			"dynamic attribute" {
-				vis="if not zero"
-				chan="$(P)Acquiring"
-			}
-			textix="Acquiring"
-		}
+	"basic attribute" {
+		clr=18
 	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)Acquiring"
+	}
+	textix="Acquiring"
 }

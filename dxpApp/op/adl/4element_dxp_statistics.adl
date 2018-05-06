@@ -1,7 +1,7 @@
 
 file {
-	name="/home/epics/devel/dxp/dxpApp/op/adl/4element_dxp_statistics.adl"
-	version=030102
+	name="/home/epics/devel/dxp-4-0/dxpApp/op/adl/4element_dxp_statistics.adl"
+	version=030109
 }
 display {
 	object {
@@ -100,9 +100,9 @@ rectangle {
 }
 text {
 	object {
-		x=480
+		x=486
 		y=10
-		width=360
+		width=348
 		height=25
 	}
 	"basic attribute" {
@@ -183,9 +183,9 @@ text {
 }
 text {
 	object {
-		x=133
+		x=126
 		y=49
-		width=55
+		width=70
 		height=20
 	}
 	"basic attribute" {
@@ -197,9 +197,9 @@ text {
 }
 text {
 	object {
-		x=145
+		x=141
 		y=71
-		width=31
+		width=40
 		height=20
 	}
 	"basic attribute" {
@@ -277,7 +277,7 @@ text {
 	object {
 		x=380
 		y=49
-		width=69
+		width=70
 		height=20
 	}
 	"basic attribute" {
@@ -289,9 +289,9 @@ text {
 }
 text {
 	object {
-		x=394
+		x=384
 		y=71
-		width=40
+		width=60
 		height=20
 	}
 	"basic attribute" {
@@ -369,7 +369,7 @@ text {
 	object {
 		x=285
 		y=49
-		width=69
+		width=70
 		height=20
 	}
 	"basic attribute" {
@@ -381,9 +381,9 @@ text {
 }
 text {
 	object {
-		x=299
+		x=279
 		y=71
-		width=40
+		width=80
 		height=20
 	}
 	"basic attribute" {
@@ -459,9 +459,9 @@ text {
 }
 text {
 	object {
-		x=208
+		x=201
 		y=49
-		width=55
+		width=70
 		height=20
 	}
 	"basic attribute" {
@@ -473,9 +473,9 @@ text {
 }
 text {
 	object {
-		x=220
+		x=216
 		y=71
-		width=31
+		width=40
 		height=20
 	}
 	"basic attribute" {
@@ -551,9 +551,9 @@ text {
 }
 text {
 	object {
-		x=58
+		x=50
 		y=49
-		width=54
+		width=70
 		height=20
 	}
 	"basic attribute" {
@@ -565,9 +565,9 @@ text {
 }
 text {
 	object {
-		x=69
+		x=65
 		y=71
-		width=31
+		width=40
 		height=20
 	}
 	"basic attribute" {
@@ -643,9 +643,9 @@ text {
 }
 text {
 	object {
-		x=675
+		x=694
 		y=49
-		width=69
+		width=30
 		height=20
 	}
 	"basic attribute" {
@@ -721,9 +721,9 @@ text {
 }
 text {
 	object {
-		x=770
+		x=789
 		y=49
-		width=69
+		width=30
 		height=20
 	}
 	"basic attribute" {
@@ -1139,9 +1139,9 @@ bar {
 }
 text {
 	object {
-		x=1274
+		x=1284
 		y=71
-		width=90
+		width=70
 		height=20
 	}
 	"basic attribute" {
@@ -1283,7 +1283,7 @@ text {
 	object {
 		x=865
 		y=49
-		width=69
+		width=70
 		height=20
 	}
 	"basic attribute" {
@@ -1359,9 +1359,9 @@ text {
 }
 text {
 	object {
-		x=870
+		x=875
 		y=71
-		width=60
+		width=50
 		height=20
 	}
 	"basic attribute" {

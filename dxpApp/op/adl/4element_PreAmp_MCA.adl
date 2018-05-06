@@ -1,12 +1,12 @@
 
 file {
-	name="/home/epics/devel/dxp/dxpApp/op/adl/4element_PreAmp_MCA.adl"
-	version=030102
+	name="/home/epics/devel/dxp-4-0/dxpApp/op/adl/4element_PreAmp_MCA.adl"
+	version=030109
 }
 display {
 	object {
-		x=156
-		y=101
+		x=269
+		y=140
 		width=890
 		height=260
 	}
@@ -102,7 +102,7 @@ text {
 	object {
 		x=259
 		y=10
-		width=372
+		width=360
 		height=25
 	}
 	"basic attribute" {
@@ -300,9 +300,9 @@ text {
 }
 text {
 	object {
-		x=5
+		x=6
 		y=79
-		width=30
+		width=28
 		height=14
 	}
 	"basic attribute" {
@@ -382,9 +382,9 @@ rectangle {
 }
 text {
 	object {
-		x=218
+		x=248
 		y=40
-		width=130
+		width=70
 		height=20
 	}
 	"basic attribute" {
@@ -395,9 +395,9 @@ text {
 }
 text {
 	object {
-		x=71
+		x=78
 		y=79
-		width=42
+		width=28
 		height=14
 	}
 	"basic attribute" {
@@ -545,9 +545,9 @@ text {
 }
 text {
 	object {
-		x=265
+		x=268
 		y=79
-		width=42
+		width=35
 		height=14
 	}
 	"basic attribute" {
@@ -558,9 +558,9 @@ text {
 }
 text {
 	object {
-		x=262
+		x=269
 		y=64
-		width=49
+		width=35
 		height=14
 	}
 	"basic attribute" {
@@ -695,9 +695,9 @@ text {
 }
 text {
 	object {
-		x=359
+		x=366
 		y=79
-		width=42
+		width=28
 		height=14
 	}
 	"basic attribute" {
@@ -708,9 +708,9 @@ text {
 }
 text {
 	object {
-		x=356
+		x=353
 		y=64
-		width=49
+		width=56
 		height=14
 	}
 	"basic attribute" {
@@ -995,9 +995,9 @@ text {
 }
 text {
 	object {
-		x=438
+		x=455
 		y=79
-		width=77
+		width=42
 		height=14
 	}
 	"basic attribute" {
@@ -1132,9 +1132,9 @@ text {
 }
 text {
 	object {
-		x=437
+		x=451
 		y=65
-		width=77
+		width=49
 		height=14
 	}
 	"basic attribute" {
@@ -1145,9 +1145,9 @@ text {
 }
 text {
 	object {
-		x=174
+		x=167
 		y=79
-		width=42
+		width=56
 		height=14
 	}
 	"basic attribute" {
@@ -1287,9 +1287,9 @@ menu {
 }
 text {
 	object {
-		x=537
+		x=587
 		y=40
-		width=130
+		width=30
 		height=20
 	}
 	"basic attribute" {
@@ -1568,104 +1568,93 @@ text {
 	limits {
 	}
 }
-composite {
+"message button" {
 	object {
 		x=51
 		y=220
-		width=702
+		width=80
 		height=18
 	}
-	"composite name"=""
-	children {
-		"message button" {
-			object {
-				x=51
-				y=220
-				width=80
-				height=18
-			}
-			control {
-				chan="$(P)CopyPreampGain"
-				clr=14
-				bclr=51
-			}
-			label="Copy 1->All"
-			press_msg="1"
-		}
-		"message button" {
-			object {
-				x=245
-				y=220
-				width=80
-				height=18
-			}
-			control {
-				chan="$(P)CopyResetDelay"
-				clr=14
-				bclr=51
-			}
-			label="Copy 1->All"
-			press_msg="1"
-		}
-		"message button" {
-			object {
-				x=339
-				y=220
-				width=80
-				height=18
-			}
-			control {
-				chan="$(P)CopyDecayTime"
-				clr=14
-				bclr=51
-			}
-			label="Copy 1->All"
-			press_msg="1"
-		}
-		"message button" {
-			object {
-				x=673
-				y=220
-				width=80
-				height=18
-			}
-			control {
-				chan="$(P)CopyADCPercentRule"
-				clr=14
-				bclr=51
-			}
-			label="Copy 1->All"
-			press_msg="1"
-		}
-		"message button" {
-			object {
-				x=433
-				y=220
-				width=80
-				height=18
-			}
-			control {
-				chan="$(P)CopyMaxEnergy"
-				clr=14
-				bclr=51
-			}
-			label="Copy 1->All"
-			press_msg="1"
-		}
-		"message button" {
-			object {
-				x=149
-				y=220
-				width=80
-				height=18
-			}
-			control {
-				chan="$(P)CopyDetectorPolarity"
-				clr=14
-				bclr=51
-			}
-			label="Copy 1->All"
-			press_msg="1"
-		}
+	control {
+		chan="$(P)CopyPreampGain"
+		clr=14
+		bclr=51
 	}
+	label="Copy 1->All"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=245
+		y=220
+		width=80
+		height=18
+	}
+	control {
+		chan="$(P)CopyResetDelay"
+		clr=14
+		bclr=51
+	}
+	label="Copy 1->All"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=339
+		y=220
+		width=80
+		height=18
+	}
+	control {
+		chan="$(P)CopyDecayTime"
+		clr=14
+		bclr=51
+	}
+	label="Copy 1->All"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=673
+		y=220
+		width=80
+		height=18
+	}
+	control {
+		chan="$(P)CopyADCPercentRule"
+		clr=14
+		bclr=51
+	}
+	label="Copy 1->All"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=433
+		y=220
+		width=80
+		height=18
+	}
+	control {
+		chan="$(P)CopyMaxEnergy"
+		clr=14
+		bclr=51
+	}
+	label="Copy 1->All"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=149
+		y=220
+		width=80
+		height=18
+	}
+	control {
+		chan="$(P)CopyDetectorPolarity"
+		clr=14
+		bclr=51
+	}
+	label="Copy 1->All"
+	press_msg="1"
 }

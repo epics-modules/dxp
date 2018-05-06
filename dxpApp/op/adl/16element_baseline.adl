@@ -1,7 +1,7 @@
 
 file {
-	name="/home/epics/synApps5-1beta2/dxp/dxpApp/op/adl/16element_baseline.adl"
-	version=030000
+	name="/home/epics/devel/dxp-4-0/dxpApp/op/adl/16element_baseline.adl"
+	version=030109
 }
 display {
 	object {
@@ -131,6 +131,7 @@ text {
 		xdata="$(P)$(D)1:BaselineEnergyArray"
 		ydata="$(P)$(D)1:BaselineHistogram"
 		data_clr=27
+		yaxis=0
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -163,6 +164,7 @@ text {
 		xdata="$(P)$(D)2:BaselineEnergyArray"
 		ydata="$(P)$(D)2:BaselineHistogram"
 		data_clr=27
+		yaxis=0
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -195,6 +197,7 @@ text {
 		xdata="$(P)$(D)4:BaselineEnergyArray"
 		ydata="$(P)$(D)4:BaselineHistogram"
 		data_clr=27
+		yaxis=0
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -227,6 +230,7 @@ text {
 		xdata="$(P)$(D)3:BaselineEnergyArray"
 		ydata="$(P)$(D)3:BaselineHistogram"
 		data_clr=27
+		yaxis=0
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -307,6 +311,7 @@ text {
 		xdata="$(P)$(D)5:BaselineEnergyArray"
 		ydata="$(P)$(D)5:BaselineHistogram"
 		data_clr=27
+		yaxis=0
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -339,6 +344,7 @@ text {
 		xdata="$(P)$(D)7:BaselineEnergyArray"
 		ydata="$(P)$(D)7:BaselineHistogram"
 		data_clr=27
+		yaxis=0
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -371,6 +377,7 @@ text {
 		xdata="$(P)$(D)8:BaselineEnergyArray"
 		ydata="$(P)$(D)8:BaselineHistogram"
 		data_clr=27
+		yaxis=0
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -403,6 +410,7 @@ text {
 		xdata="$(P)$(D)6:BaselineEnergyArray"
 		ydata="$(P)$(D)6:BaselineHistogram"
 		data_clr=27
+		yaxis=0
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -435,6 +443,7 @@ text {
 		xdata="$(P)$(D)9:BaselineEnergyArray"
 		ydata="$(P)$(D)9:BaselineHistogram"
 		data_clr=27
+		yaxis=0
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -527,6 +536,7 @@ text {
 		xdata="$(P)$(D)16:BaselineEnergyArray"
 		ydata="$(P)$(D)16:BaselineHistogram"
 		data_clr=27
+		yaxis=0
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -571,6 +581,7 @@ text {
 		xdata="$(P)$(D)15:BaselineEnergyArray"
 		ydata="$(P)$(D)15:BaselineHistogram"
 		data_clr=27
+		yaxis=0
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -615,6 +626,7 @@ text {
 		xdata="$(P)$(D)14:BaselineEnergyArray"
 		ydata="$(P)$(D)14:BaselineHistogram"
 		data_clr=27
+		yaxis=0
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -659,6 +671,7 @@ text {
 		xdata="$(P)$(D)12:BaselineEnergyArray"
 		ydata="$(P)$(D)12:BaselineHistogram"
 		data_clr=27
+		yaxis=0
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -691,6 +704,7 @@ text {
 		xdata="$(P)$(D)13:BaselineEnergyArray"
 		ydata="$(P)$(D)13:BaselineHistogram"
 		data_clr=27
+		yaxis=0
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -723,6 +737,7 @@ text {
 		xdata="$(P)$(D)10:BaselineEnergyArray"
 		ydata="$(P)$(D)10:BaselineHistogram"
 		data_clr=27
+		yaxis=0
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -791,6 +806,7 @@ text {
 		xdata="$(P)$(D)11:BaselineEnergyArray"
 		ydata="$(P)$(D)11:BaselineHistogram"
 		data_clr=27
+		yaxis=0
 	}
 	x_axis {
 		rangeStyle="auto-scale"
@@ -817,7 +833,7 @@ text {
 }
 "message button" {
 	object {
-		x=238
+		x=233
 		y=622
 		width=80
 		height=20
@@ -834,7 +850,7 @@ text {
 	object {
 		x=43
 		y=622
-		width=105
+		width=100
 		height=20
 	}
 	"basic attribute" {
@@ -844,7 +860,7 @@ text {
 }
 menu {
 	object {
-		x=151
+		x=148
 		y=623
 		width=80
 		height=18

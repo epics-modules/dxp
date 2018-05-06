@@ -1,7 +1,7 @@
 
 file {
-	name="/home/epics/devel/dxp/dxpApp/op/adl/4elementFilters.adl"
-	version=030102
+	name="/home/epics/devel/dxp-4-0/dxpApp/op/adl/4elementFilters.adl"
+	version=030109
 }
 display {
 	object {
@@ -102,7 +102,7 @@ text {
 	object {
 		x=413
 		y=10
-		width=264
+		width=252
 		height=25
 	}
 	"basic attribute" {
@@ -147,9 +147,9 @@ text {
 }
 text {
 	object {
-		x=5
+		x=6
 		y=79
-		width=30
+		width=28
 		height=14
 	}
 	"basic attribute" {
@@ -161,9 +161,9 @@ text {
 }
 text {
 	object {
-		x=814
+		x=819
 		y=40
-		width=91
+		width=80
 		height=20
 	}
 	"basic attribute" {
@@ -328,9 +328,9 @@ text {
 }
 text {
 	object {
-		x=613
+		x=603
 		y=64
-		width=28
+		width=49
 		height=14
 	}
 	"basic attribute" {
@@ -1922,265 +1922,254 @@ menu {
 	clr=14
 	bclr=51
 }
-composite {
+"message button" {
+	object {
+		x=40
+		y=225
+		width=80
+		height=18
+	}
+	control {
+		chan="$(P)CopyTriggerPeakingTime"
+		clr=14
+		bclr=51
+	}
+	label="Copy 1->All"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=130
+		y=225
+		width=80
+		height=18
+	}
+	control {
+		chan="$(P)CopyTriggerGapTime"
+		clr=14
+		bclr=51
+	}
+	label="Copy 1->All"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=220
+		y=225
+		width=80
+		height=18
+	}
+	control {
+		chan="$(P)CopyTriggerThreshold"
+		clr=14
+		bclr=51
+	}
+	label="Copy 1->All"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=409
+		y=225
+		width=80
+		height=18
+	}
+	control {
+		chan="$(P)CopyGapTime"
+		clr=14
+		bclr=51
+	}
+	label="Copy 1->All"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=319
+		y=225
+		width=80
+		height=18
+	}
+	control {
+		chan="$(P)CopyPeakingTime"
+		clr=14
+		bclr=51
+	}
+	label="Copy 1->All"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=499
+		y=225
+		width=80
+		height=18
+	}
+	control {
+		chan="$(P)CopyEnergyThreshold"
+		clr=14
+		bclr=51
+	}
+	label="Copy 1->All"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=588
+		y=225
+		width=80
+		height=18
+	}
+	control {
+		chan="$(P)CopyMaxWidth"
+		clr=14
+		bclr=51
+	}
+	label="Copy 1->All"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=681
+		y=225
+		width=80
+		height=18
+	}
+	control {
+		chan="$(P)CopyBaselineCutPercent"
+		clr=14
+		bclr=51
+	}
+	label="Copy 1->All"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=767
+		y=225
+		width=40
+		height=18
+	}
+	control {
+		chan="$(P)CopyBaselineCutEnable"
+		clr=14
+		bclr=51
+	}
+	label="Copy"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=813
+		y=225
+		width=80
+		height=18
+	}
+	control {
+		chan="$(P)CopyBaselineThreshold"
+		clr=14
+		bclr=51
+	}
+	label="Copy 1->All"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=905
+		y=225
+		width=80
+		height=18
+	}
+	control {
+		chan="$(P)CopyBaselineFilterLength"
+		clr=14
+		bclr=51
+	}
+	label="Copy 1->All"
+	press_msg="1"
+}
+text {
+	object {
+		x=182
+		y=258
+		width=90
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="File name"
+	align="horiz. right"
+}
+"text entry" {
+	object {
+		x=282
+		y=258
+		width=500
+		height=20
+	}
+	control {
+		chan="$(P)SaveSystemFile"
+		clr=14
+		bclr=51
+	}
+	format="string"
+	limits {
+	}
+}
+"message button" {
+	object {
+		x=892
+		y=258
+		width=60
+		height=20
+	}
+	control {
+		chan="$(P)SaveSystem"
+		clr=14
+		bclr=51
+	}
+	label="Save"
+	press_msg="1"
+}
+"text update" {
+	object {
+		x=962
+		y=258
+		width=100
+		height=20
+	}
+	monitor {
+		chan="$(P)SaveSystem_RBV"
+		clr=53
+		bclr=4
+	}
+	clrmod="alarm"
+	format="string"
+	limits {
+	}
+}
+text {
+	object {
+		x=792
+		y=258
+		width=90
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Save file"
+	align="horiz. right"
+}
+text {
 	object {
 		x=12
-		y=225
-		width=1050
-		height=53
+		y=258
+		width=160
+		height=20
 	}
-	"composite name"=""
-	children {
-		"message button" {
-			object {
-				x=40
-				y=225
-				width=80
-				height=18
-			}
-			control {
-				chan="$(P)CopyTriggerPeakingTime"
-				clr=14
-				bclr=51
-			}
-			label="Copy 1->All"
-			press_msg="1"
-		}
-		"message button" {
-			object {
-				x=130
-				y=225
-				width=80
-				height=18
-			}
-			control {
-				chan="$(P)CopyTriggerGapTime"
-				clr=14
-				bclr=51
-			}
-			label="Copy 1->All"
-			press_msg="1"
-		}
-		"message button" {
-			object {
-				x=220
-				y=225
-				width=80
-				height=18
-			}
-			control {
-				chan="$(P)CopyTriggerThreshold"
-				clr=14
-				bclr=51
-			}
-			label="Copy 1->All"
-			press_msg="1"
-		}
-		"message button" {
-			object {
-				x=409
-				y=225
-				width=80
-				height=18
-			}
-			control {
-				chan="$(P)CopyGapTime"
-				clr=14
-				bclr=51
-			}
-			label="Copy 1->All"
-			press_msg="1"
-		}
-		"message button" {
-			object {
-				x=319
-				y=225
-				width=80
-				height=18
-			}
-			control {
-				chan="$(P)CopyPeakingTime"
-				clr=14
-				bclr=51
-			}
-			label="Copy 1->All"
-			press_msg="1"
-		}
-		"message button" {
-			object {
-				x=499
-				y=225
-				width=80
-				height=18
-			}
-			control {
-				chan="$(P)CopyEnergyThreshold"
-				clr=14
-				bclr=51
-			}
-			label="Copy 1->All"
-			press_msg="1"
-		}
-		"message button" {
-			object {
-				x=588
-				y=225
-				width=80
-				height=18
-			}
-			control {
-				chan="$(P)CopyMaxWidth"
-				clr=14
-				bclr=51
-			}
-			label="Copy 1->All"
-			press_msg="1"
-		}
-		"message button" {
-			object {
-				x=681
-				y=225
-				width=80
-				height=18
-			}
-			control {
-				chan="$(P)CopyBaselineCutPercent"
-				clr=14
-				bclr=51
-			}
-			label="Copy 1->All"
-			press_msg="1"
-		}
-		"message button" {
-			object {
-				x=767
-				y=225
-				width=40
-				height=18
-			}
-			control {
-				chan="$(P)CopyBaselineCutEnable"
-				clr=14
-				bclr=51
-			}
-			label="Copy"
-			press_msg="1"
-		}
-		"message button" {
-			object {
-				x=813
-				y=225
-				width=80
-				height=18
-			}
-			control {
-				chan="$(P)CopyBaselineThreshold"
-				clr=14
-				bclr=51
-			}
-			label="Copy 1->All"
-			press_msg="1"
-		}
-		"message button" {
-			object {
-				x=905
-				y=225
-				width=80
-				height=18
-			}
-			control {
-				chan="$(P)CopyBaselineFilterLength"
-				clr=14
-				bclr=51
-			}
-			label="Copy 1->All"
-			press_msg="1"
-		}
-		text {
-			object {
-				x=182
-				y=258
-				width=90
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="File name"
-			align="horiz. right"
-		}
-		"text entry" {
-			object {
-				x=282
-				y=258
-				width=500
-				height=20
-			}
-			control {
-				chan="$(P)SaveSystemFile"
-				clr=14
-				bclr=51
-			}
-			format="string"
-			limits {
-			}
-		}
-		"message button" {
-			object {
-				x=892
-				y=258
-				width=60
-				height=20
-			}
-			control {
-				chan="$(P)SaveSystem"
-				clr=14
-				bclr=51
-			}
-			label="Save"
-			press_msg="1"
-		}
-		"text update" {
-			object {
-				x=962
-				y=258
-				width=100
-				height=20
-			}
-			monitor {
-				chan="$(P)SaveSystem_RBV"
-				clr=53
-				bclr=4
-			}
-			clrmod="alarm"
-			format="string"
-			limits {
-			}
-		}
-		text {
-			object {
-				x=792
-				y=258
-				width=90
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Save file"
-			align="horiz. right"
-		}
-		text {
-			object {
-				x=12
-				y=258
-				width=160
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="System settings:"
-		}
+	"basic attribute" {
+		clr=14
 	}
+	textix="System settings:"
 }
