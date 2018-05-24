@@ -16,8 +16,7 @@ dxp-*/documentation \
 dxp-*/dxpApp/Db \
 dxp-*/dxpApp/firmware \
 dxp-*/dxpApp/op/adl \
-dxp-*/bin/win32-x86-static \
-dxp-*/bin/linux-x86 \
+dxp-*/bin/win* \
 dxp-*/dbd/ \
 dxp-*/iocBoot
 popd
