@@ -1,28 +1,28 @@
-4 0 0
+4 0 1
 beginScreenProperties
 major 4
 minor 0
-release 0
+release 1
 x 1351
 y 113
 w 1935
 h 945
 font "helvetica-medium-r-18.0"
-ctlFont "helvetica-medium-r-8.0"
+ctlFont "helvetica-bold-r-10.0"
 btnFont "helvetica-medium-r-18.0"
-fgColor index 14
-bgColor index 4
-textColor index 14
-ctlFgColor1 index 30
-ctlFgColor2 index 32
-ctlBgColor1 index 34
-ctlBgColor2 index 35
-topShadowColor index 37
-botShadowColor index 44
+fgColor rgb 0 0 0
+bgColor rgb 47872 47872 47872
+textColor rgb 0 0 0
+ctlFgColor1 rgb 64256 62208 18944
+ctlFgColor2 rgb 60928 46592 11008
+ctlBgColor1 rgb 52480 24832 0
+ctlBgColor2 rgb 65280 45056 65280
+topShadowColor rgb 44544 19968 48128
+botShadowColor rgb 13312 13056 34304
+showGrid
 snapToGrid
-gridSize 5
+gridSize 4
 endScreenProperties
-
 
 # (Rectangle)
 object activeRectangleClass
@@ -34,9 +34,9 @@ x 39
 y 39
 w 359
 h 39
-lineColor index 54
+lineColor rgb 2560 0 47104
 fill
-fillColor index 54
+fillColor rgb 2560 0 47104
 lineWidth 0
 endObjectProperties
 
@@ -55,9 +55,9 @@ border
 graphTitle "$(P)$(D)1"
 xLabel "Time (usec)"
 yLabel "ADC units"
-fgColor index 14
-bgColor index 2
-gridColor index 14
+fgColor rgb 0 0 0
+bgColor rgb 55808 55808 55808
+gridColor rgb 0 0 0
 font "helvetica-medium-r-10.0"
 # Operating Modes
 plotMode "plotLastNPts"
@@ -87,7 +87,7 @@ plotSymbolType {
   0 "circle"
 }
 plotColor {
-  0 index 27
+  0 rgb 19200 28160 50944
 }
 endObjectProperties
 
@@ -106,9 +106,9 @@ border
 graphTitle "$(P)$(D)2"
 xLabel "Time (usec)"
 yLabel "ADC units"
-fgColor index 14
-bgColor index 2
-gridColor index 14
+fgColor rgb 0 0 0
+bgColor rgb 55808 55808 55808
+gridColor rgb 0 0 0
 font "helvetica-medium-r-10.0"
 # Operating Modes
 plotMode "plotLastNPts"
@@ -138,7 +138,7 @@ plotSymbolType {
   0 "circle"
 }
 plotColor {
-  0 index 27
+  0 rgb 19200 28160 50944
 }
 endObjectProperties
 
@@ -157,9 +157,9 @@ border
 graphTitle "$(P)$(D)4"
 xLabel "Time (usec)"
 yLabel "ADC units"
-fgColor index 14
-bgColor index 2
-gridColor index 14
+fgColor rgb 0 0 0
+bgColor rgb 55808 55808 55808
+gridColor rgb 0 0 0
 font "helvetica-medium-r-10.0"
 # Operating Modes
 plotMode "plotLastNPts"
@@ -189,7 +189,7 @@ plotSymbolType {
   0 "circle"
 }
 plotColor {
-  0 index 27
+  0 rgb 19200 28160 50944
 }
 endObjectProperties
 
@@ -208,9 +208,9 @@ border
 graphTitle "$(P)$(D)3"
 xLabel "Time (usec)"
 yLabel "ADC units"
-fgColor index 14
-bgColor index 2
-gridColor index 14
+fgColor rgb 0 0 0
+bgColor rgb 55808 55808 55808
+gridColor rgb 0 0 0
 font "helvetica-medium-r-10.0"
 # Operating Modes
 plotMode "plotLastNPts"
@@ -240,7 +240,7 @@ plotSymbolType {
   0 "circle"
 }
 plotColor {
-  0 index 27
+  0 rgb 19200 28160 50944
 }
 endObjectProperties
 
@@ -248,17 +248,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 576
 y 97
-w 10
+w 22
 h 20
-font "helvetica-medium-r-8.0"
-fgColor index 54
+font "helvetica-medium-r-14.0"
+fgColor rgb 2560 0 47104
+bgColor index 3
 useDisplayBg
 value {
- "1"
+  "1"
 }
 endObjectProperties
 
@@ -266,17 +267,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 576
 y 286
-w 10
+w 22
 h 20
-font "helvetica-medium-r-8.0"
-fgColor index 54
+font "helvetica-medium-r-14.0"
+fgColor rgb 2560 0 47104
+bgColor index 3
 useDisplayBg
 value {
- "2"
+  "2"
 }
 endObjectProperties
 
@@ -284,17 +286,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 576
 y 475
-w 10
+w 22
 h 20
-font "helvetica-medium-r-8.0"
-fgColor index 54
+font "helvetica-medium-r-14.0"
+fgColor rgb 2560 0 47104
+bgColor index 3
 useDisplayBg
 value {
- "3"
+  "3"
 }
 endObjectProperties
 
@@ -302,17 +305,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 576
 y 664
-w 10
+w 22
 h 20
-font "helvetica-medium-r-8.0"
-fgColor index 54
+font "helvetica-medium-r-14.0"
+fgColor rgb 2560 0 47104
+bgColor index 3
 useDisplayBg
 value {
- "4"
+  "4"
 }
 endObjectProperties
 
@@ -331,9 +335,9 @@ border
 graphTitle "$(P)$(D)5"
 xLabel "Time (usec)"
 yLabel "ADC units"
-fgColor index 14
-bgColor index 2
-gridColor index 14
+fgColor rgb 0 0 0
+bgColor rgb 55808 55808 55808
+gridColor rgb 0 0 0
 font "helvetica-medium-r-10.0"
 # Operating Modes
 plotMode "plotLastNPts"
@@ -363,7 +367,7 @@ plotSymbolType {
   0 "circle"
 }
 plotColor {
-  0 index 27
+  0 rgb 19200 28160 50944
 }
 endObjectProperties
 
@@ -382,9 +386,9 @@ border
 graphTitle "$(P)$(D)7"
 xLabel "Time (usec)"
 yLabel "ADC units"
-fgColor index 14
-bgColor index 2
-gridColor index 14
+fgColor rgb 0 0 0
+bgColor rgb 55808 55808 55808
+gridColor rgb 0 0 0
 font "helvetica-medium-r-10.0"
 # Operating Modes
 plotMode "plotLastNPts"
@@ -414,7 +418,7 @@ plotSymbolType {
   0 "circle"
 }
 plotColor {
-  0 index 27
+  0 rgb 19200 28160 50944
 }
 endObjectProperties
 
@@ -433,9 +437,9 @@ border
 graphTitle "$(P)$(D)8"
 xLabel "Time (usec)"
 yLabel "ADC units"
-fgColor index 14
-bgColor index 2
-gridColor index 14
+fgColor rgb 0 0 0
+bgColor rgb 55808 55808 55808
+gridColor rgb 0 0 0
 font "helvetica-medium-r-10.0"
 # Operating Modes
 plotMode "plotLastNPts"
@@ -465,7 +469,7 @@ plotSymbolType {
   0 "circle"
 }
 plotColor {
-  0 index 27
+  0 rgb 19200 28160 50944
 }
 endObjectProperties
 
@@ -484,9 +488,9 @@ border
 graphTitle "$(P)$(D)6"
 xLabel "Time (usec)"
 yLabel "ADC units"
-fgColor index 14
-bgColor index 2
-gridColor index 14
+fgColor rgb 0 0 0
+bgColor rgb 55808 55808 55808
+gridColor rgb 0 0 0
 font "helvetica-medium-r-10.0"
 # Operating Modes
 plotMode "plotLastNPts"
@@ -516,7 +520,7 @@ plotSymbolType {
   0 "circle"
 }
 plotColor {
-  0 index 27
+  0 rgb 19200 28160 50944
 }
 endObjectProperties
 
@@ -535,9 +539,9 @@ border
 graphTitle "$(P)$(D)9"
 xLabel "Time (usec)"
 yLabel "ADC units"
-fgColor index 14
-bgColor index 2
-gridColor index 14
+fgColor rgb 0 0 0
+bgColor rgb 55808 55808 55808
+gridColor rgb 0 0 0
 font "helvetica-medium-r-10.0"
 # Operating Modes
 plotMode "plotLastNPts"
@@ -567,7 +571,7 @@ plotSymbolType {
   0 "circle"
 }
 plotColor {
-  0 index 27
+  0 rgb 19200 28160 50944
 }
 endObjectProperties
 
@@ -575,17 +579,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 961
 y 4
-w 10
+w 22
 h 20
-font "helvetica-medium-r-8.0"
-fgColor index 54
+font "helvetica-medium-r-14.0"
+fgColor rgb 2560 0 47104
+bgColor index 3
 useDisplayBg
 value {
- "5"
+  "5"
 }
 endObjectProperties
 
@@ -593,17 +598,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 961
 y 193
-w 10
+w 22
 h 20
-font "helvetica-medium-r-8.0"
-fgColor index 54
+font "helvetica-medium-r-14.0"
+fgColor rgb 2560 0 47104
+bgColor index 3
 useDisplayBg
 value {
- "6"
+  "6"
 }
 endObjectProperties
 
@@ -611,17 +617,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 961
 y 382
-w 10
+w 22
 h 20
-font "helvetica-medium-r-8.0"
-fgColor index 54
+font "helvetica-medium-r-14.0"
+fgColor rgb 2560 0 47104
+bgColor index 3
 useDisplayBg
 value {
- "7"
+  "7"
 }
 endObjectProperties
 
@@ -629,17 +636,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 961
 y 571
-w 10
+w 22
 h 20
-font "helvetica-medium-r-8.0"
-fgColor index 54
+font "helvetica-medium-r-14.0"
+fgColor rgb 2560 0 47104
+bgColor index 3
 useDisplayBg
 value {
- "8"
+  "8"
 }
 endObjectProperties
 
@@ -647,17 +655,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 961
 y 760
-w 10
+w 22
 h 20
-font "helvetica-medium-r-8.0"
-fgColor index 54
+font "helvetica-medium-r-14.0"
+fgColor rgb 2560 0 47104
+bgColor index 3
 useDisplayBg
 value {
- "9"
+  "9"
 }
 endObjectProperties
 
@@ -676,9 +685,9 @@ border
 graphTitle "$(P)$(D)16"
 xLabel "Time (usec)"
 yLabel "ADC units"
-fgColor index 14
-bgColor index 2
-gridColor index 14
+fgColor rgb 0 0 0
+bgColor rgb 55808 55808 55808
+gridColor rgb 0 0 0
 font "helvetica-medium-r-10.0"
 # Operating Modes
 plotMode "plotLastNPts"
@@ -708,7 +717,7 @@ plotSymbolType {
   0 "circle"
 }
 plotColor {
-  0 index 27
+  0 rgb 19200 28160 50944
 }
 endObjectProperties
 
@@ -716,17 +725,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 1726
 y 378
-w 20
+w 30
 h 20
-font "helvetica-medium-r-8.0"
-fgColor index 54
+font "helvetica-medium-r-14.0"
+fgColor rgb 2560 0 47104
+bgColor index 3
 useDisplayBg
 value {
- "16"
+  "16"
 }
 endObjectProperties
 
@@ -745,9 +755,9 @@ border
 graphTitle "$(P)$(D)15"
 xLabel "Time (usec)"
 yLabel "ADC units"
-fgColor index 14
-bgColor index 2
-gridColor index 14
+fgColor rgb 0 0 0
+bgColor rgb 55808 55808 55808
+gridColor rgb 0 0 0
 font "helvetica-medium-r-10.0"
 # Operating Modes
 plotMode "plotLastNPts"
@@ -777,7 +787,7 @@ plotSymbolType {
   0 "circle"
 }
 plotColor {
-  0 index 27
+  0 rgb 19200 28160 50944
 }
 endObjectProperties
 
@@ -785,17 +795,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 184
 y 386
-w 20
+w 30
 h 20
-font "helvetica-medium-r-8.0"
-fgColor index 54
+font "helvetica-medium-r-14.0"
+fgColor rgb 2560 0 47104
+bgColor index 3
 useDisplayBg
 value {
- "15"
+  "15"
 }
 endObjectProperties
 
@@ -814,9 +825,9 @@ border
 graphTitle "$(P)$(D)14"
 xLabel "Time (usec)"
 yLabel "ADC units"
-fgColor index 14
-bgColor index 2
-gridColor index 14
+fgColor rgb 0 0 0
+bgColor rgb 55808 55808 55808
+gridColor rgb 0 0 0
 font "helvetica-medium-r-10.0"
 # Operating Modes
 plotMode "plotLastNPts"
@@ -846,7 +857,7 @@ plotSymbolType {
   0 "circle"
 }
 plotColor {
-  0 index 27
+  0 rgb 19200 28160 50944
 }
 endObjectProperties
 
@@ -854,17 +865,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 186
 y 188
-w 20
+w 30
 h 20
-font "helvetica-medium-r-8.0"
-fgColor index 54
+font "helvetica-medium-r-14.0"
+fgColor rgb 2560 0 47104
+bgColor index 3
 useDisplayBg
 value {
- "14"
+  "14"
 }
 endObjectProperties
 
@@ -883,9 +895,9 @@ border
 graphTitle "$(P)$(D)12"
 xLabel "Time (usec)"
 yLabel "ADC units"
-fgColor index 14
-bgColor index 2
-gridColor index 14
+fgColor rgb 0 0 0
+bgColor rgb 55808 55808 55808
+gridColor rgb 0 0 0
 font "helvetica-medium-r-10.0"
 # Operating Modes
 plotMode "plotLastNPts"
@@ -915,7 +927,7 @@ plotSymbolType {
   0 "circle"
 }
 plotColor {
-  0 index 27
+  0 rgb 19200 28160 50944
 }
 endObjectProperties
 
@@ -934,9 +946,9 @@ border
 graphTitle "$(P)$(D)13"
 xLabel "Time (usec)"
 yLabel "ADC units"
-fgColor index 14
-bgColor index 2
-gridColor index 14
+fgColor rgb 0 0 0
+bgColor rgb 55808 55808 55808
+gridColor rgb 0 0 0
 font "helvetica-medium-r-10.0"
 # Operating Modes
 plotMode "plotLastNPts"
@@ -966,7 +978,7 @@ plotSymbolType {
   0 "circle"
 }
 plotColor {
-  0 index 27
+  0 rgb 19200 28160 50944
 }
 endObjectProperties
 
@@ -985,9 +997,9 @@ border
 graphTitle "$(P)$(D)10"
 xLabel "Time (usec)"
 yLabel "ADC units"
-fgColor index 14
-bgColor index 2
-gridColor index 14
+fgColor rgb 0 0 0
+bgColor rgb 55808 55808 55808
+gridColor rgb 0 0 0
 font "helvetica-medium-r-10.0"
 # Operating Modes
 plotMode "plotLastNPts"
@@ -1017,7 +1029,7 @@ plotSymbolType {
   0 "circle"
 }
 plotColor {
-  0 index 27
+  0 rgb 19200 28160 50944
 }
 endObjectProperties
 
@@ -1025,17 +1037,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 1341
 y 97
-w 20
+w 30
 h 20
-font "helvetica-medium-r-8.0"
-fgColor index 54
+font "helvetica-medium-r-14.0"
+fgColor rgb 2560 0 47104
+bgColor index 3
 useDisplayBg
 value {
- "10"
+  "10"
 }
 endObjectProperties
 
@@ -1043,17 +1056,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 1341
 y 475
-w 20
+w 30
 h 20
-font "helvetica-medium-r-8.0"
-fgColor index 54
+font "helvetica-medium-r-14.0"
+fgColor rgb 2560 0 47104
+bgColor index 3
 useDisplayBg
 value {
- "12"
+  "12"
 }
 endObjectProperties
 
@@ -1061,17 +1075,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 1341
 y 664
-w 20
+w 30
 h 20
-font "helvetica-medium-r-8.0"
-fgColor index 54
+font "helvetica-medium-r-14.0"
+fgColor rgb 2560 0 47104
+bgColor index 3
 useDisplayBg
 value {
- "13"
+  "13"
 }
 endObjectProperties
 
@@ -1090,9 +1105,9 @@ border
 graphTitle "$(P)$(D)11"
 xLabel "Time (usec)"
 yLabel "ADC units"
-fgColor index 14
-bgColor index 2
-gridColor index 14
+fgColor rgb 0 0 0
+bgColor rgb 55808 55808 55808
+gridColor rgb 0 0 0
 font "helvetica-medium-r-10.0"
 # Operating Modes
 plotMode "plotLastNPts"
@@ -1122,7 +1137,7 @@ plotSymbolType {
   0 "circle"
 }
 plotColor {
-  0 index 27
+  0 rgb 19200 28160 50944
 }
 endObjectProperties
 
@@ -1130,17 +1145,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 1341
 y 286
-w 20
+w 30
 h 20
-font "helvetica-medium-r-8.0"
-fgColor index 54
+font "helvetica-medium-r-14.0"
+fgColor rgb 2560 0 47104
+bgColor index 3
 useDisplayBg
 value {
- "11"
+  "11"
 }
 endObjectProperties
 
@@ -1148,18 +1164,19 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 49
 y 40
 w 341
 h 40
-font "helvetica-medium-r-8.0"
+font "utopia-medium-r-34.0"
 fontAlign "center"
-fgColor index 0
+fgColor rgb 65280 65280 65280
+bgColor index 3
 useDisplayBg
 value {
- "16 Element Trace"
+  "16 Element Trace"
 }
 endObjectProperties
 
@@ -1167,17 +1184,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 43
 y 622
 w 105
 h 20
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-14.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- "Read Rate:"
+  "Read Rate:"
 }
 endObjectProperties
 
@@ -1185,17 +1203,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 43
 y 647
 w 210
 h 20
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-14.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- "Time per point (usec):"
+  "Time per point (usec):"
 }
 endObjectProperties
 
@@ -1203,43 +1222,44 @@ endObjectProperties
 object activeXTextDspClass
 beginObjectProperties
 major 4
-minor 0
+minor 7
 release 0
 x 262
 y 647
 w 60
 h 20
 controlPv "$(P)TraceTimes"
-font "helvetica-medium-r-8.0"
+format "decimal"
+font "helvetica-medium-r-12.0"
+fontAlign "left"
+fgColor rgb 0 0 0
+bgColor rgb 29440 57088 65280
+editable
+motifWidget
+limitsFromDb
+nullColor rgb 60928 46592 11008
 smartRefresh
 fastUpdate
-fgColor index 14
-bgColor index 51
-editable
-autoHeight
-format decimal
-motifWidget
-nullColor index 32
-useHexPrefix
-objType "controls"
 newPos
+objType "controls"
 endObjectProperties
 
 # (Static Text)
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 43
 y 672
 w 100
 h 20
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-14.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- "Trace mode"
+  "Trace mode"
 }
 endObjectProperties
 
@@ -1253,11 +1273,11 @@ x 238
 y 622
 w 80
 h 20
-fgColor index 14
-onColor index 51
-offColor index 51
-topShadowColor index 0
-botShadowColor index 14
+fgColor rgb 0 0 0
+onColor rgb 29440 57088 65280
+offColor rgb 29440 57088 65280
+topShadowColor rgb 65280 65280 65280
+botShadowColor rgb 0 0 0
 controlPv "$(P)ReadTraces.PROC"
 pressValue "1"
 releaseValue 
@@ -1265,7 +1285,7 @@ onLabel "Read Once"
 offLabel "Read Once"
 3d
 useEnumNumeric
-font "helvetica-medium-r-10.0"
+font "helvetica-medium-r-12.0"
 endObjectProperties
 
 # (Menu Button)
@@ -1278,11 +1298,11 @@ x 151
 y 623
 w 80
 h 18
-fgColor index 14
-bgColor index 51
-inconsistentColor index 12
-topShadowColor index 2
-botShadowColor index 12
+fgColor rgb 0 0 0
+bgColor rgb 29440 57088 65280
+inconsistentColor rgb 17920 17920 17920
+topShadowColor rgb 55808 55808 55808
+botShadowColor rgb 17920 17920 17920
 controlPv "$(P)ReadTraces.SCAN"
 indicatorPv "$(P)ReadTraces.SCAN"
 font "helvetica-medium-r-10.0"
@@ -1298,11 +1318,11 @@ x 151
 y 673
 w 120
 h 18
-fgColor index 14
-bgColor index 51
-inconsistentColor index 12
-topShadowColor index 2
-botShadowColor index 12
+fgColor rgb 0 0 0
+bgColor rgb 29440 57088 65280
+inconsistentColor rgb 17920 17920 17920
+topShadowColor rgb 55808 55808 55808
+botShadowColor rgb 17920 17920 17920
 controlPv "$(P)TraceModes"
 indicatorPv "$(P)TraceModes"
 font "helvetica-medium-r-10.0"

@@ -1,44 +1,45 @@
-4 0 0
+4 0 1
 beginScreenProperties
 major 4
 minor 0
-release 0
+release 1
 x 82
 y 41
 w 250
 h 150
 font "helvetica-medium-r-18.0"
-ctlFont "helvetica-medium-r-8.0"
+ctlFont "helvetica-bold-r-10.0"
 btnFont "helvetica-medium-r-18.0"
-fgColor index 14
-bgColor index 4
-textColor index 14
-ctlFgColor1 index 30
-ctlFgColor2 index 32
-ctlBgColor1 index 34
-ctlBgColor2 index 35
-topShadowColor index 37
-botShadowColor index 44
+fgColor rgb 0 0 0
+bgColor rgb 47872 47872 47872
+textColor rgb 0 0 0
+ctlFgColor1 rgb 64256 62208 18944
+ctlFgColor2 rgb 60928 46592 11008
+ctlBgColor1 rgb 52480 24832 0
+ctlBgColor2 rgb 65280 45056 65280
+topShadowColor rgb 44544 19968 48128
+botShadowColor rgb 13312 13056 34304
+showGrid
 snapToGrid
-gridSize 5
+gridSize 4
 endScreenProperties
-
 
 # (Static Text)
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 130
 y 37
 w 60
 h 20
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-14.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- "Saturn"
+  "Saturn"
 }
 endObjectProperties
 
@@ -46,17 +47,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 130
 y 62
-w 40
+w 54
 h 20
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-14.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- "xMAP"
+  "xMAP"
 }
 endObjectProperties
 
@@ -64,17 +66,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 130
 y 87
 w 70
 h 20
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-14.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- "Mercury"
+  "Mercury"
 }
 endObjectProperties
 
@@ -82,17 +85,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 130
 y 112
 w 80
 h 20
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-14.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- "MicroDXP"
+  "MicroDXP"
 }
 endObjectProperties
 
@@ -100,17 +104,18 @@ endObjectProperties
 object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
+minor 1
+release 1
 x 18
 y 9
 w 210
 h 20
-font "helvetica-medium-r-8.0"
-fgColor index 14
+font "helvetica-medium-r-14.0"
+fgColor rgb 0 0 0
+bgColor index 3
 useDisplayBg
 value {
- "DXP Top Level Control"
+  "DXP Top Level Control"
 }
 endObjectProperties
 
@@ -124,17 +129,25 @@ x 59
 y 37
 w 66
 h 20
-fgColor index 14
-bgColor index 4
-topShadowColor index 2
-botShadowColor index 12
-font "helvetica-medium-r-10.0"
+fgColor rgb 0 0 0
+bgColor rgb 47872 47872 47872
+topShadowColor rgb 55808 55808 55808
+botShadowColor rgb 17920 17920 17920
+font "helvetica-medium-r-8.0"
 icon
-numPvs 0
-numDsps 0
+numPvs 2
+numDsps 1
 displayFileName {
+  0 dxpSaturn.edl
 }
 menuLabel {
+  0 Saturn
+}
+symbols {
+  0 "P=dxpSaturn:,M=mca1,D=dxp1:"
+}
+replaceSymbols {
+  0 1
 }
 endObjectProperties
 
@@ -148,17 +161,29 @@ x 59
 y 62
 w 66
 h 20
-fgColor index 14
-bgColor index 4
-topShadowColor index 2
-botShadowColor index 12
-font "helvetica-medium-r-10.0"
+fgColor rgb 0 0 0
+bgColor rgb 47872 47872 47872
+topShadowColor rgb 55808 55808 55808
+botShadowColor rgb 17920 17920 17920
+font "helvetica-medium-r-8.0"
 icon
-numPvs 0
-numDsps 0
+numPvs 4
+numDsps 2
 displayFileName {
+  0 4element_dxp.edl
+  1 16element_dxp.edl
 }
 menuLabel {
+  0 xMAP 4-element MED
+  1 xMAP 16-element MED
+}
+symbols {
+  0 "P=dxpXMAP:,M=mca,D=dxp"
+  1 "P=dxpXMAP:,M=mca,D=dxp"
+}
+replaceSymbols {
+  0 1
+  1 1
 }
 endObjectProperties
 
@@ -172,17 +197,25 @@ x 59
 y 87
 w 66
 h 20
-fgColor index 14
-bgColor index 4
-topShadowColor index 2
-botShadowColor index 12
-font "helvetica-medium-r-10.0"
+fgColor rgb 0 0 0
+bgColor rgb 47872 47872 47872
+topShadowColor rgb 55808 55808 55808
+botShadowColor rgb 17920 17920 17920
+font "helvetica-medium-r-8.0"
 icon
-numPvs 0
-numDsps 0
+numPvs 2
+numDsps 1
 displayFileName {
+  0 4element_dxp.edl
 }
 menuLabel {
+  0 Mercury 4-element
+}
+symbols {
+  0 "P=dxpMercury:,M=mca,D=dxp"
+}
+replaceSymbols {
+  0 1
 }
 endObjectProperties
 
@@ -196,17 +229,25 @@ x 59
 y 112
 w 66
 h 20
-fgColor index 14
-bgColor index 4
-topShadowColor index 2
-botShadowColor index 12
-font "helvetica-medium-r-10.0"
+fgColor rgb 0 0 0
+bgColor rgb 47872 47872 47872
+topShadowColor rgb 55808 55808 55808
+botShadowColor rgb 17920 17920 17920
+font "helvetica-medium-r-8.0"
 icon
-numPvs 0
-numDsps 0
+numPvs 2
+numDsps 1
 displayFileName {
+  0 microDXP.edl
 }
 menuLabel {
+  0 MicroDXP
+}
+symbols {
+  0 "P=microDXP:,M=mca1,D=dxp1:"
+}
+replaceSymbols {
+  0 1
 }
 endObjectProperties
 
