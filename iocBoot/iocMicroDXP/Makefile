@@ -1,6 +1,6 @@
 TOP = ../..
 include $(TOP)/configure/CONFIG
-#ARCH = win32-x86-static-vs2015
+#ARCH = windows-x64-static-vs2015
 #ARCH = linux-x86
 ARCH = linux-x86_64
 TARGETS = envPaths
