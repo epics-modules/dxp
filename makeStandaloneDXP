@@ -20,6 +20,7 @@ dxp-*/dxpApp/Db \
 dxp-*/dxpApp/firmware \
 dxp-*/dxpApp/op \
 dxp-*/bin/win* \
+dxp-*/bin/linux* \
 dxp-*/dbd/ \
 dxp-*/iocBoot
 
@@ -40,6 +41,7 @@ dxp-*/dxpApp/Db \
 dxp-*/dxpApp/firmware \
 dxp-*/dxpApp/op \
 dxp-*/bin/win* \
+dxp-*/bin/linux* \
 dxp-*/dbd/ \
 dxp-*/iocBoot \
 --exclude '*.svn*' --exclude '*/O.*'
