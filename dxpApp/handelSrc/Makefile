@@ -37,7 +37,7 @@ handel_SRCS += mercury.c mercury_psl.c
 handel_SRCS += udxp.c udxp_common.c udxp_psl.c 
 handel_SRCS += stj.c stj_psl.c 
 handel_SRCS_WIN32 += xmap.c xmap_psl.c 
-handel_SRCS_WIN32 += xia_epp.c xia_plx.c xia_usb.c xia_usb2.c md_win32.c 
+handel_SRCS_WIN32 += xia_plx.c xia_usb.c xia_usb2.c md_win32.c 
 handel_SRCS_Linux += xia_epp_linux.c md_linux.c
 
 handel_SRCS += xerxes.c
