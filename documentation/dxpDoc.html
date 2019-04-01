@@ -120,13 +120,13 @@
   <ul>
     <li>An <a href="http://www.aps.anl.gov/epics/modules/soft/asyn/">asyn port driver</a>.
       This driver is implements a class called <a href="dxpDoxygenHTML/class_n_d_dxp.html">
-        NDDxp</a>, which is derived from the <a href="http://cars.uchicago.edu/software/epics/areaDetectorDoc.html#asynNDArrayDriver">
+        NDDxp</a>, which is derived from the <a href="https://cars.uchicago.edu/software/epics/areaDetectorDoc.html#asynNDArrayDriver">
           asynNDArrayDriver</a> and <a href="http://www.aps.anl.gov/epics/modules/soft/asyn/R4-33/asynPortDriver.html">
             asynPortDriver</a> base C++ classes. The driver communicates with the hardware
       using the <a href="Handel_API_012902_branch2.pdf">XIA Handel library</a>, which
       in turn communicates with the <a href="http://www.xia.com/Manuals/XIA_Host_Software_Manual.pdf">
         XIA Xerxes library</a>. </li>
-    <li>An EPICS <a href="http://cars.uchicago.edu/software/epics/mcaRecord.html">MCA
+    <li>An EPICS <a href="https://cars.uchicago.edu/software/epics/mcaRecord.html">MCA
       record</a> for each detector. This communicates with the driver via the asyn MCA
       device support. This support allows each detector to be treated identically with
       other supported MCA hardware, such as the Canberra AIM. The MCA record is used for
@@ -138,7 +138,7 @@
       and ADC trace. These records use the standard asyn device support.</li>
     <li>A State Notation Language program (dxpMED) for synchronizing acquisition, ROIs,
       and DXP parameters in multi-element detector systems.</li>
-    <li>Support for the file-saving plugins from the <a href="http://cars.uchicago.edu/software/epics/areaDetector.html">
+    <li>Support for the file-saving plugins from the <a href="https://cars.uchicago.edu/software/epics/areaDetector.html">
       areaDetector</a> package. These plugins are used to stream data to disk in the mappping
       modes on the xMAP and Mercury.</li>
     <li>Databases for single-element and multi-element detector systems.</li>
@@ -2355,13 +2355,13 @@
   <p>
     In the mapping modes on the xMAP and Mercury data are collected into a double-buffered
     memory on the module. When one half of the buffer memory is full the EPICS driver
-    reads the data from that buffer into an <a href="http://cars.uchicago.edu/software/epics/areaDetectorDoc.html#NDArray">
-      NDArray object.</a> It then calls any registered <a href="http://cars.uchicago.edu/software/epics/pluginDoc.html">
-        plugins</a> with that NDArray. The plugins will typically be one of the <a href="http://cars.uchicago.edu/software/epics/NDPluginFile.html">
+    reads the data from that buffer into an <a href="https://cars.uchicago.edu/software/epics/areaDetectorDoc.html#NDArray">
+      NDArray object.</a> It then calls any registered <a href="https://cars.uchicago.edu/software/epics/pluginDoc.html">
+        plugins</a> with that NDArray. The plugins will typically be one of the <a href="https://cars.uchicago.edu/software/epics/NDPluginFile.html">
           NDPluginFile</a> plugins which will write the data to disk. The useful file
     plugins can write the data in netCDF, NeXus/HDF5, and TIFF formats. The JPEG plugin
     will not be useful, because the data are not images. The data can also be passed
-    to the <a href="http://cars.uchicago.edu/software/epics/NDPluginStdArrays.html">NDPluginStdArrays</a>
+    to the <a href="https://cars.uchicago.edu/software/epics/NDPluginStdArrays.html">NDPluginStdArrays</a>
     plugin which can make the data available to EPICS channel access clients as waveform
     records.</p>
   <p>
@@ -2552,14 +2552,14 @@
     </li>
   </ul>
   <p>
-    There are IDL functions available in the <a href="http://cars.uchicago.edu/software/idl/detectors.html">
+    There are IDL functions available in the <a href="https://cars.uchicago.edu/software/idl/detectors.html">
       CARS IDL detector package</a> to conveniently extract the MCA, SCA, or List mode
-    data from netCDF files produced with the netCDF plugin. <a href="http://cars.uchicago.edu/software/idl/detector_routines.html#read_xmap_netcdf">
+    data from netCDF files produced with the netCDF plugin. <a href="https://cars.uchicago.edu/software/idl/detector_routines.html#read_xmap_netcdf">
       read_xmap_netcdf.pro</a> reads mapping data from a single netCDF file. It calls
-    <a href="http://cars.uchicago.edu/software/idl/detector_routines.html#read_nd_netcdf">
-      read_nd_netcdf.pro</a> and <a href="http://cars.uchicago.edu/software/idl/detector_routines.html#decode_xmap_buffers">
-        decode_xmap_buffers.pro</a>. <a href="http://cars.uchicago.edu/software/idl/detector_routines.html#read_xmap_2d">
-          read_xmap_2d.pro</a> is an IDL procedure that calls <a href="http://cars.uchicago.edu/software/idl/detector_routines.html#read_xmap_netcdf">
+    <a href="https://cars.uchicago.edu/software/idl/detector_routines.html#read_nd_netcdf">
+      read_nd_netcdf.pro</a> and <a href="https://cars.uchicago.edu/software/idl/detector_routines.html#decode_xmap_buffers">
+        decode_xmap_buffers.pro</a>. <a href="https://cars.uchicago.edu/software/idl/detector_routines.html#read_xmap_2d">
+          read_xmap_2d.pro</a> is an IDL procedure that calls <a href="https://cars.uchicago.edu/software/idl/detector_routines.html#read_xmap_netcdf">
             read_xmap_netcdf.pro</a> to read all of the netCDF files for an entire 2-D
     scan collected by programs such as the Python program described above.</p>
   <p>
@@ -2720,7 +2720,7 @@ IDL> iplot, h, yrange=[1,1e3], /ylog
       After installing Exceed you need to install the <a href="https://epics.anl.gov/distributions/win32/">
         EPICS Windows Tools</a>, which contain medm.</li>
     <li>Download <a href="https://github.com/epics-modules/dxp">source code from Github</a>
-      or <a href="http://cars.uchicago.edu/software/epics/dxp.html">the latest standalone
+      or <a href="https://cars.uchicago.edu/software/epics/dxp.html">the latest standalone
         release</a> of the EPICS DXP software, containing pre-built Windows binaries.</li>
     <li>If using the pre-built version unpack that distribution into a directory such
       as C:\EPICS or C:\Program Files\EPICS.</li>
