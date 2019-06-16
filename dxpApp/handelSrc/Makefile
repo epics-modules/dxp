@@ -67,11 +67,11 @@ handel_SYS_LIBS_WIN32 += setupapi User32
 handel_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 ifeq (win32-x86, $(findstring win32-x86, $(T_A)))
-  BIN_INSTALLS   += ../plxapi711.dll
+  BIN_INSTALLS   += ../plxapi720.dll
   LIB_INSTALLS   += ../PlxApi.lib
 endif
 ifeq (windows-x64, $(findstring windows-x64, $(T_A)))
-  BIN_INSTALLS   += ../x64/plxapi711_x64.dll
+  BIN_INSTALLS   += ../x64/plxapi720_x64.dll
   LIB_INSTALLS   += ../x64/PlxApi.lib
 endif
 
