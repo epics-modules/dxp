@@ -41,6 +41,7 @@
 
 #include "xia_mddef.h"
 #include "xia_common.h"
+#include "md_shim.h"
 
 
 #ifdef __cplusplus
@@ -50,17 +51,6 @@ extern "C" {
 #ifdef _DXP_PROTO_ /* ANSI C Prototypes go here */
 XIA_MD_EXPORT int XIA_MD_API dxp_md_init_util(Xia_Util_Functions *funcs, char *type);
 XIA_MD_EXPORT int XIA_MD_API dxp_md_init_io(Xia_Io_Functions *funcs, char *type);
-XIA_MD_SHARED void XIA_MD_API dxp_md_error(char *,char *, int *, char *file, int line);
-
-XIA_MD_SHARED void XIA_MD_API dxp_md_warning(char *routine, char *message, char *file, int line);
-XIA_MD_SHARED void XIA_MD_API dxp_md_info(char *routine, char *message, char *file, int line);
-XIA_MD_SHARED void XIA_MD_API dxp_md_debug(char *routine, char *message, char *file, int line);
-XIA_MD_SHARED void XIA_MD_API dxp_md_output(char *filename);
-XIA_MD_SHARED int XIA_MD_API dxp_md_enable_log(void);
-XIA_MD_SHARED int XIA_MD_API dxp_md_suppress_log(void);
-XIA_MD_SHARED int XIA_MD_API dxp_md_set_log_level(int level);
-XIA_MD_SHARED void XIA_MD_API dxp_md_log(int level, char *routine, char *message, int error,
-										 char *file, int line);
 
 XIA_MD_SHARED void XIA_MD_API *dxp_md_alloc(size_t);
 XIA_MD_SHARED void XIA_MD_API dxp_md_free(void *);
@@ -71,16 +61,6 @@ XIA_MD_SHARED void XIA_MD_API dxp_md_free(void *);
 XIA_MD_EXPORT int XIA_MD_API dxp_md_init_util();
 XIA_MD_EXPORT int XIA_MD_API dxp_md_init_io();
 
-XIA_MD_SHARED void XIA_MD_API dxp_md_error();
-XIA_MD_SHARED void XIA_MD_API dxp_md_warning();
-XIA_MD_SHARED void XIA_MD_API dxp_md_info();
-XIA_MD_SHARED void XIA_MD_API dxp_md_debug();
-XIA_MD_SHARED void XIA_MD_API dxp_md_output();
-XIA_MD_SHARED int XIA_MD_API dxp_md_enable_log();
-XIA_MD_SHARED int XIA_MD_API dxp_md_suppress_log();
-XIA_MD_SHARED int XIA_MD_API dxp_md_set_log_level();
-XIA_MD_SHARED void XIA_MD_API dxp_md_log();
-
 #endif /* _DXP_PROTO_ */
 
 #ifdef __cplusplus
@@ -88,7 +68,7 @@ XIA_MD_SHARED void XIA_MD_API dxp_md_log();
 #endif /* __cplusplus */
 
 /* Current output for the logging routines. By default, this is set to stdout */
-extern FILE *out_stream;
+static FILE *out_stream;
 
 /* Logging macros */
 #define dxp_md_log_error(x, y, z)	dxp_md_log(MD_ERROR,   (x), (y), (z), __FILE__, __LINE__)

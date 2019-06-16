@@ -325,19 +325,19 @@ HANDEL_EXPORT int HANDEL_API xiaDownloadFirmware(int detChan, char *type)
 
         /* Sync up the current firmware structure here */
         if (STREQ(type, "fippi")) {
-            strcpy(module->currentFirmware[modChan].currentFiPPI, rawFilename);
+            strcpy(currentFirmware->currentFiPPI, rawFilename);
 
         } else if (STREQ(type, "dsp")) {
-            strcpy(module->currentFirmware[modChan].currentDSP, rawFilename);
+            strcpy(currentFirmware->currentDSP, rawFilename);
 
         } else if (STREQ(type, "user_fippi")) {
-            strcpy(module->currentFirmware[modChan].currentUserFiPPI, rawFilename);
+            strcpy(currentFirmware->currentUserFiPPI, rawFilename);
 
         } else if (STREQ(type, "user_dsp")) {
-            strcpy(module->currentFirmware[modChan].currentUserDSP, rawFilename);
+            strcpy(currentFirmware->currentUserDSP, rawFilename);
 
         } else if (STREQ(type, "system_fpga")) {
-            strcpy(module->currentFirmware[modChan].currentSysFPGA, rawFilename);
+            strcpy(currentFirmware->currentSysFPGA, rawFilename);
         }
         break;
 

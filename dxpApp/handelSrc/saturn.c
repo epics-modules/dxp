@@ -55,10 +55,9 @@ static char info_string[INFO_LEN];
 
 /* Starting memory location and length for DSP parameter memory */
 static unsigned short startp=START_PARAMS;
-/* Variable to store the number of DAC counts per unit gain (dB) */
-static double dacpergaindb;
-/* Variable to store the number of DAC counts per unit gain (linear) */
-static double dacpergain;
+
+
+
 /*
  * Pointer to utility functions
  */
@@ -964,11 +963,8 @@ static int dxp_download_fpga_done(int* modChan, char *name, Board *board)
     unsigned short used;
     int ioChan;
 
-    int idummy;
-
-    /* dummy assignment to satisfy compiler */
-    idummy = *modChan;
-
+    UNUSED(modChan);
+    
     /* Few assignements to make life easier */
     ioChan = board->ioChan;
     used = board->used;
@@ -1147,11 +1143,7 @@ static int dxp_download_dsp_done(int* ioChan, int* modChan, int* mod,
     /* Time to wait between checking BUSY */
     float wait;
 
-    Dsp_Info *dsp = NULL;
-
-
-    dsp = board->dsp[*modChan];
-    ASSERT(dsp != NULL);
+    ASSERT(board->dsp[*modChan] != NULL);
 
     wait = *timeout/divisions;
 
@@ -2020,7 +2012,7 @@ static int dxp_read_baseline(int* ioChan, int* modChan, Board* board,
     us_baseline = (unsigned short *)saturn_md_alloc(len * sizeof(unsigned short));
 
     if (!us_baseline) {
-        sprintf(info_string, "Error allocating %d bytes for 'us_baseline'",
+        sprintf(info_string, "Error allocating %zu bytes for 'us_baseline'",
                 len * sizeof(unsigned short));
         saturn_md_free(us_baseline);
         dxp_log_error("dxp_read_baseline", info_string, DXP_ALLOCMEM);
@@ -2413,7 +2405,7 @@ static int dxp_begin_control_task(int* ioChan, int* modChan, short *type,
             ustemp = (unsigned short *)saturn_md_alloc((*length - 4) * sizeof(unsigned short));
 
             if (ustemp == NULL) {
-                sprintf(info_string, "Out-of-memory allocating %d bytes for 'ustemp'",
+                sprintf(info_string, "Out-of-memory allocating %zu bytes for 'ustemp'",
                         (*length - 4) * sizeof(unsigned short));
                 dxp_log_error("dxp_begin_control_task", info_string, DXP_NOMEM);
                 return DXP_NOMEM;
@@ -3152,10 +3144,7 @@ XERXES_STATIC int dxp_read_reg(int *ioChan, int *modChan, char *name,
  */
 XERXES_STATIC int XERXES_API dxp_unhook(Board *board)
 {
-    int status;
-
-
-    status = board->iface->funcs->dxp_md_close(&(board->ioChan));
+    board->iface->funcs->dxp_md_close(&(board->ioChan));
 
     /* Ignore the status due to some issues involving
      * repetitive function calls.
@@ -3186,7 +3175,6 @@ XERXES_STATIC int dxp_read_external_memory(int *ioChan, int *modChan, Board *boa
     unsigned long i;
 
     float wait = 0.0;
-    float poll = 0.0;
 
     double BUSY = 0.0;
 
@@ -3214,7 +3202,6 @@ XERXES_STATIC int dxp_read_external_memory(int *ioChan, int *modChan, Board *boa
     mem_buf_len = info[0];
     /*  wait = (float)info[1]; */
     wait = .001f;
-    poll = (float)info[2];
 
     for (i = 0; requested_len > 0; requested_len -= mem_buf_len, i++) {
 
@@ -3258,7 +3245,7 @@ XERXES_STATIC int dxp_read_external_memory(int *ioChan, int *modChan, Board *boa
         buf = (unsigned long *)saturn_md_alloc(current_len * sizeof(unsigned long));
 
         if (buf == NULL) {
-            sprintf(info_string, "Out-of-memory allocating %d bytes for 'buf'",
+            sprintf(info_string, "Out-of-memory allocating %zu bytes for 'buf'",
                     current_len * sizeof(unsigned long));
             dxp_log_error("dxp_read_external_memory", info_string, DXP_NOMEM);
             return DXP_NOMEM;
@@ -3322,7 +3309,6 @@ XERXES_STATIC int dxp_write_external_memory(int *ioChan, int *modChan, Board *bo
     short task = CT_SATURN_WRITE_MEMORY;
 
     float wait = 0.0;
-    float poll = 0.0;
 
     double BUSY = 0.0;
 
@@ -3351,7 +3337,6 @@ XERXES_STATIC int dxp_write_external_memory(int *ioChan, int *modChan, Board *bo
     mem_buf_len = task_info[0];
     /*  wait = (float)task_info[1]; */
     wait = .001f;
-    poll = (float)task_info[2];
 
     for (i = 0; requested_len > 0; requested_len -= mem_buf_len, i++) {
 
@@ -3365,7 +3350,7 @@ XERXES_STATIC int dxp_write_external_memory(int *ioChan, int *modChan, Board *bo
         info = (int *)saturn_md_alloc(info_len * sizeof(int));
 
         if (info == NULL) {
-            sprintf(info_string, "Out-of-memory allocating %d bytes for 'info'",
+            sprintf(info_string, "Out-of-memory allocating %zu bytes for 'info'",
                     info_len * sizeof(int));
             dxp_log_error("dxp_write_external_memory", info_string, DXP_NOMEM);
             return DXP_NOMEM;
@@ -3547,7 +3532,7 @@ XERXES_STATIC int dxp_read_spectrum_memory(int *ioChan, int *modChan,
     mca = saturn_md_alloc(n_mca_words * sizeof(unsigned short));
 
     if (mca == NULL) {
-        sprintf(info_string, "Unable to allocated %d bytes for 'mca'.",
+        sprintf(info_string, "Unable to allocated %zu bytes for 'mca'.",
                 n_mca_words * sizeof(unsigned short));
         dxp_log_error("dxp_read_spectrum_memory", info_string, DXP_NOMEM);
         return DXP_NOMEM;

@@ -65,7 +65,6 @@
 
 
 /* Private routines */
-XERXES_STATIC int dxp_get_btype(char *name, Board_Info **current);
 XERXES_STATIC int dxp_add_btype_library(Board_Info *current);
 XERXES_STATIC int dxp_init_iface_ds(void);
 XERXES_STATIC int dxp_init_dsp_ds(void);
@@ -399,7 +398,6 @@ static int XERXES_API dxp_init_fippi_ds(void)
 int XERXES_API dxp_add_system_item(char *ltoken, char **values)
 {
     int status=DXP_SUCCESS;
-    size_t len;
     unsigned int j;
 
     char *strTmp = '\0';
@@ -410,9 +408,6 @@ int XERXES_API dxp_add_system_item(char *ltoken, char **values)
     /* Now Proceed to process the entry */
     sprintf(info_string, "Adding system item '%s'", ltoken);
     dxp_log_info("dxp_add_system_item", info_string);
-
-    /* Get the length of the value parameters used by this routine */
-    len = strlen(values[0]);
 
     /* Convert the token to lower case for comparison */
     for (j = 0; j < strlen(strTmp); j++) {
@@ -1048,34 +1043,6 @@ static int XERXES_API dxp_free_params(Dsp_Params *params)
     return status;
 }
 
-/*
- * Routine to Retrieve the correct Board_Info structure from the
- * global linked list...match the type name.
- */
-static int XERXES_API dxp_get_btype(char* name, Board_Info** match)
-/* char *name;					Input: name of the board type			*/
-/* Board_Info **match;			Output: pointer the correct structure	*/
-{
-    int status=DXP_SUCCESS;
-
-    Board_Info *current = btypes_head;
-
-    /* First search thru the linked list and see if this configuration
-     * already exists */
-    while (current!=NULL) {
-        /* Does the filename match? */
-        if (STREQ(current->name, name)) {
-            *match = current;
-            return status;
-        }
-        current = current->next;
-    }
-
-    status = DXP_UNKNOWN_BTYPE;
-    sprintf(info_string,"Board Type %s unknown, please define",PRINT_NON_NULL(name));
-    dxp_log_error("dxp_get_btype",info_string,status);
-    return status;
-}
 
 /*
  * Routine to Load a new board Type into the linked list.  Return pointer
@@ -1280,7 +1247,7 @@ XERXES_STATIC int dxp_add_dsp(char* filename, Board_Info* board,
     new_dsp = (Dsp_Info *)xerxes_md_alloc(sizeof(Dsp_Info));
 
     if (!new_dsp) {
-        sprintf(info_string, "Error allocating %d bytes for 'new_dsp'",
+        sprintf(info_string, "Error allocating %zu bytes for 'new_dsp'",
                 sizeof(Dsp_Info));
         dxp_log_error("dxp_add_dsp", info_string, DXP_NOMEM);
         return DXP_NOMEM;
@@ -1291,7 +1258,7 @@ XERXES_STATIC int dxp_add_dsp(char* filename, Board_Info* board,
     if (!new_dsp->params) {
         dxp_free_dsp(new_dsp);
 
-        sprintf(info_string, "Error allocating %d bytes for 'new_dsp->params'",
+        sprintf(info_string, "Error allocating %zu bytes for 'new_dsp->params'",
                 sizeof(Dsp_Params));
         dxp_log_error("dxp_add_dsp", info_string, DXP_NOMEM);
         return DXP_NOMEM;
@@ -1302,7 +1269,7 @@ XERXES_STATIC int dxp_add_dsp(char* filename, Board_Info* board,
     if (!new_dsp->filename) {
         dxp_free_dsp(new_dsp);
 
-        sprintf(info_string, "Error allocating %d bytes for 'new_dsp->filename'",
+        sprintf(info_string, "Error allocating %zu bytes for 'new_dsp->filename'",
                 strlen(filename) + 1);
         dxp_log_error("dxp_add_dsp", info_string, DXP_NOMEM);
         return DXP_NOMEM;
@@ -1328,7 +1295,7 @@ XERXES_STATIC int dxp_add_dsp(char* filename, Board_Info* board,
         if (!new_dsp->data) {
             dxp_free_dsp(new_dsp);
 
-            sprintf(info_string, "Error allocating %d bytes for 'new_dsp->data'",
+            sprintf(info_string, "Error allocating %zu bytes for 'new_dsp->data'",
                     new_dsp->maxproglen * sizeof(unsigned short));
             dxp_log_error("dxp_add_dsp", info_string, DXP_NOMEM);
             return DXP_NOMEM;
@@ -1342,7 +1309,7 @@ XERXES_STATIC int dxp_add_dsp(char* filename, Board_Info* board,
     if (!new_dsp->params->parameters) {
         dxp_free_dsp(new_dsp);
 
-        sprintf(info_string, "Error allocating %d bytes for 'new_dsp->params->"
+        sprintf(info_string, "Error allocating %zu bytes for 'new_dsp->params->"
                 "parameter'", new_dsp->params->maxsym * sizeof(Parameter));
         dxp_log_error("dxp_add_dsp", info_string, DXP_NOMEM);
         return DXP_NOMEM;
@@ -1355,7 +1322,7 @@ XERXES_STATIC int dxp_add_dsp(char* filename, Board_Info* board,
     if (!new_dsp->params->per_chan_parameters) {
         dxp_free_dsp(new_dsp);
 
-        sprintf(info_string, "Error allocating %d bytes for 'new_dsp->params->"
+        sprintf(info_string, "Error allocating %zu bytes for 'new_dsp->params->"
                 "per_chan_parameters'", new_dsp->params->maxsym * sizeof(Parameter));
         dxp_log_error("dxp_add_dsp", info_string, DXP_NOMEM);
         return DXP_NOMEM;
@@ -1460,7 +1427,7 @@ static int XERXES_API dxp_add_fippi(char* filename, Board_Info* board,
     *fippi = xerxes_md_alloc(sizeof(Fippi_Info));
 
     if (*fippi == NULL) {
-        sprintf(info_string, "Error allocating %d bytes for '*fippi'",
+        sprintf(info_string, "Error allocating %zu bytes for '*fippi'",
                 sizeof(Fippi_Info));
         dxp_log_error("dxp_add_fippi", info_string, DXP_NOMEM);
         return DXP_NOMEM;
@@ -1473,7 +1440,7 @@ static int XERXES_API dxp_add_fippi(char* filename, Board_Info* board,
     (*fippi)->filename = xerxes_md_alloc(strlen(filename) + 1);
 
     if ((*fippi)->filename == NULL) {
-        sprintf(info_string, "Error allocating %d bytes for '*fippi->filename'",
+        sprintf(info_string, "Error allocating %zu bytes for '*fippi->filename'",
                 strlen(filename) + 1);
         dxp_log_error("dxp_add_fippi", info_string, DXP_NOMEM);
         return DXP_NOMEM;
@@ -1694,7 +1661,7 @@ int XERXES_API dxp_replace_fpgaconfig(int* detChan, char *name, char* filename)
 {
     int status;
     int ioChan, modChan;
-    unsigned short used;
+
     /* Pointer to the chosen Board */
     Board *chosen=NULL;
 
@@ -1705,8 +1672,8 @@ int XERXES_API dxp_replace_fpgaconfig(int* detChan, char *name, char* filename)
         dxp_log_error("dxp_replace_fpgaconfig",info_string,status);
         return status;
     }
+
     ioChan = chosen->ioChan;
-    used = chosen->used;
 
     /* Load the Fippi configuration into the structure */
 
@@ -2797,7 +2764,7 @@ XERXES_EXPORT int XERXES_API dxp_readout_detector_run(int* detChan,
 
     int status;
 
-    int ioChan, modChan;
+    int modChan;
     /* Pointer to the Chosen Board */
     Board *chosen=NULL;
 
@@ -2808,8 +2775,7 @@ XERXES_EXPORT int XERXES_API dxp_readout_detector_run(int* detChan,
         dxp_log_error("dxp_readout_detector_run",info_string,status);
         return status;
     }
-    ioChan = chosen->ioChan;
-
+    
     /* wrapper for the real readout routine */
     status = dxp_do_readout(chosen, &modChan, params, baseline, spectrum);
 
@@ -3198,7 +3164,6 @@ XERXES_EXPORT int XERXES_API dxp_cmd(int *detChan, byte_t *cmd, unsigned int *le
                                      byte_t *send, unsigned int *lenR, byte_t *receive)
 {
     int status;
-	int ioChan;
     int modChan;
 
     Board *chosen = NULL;
@@ -3211,11 +3176,8 @@ XERXES_EXPORT int XERXES_API dxp_cmd(int *detChan, byte_t *cmd, unsigned int *le
         return status;
     }
 
-	ioChan = chosen->ioChan;
-
     /* Only works for supported devices */
     if (chosen->btype->funcs->dxp_do_cmd) {
-        dxp_log_debug("dxp_cmd", "do comand");
         status = chosen->btype->funcs->dxp_do_cmd(modChan, chosen, *cmd, *lenS,
                                                   send, *lenR, receive);
 

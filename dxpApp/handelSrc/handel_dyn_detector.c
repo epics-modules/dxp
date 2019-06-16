@@ -529,8 +529,7 @@ HANDEL_EXPORT int HANDEL_API xiaGetDetectors(char *detectors[])
     Detector *current = xiaDetectorHead;
 
 
-    for (i = 0; current != NULL; current = getListNext(current)) {
-
+    for (i = 0; current != NULL; current = getListNext(current), i++) {        
         strcpy(detectors[i], current->alias);
     }
 

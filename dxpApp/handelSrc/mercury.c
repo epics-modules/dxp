@@ -688,7 +688,7 @@ static int dxp__load_symbols_from_file(char *file, Dsp_Params *params)
                                                                      sizeof(unsigned long));
 
             if (!params->chan_offsets) {
-                sprintf(info_string, "Error allocating %d bytes for 'params->"
+                sprintf(info_string, "Error allocating %zu bytes for 'params->"
                         "chan_offsets'", 4 * sizeof(unsigned long));
                 dxp_log_error("dxp__load_symbols_from_file", info_string, DXP_NOMEM);
                 return DXP_NOMEM;
@@ -1897,13 +1897,13 @@ XERXES_STATIC int dxp_read_reg(int *ioChan, int *modChan, char *name,
  */
 XERXES_STATIC int dxp_unhook(Board *b)
 {
-    int status;
+
 
 
     ASSERT(b != NULL);
 
 
-    status = b->iface->funcs->dxp_md_close(&(b->ioChan));
+    b->iface->funcs->dxp_md_close(&(b->ioChan));
 
     /* Ignore status? */
 
@@ -2049,7 +2049,7 @@ static int dxp__write_block(int *ioChan, unsigned long addr, unsigned long n,
     buf = mercury_md_alloc(len * sizeof(unsigned short));
 
     if (buf == NULL) {
-        sprintf(info_string, "Unable to allocate %d bytes for 'buf'",
+        sprintf(info_string, "Unable to allocate %zu bytes for 'buf'",
                 len * sizeof(unsigned short));
         dxp_log_error("dxp__write_block", info_string, status);
         return status;
@@ -2302,7 +2302,7 @@ static int dxp__download_fpga(int ioChan, unsigned long target,
     cfg_data = mercury_md_alloc(fpga->proglen * 2 * sizeof(unsigned long));
 
     if (cfg_data == NULL) {
-        sprintf(info_string, "Unable to allocate %d bytes for 'cfg_data'",
+        sprintf(info_string, "Unable to allocate %zu bytes for 'cfg_data'",
                 fpga->proglen * 2 * sizeof(unsigned long));
         dxp_log_error("dxp__download_fpga", info_string, DXP_NOMEM);
         return DXP_NOMEM;
@@ -2950,7 +2950,7 @@ static int dxp__read_block(int *ioChan, unsigned long addr, unsigned long n,
     buf = mercury_md_alloc(len * sizeof(unsigned short));
 
     if (buf == NULL) {
-        sprintf(info_string, "Unable to allocate %d bytes for 'buf'",
+        sprintf(info_string, "Unable to allocate %zu bytes for 'buf'",
                 len * sizeof(unsigned short));
         dxp_log_error("dxp__read_block", info_string, status);
         return status;
@@ -3444,7 +3444,6 @@ static int dxp__put_dsp_to_sleep(int ioChan, int modChan, Board *b)
 static int dxp__wake_dsp_up(int ioChan, int modChan, Board *b)
 {
     int status;
-    int ignored_status;
 
     parameter_t RUNTYPE = MERCURY_RUNTYPE_NORMAL;
 
@@ -3486,11 +3485,12 @@ static int dxp__wake_dsp_up(int ioChan, int modChan, Board *b)
     status = dxp__wait_for_busy(ioChan, modChan, 0, 1.0, b);
 
     if (status != DXP_SUCCESS) {
-        ignored_status = dxp_read_dspsymbol(&ioChan, &modChan, "RUNERROR", b,
+        dxp_read_dspsymbol(&ioChan, &modChan, "RUNERROR", b,
                                             &RUNERROR);
         sprintf(info_string, "Error waiting for DSP to wake up (RUNERROR = %#hx) for "
                 "ioChan = %d", (parameter_t)RUNERROR, ioChan);
         dxp_log_error("dxp__wake_dsp_up", info_string, status);
+
         return status;
     }
 

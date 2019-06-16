@@ -114,8 +114,6 @@ HANDEL_EXPORT void HANDEL_API xiaDumpDetChanStruct(char *fileName)
  */
 HANDEL_EXPORT void HANDEL_API xiaDumpDSPParameters(int detChan, char *fileName)
 {
-    int statusX;
-
     unsigned short nSymbols;
     unsigned short value;
     unsigned short i;
@@ -123,14 +121,14 @@ HANDEL_EXPORT void HANDEL_API xiaDumpDSPParameters(int detChan, char *fileName)
     char **paramNames;
 
     FILE *paramFile = NULL;
-
+    
     paramFile = fopen(fileName, "w");
     if (paramFile == NULL)
     {
         return;
     }
 
-    statusX = dxp_max_symbols(&detChan, &nSymbols);
+    dxp_max_symbols(&detChan, &nSymbols);
 
     paramNames = (char **)malloc(sizeof(char *) * nSymbols);
     for (i = 0; i < nSymbols; i++)
@@ -141,8 +139,8 @@ HANDEL_EXPORT void HANDEL_API xiaDumpDSPParameters(int detChan, char *fileName)
 
     for (i = 0; i < nSymbols; i++)
     {
-        statusX = dxp_symbolname_by_index(&detChan, &i, paramNames[i]);
-        statusX = dxp_get_one_dspsymbol(&detChan, paramNames[i], &value);
+        dxp_symbolname_by_index(&detChan, &i, paramNames[i]);
+        dxp_get_one_dspsymbol(&detChan, paramNames[i], &value);
 
         fprintf(paramFile, "%s: %u\n", paramNames[i], value);
     }

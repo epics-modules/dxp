@@ -79,6 +79,7 @@
 #define CMD_SNAPSHOT            0x08
 #define CMD_READ_SNAPSHOT_MCA   0x09
 #define CMD_READ_SNAPSHOT_STATS 0x0A
+#define CMD_READ_SNAPSHOT_SCA   0x0C
 
 /* Diagnostic Tools */
 #define CMD_READ_BASELINE       0x10

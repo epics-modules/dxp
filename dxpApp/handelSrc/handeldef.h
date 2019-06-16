@@ -144,4 +144,16 @@
 
 #endif               /* end of _HANDEL_SWITCH_*/
 
+#if __GNUC__
+#define HANDEL_PRINTF(_s, _f) __attribute__ ((format (printf, _s, _f)))
+#else
+#define HANDEL_PRINTF(_s, _f)
+#endif
+
+#ifdef _WIN32			/* If we are on a Windows platform */
+#define HANDLE_PATHNAME_SEP '\\'
+#else					/* Not on a Windows platform */
+#define HANDLE_PATHNAME_SEP '/'
+#endif					/* Endif for _WIN32 */
+
 #endif				 /* Endif for HANDELDEF_H */

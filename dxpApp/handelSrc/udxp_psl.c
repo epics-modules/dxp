@@ -116,8 +116,8 @@ PSL_STATIC int pslSetFilterParam(int detChan, byte_t n, parameter_t value);
 PSL_STATIC int pslGetFilterParam(int detChan, byte_t n, parameter_t *value);
 PSL_STATIC double pslCalculateBaseGain(unsigned int gainMode,
                                        parameter_t SWGAIN, parameter_t DGAINBASE, signed short DGAINBASEEXP);
-PSL_STATIC int pslGetSCADataDirect(int detChan, int numSca, double *sca64);
-PSL_STATIC int pslGetSCADataCmd(int detChan, int numSca, double *sca64);
+PSL_STATIC int pslGetSCADataDirect(int detChan, int numSca, unsigned long addr, double *sca64);
+PSL_STATIC int pslGetSCADataCmd(int detChan, int numSca, byte_t cmd, double *sca64);
 PSL_STATIC void pslCalculatePeakingTimes(int detChan, int fippi,
       unsigned short ptPerFippi, double baseclock, byte_t *receive, double *pts);
 PSL_STATIC int pslReadoutPeakingTimes(int detChan, XiaDefaults *defs,
@@ -182,6 +182,8 @@ PSL_STATIC int pslGetSnapshotMcaLen(int detChan, void *value, XiaDefaults *defs)
 PSL_STATIC int pslGetSnapshotMca(int detChan, void *value, XiaDefaults *defs);
 PSL_STATIC int pslGetSnapshotStatsLen(int detChan, void *value, XiaDefaults *defs);
 PSL_STATIC int pslGetSnapshotStats(int detChan, void *value, XiaDefaults *defs);
+PSL_STATIC int pslGetSnapshotScaLen(int detChan, void *value, XiaDefaults *defs);
+PSL_STATIC int pslGetSnapshotSca(int detChan, void *value, XiaDefaults *defs);
 
 PSL_STATIC int pslDoTrace(int detChan, short type, double *info, XiaDefaults *defs);
 
@@ -561,6 +563,8 @@ static SpecialRunData specialRunData[] = {
     {"snapshot_mca",                pslGetSnapshotMca},
     {"snapshot_statistics_length",  pslGetSnapshotStatsLen},
     {"snapshot_statistics",         pslGetSnapshotStats},
+    {"snapshot_sca_length",         pslGetSnapshotScaLen},
+    {"snapshot_sca",                pslGetSnapshotSca},
 };
 
 static BoardOperation boardOps[] = {
@@ -713,19 +717,15 @@ PSL_STATIC int pslValidateModule(Module *module)
  */
 PSL_STATIC boolean_t pslIsInterfaceValid(Module *module)
 {
-
-#ifndef EXCLUDE_SERIAL
-    if (module->interface_info->type == SERIAL) {
+    if (module->interface_info->type == XIA_SERIAL) {
         IS_USB = FALSE_;
         return TRUE_;
     }
-#endif /* EXCLUDE_SERIAL */
-#ifndef EXCLUDE_USB2
-    if (module->interface_info->type == USB2) {
+
+    if (module->interface_info->type == XIA_USB2) {
         IS_USB = TRUE_; /* HACK for RS232 Alpha support */
         return TRUE_;
     }
-#endif /* EXCLUDE_USB2 */
 
     return FALSE_;
 }
@@ -3373,6 +3373,92 @@ PSL_STATIC int pslGetBytePerBin(int detChan, char *name, XiaDefaults *defs, void
 
     return XIA_SUCCESS;
 }
+
+/*
+ * snapshot_sca_length special run data
+ * value (unsigned long) same as acq value number_of_scas
+ */
+PSL_STATIC int pslGetSnapshotScaLen(int detChan, void *value, XiaDefaults *defs)
+{
+    int status;
+    double nSCAs = 0.0;
+
+    ASSERT(defs != NULL);
+
+    status = pslGetAcquisitionValues(detChan, "number_of_scas", (void *)&nSCAs, defs);
+
+    if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error finding 'number_of_scas' for detChan %d", detChan);
+        pslLogError("pslGetSnapshotScaLen", info_string, status);
+        return status;
+    }
+
+    *((unsigned long *)value) = (unsigned long)nSCAs;
+
+    return XIA_SUCCESS;
+}
+
+/*
+ * snapshot_sca special run data
+ * value (array of double)
+ * in the same sequence as sca run data
+ */
+PSL_STATIC int pslGetSnapshotSca(int detChan, void *value, XiaDefaults *defs)
+{
+    int status;
+
+    unsigned long features;
+    unsigned long addr;
+    
+    parameter_t SCASTART;
+    
+    double number_of_scas;
+    double *sca64 = (double *)value;
+    
+    UNUSED(defs);
+
+    ASSERT(value != NULL);
+
+    status = pslGetBoardFeatures(detChan, NULL, defs, (void *)&features);
+
+    if ((status != XIA_SUCCESS) || !(features & 1 << BOARD_SUPPORTS_SNAPSHOTSCA)) {
+        pslLogError("pslGetSnapshotSca", "Connected device does not support "
+                "'snapshot_sca' special run value", XIA_NOSUPPORT_VALUE);
+        return XIA_NOSUPPORT_VALUE;
+    }
+
+    status = pslGetDefault("number_of_scas", (void *)&number_of_scas, defs);
+
+    if (status != XIA_SUCCESS) {
+        sprintf(info_string, "'number_of_scas' is not in the acquisition value "
+                "list for detChan %d. Are there SCAs configured for this channel?",
+                detChan);
+        pslLogError("pslGetSCAData", info_string, status);
+        return status;
+    }
+    
+    /* USB raw data readout is supported */
+    if (IS_USB) {
+        status = pslGetParameter(detChan, "SCASTART", &SCASTART);
+        if (status != XIA_SUCCESS) {
+            pslLogError("pslGetSCAData", "Error getting SCASTART", status);
+            return status;
+        }
+        addr = DSP_DATA_MEMORY_OFFSET + SCASTART + 32;        
+        status = pslGetSCADataDirect(detChan, (int)number_of_scas, addr, sca64);
+    } else {
+        status = pslGetSCADataCmd(detChan, (int)number_of_scas, CMD_READ_SNAPSHOT_SCA, sca64);
+    }
+
+    if (status != DXP_SUCCESS) {
+        sprintf(info_string, "Error reading snapshot sca for detChan %d", detChan);
+        pslLogError("pslGetSnapshotStats", info_string, status);
+        return status;
+    }
+
+    return XIA_SUCCESS;
+}
+
 
 /*
  * snapshot_statistics_length special run data
@@ -7575,7 +7661,7 @@ PSL_STATIC int pslGetTriggerPosition(int detChan, char *name, XiaDefaults *defs,
 
 
 /*
- * board operation board_features, check the DSP coderev to
+ * board operation get_board_features, check the DSP coderev to
  * determine board features, returns unsigned long representing bit flags
  * defined in BoardFeatures
  */
@@ -7599,6 +7685,7 @@ PSL_STATIC int pslGetBoardFeatures(int detChan, char *name, XiaDefaults *defs,
     *features |= ((unsigned long) (coderev >= MIN_UPDATED_PRESET_CODEREV)) << BOARD_SUPPORTS_UPDATED_PRESET;
     *features |= ((unsigned long) (coderev >= MIN_SNAPSHOT_SUPPORT_CODEREV)) << BOARD_SUPPORTS_SNAPSHOT;
     *features |= ((unsigned long) (coderev >= MIN_PASSTHROUGH_SUPPORT_CODEREV)) << BOARD_SUPPORTS_PASSTHROUGH;
+    *features |= ((unsigned long) (coderev >= MIN_SNAPSHOTSCA_SUPPORT_CODEREV)) << BOARD_SUPPORTS_SNAPSHOTSCA;
 
     return XIA_SUCCESS;
 }
@@ -7856,7 +7943,7 @@ PSL_STATIC int pslGetNumScas(int detChan, char *name, XiaDefaults *defs, void *v
     status = pslGetBoardFeatures(detChan, NULL, defs, (void *)&features);
 
     if ((status != XIA_SUCCESS) || !(features & 1 << BOARD_SUPPORTS_SCA)) {
-        pslLogError("pslGetSCALength", "Connected device does not support "
+        pslLogError("pslGetNumScas", "Connected device does not support "
                     "'number_of_scas' acquisition value", XIA_NOSUPPORT_VALUE);
         return XIA_NOSUPPORT_VALUE;
     }
@@ -8197,10 +8284,12 @@ PSL_STATIC int pslGetSCALength(int detChan, void *value, XiaDefaults *defs)
  */
 PSL_STATIC int pslGetSCAData(int detChan, void *value, XiaDefaults *defs)
 {
-
     int status;
+    
     unsigned long features = 0;
-
+    unsigned long addr;
+    parameter_t SCASTART = 0x0000;
+    
     double number_of_scas = 0.0;
     double *sca64 = (double *)value;
 
@@ -8227,9 +8316,16 @@ PSL_STATIC int pslGetSCAData(int detChan, void *value, XiaDefaults *defs)
 
     /* Only USB microDxp support direct memory read out */
     if (IS_USB) {
-        status = pslGetSCADataDirect(detChan, (int)number_of_scas, sca64);
+        status = pslGetParameter(detChan, "SCASTART", &SCASTART);
+        if (status != XIA_SUCCESS) {
+            pslLogError("pslGetSCAData", "Error getting SCASTART", status);
+            return status;
+        }
+
+        addr = DSP_DATA_MEMORY_OFFSET + SCASTART;        
+        status = pslGetSCADataDirect(detChan, (int)number_of_scas, addr, sca64);
     } else {
-        status = pslGetSCADataCmd(detChan, (int)number_of_scas, sca64);
+        status = pslGetSCADataCmd(detChan, (int)number_of_scas, CMD_READ_SCA, sca64);
     }
 
     if (status != XIA_SUCCESS) {
@@ -8240,7 +8336,7 @@ PSL_STATIC int pslGetSCAData(int detChan, void *value, XiaDefaults *defs)
     return XIA_SUCCESS;
 }
 
-PSL_STATIC int pslGetSCADataCmd(int detChan, int numSca, double *sca64)
+PSL_STATIC int pslGetSCADataCmd(int detChan, int numSca, byte_t cmd, double *sca64)
 {
     int statusX;
 
@@ -8249,7 +8345,6 @@ PSL_STATIC int pslGetSCADataCmd(int detChan, int numSca, double *sca64)
     unsigned int lenR = 0;
     unsigned int lenS = 0;
 
-    byte_t cmd = CMD_READ_SCA;
     byte_t *receive = NULL;
 
     lenR = 4 * numSca + 2 + RECV_BASE;
@@ -8284,32 +8379,22 @@ PSL_STATIC int pslGetSCADataCmd(int detChan, int numSca, double *sca64)
     return XIA_SUCCESS;
 }
 
-PSL_STATIC int pslGetSCADataDirect(int detChan, int numSca, double *sca64)
+PSL_STATIC int pslGetSCADataDirect(int detChan, int numSca, unsigned long addr,
+                                    double *sca64)
 {
     int statusX;
-    int status;
 
     int i;
 
     unsigned long memLen = 0;
-    unsigned long addr = 0;
 
     char mem[MAXITEM_LEN];
-    parameter_t SCASTART = 0x0000;
 
     unsigned long *data;
 
     ASSERT(IS_USB);
 
-    status = pslGetParameter(detChan, "SCASTART", &SCASTART);
-
-    if (status != XIA_SUCCESS) {
-        pslLogError("pslGetSCADataDirect", "Error getting SCASTART", status);
-        return status;
-    }
-
     memLen = 2 * numSca;
-    addr = DSP_DATA_MEMORY_OFFSET + SCASTART;
     sprintf(mem, "direct:%#lx:%lu", addr, memLen);
 
     data = (unsigned long *)utils->funcs->dxp_md_alloc(memLen * sizeof(unsigned long));

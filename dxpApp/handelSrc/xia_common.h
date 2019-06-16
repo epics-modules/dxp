@@ -107,4 +107,15 @@ typedef unsigned long*  PULONG;
 #define MAX(x, y)  ((x) > (y) ? (x) : (y))
 #endif /* MAX */
 
+/* Visual Studio projects that are nested set the __FILE__ to be the
+ * path the compiler used to find the file which causes expansions
+ * like ..\..\..\..\src\foo.c. This clogs up the log files. This idea
+ * was suggested here: http://stackoverflow.com/a/8488201
+ */
+#ifdef _WIN32
+#define XIA_FILE (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
+#else /* _WIN32 */
+#define XIA_FILE __FILE__
+#endif /* _WIN32 */
+
 #endif /* __XIA_COMMON_H__ */

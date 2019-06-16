@@ -65,7 +65,7 @@ typedef int (*DoSpecialRun_FP)(int, void *, XiaDefaults *);
 typedef int (*DoSpecialRunData_FP)(int, void *, XiaDefaults *);
 typedef int (*DoRunData_FP)(int detChan, void *value, XiaDefaults *defs,
 				Module *m);
-typedef int (*GetAcqValue_FP)(int, XiaDefaults *, void *);
+typedef int (*GetAcqValue_FP)(int, void *, XiaDefaults *);
 typedef int (*SetAcqValue_FP)(int detChan, int modChan, char *name, void *value,
 							  char *detectorType, XiaDefaults *defs, Module *m,
 							  Detector *det, FirmwareSet *fs);

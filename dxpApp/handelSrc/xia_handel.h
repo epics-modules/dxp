@@ -249,7 +249,9 @@ HANDEL_SHARED int HANDEL_API xiaFreeFirmware(Firmware *firmware);
 HANDEL_SHARED int HANDEL_API xiaFreeXiaDefaults(XiaDefaults *xiaDefaults);
 HANDEL_SHARED int HANDEL_API xiaFreeXiaDaqEntry(XiaDaqEntry *entry);
 HANDEL_SHARED int HANDEL_API xiaFreeModule(Module *module);
-HANDEL_SHARED void HANDEL_API xiaLog(int level, char *routine, char *message, int error);
+HANDEL_SHARED void HANDEL_API xiaLog(int level, const char* file, int line,
+                                     int status, const char* func,
+                                     const char* fmt, ...) HANDEL_PRINTF(6, 7);
 HANDEL_SHARED Detector* HANDEL_API xiaFindDetector(char *alias);
 HANDEL_SHARED FirmwareSet* HANDEL_API xiaFindFirmware(char *alias);
 HANDEL_SHARED XiaDefaults* HANDEL_API xiaFindDefault(char *alias);

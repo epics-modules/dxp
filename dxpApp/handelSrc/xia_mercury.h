@@ -112,14 +112,12 @@ XERXES_STATIC int dxp_write_reg(int *ioChan, int *modChan, char *name,
                                 unsigned long *data);
 XERXES_STATIC int dxp_read_reg(int *ioChan, int *modChan, char *name,
                                unsigned long *data);
-XERXES_STATIC int dxp_do_cmd(int modChan, Board *board, byte_t cmd, unsigned int lenS,
-                             byte_t *send, unsigned int lenR, byte_t *receive);
+
 XERXES_STATIC int dxp_unhook(Board *board);
 XERXES_STATIC int dxp_get_symbol_by_index(int modChan, unsigned short index,
                                           Board *board, char *name);
 XERXES_STATIC int dxp_get_num_params(int modChan, Board *b,
                                      unsigned short *n_params);
-static FILE *dxp_find_file(const char* filename, const char* mode);
 
 /* Logging macro wrappers */
 #define dxp_log_error(x, y, z)  \
@@ -229,12 +227,6 @@ static unsigned long MERCURY_CFG_STATUS[MERCURY_NUM_TARGETS][2] = {
   { 0x1,  0x2  },
   { 0x4,  0x8  },
 };
-
-static char *MERCURY_FPGA_NAMES[MERCURY_NUM_TARGETS] = {
-  "system FPGA",
-  "FiPPI A",
-};
-
 
 /* CPLD Status Register Bit Masks */
 #define DXP_CPLD_STATUS_SYS_INIT 0x1

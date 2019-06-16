@@ -1,8 +1,6 @@
-/* Routines used for controlling the logging functionality in Handel. */
-
 /*
  * Copyright (c) 2002-2004 X-ray Instrumentation Associates
- * Copyright (c) 2005-2015 XIA LLC
+ *               2005-2011 XIA LLC
  * All rights reserved
  *
  * Redistribution and use in source and binary forms,
@@ -37,15 +35,23 @@
  */
 
 
+#include <stdarg.h>
 #include <stdio.h>
 
 #include "handel_generic.h"
+#include "handel_log.h"
 #include "handeldef.h"
 #include "xia_handel.h"
-#include "xerxes_errors.h"
 #include "handel_errors.h"
 
+/**
+ * Format the log messages into this buffer.
+ */
+static char formatBuffer[2048];
 
+/**
+ * This routine enables the logging output
+ */
 HANDEL_EXPORT int HANDEL_API xiaEnableLogOutput(void)
 {
     int status;
@@ -57,7 +63,7 @@ HANDEL_EXPORT int HANDEL_API xiaEnableLogOutput(void)
 
     status = handel_md_enable_log();
 
-    if (status != DXP_SUCCESS)
+    if (status != XIA_SUCCESS)
     {
         return XIA_MD;
     }
@@ -65,7 +71,9 @@ HANDEL_EXPORT int HANDEL_API xiaEnableLogOutput(void)
     return XIA_SUCCESS;
 }
 
-
+/**
+ * This routine disables the logging output
+ */
 HANDEL_EXPORT int HANDEL_API xiaSuppressLogOutput(void)
 {
     int status;
@@ -77,7 +85,7 @@ HANDEL_EXPORT int HANDEL_API xiaSuppressLogOutput(void)
 
     status = handel_md_suppress_log();
 
-    if (status != DXP_SUCCESS)
+    if (status != XIA_SUCCESS)
     {
         return XIA_MD;
     }
@@ -85,11 +93,12 @@ HANDEL_EXPORT int HANDEL_API xiaSuppressLogOutput(void)
     return XIA_SUCCESS;
 }
 
-/*
- * Sets the maximum level at which log messages will be displayed. Use
- * the levels from md_generic.h.
+/**
+ * This routine sets the maximum level at which log messages will be
+ * displayed.
  */
 HANDEL_EXPORT int HANDEL_API xiaSetLogLevel(int level)
+/* int level;                            Input: Level to set the logging to   */
 {
     int status;
 
@@ -100,7 +109,7 @@ HANDEL_EXPORT int HANDEL_API xiaSetLogLevel(int level)
 
     status = handel_md_set_log_level(level);
 
-    if (status != DXP_SUCCESS)
+    if (status != XIA_SUCCESS)
     {
         return XIA_MD;
     }
@@ -108,13 +117,12 @@ HANDEL_EXPORT int HANDEL_API xiaSetLogLevel(int level)
     return XIA_SUCCESS;
 }
 
-/*
- * Sets the output stream for the logging routines. By default, the
- * output is sent to stdout. Literal strings "stdout" and "stderr"
- * mean to redirect to the console. Anything else is assumed to be a
- * file name.
+/**
+ * This routine sets the output stream for the logging routines. By default,
+ * the output is sent to stdout.
  */
 HANDEL_EXPORT int HANDEL_API xiaSetLogOutput(char *filename)
+/* char *filename;                    Input: name of file to redirect reporting */
 {
     if (handel_md_output == NULL)
     {
@@ -127,7 +135,31 @@ HANDEL_EXPORT int HANDEL_API xiaSetLogOutput(char *filename)
 }
 
 
-/*
+/**
+ * This routine outputs the log.
+ */
+HANDEL_SHARED void HANDEL_API xiaLog(int level, const char* file, int line,
+                                     int status, const char* func, const char* fmt, ...)
+{
+    va_list args;
+
+    va_start(args, fmt);
+
+    /*
+     * Cannot use vsnprintf on MinGW currently because is generates
+     * an unresolved external.
+     */
+    vsprintf(formatBuffer, fmt, args);
+
+    formatBuffer[sizeof(formatBuffer) - 1] = '\0';
+
+    handel_md_log(level, (char*)func, formatBuffer, status, (char*)file, line);
+
+    va_end(args);
+}
+
+
+/**
  * This routine closes the logging stream
  */
 HANDEL_EXPORT int HANDEL_API xiaCloseLog(void)
@@ -141,3 +173,4 @@ HANDEL_EXPORT int HANDEL_API xiaCloseLog(void)
 
     return XIA_SUCCESS;
 }
+

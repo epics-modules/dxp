@@ -81,8 +81,6 @@ static DXP_MD_WAIT        udxp_md_wait;
 
 static int dxp_init_dspparams(int ioChan, int modChan, Board *board);
 
-static byte_t bytesPerBin = 3;
-
 char info_string[INFO_LEN];
 
 /*
@@ -665,7 +663,7 @@ static int dxp_read_dspparams(int* ioChan, int* modChan, Board *board,
 
     if (finalR == NULL) {
         status = DXP_NOMEM;
-        sprintf(info_string, "Out-of-memory allocating %u bytes", lenR * sizeof(byte_t));
+        sprintf(info_string, "Out-of-memory allocating %zu bytes", lenR * sizeof(byte_t));
         dxp_log_error("dxp_read_dspparams", info_string, status);
         return status;
     }
@@ -1127,7 +1125,7 @@ XERXES_STATIC int dxp_write_mem(int *ioChan, int *modChan, Board *board,
     us_data = udxp_md_alloc((*offset) * sizeof(unsigned short));
 
     if (!us_data) {
-        sprintf(info_string, "Unable to allocate %d bytes for 'us_data' for "
+        sprintf(info_string, "Unable to allocate %zu bytes for 'us_data' for "
                 "ioChan = %d, modChan = %d.",
                 (*offset) * sizeof(unsigned short), *ioChan, *modChan);
         dxp_log_error("dxp_write_mem", info_string, DXP_NOMEM);
@@ -1207,12 +1205,10 @@ XERXES_STATIC int XERXES_API dxp_do_cmd(int modChan, Board *board, byte_t cmd, u
  */
 XERXES_STATIC int XERXES_API dxp_unhook(Board *board)
 {
-    int status;
-
     sprintf(info_string, "Attempting to unhook ioChan = %d", board->ioChan);
     dxp_log_debug("dxp_unhook", info_string);
 
-    status = board->iface->funcs->dxp_md_close(&(board->ioChan));
+    board->iface->funcs->dxp_md_close(&(board->ioChan));
 
     /* Ignore the status due to some issues involving
      * repetitive function calls.

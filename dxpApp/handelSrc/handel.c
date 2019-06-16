@@ -207,7 +207,7 @@ HANDEL_EXPORT int HANDEL_API xiaInitHandel(void)
         xiaLogInfo("xiaInitHandel", "Closing off existing connections.");
         status = xiaUnHook();
     }
-
+    
     xiaLogInfo("xiaInitHandel", "Starting Handel");
 
     /* Initialize the memory of both Handel and Xerxes.
@@ -223,6 +223,55 @@ HANDEL_EXPORT int HANDEL_API xiaInitHandel(void)
     sprintf(info_string, "Successfully initialized Handel %s", version);
     xiaLogInfo("xiaInitHandel", info_string);
 
+    /* Print out build configuration */
+    xiaLogInfo("xiaInitHandel", "--- Supported interface ---");    
+
+#ifndef EXCLUDE_EPP
+    xiaLogInfo("xiaInitHandel", "epp");    
+#endif /* EXCLUDE_EPP */
+
+#ifndef EXCLUDE_USB
+    xiaLogInfo("xiaInitHandel", "usb");    
+#endif /* EXCLUDE_USB */
+
+#ifndef EXCLUDE_USB2
+    xiaLogInfo("xiaInitHandel", "usb2");    
+#endif /* EXCLUDE_USB2 */
+
+#ifndef EXCLUDE_SERIAL
+    xiaLogInfo("xiaInitHandel", "serial");    
+#endif /* EXCLUDE_SERIAL */
+
+#ifndef EXCLUDE_PLX
+    xiaLogInfo("xiaInitHandel", "plx");    
+#endif /* EXCLUDE_PLX */
+
+    xiaLogInfo("xiaInitHandel", "--- Supported board types ---");    
+    
+#ifndef EXCLUDE_SATURN
+    xiaLogInfo("xiaInitHandel", "saturn");    
+#endif
+
+#ifndef EXCLUDE_UDXPS
+    xiaLogInfo("xiaInitHandel", "udxps");    
+#endif
+
+#ifndef EXCLUDE_UDXP
+    xiaLogInfo("xiaInitHandel", "udxp");    
+#endif
+
+#ifndef EXCLUDE_XMAP
+    xiaLogInfo("xiaInitHandel", "xmap");    
+#endif /* EXCLUDE_XMAP */
+
+#ifndef EXCLUDE_STJ
+    xiaLogInfo("xiaInitHandel", "stj");    
+#endif /* EXCLUDE_STJ */
+
+#ifndef EXCLUDE_MERCURY
+    xiaLogInfo("xiaInitHandel", "mercury");    
+#endif /* EXCLUDE_MERCURY */
+    
     return status;
 }
 
@@ -642,49 +691,40 @@ HANDEL_SHARED int HANDEL_API xiaFreeModule(Module *module)
         FAIL();
         break;
 
-    case NO_INTERFACE:
+    case XIA_INTERFACE_NONE:
         /* Only free the top-level struct */
         ASSERT(module->interface_info != NULL);
         handel_md_free(module->interface_info);
         break;
 
-#ifndef EXCLUDE_PLX
-    case PLX:
+    case XIA_PLX:
         handel_md_free(module->interface_info->info.plx);
         handel_md_free(module->interface_info);
         break;
-#endif /* EXCLUDE_PLX */
+        
+    case XIA_EPP:
 
-#ifndef EXCLUDE_EPP
-    case EPP:
-    case GENERIC_EPP:
+    case XIA_GENERIC_EPP:
         handel_md_free((void *)module->interface_info->info.epp);
         handel_md_free((void *)module->interface_info);
         break;
-#endif /* EXCLUDE_EPP */
 
-#ifndef EXCLUDE_SERIAL
-    case SERIAL:
+    case XIA_SERIAL:
         if (module->interface_info->info.serial->device_file)
             handel_md_free(module->interface_info->info.serial->device_file);
         handel_md_free((void *)module->interface_info->info.serial);
         handel_md_free((void *)module->interface_info);
         break;
-#endif /* EXCLUDE_SERIAL */
 
-#ifndef EXCLUDE_USB
-    case USB:
+    case XIA_USB:
         handel_md_free((void *)module->interface_info->info.usb);
         handel_md_free((void *)module->interface_info);
         break;
-#endif /* EXCLUDE_USB */
-
-#ifndef EXCLUDE_USB2
-    case USB2:
+        
+    case XIA_USB2:
         handel_md_free((void *)module->interface_info->info.usb2);
         handel_md_free((void *)module->interface_info);
         break;
-#endif /* EXCLUDE_USB2 */
 
     }
     module->interface_info = NULL;

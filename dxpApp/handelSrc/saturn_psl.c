@@ -502,18 +502,18 @@ PSL_STATIC boolean_t PSL_API pslIsInterfaceValid(Module *module)
 
 #ifndef EXCLUDE_EPP
     foundValidInterface = (boolean_t) (foundValidInterface ||
-                                       (module->interface_info->type == EPP ||
-                                        module->interface_info->type == GENERIC_EPP));
+                                       (module->interface_info->type == XIA_EPP ||
+                                        module->interface_info->type == XIA_GENERIC_EPP));
 #endif /* EXCLUDE_EPP */
 
 #ifndef EXCLUDE_USB
     foundValidInterface = (boolean_t) (foundValidInterface ||
-                                       (module->interface_info->type == USB));
+                                       (module->interface_info->type == XIA_USB));
 #endif /* EXCLUDE_USB */
 
 #ifndef EXCLUDE_USB2
     foundValidInterface = (boolean_t) (foundValidInterface ||
-                                       (module->interface_info->type == USB2));
+                                       (module->interface_info->type == XIA_USB2));
 #endif /* EXCLUDE_USB2 */
 
     if (!foundValidInterface) {
@@ -4075,7 +4075,7 @@ PSL_STATIC int pslUpdateFilter(int detChan, double peakingTime,
         filterInfo = (parameter_t *)saturn_psl_md_alloc(numFilter * sizeof(parameter_t));
 
         status = xiaFddGetFilterInfo(firmwareSet->filename, peakingTime, firmwareSet->numKeywords,
-                                     firmwareSet->keywords, &ptMin, &ptMax, filterInfo);
+                                     (const char **)firmwareSet->keywords, &ptMin, &ptMax, filterInfo);
 
         if (status != XIA_SUCCESS) {
             saturn_psl_md_free(filterInfo);
@@ -5238,7 +5238,6 @@ PSL_STATIC double PSL_API pslTauFit(unsigned int* trace, unsigned long kmin, uns
 {
     double mutop;
     double mubot;
-    double valtop;
     double valbot;
     double eps;
     double dmu;
@@ -5259,7 +5258,6 @@ PSL_STATIC double PSL_API pslTauFit(unsigned int* trace, unsigned long kmin, uns
     /* start the binary search progression search */
     do {
         /* Save the last valbot value */
-        valtop = valbot;
         mutop = mubot;
 
         /* Divide the mu value by 2 (multiply tau by 2) */
@@ -5918,7 +5916,7 @@ PSL_STATIC int psl__GetSCAData(int detChan, void *value, XiaDefaults *defs)
     sca = (unsigned long *)saturn_psl_md_alloc(totalSCA * sizeof(unsigned long));
  
     if (!sca) {
-        sprintf(info_string, "Error allocating %d bytes for 'sca'",
+        sprintf(info_string, "Error allocating %zu bytes for 'sca'",
                 totalSCA * sizeof(unsigned long));
         pslLogError("psl__GetSCAData", info_string, XIA_NOMEM);
         return XIA_NOMEM;

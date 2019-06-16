@@ -171,7 +171,7 @@ FDD_EXPORT int FDD_API xiaFddGetFirmware(const char *filename, char *path,
     keywords = (char **)fdd_md_alloc((nother + 1) * sizeof(char *));
 
     if (!keywords) {
-        sprintf(info_string, "Unable to allocate %u bytes for the keywords "
+        sprintf(info_string, "Unable to allocate %lu bytes for the keywords "
                 "array.", (nother + 1) * sizeof(char *));
         xiaFddLogError("xiaFddGetFirmware", info_string, XIA_NOMEM);
         return XIA_NOMEM;
@@ -188,7 +188,7 @@ FDD_EXPORT int FDD_API xiaFddGetFirmware(const char *filename, char *path,
 
             fdd_md_free(keywords);
 
-            sprintf(info_string, "Unable to allocate %u bytes for the keywords[%u] "
+            sprintf(info_string, "Unable to allocate %zu bytes for the keywords[%u] "
                     "array.", len + 1, i);
             xiaFddLogError("xiaFddGetFirmware", info_string, XIA_NOMEM);
             return XIA_NOMEM;
@@ -207,7 +207,7 @@ FDD_EXPORT int FDD_API xiaFddGetFirmware(const char *filename, char *path,
 
         fdd_md_free(keywords);
 
-        sprintf(info_string, "Unable to allocate %u bytes for keywords[%u] "
+        sprintf(info_string, "Unable to allocate %zu bytes for keywords[%u] "
                 "array.", len + 1, nother);
         xiaFddLogError("xiaFddGetFirmware", info_string, XIA_NOMEM);
         return XIA_NOMEM;
@@ -943,7 +943,7 @@ FDD_EXPORT int FDD_API xiaFddGetAndCacheFirmware(FirmwareSet *fs,
 
     status = xiaFddGetFirmware(fs->filename, tmpPath, ftype, pt,
                                (unsigned int)fs->numKeywords,
-                               fs->keywords, detType, file, rawFile);
+                               (const char **)fs->keywords, detType, file, rawFile);
 
     /* Do not log an error if firmware file is not found */
     if (status == XIA_FILEERR) {
@@ -983,7 +983,7 @@ FDD_EXPORT int FDD_API xiaFddGetAndCacheFirmware(FirmwareSet *fs,
         }
 
         status = xiaFddGetNumFilter(fs->filename, pt, (unsigned int) fs->numKeywords,
-                                    fs->keywords, &numFilter);
+                                    (const char **)fs->keywords, &numFilter);
 
         if (status != XIA_SUCCESS) {
             xiaFddLogError("xiaFddGetAndCacheFirmware", "Error getting number of filter params", status);
@@ -994,7 +994,7 @@ FDD_EXPORT int FDD_API xiaFddGetAndCacheFirmware(FirmwareSet *fs,
         filterInfo = (parameter_t *)fdd_md_alloc(numFilter * sizeof(parameter_t));
 
         status = xiaFddGetFilterInfo(fs->filename, pt, fs->numKeywords,
-                                     fs->keywords, &ptMin, &ptMax, filterInfo);
+                                     (const char **)fs->keywords, &ptMin, &ptMax, filterInfo);
 
         if (status != XIA_SUCCESS) {
             fdd_md_free(filterInfo);

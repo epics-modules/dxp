@@ -92,8 +92,8 @@ XERXES_STATIC int XERXES_API dxp_load_dspconfig(FILE *, Dsp_Info *);
 XERXES_STATIC int XERXES_API dxp_decode_error(int *, int *, Dsp_Info *,
                 unsigned short *, unsigned short *);
 XERXES_STATIC int XERXES_API dxp_clear_error(int *, int *, Board *);
-XERXES_STATIC int XERXES_API dxp_check_calibration(int *, Dsp_Info *);
-  XERXES_STATIC int dxp_get_runstats(int *ioChan, int *modChan, Board *b,
+
+XERXES_STATIC int dxp_get_runstats(int *ioChan, int *modChan, Board *b,
 									 unsigned long *evts, unsigned long *under,
 									 unsigned long *over, unsigned long *fast,
 									 unsigned long *base, double *live,
@@ -128,11 +128,11 @@ XERXES_STATIC int dxp_write_reg(int *ioChan, int *modChan, char *name,
 XERXES_STATIC int dxp_read_reg(int *ioChan, int *modChan, char *name,
 							   unsigned long *data);
 
-XERXES_STATIC FILE* XERXES_API dxp_find_file(const char *, const char *);
 
-XERXES_STATIC int XERXES_API dxp_do_cmd(int modChan, Board *board, byte_t cmd, unsigned int lenS,
-                                        byte_t *send, unsigned int lenR, byte_t *receive);
+                               
 
+                               
+                               
 XERXES_STATIC int XERXES_API dxp_unhook(Board *board);
 
   XERXES_STATIC int dxp_get_symbol_by_index(int modChan, unsigned short index,
@@ -198,9 +198,9 @@ XERXES_STATIC int XERXES_API dxp_write_mem();
 XERXES_STATIC int XERXES_API dxp_write_reg();
 XERXES_STATIC int XERXES_API dxp_read_reg();
 
-XERXES_STATIC FILE* XERXES_API dxp_find_file();
 
-XERXES_STATIC int XERXES_API dxp_do_cmd();
+
+
 
 XERXES_STATIC int XERXES_API dxp_unhook();
 

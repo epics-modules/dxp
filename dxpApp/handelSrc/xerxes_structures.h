@@ -70,11 +70,11 @@ typedef struct Xia_Io_Functions Xia_Io_Functions;
  *  Structure that points at the utility functions that are machine dependent
  */
 typedef void (*DXP_MD_ERROR_CONTROL)(char *, int *);
-typedef void (*DXP_MD_ERROR)(char *, char *, int *, char *, int);
-typedef void (*DXP_MD_WARNING)(char *, char *, char *, int);
-typedef void (*DXP_MD_INFO)(char *, char *, char *, int);
-typedef void (*DXP_MD_DEBUG)(char *, char *, char *, int);
-typedef void (*DXP_MD_OUTPUT)(char *);
+typedef void (*DXP_MD_ERROR)(const char *, const char *, int *, const char *, int);
+typedef void (*DXP_MD_WARNING)(const char *, const char *, const char *, int);
+typedef void (*DXP_MD_INFO)(const char *, const char *, const char *, int);
+typedef void (*DXP_MD_DEBUG)(const char *, const char *, const char *, int);
+typedef void (*DXP_MD_OUTPUT)(const char *);
 
 typedef void* (*DXP_MD_ALLOC)(size_t);
 typedef void (*DXP_MD_FREE)(void *);
@@ -83,7 +83,7 @@ typedef int (*DXP_MD_WAIT)(float *);
 typedef int (*DXP_MD_SUPPRESS_LOG)(void);
 typedef int (*DXP_MD_ENABLE_LOG)(void);
 typedef int (*DXP_MD_SET_LOG_LEVEL)(int);
-typedef void (*DXP_MD_LOG)(int, char *, char *, int, char *, int);
+typedef void (*DXP_MD_LOG)(int, const char *, const char *, int, const char *, int);
 typedef int (*DXP_MD_SET_PRIORITY)(int *);
 typedef char * (*DXP_MD_FGETS)(char *s, int size, FILE *stream);
 typedef char * (*DXP_MD_TMP_PATH)(void);

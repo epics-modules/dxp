@@ -35,58 +35,69 @@
  */
 
 
-#include <stdlib.h>
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <sys/time.h>
+#endif
+
 #include <stdio.h>
 #include <time.h>
-#include <string.h>
+#include <stdlib.h>
 #include <ctype.h>
 
 #include "xerxes_errors.h"
 #include "xerxes_structures.h"
+
+#include "md_shim.h"
 #include "md_generic.h"
 #include "xia_md.h"
+
+#include "xia_assert.h"
 #include "xia_common.h"
+#include "handel_errors.h"
 
 #define INFO_LEN  400
+
+XIA_MD_STATIC void dxp_md_local_time(struct tm **local, int *milli);
 
 /* Current output for the logging routines. By default, this is set to stdout
  * in dxp_md_log().
  */
-FILE *out_stream = NULL;
-
-/* Static variables */
 static boolean_t isSuppressed = FALSE_;
-static int     logLevel     = MD_ERROR;
 
-/*
+static int logLevel = MD_ERROR;
+
+/**
  * This routine enables the logging output
  */
-XIA_MD_SHARED int XIA_MD_API dxp_md_enable_log(void)
+XIA_MD_SHARED int dxp_md_enable_log(void)
 {
     isSuppressed = FALSE_;
 
     return DXP_SUCCESS;
 }
 
-/*
+
+/**
  * This routine disables the logging output
  */
-XIA_MD_SHARED int XIA_MD_API dxp_md_suppress_log(void)
+XIA_MD_SHARED int dxp_md_suppress_log(void)
 {
     isSuppressed = TRUE_;
 
     return DXP_SUCCESS;
 }
 
-/*
+
+/**
  * This routine sets the maximum level at which log messages will be
  * displayed.
  */
-XIA_MD_SHARED int XIA_MD_API dxp_md_set_log_level(int level)
-/* int level;             Input: Level to set the logging to   */
+XIA_MD_SHARED int dxp_md_set_log_level(int level)
 {
 
-    /* Validate level */
+/* Validate level */
     if ((level > MD_DEBUG) || (level < MD_ERROR)) {
         /* Leave level at previous setting and return an error code */
         return DXP_LOG_LEVEL;
@@ -97,25 +108,14 @@ XIA_MD_SHARED int XIA_MD_API dxp_md_set_log_level(int level)
     return DXP_SUCCESS;
 }
 
-/*
+
+/**
  * This routine is the main logging routine. It shouldn't be called directly.
  * Use the macros provided in xerxes_generic.h.
  */
-XIA_MD_SHARED void XIA_MD_API dxp_md_log(int level, char *routine, char *message, int error, char *file, int line)
-/* int level;             Input: The level of this log message */
-/* char *routine;           Input: Name of routine calling dxp_log*/
-/* char *message;           Input: Log message to send to output */
-/* int error;             Input: Only used if this is an ERROR */
+XIA_MD_SHARED void dxp_md_log(int level, const char *routine, const char *message,
+                           int error, const char *file, int line)
 {
-
-    /* Ordinarily, we'd set this in the globals section,
-     * but on Linux 'stdout' isn't a constant, so it
-     * can't be used as an initializer.
-     */
-    if (out_stream == NULL) {
-        out_stream = stdout;
-    }
-
     /* If logging is disabled or we aren't set
      * to log this message level then return gracefully, NOW!
      */
@@ -129,98 +129,128 @@ XIA_MD_SHARED void XIA_MD_API dxp_md_log(int level, char *routine, char *message
         return;
     }
 
-    switch (level) {
-    case MD_ERROR:
-        dxp_md_error(routine, message, &error, file, line);
-        break;
-    case MD_WARNING:
-        dxp_md_warning(routine, message, file, line);
-        break;
-    case MD_INFO:
-        dxp_md_info(routine, message, file, line);
-        break;
-    case MD_DEBUG:
-        dxp_md_debug(routine, message, file, line);
-        break;
-    default:
-        /* If the code gets here then something is really jacked-up */
-        break;
+    /* Ordinarily, we'd set this in the globals section, but on Linux 'stdout'
+     * isn't a constant, so it can't be used as an initializer.
+     */
+    if (out_stream == NULL) {
+        out_stream = stdout;
     }
+
+    switch (level) {
+        case MD_ERROR:
+            dxp_md_error(routine, message, &error, file, line);
+            break;
+        case MD_WARNING:
+            dxp_md_warning(routine, message, file, line);
+            break;
+        case MD_INFO:
+            dxp_md_info(routine, message, file, line);
+            break;
+        case MD_DEBUG:
+            dxp_md_debug(routine, message, file, line);
+            break;
+        default:
+            FAIL();
+            break;
+    }
+
 }
 
-/*
+/**
+ * Write a standard log format header.
+ */
+static void dxp_md_log_header(const char* type, const char* routine,
+                                     int* error_code, const char *file, int line)
+{
+    struct tm *localTime;
+    int milli;
+    char logTimeFormat[80];
+
+    const char* basename;
+    int out;
+
+    dxp_md_local_time(&localTime, &milli);
+
+    strftime(logTimeFormat, sizeof(logTimeFormat), "%Y-%m-%d %H:%M:%S", localTime);
+
+    basename = strrchr(file, '/');
+    if (basename != NULL) {
+        ++basename;
+    } else {
+        basename = strrchr(file, '\\');
+        if (basename != NULL)
+            ++basename;
+        else
+            basename = file;
+    }
+
+    out = fprintf(out_stream, "%s %s,%03d %s (%s:%d)",
+                  type, logTimeFormat, milli, routine, basename, line);
+
+    fprintf(out_stream, "%*c ", 90 - out, ':');
+
+    if (error_code)
+        fprintf(out_stream, "[%3d] ", *error_code);
+}
+
+/**
  * Routine to handle error reporting.  Allows the user to pass errors to log
  * files or report the information in whatever fashion is desired.
  */
-XIA_MD_SHARED void dxp_md_error(char* routine, char* message, int* error_code, char *file, int line)
-/* char *routine;         Input: Name of the calling routine    */
-/* char *message;         Input: Message to report          */
-/* int *error_code;         Input: Error code denoting type of error  */
+XIA_MD_SHARED void dxp_md_error(const char* routine, const char* message,
+                                int* error_code, const char *file, int line)
 {
-    time_t current = time(NULL);
-    struct tm *localTime = localtime(&current);
-    char logTimeFormat[50];
-
-    strftime(logTimeFormat, 50, "%c", localTime);
-    fprintf(out_stream, "[ERROR] [%d] %s %s, line = %d, %s: %s\n", *error_code,
-            logTimeFormat, file, line, routine, message);
+    dxp_md_log_header("[ERROR]", routine, error_code, file, line);
+    fprintf(out_stream, "%s\n", message);
     fflush(out_stream);
 }
 
 
-/*
+/**
  * Routine to handle reporting warnings. Messages are written to the output
  * defined in out_stream.
  */
-XIA_MD_SHARED void dxp_md_warning(char *routine, char *message, char *file, int line)
-/* char *routine;         Input: Name of the calling routine     */
-/* char *message;         Input: Message to report         */
+XIA_MD_SHARED void dxp_md_warning(const char *routine, const char *message,
+                                  const char *file, int line)
 {
-    time_t current = time(NULL);
-    struct tm *localTime = localtime(&current);
-    char logTimeFormat[50];
-
-    strftime(logTimeFormat, 50, "%c", localTime);
-
-    fprintf(out_stream, "[WARN] %s %s, line = %d, %s: %s\n", logTimeFormat, file, line, routine, message);
+    dxp_md_log_header("[WARN ]", routine, NULL, file, line);
+    fprintf(out_stream, "%s\n", message);
     fflush(out_stream);
 }
 
-/*
+
+/**
  * Routine to handle reporting info messages. Messages are written to the
  * output defined in out_stream.
  */
-XIA_MD_SHARED void dxp_md_info(char *routine, char *message, char *file, int line)
-/* char *routine;         Input: Name of the calling routine     */
-/* char *message;         Input: Message to report         */
+XIA_MD_SHARED void dxp_md_info(const char *routine, const char *message,
+                               const char *file, int line)
 {
-    /* No time displayed for info messages */
-
-    fprintf(out_stream, "[INFO] %s, line = %d, %s: %s\n", file, line, routine, message);
+    dxp_md_log_header("[INFO ]", routine, NULL, file, line);
+    fprintf(out_stream, "%s\n", message);
     fflush(out_stream);
 }
 
-/*
+
+/**
  * Routine to handle reporting debug messages. Messages are written to the
  * output defined in out_stream.
  */
-XIA_MD_SHARED void dxp_md_debug(char *routine, char *message, char *file, int line)
-/* char *routine;         Input: Name of the calling routine     */
-/* char *message;         Input: Message to report         */
+XIA_MD_SHARED void dxp_md_debug(const char *routine, const char *message,
+                                const char *file, int line)
 {
-    /* No time displayed for debug messages */
-    fprintf(out_stream, "[DEBUG] %s, line = %d, %s: %s\n", file, line, routine, message);
+    dxp_md_log_header("[DEBUG]", routine, NULL, file, line);
+    fprintf(out_stream, "%s\n", message);
     fflush(out_stream);
 }
 
 
-/*
- * Redirects the log output to either a file or a special descriptor
- * such as stdout or stderr. Allowed values for filename are: a
+/** Redirects the log output to either a file or a special descriptor
+ * such as stdout or stderr. Allowed values for @a filename are: a
  * path to a file, "stdout", "stderr", "" (redirects to stdout) or
  * NULL (also redirects to stdout).
  */
-XIA_MD_SHARED void dxp_md_output(char *filename)
+XIA_MD_SHARED void dxp_md_output(const char *filename)
 {
     char *strtmp = NULL;
 
@@ -228,11 +258,8 @@ XIA_MD_SHARED void dxp_md_output(char *filename)
 
     char info_string[INFO_LEN];
 
-    /* Close the existing log file */
     if (out_stream != NULL && out_stream != stdout && out_stream != stderr) {
-        fflush(out_stream);
         fclose(out_stream);
-        out_stream = NULL;
     }
 
     if (filename == NULL || STREQ(filename, "")) {
@@ -241,15 +268,14 @@ XIA_MD_SHARED void dxp_md_output(char *filename)
     }
 
     strtmp = dxp_md_alloc(strlen(filename) + 1);
-
-    if (!strtmp) {
+    if (!strtmp)
         abort();
-    }
 
     for (i = 0; i < strlen(filename); i++) {
         strtmp[i] = (char)tolower((int)filename[i]);
     }
     strtmp[strlen(filename)] = '\0';
+
 
     if (STREQ(strtmp, "stdout")) {
         out_stream = stdout;
@@ -261,15 +287,70 @@ XIA_MD_SHARED void dxp_md_output(char *filename)
         out_stream = fopen(filename, "w");
 
         if (!out_stream) {
+            int status = XIA_OPEN_FILE;
+
             /* Reset to stdout with the hope that it is redirected
              * somewhere meaningful.
              */
             out_stream = stdout;
             sprintf(info_string, "Unable to open filename '%s' for logging. "
                     "Output redirected to stdout.", filename);
-            dxp_md_log_error("dxp_md_output", info_string, DXP_MDFILEIO);
+            dxp_md_error("dxp_md_output", info_string, &status, __FILE__, __LINE__);
         }
     }
 
     dxp_md_free(strtmp);
 }
+
+#ifdef _WIN32
+/**
+ * Convert a Windows system time to time_t... for conversion to struct
+ * tm to work with strftime. From
+ * https://blogs.msdn.microsoft.com/joshpoley/2007/12/19/datetime-formats-and-conversions/
+ */
+XIA_MD_STATIC void dxp_md_SystemTimeToTime_t(SYSTEMTIME *systemTime, time_t *dosTime)
+{
+    LARGE_INTEGER jan1970FT = {0};
+    LARGE_INTEGER utcFT = {0};
+    unsigned __int64 utcDosTime;
+
+    jan1970FT.QuadPart = 116444736000000000I64; // january 1st 1970
+    SystemTimeToFileTime(systemTime, (FILETIME*)&utcFT);
+
+    utcDosTime = (utcFT.QuadPart - jan1970FT.QuadPart)/10000000;
+    *dosTime = (time_t)utcDosTime;
+}
+
+/**
+ * Returns the current local time as a struct tm for string formatting
+ * and the milliseconds on the side for extra precision.
+ */
+XIA_MD_STATIC void dxp_md_local_time(struct tm **local, int *milli)
+{
+    SYSTEMTIME tod;
+    time_t current;
+
+    GetLocalTime(&tod);
+
+    dxp_md_SystemTimeToTime_t(&tod, &current);
+    *local = gmtime(&current);
+    *milli = tod.wMilliseconds;
+}
+
+#else
+
+/**
+ * Returns the current local time as a struct tm for string formatting
+ * and the milliseconds on the side for extra precision.
+ */
+XIA_MD_STATIC void dxp_md_local_time(struct tm **local, int *milli)
+{
+    struct timeval tod;
+    time_t current;
+
+    gettimeofday(&tod, NULL);
+    current = tod.tv_sec;
+    *milli = (int) tod.tv_usec / 1000;
+    *local = localtime(&current);
+}
+#endif

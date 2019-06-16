@@ -66,28 +66,17 @@ static char *BOARD_LIST[] = {
   };
 
 
-/* These EXCLUDES must be kept in
- * sync with the EXCLUDES in
+/* These names must be kept in sync with the interface enum in
  * xia_module.h
  */
 static char *INTERF_LIST[] = {
   "bad",
-#ifndef EXCLUDE_EPP
   "EPP",
   "EPP", /* Placeholder to match the GENERIC_EPP entry in xia_module */
-#endif /* EXCLUDE_EPP */
-#ifndef EXCLUDE_SERIAL
   "SERIAL",
-#endif /* EXCLUDE_SERIAL */
-#ifndef EXCLUDE_USB
   "USB",
-#endif /* EXCLUDE_USB */
-#ifndef EXCLUDE_USB2
   "USB2",
-#endif /* EXCLUDE_USB2 */
-#ifndef EXCLUDE_PLX
   "PXI",
-#endif /* EXCLUDE_PLX */
 };
 
 #define N_KNOWN_BOARDS  (sizeof(BOARD_LIST) / sizeof(BOARD_LIST[0]))

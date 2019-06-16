@@ -346,7 +346,6 @@ HANDEL_EXPORT int HANDEL_API xiaModifyFirmwareItem(char *alias, unsigned short p
     status = xiaSetFirmwareItem(chosen, current, strtemp, value);
     if (status != XIA_SUCCESS)
     {
-        status = XIA_BAD_VALUE;
         sprintf(info_string,"Failure to set Firmware data: %s", name);
         xiaLogError("xiaModifyFirmwareItem", info_string, status);
         return status;

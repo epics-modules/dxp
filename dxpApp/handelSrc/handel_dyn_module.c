@@ -78,14 +78,13 @@ typedef struct _ModName {
 
 
 static ModName_t KNOWN_MODS[] = {
-
 #ifndef EXCLUDE_SATURN
     {"dxpx10p", "dxpx10p"},
     {"saturn",  "dxpx10p"},
     {"x10p",    "dxpx10p"},
 #endif /* EXCLUDE_SATURN */
 
-#ifndef EXCLUDE_UDXP
+#ifndef EXCLUDE_UDXPS
     {"udxps",   "udxps"},
 #endif /* EXCLUDE_UDXP */
 
@@ -156,22 +155,12 @@ HANDEL_STATIC int  _parseDetectorIdx(char *str, int *idx, char *alias);
  */
 static char *interfaceStr[] = {
     "none",
-#ifndef EXCLUDE_EPP
     "epp",
     "genericEPP",
-#endif /* EXCLUDE_EPP */
-#ifndef EXCLUDE_SERIAL
     "serial",
-#endif /* EXCLUDE_SERIAL */
-#ifndef EXCLUDE_USB
     "usb",
-#endif /* EXCLUDE_USB */
-#ifndef EXCLUDE_USB2
     "usb2",
-#endif /* EXCLUDE_USB2 */
-#ifndef EXCLUDE_PLX
     "pxi",
-#endif /* EXCLUDE_PLX */
 };
 
 /* This array is mainly used to compare names with the possible sub-interface
@@ -447,17 +436,15 @@ HANDEL_STATIC int HANDEL_API xiaProcessInterface(Module *chosen, char *name, voi
 
 
     /* Decide which interface we are going to be working with */
-
-#ifndef EXCLUDE_EPP
     if (STREQ(name, "epp_address")    ||
             STREQ(name, "daisy_chain_id") ||
             STREQ(interface, "genericEPP")     ||
             STREQ(interface, "epp"))
     {
         /* Check that the module type is correct */
-        if ((chosen->interface_info->type != EPP)           &&
-                (chosen->interface_info->type != GENERIC_EPP)   &&
-                (chosen->interface_info->type != NO_INTERFACE))
+        if ((chosen->interface_info->type != XIA_EPP)           &&
+                (chosen->interface_info->type != XIA_GENERIC_EPP)   &&
+                (chosen->interface_info->type != XIA_INTERFACE_NONE))
         {
             status = XIA_WRONG_INTERFACE;
             sprintf(info_string, "Item %s is not a valid element of the current interface", name);
@@ -466,9 +453,9 @@ HANDEL_STATIC int HANDEL_API xiaProcessInterface(Module *chosen, char *name, voi
         }
 
         /* See if we need to create a new interface */
-        if (chosen->interface_info->type == NO_INTERFACE)
+        if (chosen->interface_info->type == XIA_INTERFACE_NONE)
         {
-            chosen->interface_info->type = GENERIC_EPP;
+            chosen->interface_info->type = XIA_GENERIC_EPP;
             chosen->interface_info->info.epp = (Interface_Epp *)handel_md_alloc(sizeof(Interface_Epp));
             if (chosen->interface_info->info.epp == NULL)
             {
@@ -491,19 +478,15 @@ HANDEL_STATIC int HANDEL_API xiaProcessInterface(Module *chosen, char *name, voi
             chosen->interface_info->info.epp->daisy_chain_id = *((unsigned int *)value);
         }
 
-    } else
-#endif /* EXCLUDE_EPP */
-
-#ifndef EXCLUDE_USB
-        if ((STREQ(name, "device_number") && chosen->interface_info->type == USB)
+    } else if ((STREQ(name, "device_number") && chosen->interface_info->type == XIA_USB)
                 || STREQ(interface, "usb"))
         {
             /* A bit of hack to deal with USB and USB2 both using the
              * "device_number" module item.
              */
             /* Check that the module type is correct */
-            if ((chosen->interface_info->type != USB)           &&
-                    (chosen->interface_info->type != NO_INTERFACE))
+            if ((chosen->interface_info->type != XIA_USB)           &&
+                    (chosen->interface_info->type != XIA_INTERFACE_NONE))
             {
                 status = XIA_WRONG_INTERFACE;
                 sprintf(info_string, "Item %s is not a valid element of the current interface", name);
@@ -512,9 +495,9 @@ HANDEL_STATIC int HANDEL_API xiaProcessInterface(Module *chosen, char *name, voi
             }
 
             /* See if we need to create a new interface */
-            if (chosen->interface_info->type == NO_INTERFACE)
+            if (chosen->interface_info->type == XIA_INTERFACE_NONE)
             {
-                chosen->interface_info->type = USB;
+                chosen->interface_info->type = XIA_USB;
                 chosen->interface_info->info.usb = (Interface_Usb *)handel_md_alloc(sizeof(Interface_Usb));
                 if (chosen->interface_info->info.usb == NULL)
                 {
@@ -532,14 +515,10 @@ HANDEL_STATIC int HANDEL_API xiaProcessInterface(Module *chosen, char *name, voi
             }
 
 
-        } else
-#endif /* EXCLUDE_USB */
-
-#ifndef EXCLUDE_USB2
-            if (STREQ(name, "device_number") || STREQ(interface, "usb2")) {
+        } else if (STREQ(name, "device_number") || STREQ(interface, "usb2")) {
                 /* Check that the module type is correct */
-                if (chosen->interface_info->type != USB2 &&
-                        chosen->interface_info->type != NO_INTERFACE)
+                if (chosen->interface_info->type != XIA_USB2 &&
+                        chosen->interface_info->type != XIA_INTERFACE_NONE)
                 {
                     sprintf(info_string, "Item %s is not a valid element of the "
                             "current interface", name);
@@ -549,8 +528,8 @@ HANDEL_STATIC int HANDEL_API xiaProcessInterface(Module *chosen, char *name, voi
                 }
 
                 /* See if we need to create a new interface */
-                if (chosen->interface_info->type == NO_INTERFACE) {
-                    chosen->interface_info->type = USB2;
+                if (chosen->interface_info->type == XIA_INTERFACE_NONE) {
+                    chosen->interface_info->type = XIA_USB2;
                     chosen->interface_info->info.usb2 =
                         (Interface_Usb2 *)handel_md_alloc(sizeof(Interface_Usb2));
 
@@ -567,18 +546,14 @@ HANDEL_STATIC int HANDEL_API xiaProcessInterface(Module *chosen, char *name, voi
                     chosen->interface_info->info.usb2->device_number =
                         *((unsigned int *)value);
                 }
-            } else
-#endif /* EXCLUDE_USB2 */
-
-#ifndef EXCLUDE_SERIAL
-                if (STREQ(name, "com_port")  ||
+            } else if (STREQ(name, "com_port")  ||
                     STREQ(name, "baud_rate") ||
                     STREQ(name, "device_file") ||
                     STREQ(interface, "serial"))
                 {
 
-                    if ((chosen->interface_info->type != SERIAL) &&
-                            (chosen->interface_info->type != NO_INTERFACE)) {
+                    if ((chosen->interface_info->type != XIA_SERIAL) &&
+                            (chosen->interface_info->type != XIA_INTERFACE_NONE)) {
 
                         status = XIA_WRONG_INTERFACE;
                         sprintf(info_string, "Item %s is not a valid element of the current interface", name);
@@ -586,9 +561,9 @@ HANDEL_STATIC int HANDEL_API xiaProcessInterface(Module *chosen, char *name, voi
                         return status;
                     }
 
-                    if (chosen->interface_info->type == NO_INTERFACE) {
+                    if (chosen->interface_info->type == XIA_INTERFACE_NONE) {
 
-                        chosen->interface_info->type = SERIAL;
+                        chosen->interface_info->type = XIA_SERIAL;
                         chosen->interface_info->info.serial = (Interface_Serial *)handel_md_alloc(sizeof(Interface_Serial));
 
                         if (chosen->interface_info->info.serial == NULL) {
@@ -627,16 +602,12 @@ HANDEL_STATIC int HANDEL_API xiaProcessInterface(Module *chosen, char *name, voi
                         chosen->interface_info->info.serial->baud_rate = *((unsigned int *)value);
                     }
 
-                } else
-#endif /* EXCLUDE_SERIAL */
-
-#ifndef EXCLUDE_PLX
-                    if (STREQ(name, "pci_slot") ||
+                } else if (STREQ(name, "pci_slot") ||
                             STREQ(name, "pci_bus")  ||
                             STREQ(interface, "pxi"))
                     {
-                        if ((chosen->interface_info->type != PLX) &&
-                                (chosen->interface_info->type != NO_INTERFACE))
+                        if ((chosen->interface_info->type != XIA_PLX) &&
+                                (chosen->interface_info->type != XIA_INTERFACE_NONE))
                         {
                             sprintf(info_string, "'%s' is not a valid element of the "
                                     "currently selected interface", name);
@@ -645,8 +616,8 @@ HANDEL_STATIC int HANDEL_API xiaProcessInterface(Module *chosen, char *name, voi
                             return XIA_WRONG_INTERFACE;
                         }
 
-                        if (chosen->interface_info->type == NO_INTERFACE) {
-                            chosen->interface_info->type = PLX;
+                        if (chosen->interface_info->type == XIA_INTERFACE_NONE) {
+                            chosen->interface_info->type = XIA_PLX;
                             chosen->interface_info->info.plx =
                                 (Interface_Plx *)handel_md_alloc(sizeof(Interface_Plx));
 
@@ -669,9 +640,7 @@ HANDEL_STATIC int HANDEL_API xiaProcessInterface(Module *chosen, char *name, voi
                             chosen->interface_info->info.plx->bus  = *((byte_t *)value);
                         }
 
-                    } else
-#endif /* EXCLUDE_PLX */
-                    {
+                    } else {
                         status = XIA_MISSING_INTERFACE;
                         sprintf(info_string, "'%s' is a member of an unknown interface", name);
                         xiaLogError("xiaProcessInterface", info_string, status);
@@ -1356,82 +1325,60 @@ HANDEL_STATIC int HANDEL_API xiaGetIFaceInfo(Module *chosen, char *name, void *v
     if (STREQ(name, "interface")) {
         strcpy((char *)value, interfaceStr[chosen->interface_info->type]);
 
-    } else
+    } else if (chosen->interface_info->type == XIA_GENERIC_EPP ||
+        chosen->interface_info->type == XIA_EPP) {
 
-#ifndef EXCLUDE_EPP
-        if (chosen->interface_info->type == GENERIC_EPP ||
-                chosen->interface_info->type == EPP) {
+        if (STREQ(name, "epp_address")) {
+            *((unsigned int *)value) = chosen->interface_info->info.epp->epp_address;
 
-            if (STREQ(name, "epp_address")) {
-                *((unsigned int *)value) = chosen->interface_info->info.epp->epp_address;
+        } else if (STREQ(name, "daisy_chain_id")) {
 
-            } else if (STREQ(name, "daisy_chain_id")) {
+            *((unsigned int *)value) = chosen->interface_info->info.epp->daisy_chain_id;
+        }
 
-                *((unsigned int *)value) = chosen->interface_info->info.epp->daisy_chain_id;
-            }
+    } else if (chosen->interface_info->type == XIA_USB) {
 
-        } else
-#endif /* EXCLUDE_EPP */
+        if (STREQ(name, "device_number")) {
+            *((unsigned int *)value) = chosen->interface_info->info.usb->device_number;
+        }
 
-#ifndef EXCLUDE_USB
-            if (chosen->interface_info->type == USB) {
+    } else if (chosen->interface_info->type == XIA_USB2) {
 
-                if (STREQ(name, "device_number")) {
-                    *((unsigned int *)value) = chosen->interface_info->info.usb->device_number;
-                }
+        if (STREQ(name, "device_number")) {
+            *((unsigned int *)value) = chosen->interface_info->info.usb2->device_number;
+        }
 
-            } else
-#endif /* EXCLUDE_USB */
+    } else if (chosen->interface_info->type == XIA_SERIAL) {
 
-#ifndef EXCLUDE_USB2
-                if (chosen->interface_info->type == USB2) {
+        if (STREQ(name, "com_port")) {
 
-                    if (STREQ(name, "device_number")) {
-                        *((unsigned int *)value) = chosen->interface_info->info.usb2->device_number;
-                    }
+            *((unsigned int *)value) = chosen->interface_info->info.serial->com_port;
 
-                } else
-#endif /* EXCLUDE_USB2 */
+        } else if (STREQ(name, "device_file")) {
 
-#ifndef EXCLUDE_SERIAL
-                    if (chosen->interface_info->type == SERIAL) {
+            strcpy((char *)value, chosen->interface_info->info.serial->device_file);
 
-                        if (STREQ(name, "com_port")) {
+        } else if (STREQ(name, "baud_rate")) {
 
-                            *((unsigned int *)value) = chosen->interface_info->info.serial->com_port;
+            *((unsigned int *)value) = chosen->interface_info->info.serial->baud_rate;
+        }
 
-                        } else if (STREQ(name, "device_file")) {
+    } else if (chosen->interface_info->type == XIA_PLX) {
 
-                            strcpy((char *)value, chosen->interface_info->info.serial->device_file);
+        if (STREQ(name, "pci_slot")) {
+            *((byte_t *)value) = chosen->interface_info->info.plx->slot;
 
-                        } else if (STREQ(name, "baud_rate")) {
+        } else if (STREQ(name, "pci_bus")) {
+            *((byte_t *)value) = chosen->interface_info->info.plx->bus;
+        }
 
-                            *((unsigned int *)value) = chosen->interface_info->info.serial->baud_rate;
-                        }
+    } else {
 
-                    } else
-#endif /* EXCLUDE_SERIAL */
-
-#ifndef EXCLUDE_PLX
-                        if (chosen->interface_info->type == PLX) {
-
-                            if (STREQ(name, "pci_slot")) {
-                                *((byte_t *)value) = chosen->interface_info->info.plx->slot;
-
-                            } else if (STREQ(name, "pci_bus")) {
-                                *((byte_t *)value) = chosen->interface_info->info.plx->bus;
-                            }
-
-                        } else
-#endif /* EXCLUDE_PLX */
-
-                        {
-
-                            status = XIA_WRONG_INTERFACE;
-                            sprintf(info_string, "Specified name: %s does not apply to the current interface", name);
-                            xiaLogError("xiaGetIFaceInfo", info_string, status);
-                            return status;
-                        }
+        status = XIA_WRONG_INTERFACE;
+        sprintf(info_string, "Specified name: %s does not apply to the current interface", name);
+        xiaLogError("xiaGetIFaceInfo", info_string, status);
+        return status;
+    }
 
     return XIA_SUCCESS;
 }
@@ -2164,7 +2111,7 @@ HANDEL_STATIC int _initModule(Module *module, char *alias)
         return XIA_NOMEM;
     }
 
-    module->interface_info->type = NO_INTERFACE;
+    module->interface_info->type = XIA_INTERFACE_NONE;
 
     module->type               = NULL;
     module->number_of_channels = 0;

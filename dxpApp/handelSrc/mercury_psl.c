@@ -1018,11 +1018,14 @@ PSL_STATIC int pslGetAcquisitionValues(int detChan, char *name, void *value,
              * even though -1.0 doesn't tell the user what the actual value
              * on the hardware is.
              */
+            return XIA_SUCCESS;             
         }
     }
 
-    return XIA_SUCCESS;
-}
+    sprintf(info_string, "Unknown acquisition value '%s' for detChan %d", name,
+            detChan);
+    pslLogError("pslGetAcquisitionValues", info_string, XIA_UNKNOWN_VALUE);
+    return XIA_UNKNOWN_VALUE;}
 
 
 /*
@@ -2160,8 +2163,8 @@ PSL_STATIC int psl__UpdateFilterParams(int detChan, int modChan, double pt,
         return XIA_N_FILTER_BAD;
     }
 
-    status = xiaFddGetFilterInfo(fs->filename, pt, fs->numKeywords, fs->keywords,
-                                 &ptMin, &ptMax, &filter[0]);
+    status = xiaFddGetFilterInfo(fs->filename, pt, fs->numKeywords, 
+                       (const char **)fs->keywords, &ptMin, &ptMax, &filter[0]);
 
     if (status != XIA_SUCCESS) {
         sprintf(info_string, "Error getting filter parameter info from '%s' "
@@ -6723,9 +6726,7 @@ PSL_STATIC int psl__CheckBit(int detChan, char *reg, int bit, boolean_t *isSet)
 /*
  * Sets the total number of scan points when the hardware is run
  * in mapping mode.
- *
- * This parameter is skipped if mapping mode is not currently active.
- *
+  *
  * Setting the number of mapping points to 0.0 causes the mapping run to
  * continue indefinitely.
  */
@@ -6738,8 +6739,6 @@ PSL_STATIC int psl__SetNumMapPixels(int detChan, int modChan, char *name,
 
     unsigned long NUMPIXELS = 0;
 
-    boolean_t isMapping = FALSE_;
-
     UNUSED(modChan);
     UNUSED(name);
     UNUSED(detType);
@@ -6750,21 +6749,6 @@ PSL_STATIC int psl__SetNumMapPixels(int detChan, int modChan, char *name,
 
 
     ASSERT(value != NULL);
-
-    status = psl__IsMapping(detChan, &isMapping);
-
-    if (status != XIA_SUCCESS) {
-        sprintf(info_string, "Error checking firmware type for detChan %d", detChan);
-        pslLogError("psl__SetNumMapPixels", info_string, status);
-        return status;
-    }
-
-    if (!isMapping) {
-        sprintf(info_string, "Skipping '%s' since mapping mode is disabled for "
-                "detChan %d", name, detChan);
-        pslLogInfo("psl__SetNumMapPixels", info_string);
-        return XIA_SUCCESS;
-    }
 
     NUMPIXELS = (unsigned long)(*((double *)value));
 
@@ -6795,8 +6779,6 @@ PSL_STATIC int psl__SetNumMapPixels(int detChan, int modChan, char *name,
 /*
  * Sets the number of scan points that should be in each buffer.
  *
- * This parameter is skipped if mapping mode is not currently active.
- *
  * Also, the value -1.0 means: Use the maximum size for points/buffer given
  * the size of my spectra.
  *
@@ -6808,8 +6790,6 @@ PSL_STATIC int psl__SetNumMapPtsBuffer(int detChan, int modChan, char *name,
                                        Detector *det, FirmwareSet *fs)
 {
     int status;
-
-    boolean_t isMapping = FALSE_;
 
     double pixperbuf = 0.0;
 
@@ -6825,22 +6805,6 @@ PSL_STATIC int psl__SetNumMapPtsBuffer(int detChan, int modChan, char *name,
 
 
     ASSERT(value != NULL);
-
-
-    status = psl__IsMapping(detChan, &isMapping);
-
-    if (status != XIA_SUCCESS) {
-        sprintf(info_string, "Error checking firmware type for detChan %d", detChan);
-        pslLogError("psl__SetNumMapPtsBuffer", info_string, status);
-        return status;
-    }
-
-    if (!isMapping) {
-        sprintf(info_string, "Skipping '%s' since mapping mode is disabled for "
-                "detChan %d", name, detChan);
-        pslLogInfo("psl__SetNumMapPtsBuffer", info_string);
-        return XIA_SUCCESS;
-    }
 
     pixperbuf = *((double *)value);
 
@@ -7782,17 +7746,13 @@ PSL_STATIC int psl__ClearRegisterBit(int detChan, char *reg, int bit)
  * Sets the number of cycles on the SYNC line before the pixel is
  * advanced.
  *
- * This parameter is skipped if mapping mode is not active.
  */
 PSL_STATIC int psl__SetSyncCount(int detChan, int modChan, char *name,
                                  void *value, char *detType,
                                  XiaDefaults *defs, Module *m,
                                  Detector *det, FirmwareSet *fs)
 {
-    int status;
     int statusX;
-
-    boolean_t isMapping = FALSE_;
 
     unsigned long count = 0;
 
@@ -7806,22 +7766,6 @@ PSL_STATIC int psl__SetSyncCount(int detChan, int modChan, char *name,
 
 
     ASSERT(value != NULL);
-
-
-    status = psl__IsMapping(detChan, &isMapping);
-
-    if (status != XIA_SUCCESS) {
-        sprintf(info_string, "Error checking firmware type for detChan %d", detChan);
-        pslLogError("psl__SetSyncCount", info_string, status);
-        return status;
-    }
-
-    if (!isMapping) {
-        sprintf(info_string, "Skipping '%s' since mapping mode is disabled for "
-                "detChan %d", name, detChan);
-        pslLogInfo("psl__SetSyncCount", info_string);
-        return XIA_SUCCESS;
-    }
 
     count = (unsigned long)(*((double *)value));
 

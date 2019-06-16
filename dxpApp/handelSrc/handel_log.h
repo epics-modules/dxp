@@ -36,21 +36,22 @@
 #ifndef __HANDEL_LOG_H__
 #define __HANDEL_LOG_H__
 
-
+#include "xia_common.h"
 #include "xerxes_structures.h"
-
 
 DXP_MD_LOG           handel_md_log;
 
-
 /* Logging macro wrappers */
-#define xiaLogError(x, y, z) handel_md_log(MD_ERROR, (x), (y), (z), __FILE__, __LINE__)
-#define xiaLogWarning(x, y)	 handel_md_log(MD_WARNING, (x), (y), 0, __FILE__, __LINE__)
-#define xiaLogInfo(x, y)	 handel_md_log(MD_INFO, (x), (y), 0, __FILE__, __LINE__)
-#define xiaLogDebug(x, y)	 handel_md_log(MD_DEBUG, (x), (y), 0, __FILE__, __LINE__)
+#define xiaLogError(x, y, z) xiaLog(XIA_LOG_ERROR, (z), (x), "%s", (y))
+#define xiaLogWarning(x, y)	 xiaLog(XIA_LOG_WARNING, (x), "%s", (y))
+#define xiaLogInfo(x, y)	 xiaLog(XIA_LOG_INFO, (x), "%s", (y))
+#define xiaLogDebug(x, y)	 xiaLog(XIA_LOG_DEBUG, (x), "%s", (y))
 
+#define XIA_LOG_ERROR   MD_ERROR,  XIA_FILE, __LINE__
+#define XIA_LOG_WARNING MD_WARNING, XIA_FILE, __LINE__, 0
+#define XIA_LOG_INFO    MD_INFO, XIA_FILE, __LINE__, 0
+#define XIA_LOG_DEBUG   MD_DEBUG, XIA_FILE, __LINE__, 0
 
 static char info_string[400];
-
 
 #endif /* __HANDEL_LOG_H__ */

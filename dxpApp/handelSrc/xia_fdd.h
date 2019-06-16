@@ -73,7 +73,6 @@ FDD_EXPORT int FDD_API xiaFddGetAndCacheFirmware(FirmwareSet *fs,
 					const char *ftype, double pt, char *detType, char *file, char *rawFile);
 
 /* Routines contained in xia_common.c.  Routines that are used across libraries but not exported */
-static FILE* dxp_find_file(const char *, const char *, char [MAXFILENAME_LEN]);
 FDD_STATIC boolean_t xiaFddFindFirmware(const char *filename, const char *ftype,
 					      double ptmin, double ptmax,
 					      unsigned int nother, char **others,

@@ -74,24 +74,13 @@ typedef struct _AddChanType {
 
 /* Interface */
 enum {
-  NO_INTERFACE = 0,
-#ifndef EXCLUDE_EPP
-  EPP,
-  GENERIC_EPP,
-#endif /* EXCLUDE_EPP */
-#ifndef EXCLUDE_SERIAL
-  SERIAL,
-#endif /* EXCLUDE_SERIAL */
-#ifndef EXCLUDE_USB
-  USB,
-#endif /* EXCLUDE_USB */
-#ifndef EXCLUDE_USB2
-  USB2,
-#endif /* EXCLUDE_USB2 */
-#ifndef EXCLUDE_PLX
-  PLX,
-#endif /* EXCLUDE_PLX */
-  SENTINEL
+  XIA_INTERFACE_NONE = 0,
+  XIA_EPP,
+  XIA_GENERIC_EPP,
+  XIA_SERIAL,
+  XIA_USB,
+  XIA_USB2,
+  XIA_PLX
 };
 
 

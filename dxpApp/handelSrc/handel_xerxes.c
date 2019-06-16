@@ -451,7 +451,7 @@ HANDEL_STATIC int xia__CopyInterfString(Module *m, char *interf)
 
 
     switch (m->interface_info->type) {
-    case NO_INTERFACE:
+    case XIA_INTERFACE_NONE:
     default:
         sprintf(info_string, "No interface string specified for alias '%s'",
                 m->alias);
@@ -461,26 +461,26 @@ HANDEL_STATIC int xia__CopyInterfString(Module *m, char *interf)
 
 
 #ifndef EXCLUDE_EPP
-    case EPP:
-    case GENERIC_EPP:
+    case XIA_EPP:
+    case XIA_GENERIC_EPP:
         sprintf(interf, "%#x", m->interface_info->info.epp->epp_address);
         break;
 #endif /* EXCLUDE_EPP */
 
 #ifndef EXCLUDE_USB
-    case USB:
+    case XIA_USB:
         sprintf(interf, "%u", m->interface_info->info.usb->device_number);
         break;
 #endif /* EXCLUDE_USB */
 
 #ifndef EXCLUDE_USB2
-    case USB2:
+    case XIA_USB2:
         sprintf(interf, "%u", m->interface_info->info.usb2->device_number);
         break;
 #endif /* EXCLUDE_USB2 */
 
 #ifndef EXCLUDE_SERIAL
-    case SERIAL:
+    case XIA_SERIAL:
         if (m->interface_info->info.serial->device_file) {
             sprintf(interf, "%s", m->interface_info->info.serial->device_file);
         }
@@ -491,7 +491,7 @@ HANDEL_STATIC int xia__CopyInterfString(Module *m, char *interf)
 #endif /* EXCLUDE_SERIAL */
 
 #ifndef EXCLUDE_PLX
-    case PLX:
+    case XIA_PLX:
         sprintf(interf, "pxi");
         break;
 #endif /* EXCLUDE_PLX */
@@ -515,7 +515,7 @@ HANDEL_STATIC int xia__CopyMDString(Module *m, char *md)
 
 
     switch (m->interface_info->type) {
-    case NO_INTERFACE:
+    case XIA_INTERFACE_NONE:
     default:
         sprintf(info_string, "No interface string specified for alias '%s'",
                 m->alias);
@@ -524,8 +524,8 @@ HANDEL_STATIC int xia__CopyMDString(Module *m, char *md)
         break;
 
 #ifndef EXCLUDE_EPP
-    case EPP:
-    case GENERIC_EPP:
+    case XIA_EPP:
+    case XIA_GENERIC_EPP:
         /* If default then dont change anything, else tack on a : in front
          * of the string (tells XerXes to
          * treat this as a multi-module EPP chain
@@ -539,19 +539,19 @@ HANDEL_STATIC int xia__CopyMDString(Module *m, char *md)
 #endif /* EXCLUDE_EPP */
 
 #ifndef EXCLUDE_USB
-    case USB:
+    case XIA_USB:
         sprintf(md, "%u", m->interface_info->info.usb->device_number);
         break;
 #endif /* EXCLUDE_USB */
 
 #ifndef EXCLUDE_USB2
-    case USB2:
+    case XIA_USB2:
         sprintf(md, "%u", m->interface_info->info.usb2->device_number);
         break;
 #endif /* EXCLUDE_USB2 */
 
 #ifndef EXCLUDE_SERIAL
-    case SERIAL:
+    case XIA_SERIAL:
         if (m->interface_info->info.serial->device_file) {
             sprintf(md, "%s:%u", m->interface_info->info.serial->device_file,
                     m->interface_info->info.serial->baud_rate);
@@ -564,7 +564,7 @@ HANDEL_STATIC int xia__CopyMDString(Module *m, char *md)
 #endif /* EXCLUDE_SERIAL */
 
 #ifndef EXCLUDE_PLX
-    case PLX:
+    case XIA_PLX:
         sprintf(md, "%u:%u", m->interface_info->info.plx->bus,
                 m->interface_info->info.plx->slot);
         break;
@@ -734,7 +734,7 @@ HANDEL_STATIC int xia__AddSystemFPGA(Module *module, char *sysFPGAName,
     sysFPGAStr[0] = (char *)handel_md_alloc(strlen(sysFPGAName) + 1);
 
     if (!sysFPGAStr[0]) {
-        sprintf(info_string, "Unable to allocate %d bytes for 'sysFPGAStr[0]'",
+        sprintf(info_string, "Unable to allocate %zu bytes for 'sysFPGAStr[0]'",
                 strlen(sysFPGAName) + 1);
         xiaLogError("xia__AddSystemFPGA", info_string, XIA_NOMEM);
         return XIA_NOMEM;
@@ -925,7 +925,7 @@ HANDEL_STATIC int xia__AddSystemDSP(Module *module, char *sysDSPName,
     sysDSPStr[0] = (char *)handel_md_alloc(strlen(sysDSPName) + 1);
 
     if (!sysDSPStr[0]) {
-        sprintf(info_string, "Unable to allocate %d bytes for 'sysDSPStr[0]'",
+        sprintf(info_string, "Unable to allocate %zu bytes for 'sysDSPStr[0]'",
                 strlen(sysDSPName) + 1);
         xiaLogError("xiaAddSystemDSP", info_string, XIA_NOMEM);
         return XIA_NOMEM;
@@ -1037,7 +1037,7 @@ HANDEL_STATIC int xia__AddFiPPIA(Module *module, char *sysFippiAName,
     sysFippiAStr[0] = (char *)handel_md_alloc(strlen(sysFippiAName) + 1);
 
     if (!sysFippiAStr[0]) {
-        sprintf(info_string, "Unable to allocate %d bytes for 'sysFippiAStr[0]'",
+        sprintf(info_string, "Unable to allocate %zu bytes for 'sysFippiAStr[0]'",
                 strlen(sysFippiAName) + 1);
         xiaLogError("xiaAddSystemFippiA", info_string, XIA_NOMEM);
         return XIA_NOMEM;
@@ -1104,7 +1104,7 @@ HANDEL_STATIC int xia__AddXerxesBoardType(Module *m)
     type = (char **)handel_md_alloc(sizeof(char *));
 
     if (!type) {
-        sprintf(info_string, "Error allocating %d bytes for 'type'", sizeof(char *));
+        sprintf(info_string, "Error allocating %zu bytes for 'type'", sizeof(char *));
         xiaLogError("xia__AddXerxesBoardType", info_string, XIA_NOMEM);
         return XIA_NOMEM;
     }
@@ -1114,7 +1114,7 @@ HANDEL_STATIC int xia__AddXerxesBoardType(Module *m)
     if (!type[0]) {
         handel_md_free(type);
 
-        sprintf(info_string, "Error allocating %d bytes for 'type[0]'",
+        sprintf(info_string, "Error allocating %zu bytes for 'type[0]'",
                 strlen(m->type) + 1);
         xiaLogError("xia__AddXerxesBoardType", info_string, XIA_NOMEM);
         return XIA_NOMEM;
@@ -1236,7 +1236,7 @@ HANDEL_STATIC int xia__AddXerxesModule(Module *m)
                                       sizeof(char *));
 
     if (!modStr) {
-        sprintf(info_string, "Error allocating %d bytes for 'modStr'",
+        sprintf(info_string, "Error allocating %zu bytes for 'modStr'",
                 (m->number_of_channels + 2) * sizeof(char *));
         xiaLogError("xia__AddXerxesModule", info_string, XIA_NOMEM);
         return XIA_NOMEM;
@@ -1361,7 +1361,7 @@ HANDEL_STATIC int xia__DoMMUConfig(Module *m)
         mmu = (char **)handel_md_alloc(sizeof(char **));
 
         if (!mmu) {
-            sprintf(info_string, "Error allocating %d bytes for 'mmu'",
+            sprintf(info_string, "Error allocating %zu bytes for 'mmu'",
                     sizeof(char **));
             xiaLogError("xia__DoMMUConfig", info_string, XIA_NOMEM);
             return XIA_NOMEM;
@@ -1372,7 +1372,7 @@ HANDEL_STATIC int xia__DoMMUConfig(Module *m)
         if (!mmu[0]) {
             handel_md_free(mmu);
 
-            sprintf(info_string, "Error allocating %d bytes for 'mmu[0]'",
+            sprintf(info_string, "Error allocating %zu bytes for 'mmu[0]'",
                     strlen(name) + 1);
             xiaLogError("xia__DoMMUConfig", info_string, XIA_NOMEM);
             return XIA_NOMEM;
@@ -1937,7 +1937,7 @@ HANDEL_STATIC int xia__AddSystemFiPPI(Module *m, char *sysFipName,
     sysFipStr[0] = handel_md_alloc(strlen(sysFipName) + 1);
 
     if (sysFipStr[0] == NULL) {
-        sprintf(info_string, "Unable to allocated %d bytes for 'sysFipStr[0]'",
+        sprintf(info_string, "Unable to allocated %zu bytes for 'sysFipStr[0]'",
                 strlen(sysFipName) + 1);
         xiaLogError("xia__AddSystemFiPPI", info_string, XIA_NOMEM);
         return XIA_NOMEM;
