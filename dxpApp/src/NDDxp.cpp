@@ -1827,7 +1827,7 @@ asynStatus NDDxp::configureCollectMode()
 asynStatus NDDxp::getAcquisitionStatus(asynUser *pasynUser, int addr)
 {
     int acquiring=0;
-    unsigned long run_active;
+    unsigned long runActive;
     int ivalue;
     int channel=addr;
     asynStatus status=asynSuccess;
@@ -1852,13 +1852,13 @@ asynStatus NDDxp::getAcquisitionStatus(asynUser *pasynUser, int addr)
     } else {
         /* Get the run time status from the handel library - informs whether the
          * HW is acquiring or not.        */
-        CALLHANDEL( xiaGetRunData(channel, "run_active", &run_active), "xiaGetRunData (run_active)" )
+        CALLHANDEL( xiaGetRunData(channel, "run_active", &runActive), "xiaGetRunData (run_active)" )
         /* If Handel thinks the run is active, but the hardware does not, then
          * stop the run */
-        if (run_active == XIA_RUN_HANDEL)
+        if (runActive == XIA_RUN_HANDEL)
             CALLHANDEL( xiaStopRun(channel), "xiaStopRun")
         /* Get the acquiring state from the XIA hardware */
-        acquiring = (run_active & XIA_RUN_HARDWARE);
+        acquiring = (runActive & XIA_RUN_HARDWARE);
         setIntegerParam(addr, NDDxpAcquiring, acquiring);
     }
     //asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
