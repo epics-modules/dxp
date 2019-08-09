@@ -28,7 +28,6 @@ AREA_DETECTOR=$(SUPPORT)/areaDetector-3-7
 -include $(AREA_DETECTOR)/configure/RELEASE_PRODS.local
 
 MCA=$(SUPPORT)/mca-7-8
-CAMAC=$(SUPPORT)/camac-2-7-1
 DXP=$(SUPPORT)/dxp-5-0
 
 # The following are needed only to support the ioc
