@@ -46,14 +46,9 @@ dxpApp_SRCS_DEFAULT += dxpMain.cpp dxp_registerRecordDeviceDriver.cpp
 
 dxpApp_LIBS += dxp handel
 dxpApp_LIBS += mca
-dxpApp_LIBS += asyn
-dxpApp_LIBS += calc sscan autosave
-dxpApp_LIBS += busy
 dxpApp_LIBS += seq pv
 
 include $(ADCORE)/ADApp/commonDriverMakefile
-
-dxpApp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 dxpApp_LIBS_WIN32 += PlxApi
 ifeq ($(LINUX_USB_INSTALLED), YES)
