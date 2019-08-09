@@ -410,6 +410,9 @@ XIA_EXPORT int XIA_API xia_usb2_readn(HANDLE h, unsigned long addr,
     if (n_bytes < XIA_USB2_SMALL_READ_PACKET_SIZE) {
         byte_t big_packet[XIA_USB2_SMALL_READ_PACKET_SIZE];
 
+        /* Tag xia_usb_linux small packet buffers. */
+        memset(big_packet, 0xbccb, XIA_USB2_SMALL_READ_PACKET_SIZE / 2);
+
         status = xia_usb2__send_setup_packet(0, addr,
                                              XIA_USB2_SMALL_READ_PACKET_SIZE,
                                              XIA_USB2_SETUP_FLAG_READ);
@@ -426,7 +429,13 @@ XIA_EXPORT int XIA_API xia_usb2_readn(HANDLE h, unsigned long addr,
             return XIA_USB2_XFER;
         }
 
+        if (rlen != n_bytes && rlen != XIA_USB2_SMALL_READ_PACKET_SIZE) {
+            sprintf(info_string, "usb_bulk_read %d/%lu", rlen, n_bytes);
+            xiaLogError("xia_usb2_read", info_string, XIA_MD);
+	}
+
         memcpy(buf, &big_packet, n_bytes);
+
         rlen = n_bytes;
     } else {
         status = xia_usb2__send_setup_packet(0, addr, n_bytes, XIA_USB2_SETUP_FLAG_READ);
