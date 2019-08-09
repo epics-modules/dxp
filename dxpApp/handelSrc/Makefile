@@ -12,8 +12,10 @@ include $(TOP)/configure/CONFIG
 LIBRARY_IOC_Linux    += handel
 LIBRARY_IOC_WIN32    += handel
 
-USR_CFLAGS +=          -DEXCLUDE_XUP -DEXCLUDE_SERIAL -DEXCLUDE_VEGA -DEXCLUDE_UDXPS
-USR_CFLAGS_Linux    += -DEXCLUDE_XMAP -DEXCLUDE_PLX -DLINUX
+USR_CFLAGS       += -DEXCLUDE_XUP -DEXCLUDE_SERIAL -DEXCLUDE_VEGA -DEXCLUDE_UDXPS
+USR_CFLAGS_Linux += -DEXCLUDE_XMAP -DEXCLUDE_PLX -DLINUX
+# For debugging USB problems
+#USR_CFLAGS       += -DXERXES_TRACE_IO
 
 # The very old gcc42 compiler does not recognize this flag
 ifneq (gcc42, $(findstring gcc42, $(T_A)))
