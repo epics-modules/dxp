@@ -93,7 +93,7 @@ XERXES_SHARED int dxp_md_io(Board *board, unsigned int function,
         char op = function == MD_IO_READ ? 'R' : 'W';
         char *pos = INFO_STRING;
 
-        pos += sprintf(pos, "%s %c ch%d [0x%08X..%lu]",
+        pos += sprintf(pos, "%s %c ch%d [0x%08lX..%u]",
                        board->iface->dllname, op, board->ioChan, addr, len * 2);
 
         for (i = 0; i < len && strlen(INFO_STRING) < sizeof(INFO_STRING) - 7; i++) {
