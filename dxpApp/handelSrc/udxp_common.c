@@ -323,7 +323,7 @@ XERXES_SHARED int dxp_usb_read_block(int modChan, Board *board,
         return status;
     }
 
-    dxp_md_io(board, serial_read, a, (void *)data, dataWords);
+    status = dxp_md_io(board, serial_read, a, (void *)data, dataWords);
     status += dxp_usb2_reset_bus(modChan, board);
 
     if (status != DXP_SUCCESS) {
