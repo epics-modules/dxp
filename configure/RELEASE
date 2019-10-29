@@ -13,35 +13,14 @@ SUPPORT=/corvette/home/epics/devel
 #If using the sequencer, point SNCSEQ at its top directory:
 SNCSEQ=$(SUPPORT)/seq-2-2-5
 
-# dxp requires areaDetector, and areaDetector/configure already defines
-# ASYN, EV4_BASE, libraries needed for plugins, etc.
-AREA_DETECTOR=$(SUPPORT)/areaDetector-3-7
--include $(AREA_DETECTOR)/configure/RELEASE_PATHS.local
-
-# Unfortunately RELEASE_PATHS.local above redefines SUPPORT and AREA_DETECTOR
-# and this messes things up on Windows building on a Linux host.
-# Need to redefine them as above.
--include $(TOP)/../configure/SUPPORT.$(EPICS_HOST_ARCH)
-AREA_DETECTOR=$(SUPPORT)/areaDetector-3-7
--include $(AREA_DETECTOR)/configure/RELEASE_PATHS.local.$(EPICS_HOST_ARCH)
--include $(AREA_DETECTOR)/configure/RELEASE_PRODS.local
-
 MCA=$(SUPPORT)/mca-7-8
 DXP=$(SUPPORT)/dxp-5-0
 
-# The following are needed only to support the ioc
-CALC=$(SUPPORT)/calc-3-7-3
-SSCAN=$(SUPPORT)/sscan-2-11-3
-BUSY=$(SUPPORT)/busy-1-7-2
-AUTOSAVE=$(SUPPORT)/autosave-5-10
-DEVIOCSTATS=$(SUPPORT)/devIocStats-3-1-16
-
-# EPICS_BASE usually appears last so other apps can override stuff:
-EPICS_BASE=/corvette/usr/local/epics-devel/base-7.0.3
-
-#Capfast users may need the following definitions
-#CAPFAST_TEMPLATES=
-#SCH2EDIF_PATH=
+# dxp requires areaDetector, and areaDetector/configure/RELEASE_PRODS.local already defines
+# ASYN, CALC, etc.
+AREA_DETECTOR=$(SUPPORT)/areaDetector-3-8
+-include $(TOP)/../RELEASE.$(EPICS_HOST_ARCH).local
+-include $(AREA_DETECTOR)/configure/RELEASE_PRODS.local
 
 -include $(TOP)/../RELEASE.local
 -include $(TOP)/../RELEASE.$(EPICS_HOST_ARCH).local
