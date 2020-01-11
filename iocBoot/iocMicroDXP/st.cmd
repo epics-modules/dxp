@@ -16,6 +16,8 @@ epicsEnvSet USB_DEVFS_PATH /dev/bus/usb
 # Initialize the XIA software
 # Set logging level (1=ERROR, 2=WARNING, 3=XXX, 4=DEBUG)
 xiaSetLogLevel(2)
+#xiaSetLogLevel(4)
+#xiaSetLogOutput("Handel_MicroDXP_Ubuntu5.txt")
 # Edit the .ini file to select the desired USB device number and other settings
 xiaInit("KETEK_DPP2_usb2.ini")
 xiaStartSystem
@@ -33,9 +35,6 @@ dbLoadRecords("$(DXP)/dxpApp/Db/dxpLowLevel.template", "P=$(PREFIX), R=dxp1:,IO=
 dbLoadRecords("$(DXP)/dxpApp/Db/dxpSCA_16.template",   "P=$(PREFIX), R=dxp1:,IO=@asyn(DXP1 0 1)")
 dbLoadRecords("$(DXP)/dxpApp/Db/mcaCallback.template", "P=$(PREFIX), R=mca1, IO=@asyn(DXP1 0 1)")
 dbLoadRecords("$(MCA)/mcaApp/Db/mca.db",               "P=$(PREFIX), M=mca1, DTYP=asynMCA,INP=@asyn(DXP1 0),NCHAN=2048")
-
-# Template to copy MCA ROIs to DXP SCAs
-dbLoadTemplate("roi_to_sca.substitutions")
 
 # Setup for save_restore
 < ../save_restore.cmd
