@@ -68,7 +68,8 @@ HANDEL_STATIC int xia__GetFiPPIAName(Module *module, char *detType,
                                      boolean_t *found);
 HANDEL_STATIC int xia__GetFiPPIName(Module *module, int channel,
                                     double peakingTime, char *fippiName,
-                                    char *detectorType, char *rawFilename);
+                                    char *detectorType, char *rawFilename,
+                                     boolean_t *found);
 HANDEL_STATIC int xia__GetSystemFiPPIName(Module *module, char *detType,
                                           char *sysFipName, char *rawFilename,
                                           boolean_t *found);
@@ -97,7 +98,7 @@ HANDEL_STATIC int xia__DoSystemFPGA(Module *m);
 HANDEL_STATIC int xia__DoSystemDSP(Module *m, boolean_t *found);
 HANDEL_STATIC int xia__DoDSP(Module *m);
 HANDEL_STATIC int xia__DoFiPPIA(Module *m, boolean_t *found);
-HANDEL_STATIC int xia__DoFiPPI(Module *m);
+HANDEL_STATIC int xia__DoFiPPI(Module *m, boolean_t *found);
 HANDEL_STATIC int xia__DoSystemFiPPI(Module *m, boolean_t *found);
 
 HANDEL_STATIC int xia__GetDetStringFromDetChan(int detChan, Module *m,
@@ -234,7 +235,7 @@ HANDEL_SHARED int HANDEL_API xiaBuildXerxesConfig(void)
         }
 
         if (!found && !isSysFip) {
-            status = xia__DoFiPPI(current);
+            status = xia__DoFiPPI(current, &found);
 
             if (status != XIA_SUCCESS) {
                 sprintf(info_string, "Error adding FiPPIs for alias = '%s'",
@@ -630,7 +631,8 @@ HANDEL_STATIC int xia__GetDSPName(Module *module, int channel,
  */
 HANDEL_STATIC int xia__GetFiPPIName(Module *module, int channel,
                                     double peakingTime, char *fippiName,
-                                    char *detectorType, char *rawFilename)
+                                    char *detectorType, char *rawFilename,
+                                    boolean_t *found)
 {
     char *firmAlias;
 
@@ -641,6 +643,8 @@ HANDEL_STATIC int xia__GetFiPPIName(Module *module, int channel,
     firmAlias = module->firmware[channel];
 
     firmwareSet = xiaFindFirmware(firmAlias);
+
+    *found = FALSE_;
 
     if (firmwareSet->filename == NULL)
     {
@@ -660,6 +664,19 @@ HANDEL_STATIC int xia__GetFiPPIName(Module *module, int channel,
 
         status = xiaFddGetAndCacheFirmware(firmwareSet, "fippi", peakingTime,
                                            detectorType, fippiName, rawFilename);
+
+        /* This is not necessarily an error. We will still pass the error value
+         * up to the top-level but only use an informational message. For products
+         * without system_fpga defined in their FDD files this message will always
+         * appear and we don't want them to be confused by spurious ERRORs.
+         */
+        if (status == XIA_FILEERR) {
+            sprintf(info_string, "No fippi defined in %s", firmwareSet->filename);
+            xiaLogInfo("xia__GetFiPPIName", info_string);
+            return status;
+        }
+
+        *found = TRUE_;
 
         if (status != XIA_SUCCESS)
         {
@@ -1711,7 +1728,7 @@ HANDEL_STATIC int xia__DoFiPPIA(Module *m, boolean_t *found)
  * Adds the FiPPI data for each enabled channel to the Xerxes
  * configuration.
  */
-HANDEL_STATIC int xia__DoFiPPI(Module *m)
+HANDEL_STATIC int xia__DoFiPPI(Module *m, boolean_t *found)
 {
     int status;
     int statusX;
@@ -1751,9 +1768,9 @@ HANDEL_STATIC int xia__DoFiPPI(Module *m)
 
         pt = xiaGetValueFromDefaults("peaking_time", m->defaults[i]);
 
-        status = xia__GetFiPPIName(m, i, pt, fippiName, detType, rawName);
+        status = xia__GetFiPPIName(m, i, pt, fippiName, detType, rawName, found);
 
-        if (status != XIA_SUCCESS) {
+        if (status != XIA_SUCCESS && *found) {
             sprintf(info_string, "Error getting FiPPI name for alias '%s'", m->alias);
             xiaLogError("xia__DoFiPPI", info_string, status);
             return status;
@@ -1767,12 +1784,14 @@ HANDEL_STATIC int xia__DoFiPPI(Module *m)
 
         sprintf(fippiStr[0], "%u", i);
 
-        statusX = dxp_add_board_item("fippi", (char **)fippiStr);
+        if (*found) {
+            statusX = dxp_add_board_item("fippi", (char **)fippiStr);
 
-        if (statusX != DXP_SUCCESS) {
-            sprintf(info_string, "Error adding 'fippi' for alias '%s'", m->alias);
-            xiaLogError("xia__DoFiPPI", info_string, XIA_XERXES);
-            return XIA_XERXES;
+            if (statusX != DXP_SUCCESS) {
+                sprintf(info_string, "Error adding 'fippi' for alias '%s'", m->alias);
+                xiaLogError("xia__DoFiPPI", info_string, XIA_XERXES);
+                return XIA_XERXES;
+            }
         }
     }
 

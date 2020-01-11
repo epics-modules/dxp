@@ -41,8 +41,7 @@
 
 #include "xia_mddef.h"
 #include "xia_common.h"
-#include "md_shim.h"
-
+#include "md_log.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -66,15 +65,6 @@ XIA_MD_EXPORT int XIA_MD_API dxp_md_init_io();
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-
-/* Current output for the logging routines. By default, this is set to stdout */
-static FILE *out_stream;
-
-/* Logging macros */
-#define dxp_md_log_error(x, y, z)	dxp_md_log(MD_ERROR,   (x), (y), (z), __FILE__, __LINE__)
-#define dxp_md_log_warning(x, y)	dxp_md_log(MD_WARNING, (x), (y), 0,   __FILE__, __LINE__)
-#define dxp_md_log_info(x, y)		dxp_md_log(MD_INFO,    (x), (y), 0,   __FILE__, __LINE__)
-#define dxp_md_log_debug(x, y)		dxp_md_log(MD_DEBUG,   (x), (y), 0,   __FILE__, __LINE__)
 
 DXP_MD_ALLOC md_md_alloc;
 DXP_MD_FREE  md_md_free;

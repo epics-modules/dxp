@@ -79,6 +79,9 @@ HANDEL_EXPORT int HANDEL_API xiaStartRun(int detChan, unsigned short resume)
 
     PSLFuncs localFuncs;
 
+    sprintf(info_string,  "Starting a run on chan %d...", detChan);
+    xiaLogInfo("xiaStartRun", info_string);
+
     elemType = xiaGetElemType((unsigned int)detChan);
 
     switch(elemType)
@@ -221,6 +224,9 @@ HANDEL_EXPORT int HANDEL_API xiaStopRun(int detChan)
     Module *module = NULL;
 
     PSLFuncs localFuncs;
+
+    sprintf(info_string,  "Stopping a run on chan %d...", detChan);
+    xiaLogInfo("xiaStopRun", info_string);
 
     elemType = xiaGetElemType((unsigned int)detChan);
 
@@ -451,6 +457,9 @@ HANDEL_EXPORT int HANDEL_API xiaDoSpecialRun(int detChan, char *name, void *info
     char *detectorAlias;
     int detector_chan;
     unsigned int modChan;
+
+    sprintf(info_string, "Starting special run %s on chan %d...", name, detChan);
+    xiaLogInfo("xiaDoSpecialRun", info_string);
 
     elemType = xiaGetElemType((unsigned int)detChan);
 

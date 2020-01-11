@@ -43,6 +43,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 
 #ifdef _WIN32
 #pragma warning(disable : 4214)
@@ -66,9 +67,14 @@
 /* Prototypes */
 static int xia_usb2__send_setup_packet(HANDLE h, unsigned long addr,
                                        unsigned long n_bytes, byte_t rw_flag);
-static int xia_usb2__xfer(HANDLE h, byte_t ep, DWORD n_bytes, byte_t *buf, DWORD *bytes_ret);
+static int xia_usb2__xfer(HANDLE h, byte_t ep, DWORD n_bytes, byte_t *buf,
+                     DWORD *bytes_ret, DWORD timeout, boolean_t no_timeout_log);
 static int xia_usb2__small_read_xfer(HANDLE h, DWORD n_bytes, byte_t *buf, DWORD *bytes_ret);
 static int xia_usb2__set_max_packet_size(HANDLE h);
+static void xia_usb2__log_error(const char* fmt, ...);
+static void xia_usb2__flush_read_ep(HANDLE h);
+static void print_hexbinary_lines(byte_t *buffer, int size, int line_length);
+static void print_debug(const char* fmt, ...);
 
 #ifdef XIA_USB2_DUMP_HELPERS
 /* Currently we aren't using these routines for anything, but since they
@@ -95,6 +101,11 @@ static GUID CYPRESS_GUID = {0xae18aa60, 0x7f6a, 0x11d4,
  */
 static unsigned long XIA_USB2_SMALL_READ_PACKET_SIZE = 0;
 
+/* The text of last printf info is reset every time the status code is updated
+ * so that callers can retrieve it in case of an error status
+ */
+#define INFO_LEN 400
+static char info_string[INFO_LEN];
 
 /*
  * Opens the device with the specified number (dev) and returns
@@ -123,6 +134,7 @@ XIA_EXPORT int XIA_API xia_usb2_open(int dev, HANDLE *h)
                                    DIGCF_DEVICEINTERFACE | DIGCF_PRESENT);
 
     if (dev_info == NULL) {
+        xia_usb2__log_error("No info returned from SetupDiGetClassDevs.");
         return XIA_USB2_GET_CLASS_DEVS;
     }
 
@@ -132,7 +144,9 @@ XIA_EXPORT int XIA_API xia_usb2_open(int dev, HANDLE *h)
                                           &intfc_data);
 
     if (!success) {
+        err = GetLastError();
         SetupDiDestroyDeviceInfoList(dev_info);
+        xia_usb2__log_error("SetupDiEnumDeviceInterfaces error = %#lx", err);
         return XIA_USB2_ENUM_DEV_INTFC;
     }
 
@@ -147,20 +161,20 @@ XIA_EXPORT int XIA_API xia_usb2_open(int dev, HANDLE *h)
      */
     if (success) {
         SetupDiDestroyDeviceInfoList(dev_info);
-        printf("Status magically was true!\n");
+        xia_usb2__log_error("Status magically was true!");
         return XIA_USB2_DEV_INTFC_DETAIL;
     }
 
     if (GetLastError() != 0x7A) {
         SetupDiDestroyDeviceInfoList(dev_info);
-        printf("Last error wasn't 0x7A!\n");
+        xia_usb2__log_error("Last error wasn't 0x7A!");
         return XIA_USB2_DEV_INTFC_DETAIL;
     }
 
     intfc_detail_data = malloc(intfc_detail_size);
-
     if (intfc_detail_data == NULL) {
         SetupDiDestroyDeviceInfoList(dev_info);
+        xia_usb2__log_error("Error allocating memory!");
         return XIA_USB2_NO_MEM;
     }
 
@@ -174,10 +188,10 @@ XIA_EXPORT int XIA_API xia_usb2_open(int dev, HANDLE *h)
                                               &dev_info_data);
 
     if (!success) {
+        err = GetLastError();
         free(intfc_detail_data);
         SetupDiDestroyDeviceInfoList(dev_info);
-        err = GetLastError();
-        printf("Last Error = %#lx\n", err);
+        xia_usb2__log_error("SetupDiGetDeviceInterfaceDetail error = %#lx", err);
         return XIA_USB2_DEV_INTFC_DETAIL;
     }
 
@@ -190,18 +204,18 @@ XIA_EXPORT int XIA_API xia_usb2_open(int dev, HANDLE *h)
 
     if (*h == INVALID_HANDLE_VALUE) {
         err = GetLastError();
-        printf("Last Error = %#lx\n", err);
+        xia_usb2__log_error("CreateFile error = %#lx", err);
         return XIA_USB2_INVALID_HANDLE;
     }
 
     status = xia_usb2__set_max_packet_size(*h);
 
     if (status != XIA_USB2_SUCCESS) {
-        printf("Setting max packet size failed with status %d. Closing the handle.\n", status);
         xia_usb2_close(*h);
         return status;
     }
 
+    xia_usb2__flush_read_ep(*h);
     return XIA_USB2_SUCCESS;
 }
 
@@ -215,12 +229,11 @@ XIA_EXPORT int XIA_API xia_usb2_close(HANDLE h)
 
     DWORD err;
 
-
     status = CloseHandle(h);
 
     if (!status) {
         err = GetLastError();
-        printf("Close Error = %#lx\n", err);
+        xia_usb2__log_error("CloseHandle error = %#lx", err);
         return XIA_USB2_CLOSE_HANDLE;
     }
 
@@ -247,10 +260,12 @@ XIA_EXPORT int XIA_API xia_usb2_read(HANDLE h, unsigned long addr,
 
     /* Prior to adding xia_usb2_readn, the Windows driver never
      * checked the length, just whether there was an error. Just warn,
-     * don't error, for backward compatiblity.
+     * don't error, for backward compatiblity. Skip the common case where
+     * an even number of bytes are allocated for odd number of expected
+     * response.
      */
-    if (bytes_ret != n_bytes) {
-        printf("USB bulk read returned %lu bytes, expected %lu\n",
+    if (bytes_ret != n_bytes && (bytes_ret != n_bytes - 1)) {
+        print_debug("USB bulk read returned %lu bytes, expected %lu\n",
                bytes_ret, n_bytes);
     }
 
@@ -310,7 +325,8 @@ XIA_EXPORT int XIA_API xia_usb2_readn(HANDLE h, unsigned long addr,
             return status;
         }
 
-        status = xia_usb2__xfer(h, XIA_USB2_READ_EP, (DWORD)n_bytes, buf, &bytes_ret);
+        status = xia_usb2__xfer(h, XIA_USB2_READ_EP, (DWORD)n_bytes, buf,
+                                &bytes_ret, XIA_USB2_TIMEOUT, FALSE_);
     }
 
     if (status == XIA_USB2_SUCCESS) {
@@ -349,7 +365,8 @@ XIA_EXPORT int XIA_API xia_usb2_write(HANDLE h, unsigned long addr,
         return status;
     }
 
-    status = xia_usb2__xfer(h, XIA_USB2_WRITE_EP, (DWORD)n_bytes, buf, &bytes_ret);
+    status = xia_usb2__xfer(h, XIA_USB2_WRITE_EP, (DWORD)n_bytes, buf,
+                            &bytes_ret, XIA_USB2_TIMEOUT, FALSE_);
 
     return status;
 }
@@ -384,7 +401,7 @@ static int xia_usb2__send_setup_packet(HANDLE h, unsigned long addr,
     pkt[8] = (byte_t)((addr >> 24) & 0xFF);
 
     status = xia_usb2__xfer(h, XIA_USB2_SETUP_EP, XIA_USB2_SETUP_PACKET_SIZE,
-                            pkt, &bytes_ret);
+                            pkt, &bytes_ret, XIA_USB2_TIMEOUT, FALSE_);
 
     return status;
 }
@@ -398,8 +415,14 @@ static int xia_usb2__send_setup_packet(HANDLE h, unsigned long addr,
  * The timeout is implemented through setting a FILE_FLAG_OVERLAPPED flag
  * when calling CreateFile, passing the OVERLAPPED structure to DeviceIoControl,
  * Then calling WaitForSingleObject with a specified timeout value.
+ *
+ * A no_timeout_log option can be toggled to avoid logging timeout errors. This
+ * should only used in combination with xia_usb2__flush_read_ep to avoid
+ * printing out debug messages when there is not error.
+ *
  */
-static int xia_usb2__xfer(HANDLE h, byte_t ep, DWORD n_bytes, byte_t *buf, DWORD *bytes_ret)
+static int xia_usb2__xfer(HANDLE h, byte_t ep, DWORD n_bytes, byte_t *buf,
+                     DWORD *bytes_ret, DWORD timeout, boolean_t no_timeout_log)
 {
     SINGLE_TRANSFER st;
     OVERLAPPED overlapped;
@@ -422,7 +445,7 @@ static int xia_usb2__xfer(HANDLE h, byte_t ep, DWORD n_bytes, byte_t *buf, DWORD
 
     if (overlapped.hEvent == INVALID_HANDLE_VALUE) {
         err = GetLastError();
-        printf("Create overlapped event Error = %#lx\n", err);
+        xia_usb2__log_error("Create overlapped event error = %#lx", err);
         return XIA_USB2_XFER;
     }
 
@@ -441,22 +464,25 @@ static int xia_usb2__xfer(HANDLE h, byte_t ep, DWORD n_bytes, byte_t *buf, DWORD
     err = GetLastError();
 
     if (err != ERROR_IO_PENDING) {
-        printf("DeviceIoControl Error = %#lx\n", err);
         CloseHandle(overlapped.hEvent);
-        return err == ERROR_FILE_NOT_FOUND ? XIA_USB2_DEVICE_NOT_FOUND : XIA_USB2_XFER;
+        xia_usb2__log_error("DeviceIoControl last error code = %#lx", err);
+        err = ERROR_FILE_NOT_FOUND ? XIA_USB2_DEVICE_NOT_FOUND : XIA_USB2_XFER;
+        return err;
     }
 
-    wait = WaitForSingleObject(overlapped.hEvent, XIA_USB2_TIMEOUT);
+    wait = WaitForSingleObject(overlapped.hEvent, timeout);
 
     switch (wait) {
     case WAIT_OBJECT_0: /* Success */
         break;
     case WAIT_TIMEOUT:  /* Timed out, need to cancel IO */
-        printf("Timed out waiting for transfer\n");
+        if (!no_timeout_log)
+            print_debug("Timed out waiting for transfer\n");
     default:
         err = GetLastError();
-        printf("Wait for transfer failed, wait = %#lx, error = %#lx. Cancelling...\n",
-               wait, err);
+        if (!no_timeout_log)
+            xia_usb2__log_error("Wait for transfer failed, wait = %#lx, "
+            "error = %#lx. Cancelling...", wait, err);
 
         status = XIA_USB2_XFER;
 
@@ -475,10 +501,10 @@ static int xia_usb2__xfer(HANDLE h, byte_t ep, DWORD n_bytes, byte_t *buf, DWORD
             err = GetLastError();
 
             if (err == ERROR_FILE_NOT_FOUND) {
-                printf("IOCTL_ADAPT_ABORT_PIPE failed with ERROR_FILE_NOT_FOUND\n");
+                xia_usb2__log_error("IOCTL_ADAPT_ABORT_PIPE failed with ERROR_FILE_NOT_FOUND\n");
                 status = XIA_USB2_DEVICE_NOT_FOUND;
             } else {
-                printf("IOCTL_ADAPT_ABORT_PIPE failed, result = %#lx\n", err);
+                print_debug("IOCTL_ADAPT_ABORT_PIPE failed, result = %#lx\n", err);
             }
         }
 
@@ -492,8 +518,8 @@ static int xia_usb2__xfer(HANDLE h, byte_t ep, DWORD n_bytes, byte_t *buf, DWORD
 
     if (!success) {
         err = GetLastError();
-        printf("Get overlapped result = %#lx\n", err);
         CloseHandle(overlapped.hEvent);
+        xia_usb2__log_error("Get overlapped result = %#lx", wait, err);
         return XIA_USB2_XFER;
     }
 
@@ -524,14 +550,18 @@ static int xia_usb2__small_read_xfer(HANDLE h, DWORD n_bytes, byte_t *buf, DWORD
     ASSERT(buf != NULL);
 
 
-    big_packet = calloc(XIA_USB2_SMALL_READ_PACKET_SIZE, 1);
+    big_packet = malloc(XIA_USB2_SMALL_READ_PACKET_SIZE);
 
     if (!big_packet) {
         return XIA_USB2_NO_MEM;
     }
 
-    status = xia_usb2__xfer(h, XIA_USB2_READ_EP,
-                            XIA_USB2_SMALL_READ_PACKET_SIZE, big_packet, bytes_ret);
+    /* Initialize buffer to a fixed pattern to identify source of read errors
+     * in case the buffer is not filled completely */
+    memset(big_packet, 0xCD, XIA_USB2_SMALL_READ_PACKET_SIZE);
+
+    status = xia_usb2__xfer(h, XIA_USB2_READ_EP, XIA_USB2_SMALL_READ_PACKET_SIZE,
+                        big_packet, bytes_ret, XIA_USB2_TIMEOUT, FALSE_);
 
     if (status != XIA_USB2_SUCCESS) {
         free(big_packet);
@@ -580,7 +610,7 @@ static int xia_usb2__set_max_packet_size(HANDLE h)
 
     transfer = (SINGLE_TRANSFER *)malloc(total_transfer_size);
 
-    if (transfer == NULL) {
+    if (!transfer) {
         return XIA_USB2_NO_MEM;
     }
 
@@ -605,7 +635,7 @@ static int xia_usb2__set_max_packet_size(HANDLE h)
     if (!success) {
         free(transfer);
         err = GetLastError();
-        printf("Xfer Error = %#lx\n", err);
+        xia_usb2__log_error("Setting up max packet size error = %#lx", err);
         return XIA_USB2_XFER;
     }
 
@@ -635,6 +665,31 @@ static int xia_usb2__set_max_packet_size(HANDLE h)
     return XIA_USB2_SUCCESS;
 }
 
+/*
+ * Set the error info string before returning status code
+ */
+static void xia_usb2__log_error(const char* fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+
+    vsprintf(info_string, fmt, args);
+    info_string[sizeof(info_string) - 1] = '\0';
+
+    printf(fmt, args);
+    printf("\n");
+
+    va_end(args);
+}
+
+/*
+ * Return the content of the last info_string printed to screen
+ * This is overwitten every time the api function is called
+ */
+XIA_EXPORT char* xia_usb2_get_last_error()
+{
+    return info_string;
+}
 
 #ifdef XIA_USB2_DUMP_HELPERS
 /*
@@ -692,3 +747,88 @@ static void xia_usb2__dump_ep_desc(xia_usb2_endpoint_descriptor_t *d)
     printf("\n");
 }
 #endif /* XIA_USB2_DUMP_HELPERS */
+
+
+/*
+ * Occationally when user press CTRL+C to end a program, communication might be
+ * broken off leaving unread data in device buffer, this would cause unexpected
+ * responses to be sent back for subsequent connections. This function reads a
+ * a large packet directly from XIA_USB2_READ_EP with a short timeout to clear
+ * the buffer if  possible.
+ */
+static void xia_usb2__flush_read_ep(HANDLE h)
+{
+    int status;
+    int loop = 0, maxloop = 64;
+    int total_len = 0;
+    DWORD rlen;
+
+    int packet_size = XIA_USB2_SMALL_READ_PACKET_SIZE;
+    byte_t big_packet[512];
+
+    clock_t start = clock();
+    double exec_seconds;
+
+    memset(big_packet, 0xBC, packet_size);
+
+    /* Use a very short timeout initially */
+    status = xia_usb2__xfer(h, XIA_USB2_READ_EP, (DWORD)packet_size, big_packet,
+                                &rlen, 10, TRUE_);
+
+    while (rlen > 0) {
+        print_debug("xia_usb2__flush_read_ep %d bytes\n", rlen);
+#ifdef _DEBUG
+        print_hexbinary_lines(big_packet, rlen, 0x20);
+#endif
+        total_len += (int)rlen;
+        status = xia_usb2__xfer(h, XIA_USB2_READ_EP, (DWORD)packet_size, big_packet,
+                                &rlen, 100, TRUE_);
+
+        /* In theory we should only need to flush EP1 buffer 4 times,
+         * one for each memory block on the device, we'll use a generous
+         * maximum here.
+         */
+        loop++;
+        if (loop > maxloop) {
+            print_debug("xia_usb2__flush_read_ep usb2 flush exceeded maximum "
+                        "%d", maxloop);
+            break;
+        }
+    }
+
+    exec_seconds = (double)(clock() - start) * 1000.0 / CLOCKS_PER_SEC;
+    if (total_len >0)
+        print_debug("xia_usb2__flush_read_ep exec time %.4f ms %d bytes\n",
+                exec_seconds, total_len);
+
+}
+
+/*
+ * Print binary data in hex format in lines of length line_length
+ */
+static void print_hexbinary_lines(byte_t *buffer, int size, int line_length)
+{
+    int j;
+    for (j = 0; j < size; j++) {
+        printf("%02X", buffer[j]);
+        if ((j + 1) % line_length == 0) printf("\n");
+    }
+    if (size % line_length != 0) printf("\n");
+}
+
+/*
+ * Print message to stdout for DEBUG builds
+ */
+static void print_debug(const char* fmt, ...)
+{
+#ifdef _DEBUG
+    va_list args;
+    va_start(args, fmt);
+
+    vprintf(fmt, args);
+
+    va_end(args);
+#else
+    UNUSED(fmt);
+#endif
+}

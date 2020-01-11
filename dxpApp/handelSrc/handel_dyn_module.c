@@ -73,7 +73,6 @@ static char *MODULE_NULL_STRING = "null";
 typedef struct _ModName {
     char *alias;
     char *actual;
-
 } ModName_t;
 
 
@@ -85,19 +84,20 @@ static ModName_t KNOWN_MODS[] = {
 #endif /* EXCLUDE_SATURN */
 
 #ifndef EXCLUDE_UDXPS
-    {"udxps",   "udxps"},
+    {"udxps", "udxps"},
 #endif /* EXCLUDE_UDXP */
 
 #ifndef EXCLUDE_UDXP
+    {"ultralo", "udxp"},
     {"udxp",    "udxp"},
 #endif /* EXCLUDE_UDXP */
 
 #ifndef EXCLUDE_XMAP
-    {"xmap",    "xmap"},
+    {"xmap", "xmap"},
 #endif /* EXCLUDE_XMAP */
 
 #ifndef EXCLUDE_STJ
-    {"stj",    "stj"},
+    {"stj", "stj"},
 #endif /* EXCLUDE_STJ */
 
 #ifndef EXCLUDE_MERCURY

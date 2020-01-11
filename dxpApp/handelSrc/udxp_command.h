@@ -184,6 +184,8 @@
                   byte_t receive[(lr) + RECV_BASE]
 
 #define OLD_MICRO_CMD(ls, lr)                           \
+                  ASSERT(lenS >= (ls));                 \
+                  ASSERT(lenR >= (lr) + RECV_BASE);     \
                   lenS = (ls);                          \
                   lenR = (lr) + RECV_BASE;
 

@@ -560,6 +560,10 @@ int dxp_add_board_item(char *ltoken, char **values)
          * location in the array used by the machine dependent functions to
          * identify how to talk to this module. */
 
+        sprintf(info_string, "Opening interface ioname=%s iface_dllname=%s funcs=%p",
+                values[0], working_iface->dllname, working_iface->funcs);
+        dxp_log_info("dxp_add_board_item", info_string);
+
         status = working_iface->funcs->dxp_md_open(values[0], &ioChan);
 
         if(status != DXP_SUCCESS) {
@@ -568,6 +572,9 @@ int dxp_add_board_item(char *ltoken, char **values)
             dxp_log_error("dxp_add_board_item", info_string, status);
             return status;
         }
+
+        sprintf(info_string, "Opened ioChan=%d", ioChan);
+        dxp_log_info("dxp_add_board_item", info_string);
 
         /* Now loop over the next MAXCHAN numbers to define a detector element number
          * associated with each DXP channel.  If positive then the channel is
@@ -625,8 +632,8 @@ int dxp_add_board_item(char *ltoken, char **values)
         working_board->system_dsp   = NULL;
         working_board->fippi_a      = NULL;
         working_board->system_fpga  = NULL;
-        working_board->system_fippi = NULL;            
-                
+        working_board->system_fippi = NULL;
+
         /* Memory assignments */
         working_board->chanstate =
             (Chan_State *)xerxes_md_alloc(nchan * sizeof(Chan_State));
@@ -638,7 +645,7 @@ int dxp_add_board_item(char *ltoken, char **values)
 
         working_board->dsp =
             (Dsp_Info **)xerxes_md_alloc(nchan * sizeof(Dsp_Info *));
-        
+
         working_board->fippi=
             (Fippi_Info **)xerxes_md_alloc(nchan * sizeof(Fippi_Info *));
 
@@ -2775,7 +2782,7 @@ XERXES_EXPORT int XERXES_API dxp_readout_detector_run(int* detChan,
         dxp_log_error("dxp_readout_detector_run",info_string,status);
         return status;
     }
-    
+
     /* wrapper for the real readout routine */
     status = dxp_do_readout(chosen, &modChan, params, baseline, spectrum);
 
@@ -3188,7 +3195,7 @@ XERXES_EXPORT int XERXES_API dxp_cmd(int *detChan, byte_t *cmd, unsigned int *le
     } else {
         dxp_log_debug("dxp_cmd", "This function is not implemented for current device");
     }
-    
+
     return DXP_SUCCESS;
 }
 

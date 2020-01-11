@@ -207,7 +207,7 @@ HANDEL_EXPORT int HANDEL_API xiaInitHandel(void)
         xiaLogInfo("xiaInitHandel", "Closing off existing connections.");
         status = xiaUnHook();
     }
-    
+
     xiaLogInfo("xiaInitHandel", "Starting Handel");
 
     /* Initialize the memory of both Handel and Xerxes.
@@ -224,54 +224,54 @@ HANDEL_EXPORT int HANDEL_API xiaInitHandel(void)
     xiaLogInfo("xiaInitHandel", info_string);
 
     /* Print out build configuration */
-    xiaLogInfo("xiaInitHandel", "--- Supported interface ---");    
+    xiaLogInfo("xiaInitHandel", "--- Supported interface ---");
 
 #ifndef EXCLUDE_EPP
-    xiaLogInfo("xiaInitHandel", "epp");    
+    xiaLogInfo("xiaInitHandel", "epp");
 #endif /* EXCLUDE_EPP */
 
 #ifndef EXCLUDE_USB
-    xiaLogInfo("xiaInitHandel", "usb");    
+    xiaLogInfo("xiaInitHandel", "usb");
 #endif /* EXCLUDE_USB */
 
 #ifndef EXCLUDE_USB2
-    xiaLogInfo("xiaInitHandel", "usb2");    
+    xiaLogInfo("xiaInitHandel", "usb2");
 #endif /* EXCLUDE_USB2 */
 
 #ifndef EXCLUDE_SERIAL
-    xiaLogInfo("xiaInitHandel", "serial");    
+    xiaLogInfo("xiaInitHandel", "serial");
 #endif /* EXCLUDE_SERIAL */
 
 #ifndef EXCLUDE_PLX
-    xiaLogInfo("xiaInitHandel", "plx");    
+    xiaLogInfo("xiaInitHandel", "plx");
 #endif /* EXCLUDE_PLX */
 
-    xiaLogInfo("xiaInitHandel", "--- Supported board types ---");    
-    
+    xiaLogInfo("xiaInitHandel", "--- Supported board types ---");
+
 #ifndef EXCLUDE_SATURN
-    xiaLogInfo("xiaInitHandel", "saturn");    
+    xiaLogInfo("xiaInitHandel", "saturn");
 #endif
 
 #ifndef EXCLUDE_UDXPS
-    xiaLogInfo("xiaInitHandel", "udxps");    
+    xiaLogInfo("xiaInitHandel", "udxps");
 #endif
 
 #ifndef EXCLUDE_UDXP
-    xiaLogInfo("xiaInitHandel", "udxp");    
+    xiaLogInfo("xiaInitHandel", "udxp");
 #endif
 
 #ifndef EXCLUDE_XMAP
-    xiaLogInfo("xiaInitHandel", "xmap");    
+    xiaLogInfo("xiaInitHandel", "xmap");
 #endif /* EXCLUDE_XMAP */
 
 #ifndef EXCLUDE_STJ
-    xiaLogInfo("xiaInitHandel", "stj");    
+    xiaLogInfo("xiaInitHandel", "stj");
 #endif /* EXCLUDE_STJ */
 
 #ifndef EXCLUDE_MERCURY
-    xiaLogInfo("xiaInitHandel", "mercury");    
+    xiaLogInfo("xiaInitHandel", "mercury");
 #endif /* EXCLUDE_MERCURY */
-    
+
     return status;
 }
 
@@ -326,6 +326,7 @@ HANDEL_STATIC int HANDEL_API xiaInitMemory(void)
 HANDEL_EXPORT int HANDEL_API xiaExit(void)
 {
     int status;
+    xiaLogInfo("xiaExit", "Exiting...");
 
     /* Close down any communications that need to be shutdown.
      */
@@ -701,7 +702,7 @@ HANDEL_SHARED int HANDEL_API xiaFreeModule(Module *module)
         handel_md_free(module->interface_info->info.plx);
         handel_md_free(module->interface_info);
         break;
-        
+
     case XIA_EPP:
 
     case XIA_GENERIC_EPP:
@@ -720,7 +721,7 @@ HANDEL_SHARED int HANDEL_API xiaFreeModule(Module *module)
         handel_md_free((void *)module->interface_info->info.usb);
         handel_md_free((void *)module->interface_info);
         break;
-        
+
     case XIA_USB2:
         handel_md_free((void *)module->interface_info->info.usb2);
         handel_md_free((void *)module->interface_info);

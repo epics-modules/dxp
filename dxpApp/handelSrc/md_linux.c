@@ -234,10 +234,6 @@ XIA_MD_EXPORT int XIA_MD_API dxp_md_init_util(Xia_Util_Functions* funcs, char* t
     funcs->dxp_md_clear_tmp      = dxp_md_clear_tmp;
     funcs->dxp_md_path_separator = dxp_md_path_separator;
 
-    if (out_stream == NULL) {
-        out_stream = stdout;
-    }
-
     return DXP_SUCCESS;
 }
 
@@ -494,7 +490,7 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_epp_io(int* camChan, unsigned int* function,
     int i;
 
     unsigned short *us_data = (unsigned short *)data;
-    
+
     int ullength = (int) *length/2;
     unsigned long *temp = NULL;
 
@@ -530,14 +526,14 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_epp_io(int* camChan, unsigned int* function,
             /* Perform long reads and writes if in program address space (24-bit) */
             /* Allocate memory */
             temp = (unsigned long *)dxp_md_alloc(sizeof(unsigned long) * ullength);
-            
+
             if (!temp) {
                 sprintf(ERROR_STRING, "Unable to allocate %zu bytes for temp",
                         sizeof(unsigned long) * ullength);
                 dxp_md_log_error("dxp_md_epp_io", ERROR_STRING, DXP_MDNOMEM);
                 return DXP_MDNOMEM;
             }
-            
+
             if (*function == MD_IO_READ) {
                 rstat = DxpReadBlocklong(next_addr, temp, ullength);
                 /* reverse the byte order for the EPPLIB library */
@@ -1329,6 +1325,13 @@ XIA_MD_STATIC int  dxp_md_usb2_io(int *camChan, unsigned int *function,
                 dxp_md_log_error("dxp_md_usb2_io", ERROR_STRING, DXP_MDNOMEM);
                 return DXP_MDNOMEM;
             }
+
+
+            /* Initialize buffer to a fixed pattern to identify source of read
+             * errors in case the buffer is not filled completely
+             */
+            memset(byte_buf, 0xAB, n_bytes);
+
             status = xia_usb2_readn(usb2Handles[*camChan], cache_addr, n_bytes,
                                     byte_buf, &n_bytes_read);
             if (status != 0) {
@@ -1340,7 +1343,9 @@ XIA_MD_STATIC int  dxp_md_usb2_io(int *camChan, unsigned int *function,
                 return DXP_MDIO;
             }
 
-            if (n_bytes_read != n_bytes) {
+            //Skip the common case where an even number of bytes are allocated
+            //for odd number of expected respons
+            if (n_bytes_read != n_bytes && n_bytes_read != n_bytes - 1) {
                 sprintf(ERROR_STRING, "Reading %lu bytes from %#lx for "
                         "camChan %d, got %lu",
                         n_bytes, cache_addr, *camChan, n_bytes_read);
@@ -1543,20 +1548,17 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_puts(char* s)
 
 }
 
-
 /*
- * Safe version of fgets() that can handle both UNIX and DOS
- * line-endings.
+ * Safe version of fgets() that can handle both UNIX and DOS line-endings.
  *
  * If the trailing two characters are '\\r' + '\\n', they are replaced by a
  * single '\\n'.
  */
 XIA_MD_STATIC char * dxp_md_fgets(char *s, int length, FILE *stream)
 {
-    int buf_len = 0;
-
-    char *buf     = NULL;
     char *cstatus = NULL;
+
+    size_t ret_len = 0;
 
 
     ASSERT(s != NULL);
@@ -1564,35 +1566,28 @@ XIA_MD_STATIC char * dxp_md_fgets(char *s, int length, FILE *stream)
     ASSERT(length > 0);
 
 
-    buf = dxp_md_alloc(length + 1);
-
-    if (!buf) {
-        return NULL;
-    }
-
-    cstatus = fgets(buf, (length + 1), stream);
+    cstatus = fgets(s, length - 1, stream);
 
     if (!cstatus) {
-        dxp_md_free(buf);
+        if (ferror(stream)) {
+            dxp_md_log_warning("dxp_md_fgets", "Error detected reading from "
+                               "stream.");
+        }
+
         return NULL;
     }
 
-    buf_len = strlen(buf);
+    ret_len = strlen(s);
 
-    if ((buf[buf_len - 2] == '\r') && (buf[buf_len - 1] == '\n')) {
-        buf[buf_len - 2] = '\n';
-        buf[buf_len - 1] = '\0';
+    if ((ret_len > 1) &&
+            (s[ret_len - 2] == '\r') &&
+            (s[ret_len - 1] == '\n')) {
+        s[ret_len - 2] = '\n';
+        s[ret_len - 1] = '\0';
     }
-
-    ASSERT(strlen(buf) < length);
-
-    strcpy(s, buf);
-
-    free(buf);
 
     return s;
 }
-
 
 /*
  * Get a safe temporary directory path.

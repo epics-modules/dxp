@@ -59,6 +59,8 @@ extern "C" {
   XIA_IMPORT int XIA_API xia_usb2_write(HANDLE h, unsigned long addr,
                                         unsigned long n_bytes,
                                         byte_t *buf);
+  XIA_IMPORT char* xia_usb2_get_last_error();
+
 
 #ifdef __cplusplus
 }

@@ -71,11 +71,8 @@
 
 #include "fdd.h"
 
-/* HACK: USB RS232 update
- * Need a modular variable to identify whether the board is USB2 or RS232
- * This only used for I2C bus access where the data bytes need to be different
- * for USB2, we can remove this and the support for RS232 I2C command when
- * we are certain there is no more RS232 alpha boards.
+/* Global hack for convenient checks to switch to direct USB
+ * operation for fast bulk reads. For the UltraLo, assume true.
  */
 static boolean_t IS_USB = FALSE_;
 
@@ -128,6 +125,7 @@ PSL_STATIC int pslGetMcaDirect(int detChan, int bytesPerBin,
                                     int numMCAChans, unsigned long startAddr,
                                     unsigned long *data);
 #ifdef XIA_ALPHA
+PSL_STATIC unsigned long long pslUllFromBytesOffset(byte_t *bytes, int size, int offset);
 PSL_STATIC int pslAlphaPulserComputeDAC(unsigned short amplitude,
                                         unsigned short risetime,
                                         unsigned short *dac);
@@ -146,6 +144,7 @@ PSL_STATIC int pslGetParamValues(int detChan, void *value);
 PSL_STATIC int pslGetMCALength(int detChan, void *value, XiaDefaults *defs);
 PSL_STATIC int pslGetMCAData(int detChan, void *value, XiaDefaults *defs);
 PSL_STATIC int pslGetLivetime(int detChan, void *value, XiaDefaults *defs);
+PSL_STATIC int pslGetELivetime(int detChan, void *value, XiaDefaults *defs);
 PSL_STATIC int pslGetRuntime(int detChan, void *value, XiaDefaults *defs);
 PSL_STATIC int pslGetICR(int detChan, void *value, XiaDefaults *defs);
 PSL_STATIC int pslGetOCR(int detChan, void *value, XiaDefaults *defs);
@@ -423,6 +422,11 @@ PSL_STATIC int pslUltraMoistureRead(int detChan, char *name,
                                     XiaDefaults *defs, void *value);
 PSL_STATIC int pslUltraGetMBID(int detChan, char *name,
                                XiaDefaults *defs, void *value);
+PSL_STATIC int pslUltraGetMBV41ID(int detChan, unsigned long long *id);
+PSL_STATIC int pslUltraGetMBV42ID(int detChan, unsigned long *id);
+PSL_STATIC int pslUltraGetDSR(int detChan, char *name,
+                              XiaDefaults *defs, void *value);
+PSL_STATIC int psl__UltraGetDSR(int detChan, byte_t *dsr);
 #endif /* XIA_ALPHA */
 
 /* Gain Operations */
@@ -522,6 +526,7 @@ static Udxp_RunData runData[] = {
     {"realtime",            pslGetRuntime},
     {"mca_events",          pslGetEvents},
     {"trigger_livetime",    pslGetLivetime},
+    {"energy_livetime",     pslGetELivetime},
     {"module_statistics_2", pslGetModuleStatistics},
 #ifdef XIA_ALPHA
     {"alpha_buffer_num_events", pslGetAlphaBufferNumEvents},
@@ -625,6 +630,7 @@ static BoardOperation boardOps[] = {
     {"ultra_get_electrode_size",      pslUltraGetElectrodeSize},
     {"ultra_moisture_read",           pslUltraMoistureRead},
     {"ultra_get_mb_id",               pslUltraGetMBID},
+    {"ultra_get_dsr",                 pslUltraGetDSR},
 #endif /* XIA_ALPHA */
 };
 
@@ -718,12 +724,17 @@ PSL_STATIC int pslValidateModule(Module *module)
 PSL_STATIC boolean_t pslIsInterfaceValid(Module *module)
 {
     if (module->interface_info->type == XIA_SERIAL) {
+#ifdef XIA_ALPHA
+        /* Serial motherboards are obsolete */
+        FAIL();
+#endif
+
         IS_USB = FALSE_;
         return TRUE_;
     }
 
     if (module->interface_info->type == XIA_USB2) {
-        IS_USB = TRUE_; /* HACK for RS232 Alpha support */
+        IS_USB = TRUE_;
         return TRUE_;
     }
 
@@ -738,7 +749,7 @@ PSL_STATIC boolean_t pslIsInterfaceValid(Module *module)
 PSL_STATIC boolean_t pslIsNumChannelsValid(Module *module)
 {
 #ifdef XIA_ALPHA
-    return module->number_of_channels == 2;
+        return module->number_of_channels == 2;
 #else
     if (module->number_of_channels != 1) {
         return FALSE_;
@@ -2014,6 +2025,29 @@ PSL_STATIC int pslGetLivetime(int detChan, void *value, XiaDefaults *defs)
     return XIA_SUCCESS;
 }
 
+/*
+ * This routine calculates and returns run data energy_livetime
+ */
+PSL_STATIC int pslGetELivetime(int detChan, void *value, XiaDefaults *defs)
+{
+    int statusX;
+
+    double stats[9];
+
+    ASSERT(value != NULL);
+
+    statusX = pslGetModuleStatistics(detChan, (void *)stats, defs);
+
+    if (statusX != DXP_SUCCESS) {
+        sprintf(info_string, "Error reading statistics for detChan %d", detChan);
+        pslLogError("pslGetELivetime", info_string, XIA_XERXES);
+        return XIA_XERXES;
+    }
+
+    *((double *)value) = stats[2];
+
+    return XIA_SUCCESS;
+}
 
 /*
  * This routine calculates and returns the
@@ -3409,12 +3443,12 @@ PSL_STATIC int pslGetSnapshotSca(int detChan, void *value, XiaDefaults *defs)
 
     unsigned long features;
     unsigned long addr;
-    
+
     parameter_t SCASTART;
-    
+
     double number_of_scas;
     double *sca64 = (double *)value;
-    
+
     UNUSED(defs);
 
     ASSERT(value != NULL);
@@ -3436,7 +3470,7 @@ PSL_STATIC int pslGetSnapshotSca(int detChan, void *value, XiaDefaults *defs)
         pslLogError("pslGetSCAData", info_string, status);
         return status;
     }
-    
+
     /* USB raw data readout is supported */
     if (IS_USB) {
         status = pslGetParameter(detChan, "SCASTART", &SCASTART);
@@ -3444,7 +3478,7 @@ PSL_STATIC int pslGetSnapshotSca(int detChan, void *value, XiaDefaults *defs)
             pslLogError("pslGetSCAData", "Error getting SCASTART", status);
             return status;
         }
-        addr = DSP_DATA_MEMORY_OFFSET + SCASTART + 32;        
+        addr = DSP_DATA_MEMORY_OFFSET + SCASTART + 32;
         status = pslGetSCADataDirect(detChan, (int)number_of_scas, addr, sca64);
     } else {
         status = pslGetSCADataCmd(detChan, (int)number_of_scas, CMD_READ_SNAPSHOT_SCA, sca64);
@@ -6284,7 +6318,6 @@ PSL_STATIC int pslGetModuleStatistics(int detChan, void *value, XiaDefaults *def
 
     stats[0] = rt;
     stats[1] = lt;
-    /* microDXP doesn't support energy_livetime */
     stats[2] = 0.0;
     stats[3] = in;
     stats[4] = out;
@@ -6292,6 +6325,14 @@ PSL_STATIC int pslGetModuleStatistics(int detChan, void *value, XiaDefaults *def
     stats[6] = ocr;
     stats[7] = unders;
     stats[8] = overs;
+
+    /* microDXP doesn't support energy_livetime directly
+     * it's calculated from the following formula
+     * energy filter live time = realtime * ocr / icr
+     * (excluding unrealistic OCR values caused by noisy energy peak)
+     */
+    if ((icr != 0) && (icr >= ocr))
+        stats[2] = (rt * ocr) / icr;
 
     return XIA_SUCCESS;
 }
@@ -7716,10 +7757,9 @@ PSL_STATIC int pslPassthrough(int detChan, char *name, XiaDefaults *defs,
     int receive_len = *(value_int_array[3]);
 
     /* The return size for the command is fixed at 32 + 1 (status) */
-    DEFINE_CMD(CMD_PASSTHROUGH, MAX_PASSTHROUGH_SIZE, RECV_BASE + MAX_PASSTHROUGH_SIZE + 1);
+    DEFINE_CMD(CMD_PASSTHROUGH, MAX_PASSTHROUGH_SIZE, MAX_PASSTHROUGH_SIZE + 1);
 
     UNUSED(name);
-
 
     status = pslGetBoardFeatures(detChan, NULL, defs, (void *)&features);
 
@@ -7746,6 +7786,13 @@ PSL_STATIC int pslPassthrough(int detChan, char *name, XiaDefaults *defs,
 
     status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
+    /* Unsupported command status */
+    if (status != DXP_SUCCESS && receive[4] == HW_STATUS_UNSUPPORTED) {
+        pslLogError("pslPassthrough", "Hardware reported that passthrough"
+            " command is not supported.", XIA_PASSTHROUGH);
+        return XIA_PASSTHROUGH;
+    }
+
     if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error executing UART passthrough command for "
                 "detChan %d", detChan);
@@ -7753,16 +7800,7 @@ PSL_STATIC int pslPassthrough(int detChan, char *name, XiaDefaults *defs,
         return XIA_XERXES;
     }
 
-    if (receive[RECV_BASE] != 0) {
-        sprintf(info_string, "Hardware reported error status code 0x%X sending "
-                "UART passthrough command for detChan %d", receive[RECV_BASE],
-                detChan);
-        pslLogError("pslPassthrough", info_string, XIA_PASSTHROUGH);
-        return XIA_PASSTHROUGH;
-    }
-
     memcpy(receive_byte, receive + RECV_BASE + 1, receive_len);
-
     return XIA_SUCCESS;
 }
 
@@ -8285,11 +8323,11 @@ PSL_STATIC int pslGetSCALength(int detChan, void *value, XiaDefaults *defs)
 PSL_STATIC int pslGetSCAData(int detChan, void *value, XiaDefaults *defs)
 {
     int status;
-    
+
     unsigned long features = 0;
     unsigned long addr;
     parameter_t SCASTART = 0x0000;
-    
+
     double number_of_scas = 0.0;
     double *sca64 = (double *)value;
 
@@ -8322,7 +8360,7 @@ PSL_STATIC int pslGetSCAData(int detChan, void *value, XiaDefaults *defs)
             return status;
         }
 
-        addr = DSP_DATA_MEMORY_OFFSET + SCASTART;        
+        addr = DSP_DATA_MEMORY_OFFSET + SCASTART;
         status = pslGetSCADataDirect(detChan, (int)number_of_scas, addr, sca64);
     } else {
         status = pslGetSCADataCmd(detChan, (int)number_of_scas, CMD_READ_SCA, sca64);
@@ -8576,7 +8614,7 @@ PSL_STATIC int pslGetPresetValue(int detChan, char *name, XiaDefaults *defs, voi
     num_bytes = support_long_readout ? 6 : 4;
 
     if (!support_long_readout) {
-        OLD_MICRO_CMD(6, 6);
+        OLD_MICRO_CMD(1, 6);
     }
 
     send[0] = 0x01;
@@ -8772,6 +8810,21 @@ PSL_STATIC int pslSetPresetValue(int detChan, char *name, XiaDefaults *defs, voi
 }
 
 #ifdef XIA_ALPHA
+
+PSL_STATIC unsigned long long pslUllFromBytesOffset(byte_t *bytes, int size, int offset)
+{
+    int i;
+    unsigned long long value;
+
+    ASSERT(size <= (int)sizeof(value));
+
+    for (i = 0, value = 0; i < size; i++) {
+        value += ((unsigned long long)bytes[offset + i]) << (i * 8);
+    }
+
+    return value;
+}
+
 /*
  * Perform the requested I/O operation with the tilt sensor.
  *
@@ -8785,7 +8838,7 @@ PSL_STATIC int pslUltraDoTiltIO(int detChan, int rw, byte_t reg, byte_t *data)
 {
     int statusX;
 
-    byte_t cmd = CMD_TILT_IO;
+    byte_t cmd = CMD_ACCESS_I2C;
 
     unsigned int lenS = 5;
     unsigned int lenR = RECV_BASE + 1;
@@ -8798,7 +8851,6 @@ PSL_STATIC int pslUltraDoTiltIO(int detChan, int rw, byte_t reg, byte_t *data)
     byte_t recv[2 + RECV_BASE];
 
 
-    ASSERT(IS_USB);
     ASSERT(reg >= ULTRA_TILT_WHO_AM_I && reg <= ULTRA_TILT_DD_THSE_H);
     ASSERT(rw == ALPHA_I2C_READ || rw == ALPHA_I2C_WRITE);
 
@@ -8859,10 +8911,6 @@ PSL_STATIC int pslUltraTiltInit(int detChan, char *name, XiaDefaults *defs,
     UNUSED(name);
     UNUSED(defs);
     UNUSED(value);
-
-
-    ASSERT(IS_USB);
-
 
     /* Clear CTRL_REG3 */
     reg = 0x00;
@@ -9032,14 +9080,10 @@ PSL_STATIC int pslUltraTiltSetThresholds(int detChan, char *name,
     byte_t threshExtLow;
     byte_t threshExtHigh;
 
-
     UNUSED(name);
     UNUSED(defs);
 
-
     ASSERT(value);
-    ASSERT(IS_USB);
-
 
     thresholdGs = (double *)value;
 
@@ -9131,10 +9175,6 @@ PSL_STATIC int pslUltraTiltEnableInterlock(int detChan, char *name,
     UNUSED(defs);
     UNUSED(value);
 
-
-    ASSERT(IS_USB);
-
-
     status = pslUltraDoTiltIO(detChan, ALPHA_I2C_WRITE, ULTRA_TILT_DD_CFG,
                               &reg);
 
@@ -9168,10 +9208,7 @@ PSL_STATIC int pslUltraTiltIsTriggered(int detChan, char *name,
     UNUSED(name);
     UNUSED(defs);
 
-
     ASSERT(value);
-    ASSERT(IS_USB);
-
 
     sprintf(mem, "direct:%#x:%lu", ULTRA_USB_TILT_STATUS, 1);
 
@@ -9956,8 +9993,7 @@ PSL_STATIC int pslSetAlphaExtTrigger(int detChan, char *name, XiaDefaults *defs,
 
 
 /*
- * Reads the high voltage value from the Alpha processor.
- * Or in the case of USB2 udxp read directly from i2c bus
+ * Reads the high voltage value from UltraLo motherboard I2C bus.
  *
  * Requires Alpha-project firmware.
  *
@@ -9975,39 +10011,21 @@ PSL_STATIC int pslGetAlphaHV(int detChan, char *name, XiaDefaults *defs,
     int sum = 0;
     double average;
 
-    byte_t cmd = CMD_GET_ALPHA_HV;
-
-    unsigned int lenS;
-
-    unsigned int lenR = 9 + RECV_BASE;
-    byte_t receive[9 + RECV_BASE];
-
-    byte_t *send = NULL;
+    DEFINE_CMD(CMD_ACCESS_I2C, 5, 9);
 
     UNUSED(name);
     UNUSED(defs);
 
     ASSERT(value != NULL);
 
-    if (IS_USB) {
-        lenS = 5;
-    } else {
-        lenS = 0;
-    }
-
-    send = (byte_t *)utils->funcs->dxp_md_alloc(lenS * sizeof(byte_t));
-
-    if (IS_USB) {
-        /* I2C command to get HV */
-        send[0] = ALPHA_I2C_READ;
-        send[1] = 0x94;
-        send[2] = 0x01;
-        send[3] = 0x08;
-        send[4] = 0x00;
-    }
+    /* I2C command to get HV */
+    send[0] = ALPHA_I2C_READ;
+    send[1] = 0x94;
+    send[2] = 0x01;
+    send[3] = 0x08;
+    send[4] = 0x00;
 
     status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
-    utils->funcs->dxp_md_free(send);
 
     if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting Alpha high voltage for "
@@ -10034,9 +10052,10 @@ PSL_STATIC int pslGetAlphaHV(int detChan, char *name, XiaDefaults *defs,
 
 
 /*
- * Sets the high voltage value on the Alpha processor. This setting takes
- * effect immediately, so if you want to ramp up to a target, you must call
- * this multiple times, calculating the incremental values yourself.
+ * Sets the high voltage value on the UltraLo motherboard via the I2C
+ * bus. This setting takes effect immediately, so if you want to ramp
+ * up to a target, you must call this multiple times, calculating the
+ * incremental values yourself.
  *
  * Requires Alpha-project firmware.
  *
@@ -10052,14 +10071,7 @@ PSL_STATIC int pslSetAlphaHV(int detChan, char *name, XiaDefaults *defs,
     byte_t voltHigh;
     byte_t voltLow;
 
-    byte_t cmd = CMD_SET_ALPHA_HV;
-
-    unsigned int lenS;
-
-    unsigned int lenR = 1 + RECV_BASE;
-    byte_t receive[1 + RECV_BASE];
-
-    byte_t *send = NULL;
+    DEFINE_CMD(CMD_ACCESS_I2C, 6, 1);
 
     UNUSED(name);
     UNUSED(defs);
@@ -10079,29 +10091,15 @@ PSL_STATIC int pslSetAlphaHV(int detChan, char *name, XiaDefaults *defs,
     voltLow = (byte_t)(scaledVolts & 0xFF);
     voltHigh = (byte_t)((scaledVolts >> 8) & 0xFF);
 
-    if (IS_USB) {
-        lenS = 6;
-    } else {
-        lenS = 2;
-    }
-
-    send = (byte_t *)utils->funcs->dxp_md_alloc(lenS * sizeof(byte_t));
-
-    if (IS_USB) {
-        /* I2C command to set HV */
-        send[0] = ALPHA_I2C_WRITE;
-        send[1] = 0x98;
-        send[2] = 0x01;
-        send[3] = 0x01;
-        send[4] = voltHigh;  /* Note the reversed byte order here */
-        send[5] = voltLow;
-    } else {
-        send[0] = voltLow;
-        send[1] = voltHigh;
-    }
+    /* I2C command to set HV */
+    send[0] = ALPHA_I2C_WRITE;
+    send[1] = 0x98;
+    send[2] = 0x01;
+    send[3] = 0x01;
+    send[4] = voltHigh;  /* Note the reversed byte order here */
+    send[5] = voltLow;
 
     statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
-    utils->funcs->dxp_md_free(send);
 
     if (statusX != DXP_SUCCESS) {
         sprintf(info_string, "Error setting Alpha high voltage to %hu "
@@ -10133,12 +10131,6 @@ PSL_STATIC int pslGetCPLDVersion(int detChan, char *name, XiaDefaults *defs,
 
     UNUSED(defs);
     UNUSED(name);
-
-    if (!IS_USB) {
-        pslLogError("pslGetCPLDVersion",
-                    "Reading of motherboard CPLD firmware version not supported", XIA_XERXES);
-        return XIA_XERXES;
-    }
 
     ASSERT(value != NULL);
 
@@ -10184,10 +10176,6 @@ PSL_STATIC int pslAlphaPulserDisable(int detChan, char *name, XiaDefaults *defs,
     UNUSED(defs);
     UNUSED(value);
 
-
-    ASSERT(IS_USB);
-
-
     send[0] = (byte_t)0;
 
     statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
@@ -10215,10 +10203,6 @@ PSL_STATIC int pslAlphaPulserEnable(int detChan, char *name, XiaDefaults *defs,
     UNUSED(name);
     UNUSED(defs);
     UNUSED(value);
-
-
-    ASSERT(IS_USB);
-
 
     send[0] = (byte_t)1;
 
@@ -10253,10 +10237,7 @@ PSL_STATIC int pslAlphaPulserConfig1(int detChan, char *name, XiaDefaults *defs,
     UNUSED(name);
     UNUSED(defs);
 
-
     ASSERT(value != NULL);
-    ASSERT(IS_USB);
-
 
     config = (unsigned short *)value;
 
@@ -10311,8 +10292,6 @@ PSL_STATIC int pslAlphaPulserConfig2(int detChan, char *name, XiaDefaults *defs,
 
 
     ASSERT(value != NULL);
-    ASSERT(IS_USB);
-
 
     config = (unsigned short *)value;
 
@@ -10366,10 +10345,7 @@ PSL_STATIC int pslAlphaPulserSetMode(int detChan, char *name, XiaDefaults *defs,
     UNUSED(name);
     UNUSED(defs);
 
-
     ASSERT(value != NULL);
-    ASSERT(IS_USB);
-
 
     modes = *((unsigned long *)value);
 
@@ -10410,9 +10386,7 @@ PSL_STATIC int pslAlphaPulserConfigVeto(int detChan, char *name,
     UNUSED(name);
     UNUSED(defs);
 
-
     ASSERT(value != NULL);
-    ASSERT(IS_USB);
 
     lenS = 2;
     config = (byte_t *)value;
@@ -10451,10 +10425,6 @@ PSL_STATIC int pslAlphaPulserEnableVeto(int detChan, char *name,
     UNUSED(defs);
     UNUSED(value);
 
-
-    ASSERT(IS_USB);
-
-
     send[0] = (byte_t)1;
 
     statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
@@ -10483,10 +10453,6 @@ PSL_STATIC int pslAlphaPulserDisableVeto(int detChan, char *name,
     UNUSED(name);
     UNUSED(defs);
     UNUSED(value);
-
-
-    ASSERT(IS_USB);
-
 
     send[0] = (byte_t)0;
 
@@ -10517,10 +10483,6 @@ PSL_STATIC int pslAlphaPulserStart(int detChan, char *name, XiaDefaults *defs,
     UNUSED(defs);
     UNUSED(value);
 
-
-    ASSERT(IS_USB);
-
-
     send[0] = (byte_t)1;
 
     statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
@@ -10546,10 +10508,6 @@ PSL_STATIC int pslAlphaPulserStop(int detChan, char *name, XiaDefaults *defs,
     UNUSED(name);
     UNUSED(defs);
     UNUSED(value);
-
-
-    ASSERT(IS_USB);
-
 
     send[0] = (byte_t)0;
 
@@ -10729,10 +10687,6 @@ PSL_STATIC int pslUltraRenumerateDevice(int detChan, char *name,
     UNUSED(defs);
     UNUSED(value);
 
-
-    ASSERT(IS_USB);
-
-
     sprintf(mem, "direct:%#x:%lu", ULTRA_USB_RENUMERATE, 1);
 
     statusX = dxp_write_memory(&detChan, mem, &bang[0]);
@@ -10762,10 +10716,7 @@ PSL_STATIC int pslUltraSetElectrodeSize(int detChan, char *name,
     UNUSED(name);
     UNUSED(defs);
 
-
     ASSERT(value);
-    ASSERT(IS_USB);
-
 
     es = *((enum ElectrodeSize *)value);
 
@@ -10810,10 +10761,7 @@ PSL_STATIC int pslUltraGetElectrodeSize(int detChan, char *name,
     UNUSED(name);
     UNUSED(defs);
 
-
     ASSERT(value);
-    ASSERT(IS_USB);
-
 
     sprintf(mem, "direct:%#x:%lu", 0x05000000, 1);
 
@@ -10826,7 +10774,7 @@ PSL_STATIC int pslUltraGetElectrodeSize(int detChan, char *name,
         return XIA_XERXES;
     }
 
-    *((enum ElectrodeSize *)value) = (enum ElectrodeSize)size[0];
+    *((enum ElectrodeSize *)value) = (enum ElectrodeSize)(size[0] & 0xFF);
 
     sprintf(info_string, "Electrode size is %lu via memory read: %s for "
             "detChan %d.", size[0], mem, detChan);
@@ -10988,32 +10936,47 @@ PSL_STATIC int pslUltraMoistureRead(int detChan, char *name,
 
 
 /*
- * Returns the UltraLo motherboard's unique ID, defined as the serial number
- * in the I2C EEPROM.
- *
- * value returns the unique ID as a double. The value derives from a
- * 48-bit unsigned integer; we use the double only as a portable large number;
- * it will always be positive with zero fractional portion. uint64_t would be
- * preferred once support for old compilers is dropped.
+ * Returns the UltraLo motherboard's unique ID as unsigned long long.
+ * The value is taken from the serial number in the MB EEPROM, which
+ * varies by motherboard version. The underlying serial number may be
+ * 32 bits or 48 bits. This function uses the device status register
+ * to select the right device and normalizes the size (64 bits on msvc).
  */
 PSL_STATIC int pslUltraGetMBID(int detChan, char *name,
                                XiaDefaults *defs, void *value)
 {
     int status;
-    unsigned int i;
-
-    DEFINE_CMD(CMD_GET_MB_ID, 5, 9);
-
-    byte_t calcCRC, retCRC;
-    byte_t family;
-    double sn;
+    byte_t dsr;
 
     UNUSED(name);
     UNUSED(defs);
-    ASSERT(value);
 
-    ASSERT(IS_USB);
+    status = psl__UltraGetDSR(detChan, &dsr);
 
+    if (status == XIA_SUCCESS && (dsr & (1 << ULTRA_DSR_MBV42_BIT))) {
+        status = pslUltraGetMBV42ID(detChan, value);
+    }
+    else {
+        status = pslUltraGetMBV41ID(detChan, value);
+    }
+
+    return status;
+}
+
+/*
+ * MB v4.1 unique ID device DS28CN01. Returns a 48-bit serial number.
+ */
+PSL_STATIC int pslUltraGetMBV41ID(int detChan, unsigned long long *id)
+{
+    int status;
+    unsigned int i;
+
+    DEFINE_CMD(CMD_ACCESS_I2C, 5, 9);
+
+    byte_t calcCRC, retCRC;
+    byte_t family;
+
+    ASSERT(id);
 
     send[0] = ALPHA_I2C_READ;
     send[1] = ULTRA_MB_EEPROM_I2C_ADDR;
@@ -11026,7 +10989,7 @@ PSL_STATIC int pslUltraGetMBID(int detChan, char *name,
     if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting MICROMB EEPROM registration number "
                 "for detChan %d", detChan);
-        pslLogError("pslUltraGetMBID", info_string, XIA_XERXES);
+        pslLogError("pslUltraGetMBV41ID", info_string, XIA_XERXES);
         return XIA_XERXES;
     }
 
@@ -11037,17 +11000,17 @@ PSL_STATIC int pslUltraGetMBID(int detChan, char *name,
     if (calcCRC != retCRC) {
         for (i = 0; i < lenS; i++) {
             sprintf(info_string, "send[%u] = %#x", i, send[i]);
-            pslLogDebug("pslUltraGetMBID", info_string);
+            pslLogDebug("pslUltraGetMBV41ID", info_string);
         }
 
         for (i = 0; i < lenR; i++) {
             sprintf(info_string, "receive[%u] = %#x", i, receive[i]);
-            pslLogDebug("pslUltraGetMBID", info_string);
+            pslLogDebug("pslUltraGetMBV41ID", info_string);
         }
 
         sprintf(info_string, "CRC mismatch: retCRC = %u, calcCRC = %u",
                 retCRC, calcCRC);
-        pslLogError("pslUltraGetMBID", info_string, XIA_CHKSUM);
+        pslLogError("pslUltraGetMBV41ID", info_string, XIA_CHKSUM);
         return XIA_CHKSUM;
     }
 
@@ -11057,24 +11020,21 @@ PSL_STATIC int pslUltraGetMBID(int detChan, char *name,
         sprintf(info_string, "MICROMB EEPROM registration family number = %#x, "
                 "expected %#x, for detChan %d.", family, ULTRA_MB_EEPROM_FAM,
                 detChan);
-        pslLogWarning("pslUltraGetMBID", info_string);
+        pslLogWarning("pslUltraGetMBV41ID", info_string);
     }
 
-    sn = pslDoubleFromBytes(&receive[RECV_BASE + 1], 6);
+    *id = pslUllFromBytesOffset(receive, 6, RECV_BASE + 1);
 
     sprintf(info_string, "MICROMB EEPROM registration family number = %#x, "
-            "serial number = %.0f, detChan %d.", family, sn, detChan);
-    pslLogDebug("pslUltraGetMBID", info_string);
-
-    *((double*)value) = sn;
+            "serial number = %llu, detChan %d.", family, *id, detChan);
+    pslLogDebug("pslUltraGetMBV41ID", info_string);
 
     return XIA_SUCCESS;
 }
 
-
 /*
  * Computes a DOW CRC over buffer according to the lookup table algorithm
- *  presented in http://www.maximintegrated.com/app-notes/index.mvp/id/27.
+ * presented in http://www.maximintegrated.com/app-notes/index.mvp/id/27.
  */
 PSL_STATIC byte_t pslDOWCRC(byte_t *buffer, int len)
 {
@@ -11106,6 +11066,115 @@ PSL_STATIC byte_t pslDOWCRC(byte_t *buffer, int len)
 
     return crc;
 }
+
+/*
+ * MB v4.2 unique ID device 24AA256UIDT. Returns a 32-bit serial number.
+ * http://ww1.microchip.com/downloads/en/DeviceDoc/20005215C.pdf
+ */
+PSL_STATIC int pslUltraGetMBV42ID(int detChan, unsigned long *id)
+{
+    int status;
+
+    DEFINE_CMD(CMD_ACCESS_I2C, 6, 7);
+
+    byte_t mfg_code, device_code;
+
+    ASSERT(id);
+
+    send[0] = ALPHA_I2C_READ;
+    send[1] = ULTRA_MB_V42_EEPROM_I2C_ADDR;
+    send[2] = 0x02;
+    send[3] = 0x06;
+    send[4] = LO_BYTE(ULTRA_MB_V42_EEPROM_MFG);
+    send[5] = HI_BYTE(ULTRA_MB_V42_EEPROM_MFG);
+
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+
+    if (status != DXP_SUCCESS) {
+        sprintf(info_string, "Error getting MICROMB EEPROM registration number "
+                "for detChan %d", detChan);
+        pslLogError("pslUltraGetMBV42ID", info_string, XIA_XERXES);
+        return XIA_XERXES;
+    }
+
+    mfg_code = receive[RECV_BASE];
+    device_code = receive[RECV_BASE + 1];
+
+    /* 32-bits, high byte first */
+    *id = (receive[RECV_BASE + 2] << 24) |
+        (receive[RECV_BASE + 3] << 16) |
+        (receive[RECV_BASE + 4] << 8) |
+        receive[RECV_BASE + 5];
+
+    sprintf(info_string, "MICROMB v4.2 mfg=%hhx device=%hhx ID=%lx (%lu), detChan %d.",
+            mfg_code, device_code, *id, *id, detChan);
+    pslLogDebug("pslUltraGetMBV42ID", info_string);
+
+    return XIA_SUCCESS;
+}
+
+/*
+ * Board operation handler returning the UltraLo motherboard's device
+ * status register (DSR).
+ *
+ * value returns DSR as a byte.
+ */
+PSL_STATIC int pslUltraGetDSR(int detChan, char *name,
+                              XiaDefaults *defs, void *value)
+{
+    int status;
+    byte_t dsr;
+
+    UNUSED(name);
+    UNUSED(defs);
+    ASSERT(value);
+
+    status = psl__UltraGetDSR(detChan, &dsr);
+    if (status != DXP_SUCCESS) {
+        sprintf(info_string, "Error getting MICROMB DSR "
+                "for detChan %d", detChan);
+        pslLogError("pslUltraGetDSR", info_string, XIA_XERXES);
+        return XIA_XERXES;
+    }
+
+    *((byte_t*)value) = dsr;
+
+    return XIA_SUCCESS;
+}
+
+/*
+ * Returns the contents of the device status register, added in MB
+ * v4.1. Quickly returns a communication error for MB v4.0 since
+ * the I2C device does not exist.
+ */
+PSL_STATIC int psl__UltraGetDSR(int detChan, byte_t *dsr)
+{
+    int status;
+
+    DEFINE_CMD(CMD_ACCESS_I2C, 5, 2);
+
+    ASSERT(dsr);
+
+    send[0] = ALPHA_I2C_READ;
+    send[1] = (byte_t)ULTRA_MB_DSR_I2C_ADDR;
+    send[2] = 0x01;
+    send[3] = 0x01;
+    send[4] = 0;                /* register 0 on PCA9538 */
+
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+
+    if (status != DXP_SUCCESS) {
+        sprintf(info_string, "Error getting MICROMB DSR "
+                "for detChan %d", detChan);
+        pslLogError("psl__UltraGetDSR", info_string, XIA_XERXES);
+        return XIA_XERXES;
+    }
+
+    *dsr = receive[RECV_BASE];
+
+    return XIA_SUCCESS;
+}
+
 #endif /* XIA_ALPHA */
 
 

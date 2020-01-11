@@ -48,6 +48,7 @@
 
 #include "xerxes.h"
 #include "xerxes_errors.h"
+#include "xia_xerxes.h"
 
 #include "handel_constants.h"
 #include "handel_errors.h"
@@ -67,7 +68,8 @@ PSL_STATIC double psl__GetClockTick(void);
 PSL_STATIC int psl__UpdateFilterParams(int detChan, int modChan, double pt,
                                        XiaDefaults *defs, FirmwareSet *fs,
                                        Module *m, Detector *det);
-PSL_STATIC int psl__UpdateTrigFilterParams(int detChan, XiaDefaults *defs);
+PSL_STATIC int psl__UpdateTrigFilterParams(Module *m, int detChan,
+                                        XiaDefaults *defs);
 PSL_STATIC int psl__UpdateGain(int detChan, int modChan, XiaDefaults *defs,
                                Module *m, Detector *det);
 PSL_STATIC int psl__CalculateGain(XiaDefaults *defs, double preampGain,
@@ -101,6 +103,7 @@ PSL_STATIC unsigned long psl__GetMCAPixelBlockSize(XiaDefaults *defs,
 PSL_STATIC int psl__SyncTempCalibrationValues(int detChan, Module *m,
                                               XiaDefaults *defs);
 PSL_STATIC int psl__ApplyTempCalibrationValues(int detChan, XiaDefaults *defs);
+PSL_STATIC boolean_t psl__IsMercuryOem(int detChan);
 
 /* Helper functions for mapping mode */
 PSL_STATIC int psl__UpdateParams(int detChan, unsigned short type, int modChan,
@@ -1018,7 +1021,7 @@ PSL_STATIC int pslGetAcquisitionValues(int detChan, char *name, void *value,
              * even though -1.0 doesn't tell the user what the actual value
              * on the hardware is.
              */
-            return XIA_SUCCESS;             
+            return XIA_SUCCESS;
         }
     }
 
@@ -1861,6 +1864,7 @@ PSL_STATIC int psl__SetPeakingTime(int detChan, int modChan, char *name,
                                    Detector *det, FirmwareSet *fs)
 {
     int status;
+    boolean_t isMercuryOem = psl__IsMercuryOem(detChan);
 
     double pt   = 0.0;
     double tick = psl__GetClockTick();
@@ -1873,39 +1877,41 @@ PSL_STATIC int psl__SetPeakingTime(int detChan, int modChan, char *name,
 
     UNUSED(name);
 
-
     ASSERT(value != NULL);
     ASSERT(det != NULL);
     ASSERT(fs != NULL);
     ASSERT(m != NULL);
 
-
     pt = *((double *)value);
 
-    /* The peaking time is validated relative to the defined peaking time
-     * ranges in the FDD file.
-     */
+    if (isMercuryOem) {
+        pslLogInfo("psl__SetPeakingTime", "Skipping firmware download for Mercury-OEM");
 
-    status = psl__GetFiPPIName(modChan, pt, fs, detType, fippi, rawFippi);
+    } else {
+        /* The peaking time is validated relative to the defined peaking time
+         * ranges in the FDD file.
+         */
+        status = psl__GetFiPPIName(modChan, pt, fs, detType, fippi, rawFippi);
 
-    if (status != XIA_SUCCESS) {
-        sprintf(info_string, "Error getting FiPPI name at peaking time %0.2f "
-                "for detChan = %d", pt, detChan);
-        pslLogError("psl__SetPeakingTime", info_string, status);
-        return status;
-    }
+        if (status != XIA_SUCCESS) {
+            sprintf(info_string, "Error getting FiPPI name at peaking time %0.2f "
+                    "for detChan = %d", pt, detChan);
+            pslLogError("psl__SetPeakingTime", info_string, status);
+            return status;
+        }
 
-    sprintf(info_string, "Preparing to download FiPPI A to detChan %d", detChan);
-    pslLogDebug("psl__SetPeakingTime", info_string);
+        sprintf(info_string, "Preparing to download FiPPI A to detChan %d", detChan);
+        pslLogDebug("psl__SetPeakingTime", info_string);
 
-    status = pslDownloadFirmware(detChan, "fippi_a", fippi, m,
-                                 rawFippi, NULL);
+        status = pslDownloadFirmware(detChan, "fippi_a", fippi, m,
+                                     rawFippi, NULL);
 
-    if (status != XIA_SUCCESS) {
-        sprintf(info_string, "Error downloading FiPPI A '%s' to detChan %d",
-                fippi, detChan);
-        pslLogError("psl__SetPeakingTime", info_string, status);
-        return status;
+        if (status != XIA_SUCCESS) {
+            sprintf(info_string, "Error downloading FiPPI A '%s' to detChan %d",
+                    fippi, detChan);
+            pslLogError("psl__SetPeakingTime", info_string, status);
+            return status;
+        }
     }
 
     status = psl__UpdateFilterParams(detChan, modChan, pt, defs, fs, m, det);
@@ -2021,7 +2027,6 @@ PSL_STATIC int psl__GetFiPPIName(int modChan, double pt, FirmwareSet *fs,
     ASSERT(name != NULL);
     ASSERT(rawName != NULL);
 
-
     if (!fs->filename) {
         sprintf(info_string, "Only FDD files are supported for the Mercury "
                 "(modChan = %d)", modChan);
@@ -2124,6 +2129,8 @@ PSL_STATIC int psl__UpdateFilterParams(int detChan, int modChan, double pt,
     parameter_t PEAKSAM    = 0;
     parameter_t PEAKMODE   = 0;
 
+    int max_slowfilter = MAX_SLOWFILTER;
+
     double tick        = psl__GetClockTick();
     double sl          = 0.0;
     double sg          = 0.0;
@@ -2135,42 +2142,49 @@ PSL_STATIC int psl__UpdateFilterParams(int detChan, int modChan, double pt,
     double ptMin       = 0.0;
     double ptMax       = 0.0;
 
-    parameter_t filter[2];
+    parameter_t filter[2] = {0, 0};
 
     char psStr[20];
     char piStr[22];
 
+    boolean_t isMercuryOem = psl__IsMercuryOem(detChan);
 
     ASSERT(fs != NULL);
     ASSERT(fs->filename != NULL);
 
-
-    status = xiaFddGetNumFilter(fs->filename, pt, fs->numKeywords, fs->keywords,
-                                &nFilter);
-
-    if (status != XIA_SUCCESS) {
-        sprintf(info_string, "Error getting number of filter parameters from '%s' "
-                "for detChan %d", fs->filename, detChan);
-        pslLogError("psl__UpdateFilterParams", info_string, status);
-        return status;
+    if (isMercuryOem) {
+        ptMax = 40.96;
+        max_slowfilter = 2048;
     }
 
-    if (nFilter != 2) {
-        sprintf(info_string, "Number of filter parameters (%hu) in '%s' does not "
-                "match the number required for the hardware (%d).", nFilter,
-                fs->filename, 2);
-        pslLogError("psl__UpdateFilterParams", info_string, XIA_N_FILTER_BAD);
-        return XIA_N_FILTER_BAD;
-    }
+    if (!isMercuryOem) {
+        status = xiaFddGetNumFilter(fs->filename, pt, fs->numKeywords, fs->keywords,
+                                    &nFilter);
 
-    status = xiaFddGetFilterInfo(fs->filename, pt, fs->numKeywords, 
-                       (const char **)fs->keywords, &ptMin, &ptMax, &filter[0]);
+        if (status != XIA_SUCCESS) {
+            sprintf(info_string, "Error getting number of filter parameters from '%s' "
+                    "for detChan %d", fs->filename, detChan);
+            pslLogError("psl__UpdateFilterParams", info_string, status);
+            return status;
+        }
 
-    if (status != XIA_SUCCESS) {
-        sprintf(info_string, "Error getting filter parameter info from '%s' "
-                "for detChan %d", fs->filename, detChan);
-        pslLogError("psl__UpdateFilterParams", info_string, status);
-        return status;
+        if (nFilter != 2) {
+            sprintf(info_string, "Number of filter parameters (%hu) in '%s' does not "
+                    "match the number required for the hardware (%d).", nFilter,
+                    fs->filename, 2);
+            pslLogError("psl__UpdateFilterParams", info_string, XIA_N_FILTER_BAD);
+            return XIA_N_FILTER_BAD;
+        }
+
+        status = xiaFddGetFilterInfo(fs->filename, pt, fs->numKeywords,
+                           (const char **)fs->keywords, &ptMin, &ptMax, &filter[0]);
+
+        if (status != XIA_SUCCESS) {
+            sprintf(info_string, "Error getting filter parameter info from '%s' "
+                    "for detChan %d", fs->filename, detChan);
+            pslLogError("psl__UpdateFilterParams", info_string, status);
+            return status;
+        }
     }
 
     /* Calculate SLOWLEN */
@@ -2193,10 +2207,10 @@ PSL_STATIC int psl__UpdateFilterParams(int detChan, int modChan, double pt,
     sl = pt / (tick * pow(2.0, (double)DECIMATION));
     SLOWLEN = (parameter_t)ROUND(sl);
 
-    if (SLOWLEN < MIN_SLOWLEN || SLOWLEN > MAX_SLOWLEN) {
+    if (SLOWLEN < MIN_SLOWLEN || SLOWLEN > max_slowfilter) {
         sprintf(info_string, "Calculated slow filter length (%hu) is not in the "
                 "allowed range (%d, %d) for detChan %d", SLOWLEN, MIN_SLOWLEN,
-                MAX_SLOWLEN, detChan);
+                max_slowfilter, detChan);
         pslLogError("psl__UpdateFilterParams", info_string, XIA_SLOWLEN_OOR);
         return XIA_SLOWLEN_OOR;
     }
@@ -2219,18 +2233,18 @@ PSL_STATIC int psl__UpdateFilterParams(int detChan, int modChan, double pt,
     sprintf(info_string, "Calculated SLOWGAP = %hu", SLOWGAP);
     pslLogDebug("psl__UpdateFilterParams", info_string);
 
-    if (SLOWGAP > MAX_SLOWGAP) {
+    if (SLOWGAP > max_slowfilter) {
         sprintf(info_string, "Calculated slow filter gap length (%hu) is not in the "
                 "allowed range(%d, %d) for detChan %d", SLOWGAP,
-                MIN_SLOWGAP, MAX_SLOWGAP, detChan);
+                MIN_SLOWGAP, max_slowfilter, detChan);
         pslLogError("psl__UpdateFilterParams", info_string, XIA_SLOWGAP_OOR);
         return XIA_SLOWGAP_OOR;
     }
 
-    if ((SLOWLEN + SLOWGAP) > MAX_SLOWFILTER) {
+    if ((SLOWLEN + SLOWGAP) > max_slowfilter) {
         sprintf(info_string, "Total slow filter length (%hd) is larger then the "
                 "maximum allowed size (%d) for detChan %d",
-                SLOWLEN + SLOWGAP, MAX_SLOWFILTER, detChan);
+                SLOWLEN + SLOWGAP, max_slowfilter, detChan);
         pslLogError("psl__UpdateFilterParams", info_string, XIA_SLOWGAP_OOR);
         return XIA_SLOWGAP_OOR;
     }
@@ -2395,11 +2409,11 @@ PSL_STATIC int psl__UpdateGain(int detChan, int modChan, XiaDefaults *defs,
     parameter_t ESCALE   = 0;
     parameter_t SLOWLEN  = 0;
 
+    boolean_t isMercuryOem = psl__IsMercuryOem(detChan);
 
     ASSERT(defs != NULL);
     ASSERT(m != NULL);
     ASSERT(det != NULL);
-
 
     status = pslGetParameter(detChan, "SLOWLEN", &SLOWLEN);
 
@@ -2436,12 +2450,14 @@ PSL_STATIC int psl__UpdateGain(int detChan, int modChan, XiaDefaults *defs,
         return status;
     }
 
-    status = pslSetParameter(detChan, "ESCALE", ESCALE);
+    if (!isMercuryOem) {
+        status = pslSetParameter(detChan, "ESCALE", ESCALE);
 
-    if (status != XIA_SUCCESS) {
-        sprintf(info_string, "Error setting ESCALE for detChan %d", detChan);
-        pslLogError("psl__UpdateGain", info_string, status);
-        return status;
+        if (status != XIA_SUCCESS) {
+            sprintf(info_string, "Error setting ESCALE for detChan %d", detChan);
+            pslLogError("psl__UpdateGain", info_string, status);
+            return status;
+        }
     }
 
     sprintf(info_string, "New gain settings for detChan %d: GAINDAC = %#hx, "
@@ -4868,7 +4884,7 @@ PSL_STATIC int psl__SetTrigPeakingTime(int detChan, int modChan, char *name, voi
     status = pslSetDefault("trigger_peaking_time", value, defs);
     ASSERT(status == XIA_SUCCESS);
 
-    status = psl__UpdateTrigFilterParams(detChan, defs);
+    status = psl__UpdateTrigFilterParams(m, detChan, defs);
 
     if (status != XIA_SUCCESS) {
         sprintf(info_string, "Error updating trigger filter parameters for detChan %d",
@@ -4888,7 +4904,8 @@ PSL_STATIC int psl__SetTrigPeakingTime(int detChan, int modChan, char *name, voi
 /*
  * Update the trigger filter parameters.
  */
-PSL_STATIC int psl__UpdateTrigFilterParams(int detChan, XiaDefaults *defs)
+PSL_STATIC int psl__UpdateTrigFilterParams(Module *m, int detChan,
+                                            XiaDefaults *defs)
 {
     int status;
 
@@ -4903,6 +4920,9 @@ PSL_STATIC int psl__UpdateTrigFilterParams(int detChan, XiaDefaults *defs)
     parameter_t FASTGAP = 0;
     parameter_t FSCALE  = 0;
 
+    boolean_t isMercuryOem = psl__IsMercuryOem(detChan);
+
+    UNUSED(m);
 
     ASSERT(defs != NULL);
 
@@ -4950,9 +4970,6 @@ PSL_STATIC int psl__UpdateTrigFilterParams(int detChan, XiaDefaults *defs)
         pslLogInfo("psl__UpdateTrigFilterParams", info_string);
     }
 
-    fscale = ceil(log((double)FASTLEN) / log(2.0)) - 1.0;
-    FSCALE = (parameter_t)ROUND(fscale);
-
     status = pslSetParameter(detChan, "FASTLEN", FASTLEN);
 
     if (status != XIA_SUCCESS) {
@@ -4971,13 +4988,18 @@ PSL_STATIC int psl__UpdateTrigFilterParams(int detChan, XiaDefaults *defs)
         return status;
     }
 
-    status = pslSetParameter(detChan, "FSCALE", FSCALE);
+    if (!isMercuryOem) {
+        fscale = ceil(log((double)FASTLEN) / log(2.0)) - 1.0;
+        FSCALE = (parameter_t)ROUND(fscale);
 
-    if (status != XIA_SUCCESS) {
-        sprintf(info_string, "Error setting fast filter scaling for detChan %d",
-                detChan);
-        pslLogError("psl__UpdateTrigFilterParams", info_string, status);
-        return status;
+        status = pslSetParameter(detChan, "FSCALE", FSCALE);
+
+        if (status != XIA_SUCCESS) {
+            sprintf(info_string, "Error setting fast filter scaling for detChan %d",
+                    detChan);
+            pslLogError("psl__UpdateTrigFilterParams", info_string, status);
+            return status;
+        }
     }
 
     /* Recompute acquisition values based on -- potentially -- rounded DSP
@@ -5019,7 +5041,7 @@ PSL_STATIC int psl__SetTrigGapTime(int detChan, int modChan, char *name, void *v
     status = pslSetDefault("trigger_gap_time", value, defs);
     ASSERT(status == XIA_SUCCESS);
 
-    status = psl__UpdateTrigFilterParams(detChan, defs);
+    status = psl__UpdateTrigFilterParams(m, detChan, defs);
 
     if (status != XIA_SUCCESS) {
         sprintf(info_string, "Error updating trigger filter parameters for detChan %d",
@@ -5306,44 +5328,38 @@ PSL_STATIC int psl__SwitchFirmware(int detChan, double type, int modChan,
                                    double pt, FirmwareSet *fs, Module *m)
 {
     int status;
+    boolean_t isMercuryOem = psl__IsMercuryOem(detChan);
 
     char fippi[MAX_PATH_LEN];
     char dsp[MAX_PATH_LEN];
     char rawFippi[MAXFILENAME_LEN];
     char rawDSP[MAXFILENAME_LEN];
-
+    char preamptype[MAXITEM_LEN];
 
     ASSERT(fs != NULL);
     ASSERT(m  != NULL);
 
+    if (type == XIA_PREAMP_RESET) {
+        strcpy(preamptype, "RESET");
+    } else {
+        strcpy(preamptype, "RC");
+    }
 
-    switch ((int)type) {
+    sprintf(info_string, "Switching to %s preamp", preamptype);
+    pslLogDebug("psl__SwitchFirmware", info_string);
 
-    case (int)XIA_PREAMP_RESET:
-        sprintf(info_string, "Switching to reset preamp");
-        pslLogDebug("psl__SwitchFirmware", info_string);
-
-        status = psl__GetFiPPIName(modChan, pt, fs, "RESET", fippi, rawFippi);
+    if (!isMercuryOem) {
+        status = psl__GetFiPPIName(modChan, pt, fs, preamptype, fippi, rawFippi);
 
         if (status != XIA_SUCCESS) {
             sprintf(info_string, "Unable to get the name of the FiPPI that supports "
-                    "reset preamplifiers for peaking time = %0.3f microseconds for "
-                    "detChan %d", pt, detChan);
+                    "%s preamplifiers for peaking time = %0.3f microseconds for "
+                    "detChan %d", preamptype,pt, detChan);
             pslLogError("psl__SwitchFirmware", info_string, status);
             if (status == XIA_FILEERR) {
                 /* Reset status to a more meaningful code */
                 status = XIA_NOSUPPORTED_PREAMP_TYPE;
             }
-            return status;
-        }
-
-        status = psl__GetDSPName(modChan, pt, fs, "RESET", dsp, rawDSP);
-
-        if (status != XIA_SUCCESS) {
-            sprintf(info_string, "Unable to get the DSP that supports reset "
-                    "preamplifiers for peaking time = %0.3f microseconds for "
-                    "detChan %d", pt, detChan);
-            pslLogError("psl__SwitchFirmware", info_string, status);
             return status;
         }
 
@@ -5356,91 +5372,33 @@ PSL_STATIC int psl__SwitchFirmware(int detChan, double type, int modChan,
             pslLogError("psl__SwitchFirmware", info_string, status);
             return status;
         }
+    }
 
-        status = pslDownloadFirmware(detChan, "dsp", dsp, m, rawDSP, NULL);
+    status = psl__GetDSPName(modChan, pt, fs, preamptype, dsp, rawDSP);
 
-        if (status != XIA_SUCCESS) {
-            sprintf(info_string, "Error downloading new DSP for peaking time = "
-                    "%0.3f microseconds for detChan %d", pt, detChan);
-            pslLogError("psl__SwitchFirmware", info_string, status);
-            return status;
-        }
+    if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Unable to get the DSP that supports %s "
+                "preamplifiers for peaking time = %0.3f microseconds for "
+                "detChan %d", preamptype, pt, detChan);
+        pslLogError("psl__SwitchFirmware", info_string, status);
+        return status;
+    }
 
-        status = psl__WakeDSP(detChan);
+    status = pslDownloadFirmware(detChan, "dsp", dsp, m, rawDSP, NULL);
 
-        if (status != XIA_SUCCESS) {
-            sprintf(info_string, "Error waking new DSP for detChan %d", detChan);
-            pslLogError("psl__SwitchFirmware", info_string, status);
-            return status;
-        }
+    if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error downloading new DSP for peaking time = "
+                "%0.3f microseconds for detChan %d", pt, detChan);
+        pslLogError("psl__SwitchFirmware", info_string, status);
+        return status;
+    }
 
-        break;
+    status = psl__WakeDSP(detChan);
 
-    case (int)XIA_PREAMP_RC:
-        sprintf(info_string, "Switching to RC preamp");
-        pslLogDebug("psl__SwitchFirmware", info_string);
-
-        status = psl__GetFiPPIName(modChan, pt, fs, "RC", fippi, rawFippi);
-        if (status != XIA_SUCCESS) {
-            sprintf(info_string, "Unable to get the name of the FiPPI that supports "
-                    "reset preamplifiers for peaking time = %0.3f microseconds for "
-                    "detChan %d", pt, detChan);
-            pslLogError("psl__SwitchFirmware", info_string, status);
-            if (status == XIA_FILEERR) {
-                /* Reset status to a more meaningful code */
-                status = XIA_NOSUPPORTED_PREAMP_TYPE;
-            }
-            return status;
-        }
-
-        sprintf(info_string, "Switching to RC fippi: '%s', '%s'", fippi, rawFippi);
-        pslLogDebug("psl__SwitchFirmware", info_string);
-
-        status = psl__GetDSPName(modChan, pt, fs, "RC", dsp, rawDSP);
-
-        sprintf(info_string, "Switching to RC DSP: '%s', '%s'", dsp, rawDSP);
-        pslLogDebug("psl__SwitchFirmware", info_string);
-
-        if (status != XIA_SUCCESS) {
-            sprintf(info_string, "Unable to get the DSP that supports reset "
-                    "preamplifiers for peaking time = %0.3f microseconds for "
-                    "detChan %d", pt, detChan);
-            pslLogError("psl__SwitchFirmware", info_string, status);
-            return status;
-        }
-
-        status = pslDownloadFirmware(detChan, "fippi_a_dsp_no_wake", fippi, m,
-                                     rawFippi, NULL);
-
-        if (status != XIA_SUCCESS) {
-            sprintf(info_string, "Error downloading new FiPPI for peaking time = "
-                    "%0.3f microseconds for detChan %d", pt, detChan);
-            pslLogError("psl__SwitchFirmware", info_string, status);
-            return status;
-        }
-
-        status = pslDownloadFirmware(detChan, "dsp", dsp, m, rawDSP, NULL);
-
-        if (status != XIA_SUCCESS) {
-            sprintf(info_string, "Error downloading new DSP for peaking time = "
-                    "%0.3f microseconds for detChan %d", pt, detChan);
-            pslLogError("psl__SwitchFirmware", info_string, status);
-            return status;
-        }
-
-        status = psl__WakeDSP(detChan);
-
-        if (status != XIA_SUCCESS) {
-            sprintf(info_string, "Error waking new DSP for detChan %d", detChan);
-            pslLogError("psl__SwitchFirmware", info_string, status);
-            return status;
-        }
-
-        break;
-
-    default:
-        FAIL();
-        break;
+    if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error waking new DSP for detChan %d", detChan);
+        pslLogError("psl__SwitchFirmware", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -6177,10 +6135,10 @@ PSL_STATIC int psl__GetSCAData(int detChan, void *value, XiaDefaults *defs,
     int j;
 
     unsigned int modChan;
-    size_t totalSCA = 0;
+    unsigned int addr = 0;
+    unsigned int totalSCA = 0;
 
     unsigned long *sca = NULL;
-    unsigned long addr = 0;
 
     double nSCA = 0.0;
 
@@ -6225,15 +6183,15 @@ PSL_STATIC int psl__GetSCAData(int detChan, void *value, XiaDefaults *defs,
         return status;
     }
 
-    addr = (unsigned long)SCAMEMBASE + (modChan * MERCURY_SCA_CHAN_OFFSET);
+    addr = (unsigned int)SCAMEMBASE + (modChan * MERCURY_SCA_CHAN_OFFSET);
 
-    sprintf(info_string, "Reading out %d SCA value: addr = %#lx", (int)nSCA, addr);
+    sprintf(info_string, "Reading out %d SCA value: addr = %#x", (int)nSCA, addr);
     pslLogDebug("psl__GetSCAData", info_string);
 
     /* The SCA values are 64 bits, total, so there are 2 32-bit words returned
     * per SCA.
     */
-    totalSCA = (size_t)nSCA * 2;
+    totalSCA = (unsigned int)nSCA * 2;
     sca = (unsigned long *)mercury_psl_md_alloc(totalSCA * sizeof(unsigned long));
 
     if (!sca) {
@@ -6243,7 +6201,7 @@ PSL_STATIC int psl__GetSCAData(int detChan, void *value, XiaDefaults *defs,
         return XIA_NOMEM;
     }
 
-    sprintf(memory, "burst:%#lx:%lu", addr, (unsigned long)totalSCA);
+    sprintf(memory, "burst:%#x:%u", addr, totalSCA);
     statusX = dxp_read_memory(&detChan, memory, sca);
 
     if (statusX != DXP_SUCCESS) {
@@ -9162,4 +9120,23 @@ PSL_STATIC int psl__GetUSBVersion(int detChan, char *name, XiaDefaults *defs,
            ((version >> 24) & 0xFF);
 
     return XIA_SUCCESS;
+}
+
+/* MERCURY-OEM
+ * Quick test to determined whether connected board is Mercury OEM
+ * by checking the loaded FDD for missing fippi_a
+ */
+PSL_STATIC boolean_t psl__IsMercuryOem(int detChan)
+{
+    int status;
+    int modChan;
+
+    Board *b = NULL;
+
+    status = dxp_det_to_elec(&detChan, &b, &modChan);
+
+    ASSERT(status == DXP_SUCCESS);
+    ASSERT(b->system_fpga != NULL);
+
+    return (b->fippi_a == NULL);
 }

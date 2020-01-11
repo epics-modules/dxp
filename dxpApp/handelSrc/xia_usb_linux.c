@@ -42,16 +42,17 @@
 #include <sys/types.h>
 #include <linux/limits.h>
 #include <string.h>
+#include <time.h>
 
 #include "Dlldefs.h"
 #include "usblib.h"
 #include "handel_errors.h"
-#include "handel_log.h"
-#include "xia_handel.h"
 
 #include "xia_usb2.h"
 #include "xia_usb2_errors.h"
 #include "xia_usb2_private.h"
+
+#include "xia_md.h"
 
 #define FALSE    0
 #define TRUE    (!0)
@@ -67,11 +68,16 @@
 #define XIA_USB2_SMALL_READ_PACKET_SIZE 512
 
 static bool is_xia_usb2_device(struct usb_device *q);
-static int xia_usb2__send_setup_packet(HANDLE h, unsigned long addr,
+static int xia_usb2__send_setup_packet(unsigned long addr,
                                        unsigned long n_bytes, byte_t rw_flag);
+static void xia_usb2__flush_read_ep();
+static void print_hexbinary_lines(byte_t *buffer, int size, int line_length);
+static void print_debug(const char* fmt, ...);
+
 static struct usb_dev_handle        *xia_usb_handle = NULL;
 static struct usb_device            *xia_usb_device = NULL;
 
+static char info_string[400];
 
 XIA_EXPORT int XIA_API xia_usb_open(char *device, HANDLE *hDevice)
 {
@@ -113,8 +119,7 @@ XIA_EXPORT int XIA_API xia_usb_open(char *device, HANDLE *hDevice)
                             if (rv == 0) {
                                 rv = usb_claim_interface(xia_usb_handle, 0);
                                 rv = usb_reset(xia_usb_handle);
-                                sprintf(info_string, "Found USB 1.0 board");
-                                xiaLogInfo("xia_usb_open", info_string);
+                                dxp_md_log_info("xia_usb_open", "Found USB 1.0 board");
                             }
                         }
                     }
@@ -136,28 +141,27 @@ XIA_EXPORT int XIA_API xia_usb_open(char *device, HANDLE *hDevice)
 
 static bool is_xia_usb2_device(struct usb_device *q)
 {
-    bool is_xia_vid = (q->descriptor.idVendor == 0x10E9);
+    bool is_xia_vid     = (q->descriptor.idVendor == 0x10E9);
 
-    bool is_ketek_vid = (q->descriptor.idVendor == 0x20BD);
+    bool is_ketek_vid   = (q->descriptor.idVendor == 0x20BD);
 
-    bool is_saturn = (q->descriptor.idProduct == 0x0701);
+    bool is_saturn      = (q->descriptor.idProduct == 0x0701);
 
-    bool is_mercury = (q->descriptor.idProduct == 0x0702) ||
-                 (q->descriptor.idProduct == 0x0703) ||
-                 (q->descriptor.idProduct == 0x0780) ||
-                 (q->descriptor.idProduct == 0x0781);
+    bool is_mercury     = (q->descriptor.idProduct == 0x0702) ||
+                             (q->descriptor.idProduct == 0x0703) ||
+                             (q->descriptor.idProduct == 0x0780) ||
+                             (q->descriptor.idProduct == 0x0781);
 
-    bool is_microdxp = (q->descriptor.idProduct == 0x0B01) ||
-                 (q->descriptor.idProduct == 0x0A01) ||
-                 (q->descriptor.idProduct == 0x0C01);
+    bool is_microdxp    = (q->descriptor.idProduct == 0x0B01) ||
+                             (q->descriptor.idProduct == 0x0A01) ||
+                             (q->descriptor.idProduct == 0x0C01);
 
 
-    bool is_dpp2 = (q->descriptor.idProduct == 0x0020);
+    bool is_dpp2        = (q->descriptor.idProduct == 0x0020);
 
     return (is_xia_vid && (is_saturn || is_mercury || is_microdxp)) ||
             (is_ketek_vid && is_dpp2);
 }
-
 
 
 XIA_EXPORT int XIA_API xia_usb2_open(int device_number, HANDLE *hDevice)
@@ -171,14 +175,12 @@ XIA_EXPORT int XIA_API xia_usb2_open(int device_number, HANDLE *hDevice)
 
     sprintf(info_string, "Entry: device_number = %d, static handle = %p", device_number,
             xia_usb_handle);
-    xiaLogInfo("xia_usb2_open", info_string);
+    dxp_md_log_info("xia_usb2_open", info_string);
 
     if (xia_usb_handle != NULL) return 0; /* if not first just return, leaving the old device open  */
 
-
     sprintf(info_string, "No handle");
-    xiaLogInfo("xia_usb2_open", info_string);
-
+    dxp_md_log_info("xia_usb2_open", info_string);
 
     /* Must be new XIA USB 2.0 card */
     if (xia_usb_handle == NULL) {
@@ -200,46 +202,46 @@ XIA_EXPORT int XIA_API xia_usb2_open(int device_number, HANDLE *hDevice)
                                 q->descriptor.idVendor,
                                 q->descriptor.idProduct,
                                 found);
-                        xiaLogInfo("xia_usb2_open", info_string);
+                        dxp_md_log_info("xia_usb2_open", info_string);
 
                         h = usb_open(q);
                         if (h == NULL) {
                             sprintf(info_string, "usb_open failed");
-                            xiaLogInfo("xia_usb2_open", info_string);
+                            dxp_md_log_info("xia_usb2_open", info_string);
                             rv = -1;
                         } else {
                             sprintf(info_string, "setting configuration: %hu",
                                     q->config[0].bConfigurationValue);
-                            xiaLogInfo("xia_usb2_open", info_string);
+                            dxp_md_log_info("xia_usb2_open", info_string);
 
                             rv = usb_set_configuration(h, q->config[0].bConfigurationValue);
 
                             if (rv == 0) {
-                                xiaLogInfo("xia_usb2_open", "claiming the interface");
+                                dxp_md_log_info("xia_usb2_open", "claiming the interface");
 
                                 rv = usb_claim_interface(h, 0);
                                 if (rv != 0) {
                                     sprintf(info_string, "error claiming the interface: %d",
                                             rv);
-                                    xiaLogWarning("xia_usb2_open", info_string);
+                                    dxp_md_log_warning("xia_usb2_open", info_string);
                                 }
 
                                 rv = usb_reset(h);
                                 if (rv != 0) {
                                     sprintf(info_string, "error resetting: %d",
                                             rv);
-                                    xiaLogWarning("xia_usb2_open", info_string);
+                                    dxp_md_log_warning("xia_usb2_open", info_string);
                                 }
 
                                 sprintf(info_string, "Found USB 2.0 board, product=0x%x",
                                         q->descriptor.idProduct);
-                                xiaLogInfo("xia_usb2_open", info_string);
+                                dxp_md_log_info("xia_usb2_open", info_string);
 
                                 xia_usb_device = q;
                                 xia_usb_handle = h;
                             } else {
                                 sprintf(info_string, "usb_set_configuration failed: %d", rv);
-                                xiaLogInfo("xia_usb2_open", info_string);
+                                dxp_md_log_info("xia_usb2_open", info_string);
 
                                 usb_close(h);
                             }
@@ -249,7 +251,7 @@ XIA_EXPORT int XIA_API xia_usb2_open(int device_number, HANDLE *hDevice)
                                 q->descriptor.idVendor,
                                 q->descriptor.idProduct,
                                 found);
-                        xiaLogInfo("xia_usb2_open", info_string);
+                        dxp_md_log_info("xia_usb2_open", info_string);
                     }
                 }
                 q = q->next;
@@ -262,6 +264,7 @@ XIA_EXPORT int XIA_API xia_usb2_open(int device_number, HANDLE *hDevice)
         *hDevice = 0;
         if (rv == 0) rv = -99;
     } else {
+        xia_usb2__flush_read_ep();
         *hDevice = 1;
     }
 
@@ -287,14 +290,14 @@ XIA_EXPORT int XIA_API xia_usb_close(HANDLE hDevice)
         if (rv_release != 0) {
             sprintf(info_string, "Failed to release the interface, handle=%p, error=%d",
                     xia_usb_handle, rv_release);
-            xiaLogWarning("xia_usb_close", info_string);
+            dxp_md_log_warning("xia_usb_close", info_string);
         }
 
         rv_close = usb_close(xia_usb_handle);
         if (rv_close != 0) {
             sprintf(info_string, "Failed to close, handle=%p, error=%d",
                     xia_usb_handle, rv_close);
-            xiaLogWarning("xia_usb_close", info_string);
+            dxp_md_log_warning("xia_usb_close", info_string);
         }
 
         rv = rv_release | rv_close;
@@ -322,10 +325,9 @@ XIA_EXPORT int XIA_API xia_usb_read(long address, long nWords, char *device, uns
     rv = xia_usb_open(device, &hDevice);            /* Get handle to USB device */
     if (rv != 0) {
         sprintf(info_string, "Failed to open device %s", device);
-        xiaLogError("xia_usb_read", info_string, XIA_MD);
+        dxp_md_log_error("xia_usb_read", info_string, XIA_MD);
         return 1;
     }
-
 
     n_bytes = (nWords * 2);
 
@@ -341,22 +343,21 @@ XIA_EXPORT int XIA_API xia_usb_read(long address, long nWords, char *device, uns
     ctrlBuffer[3] = hi_count;
     ctrlBuffer[4] = (unsigned char)0x01;
 
-    rv = usb_bulk_write(xia_usb_handle, OUT1 | USB_ENDPOINT_OUT, (char*)ctrlBuffer, CTRL_SIZE, 10000);
+    rv = usb_bulk_write(xia_usb_handle, OUT1 | USB_ENDPOINT_OUT, (char*)ctrlBuffer, CTRL_SIZE, XIA_USB2_TIMEOUT);
     if (rv != CTRL_SIZE) {
         sprintf(info_string, "usb_bulk_read returned %d should be %d", rv, CTRL_SIZE);
-        xiaLogError("xia_usb_read", info_string, XIA_MD);
+        dxp_md_log_error("xia_usb_read", info_string, XIA_MD);
         return 14;
     }
 
-    rv = usb_bulk_read(xia_usb_handle, IN2 | USB_ENDPOINT_IN, (char*)buffer, n_bytes, 10000);
+    rv = usb_bulk_read(xia_usb_handle, IN2 | USB_ENDPOINT_IN, (char*)buffer, n_bytes, XIA_USB2_TIMEOUT);
     if (rv != n_bytes) {
         sprintf(info_string, "usb_bulk_read returned %d should be %d", rv, n_bytes);
-        xiaLogError("xia_usb_read", info_string, XIA_MD);
+        dxp_md_log_error("xia_usb_read", info_string, XIA_MD);
         return 2;
     }
 
     return 0;
-
 }
 
 XIA_EXPORT int XIA_API xia_usb2_read(HANDLE h, unsigned long addr,
@@ -373,7 +374,7 @@ XIA_EXPORT int XIA_API xia_usb2_read(HANDLE h, unsigned long addr,
     if (rlen != n_bytes) {
         sprintf(info_string, "USB bulk read returned %lu bytes, expected %lu",
                 rlen, n_bytes);
-        xiaLogError("xia_usb2_read", info_string, XIA_MD);
+        dxp_md_log_error("xia_usb2_read", info_string, XIA_MD);
         return XIA_USB2_XFER;
     }
 
@@ -410,10 +411,11 @@ XIA_EXPORT int XIA_API xia_usb2_readn(HANDLE h, unsigned long addr,
     if (n_bytes < XIA_USB2_SMALL_READ_PACKET_SIZE) {
         byte_t big_packet[XIA_USB2_SMALL_READ_PACKET_SIZE];
 
-        /* Tag xia_usb_linux small packet buffers. */
-        memset(big_packet, 0xbccb, XIA_USB2_SMALL_READ_PACKET_SIZE / 2);
+        /* Initialize buffer to a fixed pattern to identify source of read errors
+         * in case the buffer is not filled completely */
+        memset(big_packet, 0xCD, XIA_USB2_SMALL_READ_PACKET_SIZE);
 
-        status = xia_usb2__send_setup_packet(0, addr,
+        status = xia_usb2__send_setup_packet(addr,
                                              XIA_USB2_SMALL_READ_PACKET_SIZE,
                                              XIA_USB2_SETUP_FLAG_READ);
 
@@ -422,33 +424,27 @@ XIA_EXPORT int XIA_API xia_usb2_readn(HANDLE h, unsigned long addr,
         }
 
         rlen = usb_bulk_read(xia_usb_handle, XIA_USB2_READ_EP | USB_ENDPOINT_IN, (char*)big_packet,
-                             XIA_USB2_SMALL_READ_PACKET_SIZE, 10000);
+                             XIA_USB2_SMALL_READ_PACKET_SIZE, XIA_USB2_TIMEOUT);
         if (rlen < 0) {
             sprintf(info_string, "usb_bulk_read error, driver reports: %d", rlen);
-            xiaLogError("xia_usb2_read", info_string, XIA_MD);
+            dxp_md_log_error("xia_usb2_read", info_string, XIA_MD);
             return XIA_USB2_XFER;
         }
 
-        if (rlen != n_bytes && rlen != XIA_USB2_SMALL_READ_PACKET_SIZE) {
-            sprintf(info_string, "usb_bulk_read %d/%lu", rlen, n_bytes);
-            xiaLogError("xia_usb2_read", info_string, XIA_MD);
-	}
-
         memcpy(buf, &big_packet, n_bytes);
-
         rlen = n_bytes;
     } else {
-        status = xia_usb2__send_setup_packet(0, addr, n_bytes, XIA_USB2_SETUP_FLAG_READ);
+        status = xia_usb2__send_setup_packet(addr, n_bytes, XIA_USB2_SETUP_FLAG_READ);
 
         if (status != XIA_USB2_SUCCESS) {
             return status;
         }
 
         rlen = usb_bulk_read(xia_usb_handle, XIA_USB2_READ_EP | USB_ENDPOINT_IN, (char*)buf,
-                             n_bytes, 10000);
+                             n_bytes, XIA_USB2_TIMEOUT);
         if (rlen < 0) {
             sprintf(info_string, "usb_bulk_read error, driver reports: %d", rlen);
-            xiaLogError("xia_usb2_read", info_string, XIA_MD);
+            dxp_md_log_error("xia_usb2_read", info_string, XIA_MD);
             return XIA_USB2_XFER;
         }
     }
@@ -469,7 +465,7 @@ XIA_EXPORT int XIA_API xia_usb_write(long address, long nWords, char *device, un
     rv = xia_usb_open(device, &hDevice);            /* Get handle to USB device */
     if (rv != 0) {
         sprintf(info_string, "Failed to open %s", device);
-        xiaLogError("xia_usb_write", info_string, XIA_MD);
+        dxp_md_log_error("xia_usb_write", info_string, XIA_MD);
         return 1;
     }
 
@@ -488,17 +484,17 @@ XIA_EXPORT int XIA_API xia_usb_write(long address, long nWords, char *device, un
     ctrlBuffer[3] = hi_count;
     ctrlBuffer[4] = (unsigned char)0x00;
 
-    rv = usb_bulk_write(xia_usb_handle, OUT1 | USB_ENDPOINT_OUT, (char*)ctrlBuffer, CTRL_SIZE, 10000);
+    rv = usb_bulk_write(xia_usb_handle, OUT1 | USB_ENDPOINT_OUT, (char*)ctrlBuffer, CTRL_SIZE, XIA_USB2_TIMEOUT);
     if (rv != CTRL_SIZE) {
         sprintf(info_string, "usb_bulk_write returned %d should be %d", rv, CTRL_SIZE);
-        xiaLogError("xia_usb_write", info_string, XIA_MD);
+        dxp_md_log_error("xia_usb_write", info_string, XIA_MD);
         return 14;
     }
 
-    rv = usb_bulk_write(xia_usb_handle, OUT2 | USB_ENDPOINT_OUT, (char*)buffer, n_bytes, 10000);
+    rv = usb_bulk_write(xia_usb_handle, OUT2 | USB_ENDPOINT_OUT, (char*)buffer, n_bytes, XIA_USB2_TIMEOUT);
     if (rv != n_bytes) {
         sprintf(info_string, "usb_bulk_write returned %d should be %d", rv, n_bytes);
-        xiaLogError("xia_usb_write", info_string, XIA_MD);
+        dxp_md_log_error("xia_usb_write", info_string, XIA_MD);
         return 15;
     }
     return 0;
@@ -524,18 +520,18 @@ XIA_EXPORT int XIA_API xia_usb2_write(HANDLE h, unsigned long addr,
         return XIA_USB2_NULL_BUFFER;
     }
 
-    status = xia_usb2__send_setup_packet(0, addr, n_bytes, XIA_USB2_SETUP_FLAG_WRITE);
+    status = xia_usb2__send_setup_packet(addr, n_bytes, XIA_USB2_SETUP_FLAG_WRITE);
 
     if (status != XIA_USB2_SUCCESS) {
         return status;
     }
 
     status = usb_bulk_write(xia_usb_handle, XIA_USB2_WRITE_EP | USB_ENDPOINT_OUT, (char*)buf,
-                            n_bytes, 10000);
+                            n_bytes, XIA_USB2_TIMEOUT);
 
     if (status != n_bytes) {
         sprintf(info_string, "usb_bulk_write returned %d should be %lu", status, n_bytes);
-        xiaLogError("xia_usb2_write", info_string, XIA_MD);
+        dxp_md_log_error("xia_usb2_write", info_string, XIA_MD);
         return XIA_USB2_XFER;
     }
 
@@ -547,7 +543,7 @@ XIA_EXPORT int XIA_API xia_usb2_write(HANDLE h, unsigned long addr,
  * is the first stage of our two-part process for transferring data to
  * and from the board.
  */
-static int xia_usb2__send_setup_packet(HANDLE h, unsigned long addr,
+static int xia_usb2__send_setup_packet(unsigned long addr,
                                        unsigned long n_bytes, byte_t rw_flag)
 {
     int             status;
@@ -564,12 +560,95 @@ static int xia_usb2__send_setup_packet(HANDLE h, unsigned long addr,
     pkt[7] = (byte_t)((addr >> 16) & 0xFF);
     pkt[8] = (byte_t)((addr >> 24) & 0xFF);
 
-    status = usb_bulk_write(xia_usb_handle, XIA_USB2_SETUP_EP | USB_ENDPOINT_OUT, (char*)pkt, XIA_USB2_SETUP_PACKET_SIZE, 10000);
+    status = usb_bulk_write(xia_usb_handle, XIA_USB2_SETUP_EP | USB_ENDPOINT_OUT, (char*)pkt, XIA_USB2_SETUP_PACKET_SIZE, XIA_USB2_TIMEOUT);
     if (status != XIA_USB2_SETUP_PACKET_SIZE) {
         sprintf(info_string, "usb_bulk_write returned %d should be %d", status, XIA_USB2_SETUP_PACKET_SIZE);
-        xiaLogError("xia_usb2__send_setup_packet", info_string, XIA_MD);
+        dxp_md_log_error("xia_usb2__send_setup_packet", info_string, XIA_MD);
         return XIA_USB2_XFER;
     }
 
     return XIA_USB2_SUCCESS;
+}
+
+/*
+ * Occationally when user press CTRL+C to end a program, communication might be
+ * broken off leaving unread data in device buffer, this would cause unexpected
+ * responses to be sent back for subsequent connections. This function reads a
+ * a large packet directly from XIA_USB2_READ_EP with a short timeout to clear
+ * the buffer if  possible.
+ */
+ static void xia_usb2__flush_read_ep()
+ {
+    int rlen;
+    int total_len = 0;
+    int loop = 0, maxloop = 64;
+
+    int packet_size = XIA_USB2_SMALL_READ_PACKET_SIZE;
+    byte_t big_packet[XIA_USB2_SMALL_READ_PACKET_SIZE];
+
+    clock_t start = clock();
+    double exec_seconds;
+
+    memset(big_packet, 0xBC, packet_size);
+
+    /* Use a very short timeout initially */
+    rlen = usb_bulk_read(xia_usb_handle, XIA_USB2_READ_EP | USB_ENDPOINT_IN,
+                (char*)big_packet, packet_size, 10);
+
+    while (rlen > 0) {
+        print_debug("xia_usb2__flush_read_ep %d bytes\n", rlen);
+#ifdef _DEBUG
+        print_hexbinary_lines(big_packet, rlen, 0x20);
+#endif
+        total_len += rlen;
+        rlen = usb_bulk_read(xia_usb_handle, XIA_USB2_READ_EP | USB_ENDPOINT_IN,
+                (char*)big_packet, packet_size, 100);
+
+        /* In theory we should only need to flush EP1 buffer 4 times,
+         * one for each memory block on the device, we'll use a generous
+         * maximum here.
+         */
+        loop++;
+        if (loop > maxloop) {
+            print_debug("xia_usb2__flush_read_ep usb2 flush exceeded maximum "
+                        "%d", maxloop);
+
+            break;
+        }
+    }
+
+    exec_seconds = (double)(clock() - start) * 1000.0 / CLOCKS_PER_SEC;
+    sprintf(info_string, "exec time %.4f ms %d bytes", exec_seconds, total_len);
+    dxp_md_log_info("xia_usb2__flush_read_ep", info_string);
+    print_debug("xia_usb2__flush_read_ep %s\n", info_string);
+}
+
+/*
+ * Print message to stdout for DEBUG builds
+ */
+static void print_debug(const char* fmt, ...)
+{
+#ifdef _DEBUG
+    va_list args;
+    va_start(args, fmt);
+
+    vprintf(fmt, args);
+
+    va_end(args);
+#else
+    UNUSED(fmt);
+#endif
+}
+
+/*
+ * Print binary data in hex format in lines of length line_length
+ */
+static void print_hexbinary_lines(byte_t *buffer, int size, int line_length)
+{
+    int j;
+    for (j = 0; j < size; j++) {
+        printf("%02X", buffer[j]);
+        if ((j + 1) % line_length == 0) printf("\n");
+    }
+    if (size % line_length != 0) printf("\n");
 }

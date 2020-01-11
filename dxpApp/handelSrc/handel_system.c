@@ -87,7 +87,7 @@ HANDEL_EXPORT int HANDEL_API xiaStartSystem(void)
     int status;
 
     DetChanElement *current = NULL;
-
+    xiaLogInfo("xiaStartSystem", "Starting system...");
 
     status = xiaValidateFirmwareSets();
 
@@ -214,6 +214,7 @@ HANDEL_EXPORT int HANDEL_API xiaDownloadFirmware(int detChan, char *type)
 
     PSLFuncs localFuncs;
 
+    xiaLogInfo("xiaDownloadFirmware", "Downloading firmware");
 
     elemType = xiaGetElemType((unsigned int)detChan);
 

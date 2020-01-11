@@ -49,7 +49,6 @@
 #include "xerxes_errors.h"
 #include "xerxes_structures.h"
 
-#include "md_shim.h"
 #include "md_generic.h"
 #include "xia_md.h"
 
@@ -61,9 +60,9 @@
 
 XIA_MD_STATIC void dxp_md_local_time(struct tm **local, int *milli);
 
-/* Current output for the logging routines. By default, this is set to stdout
- * in dxp_md_log().
- */
+/* Current output for the logging routines. By default, this is set to stdout */
+static FILE *out_stream;
+
 static boolean_t isSuppressed = FALSE_;
 
 static int logLevel = MD_ERROR;
@@ -267,7 +266,7 @@ XIA_MD_SHARED void dxp_md_output(const char *filename)
         return;
     }
 
-    strtmp = dxp_md_alloc(strlen(filename) + 1);
+    strtmp = malloc(strlen(filename) + 1);
     if (!strtmp)
         abort();
 
@@ -299,7 +298,7 @@ XIA_MD_SHARED void dxp_md_output(const char *filename)
         }
     }
 
-    dxp_md_free(strtmp);
+    free(strtmp);
 }
 
 #ifdef _WIN32

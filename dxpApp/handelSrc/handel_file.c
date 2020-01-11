@@ -1737,20 +1737,23 @@ HANDEL_STATIC int xiaLoadDefaults(FILE *fp, fpos_t *start, fpos_t *end)
             return status;
         }
 
-        sscanf(tmpValue, "%lf", &defValue);
-
-        status = xiaAddDefaultItem(alias, tmpName, (void *)&defValue);
-
-        if (status != XIA_SUCCESS)
+        if (!STREQ(tmpName, "COMMENT"))
         {
-            sprintf(info_string, "Error adding %s (value = %.3f) to alias %s", tmpName, defValue, alias);
-            xiaLogError("xiaLoadDefaults", info_string, status);
-            return status;
+            sscanf(tmpValue, "%lf", &defValue);
+
+            status = xiaAddDefaultItem(alias, tmpName, (void *)&defValue);
+
+            if (status != XIA_SUCCESS)
+            {
+                sprintf(info_string, "Error adding %s (value = %.3f) to alias %s", tmpName, defValue, alias);
+                xiaLogError("xiaLoadDefaults", info_string, status);
+                return status;
+            }
+
+
+            sprintf(info_string, "Added %s (value = %.3f) to alias %s", tmpName, defValue, alias);
+            xiaLogDebug("xiaLoadDefaults", info_string);
         }
-
-
-        sprintf(info_string, "Added %s (value = %.3f) to alias %s", tmpName, defValue, alias);
-        xiaLogDebug("xiaLoadDefaults", info_string);
 
         status = xiaGetLine(fp, currentLine);
     }

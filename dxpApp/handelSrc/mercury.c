@@ -2243,10 +2243,14 @@ static int dxp__download_fpga(int ioChan, unsigned long target,
     unsigned int i;
     unsigned long j;
 
+    unsigned int n_polls = 0;
+    float wait = .05f;
+    boolean_t asserted;
+
     unsigned long *cfg_data = NULL;
 
     float cpld_ctrl_wait = 0.001f;
-    float sys_done_wait  = 1.0f;
+    float sys_done_wait  = 3.0f;
 
     unsigned long cpld_status = 0;
 
@@ -2325,29 +2329,36 @@ static int dxp__download_fpga(int ioChan, unsigned long target,
         return status;
     }
 
-    mercury_md_wait(&sys_done_wait);
+    n_polls = (unsigned int)ROUND(sys_done_wait / wait);
 
-    status = dxp__read_global_register(ioChan, DXP_CPLD_CFG_STATUS, &cpld_status);
+    for (i = 0; i < n_polls; i++) {
+        mercury_md_wait(&wait);
+        status = dxp__read_global_register(ioChan, DXP_CPLD_CFG_STATUS, &cpld_status);
 
-    if (status != DXP_SUCCESS) {
-        sprintf(info_string, "Error reading Status Register for channel %d", ioChan);
-        dxp_log_error("dxp_download_fpga", info_string, status);
-        return status;
-    }
+        if (status != DXP_SUCCESS) {
+            sprintf(info_string, "Error reading Status Register for channel %d", ioChan);
+            dxp_log_error("dxp_download_fpga", info_string, status);
+            return status;
+        }
 
-    /* See the comment above (where INIT* is checked). */
-    for (j = 0; j < MERCURY_NUM_TARGETS; j++) {
-        if (target & (1 << j)) {
-            if (! (cpld_status & MERCURY_CFG_STATUS[j][MERCURY_XDONE])) {
-                sprintf(info_string, "XDONE line never asserted for Target %lu after "
-                        "waiting %f seconds", j, sys_done_wait);
-                dxp_log_error("dxp__download_fpga", info_string, DXP_FPGA_TIMEOUT);
-                return DXP_FPGA_TIMEOUT;
+        asserted = TRUE_;
+        for (j = 0; j < MERCURY_NUM_TARGETS; j++) {
+            if (target & (1 << j)) {
+                if (! (cpld_status & MERCURY_CFG_STATUS[j][MERCURY_XDONE])) {
+                    asserted = FALSE_;
+                }
             }
         }
+
+        if (asserted)
+            return DXP_SUCCESS;
     }
 
-    return DXP_SUCCESS;
+    sprintf(info_string, "XDONE line never asserted for after "
+            "waiting %f seconds", sys_done_wait);
+    dxp_log_error("dxp__download_fpga", info_string, DXP_FPGA_TIMEOUT);
+    return DXP_FPGA_TIMEOUT;
+
 }
 
 
@@ -2394,7 +2405,11 @@ static int dxp__download_fippi(int ioChan, int modChan, Board *b)
     int status;
 
     ASSERT(b != NULL);
-    ASSERT(b->fippi_a != NULL);
+
+    /* MERCURY-OEM skip loading fippi_a if non-exisitent */
+    if (b->fippi_a == NULL) {
+        return DXP_SUCCESS;
+    }
 
     status = dxp__download_fippi_dsp_no_wake(ioChan, modChan, b);
 
@@ -2429,6 +2444,11 @@ static int dxp__download_fippi_dsp_no_wake(int ioChan, int modChan, Board *b)
 
     ASSERT(b != NULL);
     ASSERT(b->fippi_a != NULL);
+
+    /* MERCURY-OEM skip loading fippi_a if non-exisitent */
+    if (b->fippi_a == NULL) {
+        return DXP_SUCCESS;
+    }
 
     status = dxp__put_dsp_to_sleep(ioChan, modChan, b);
 

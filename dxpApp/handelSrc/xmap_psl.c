@@ -400,9 +400,8 @@ PSL_STATIC int psl__SetBufferClearSize(int detChan, int modChan, char *name,
 PSL_STATIC int psl__SetMaster(int detChan, enum master type, XiaDefaults *defs);
 PSL_STATIC int psl__ClearMaster(int detChan, enum master type,
                                 XiaDefaults *defs);
-PSL_STATIC void psl__WhichMasters(int detChan, XiaDefaults *defs,
-                                  boolean_t *isGate, boolean_t *isSync,
-                                  boolean_t *isLbus);
+PSL_STATIC int psl__CurrentMaster(int detChan);
+
 
 
 /* These are the DSP parameter data types for pslGetParamData(). */
@@ -943,7 +942,7 @@ PSL_STATIC int pslGetAcquisitionValues(int detChan, char *name, void *value,
             * even though -1.0 doesn't tell the user what the actual value
             * on the hardware is.
             */
-            return XIA_SUCCESS;            
+            return XIA_SUCCESS;
         }
     }
 
@@ -8867,19 +8866,15 @@ PSL_STATIC int psl__UpdateRawParamAcqValue(int detChan, char *name,
     return XIA_SUCCESS;
 }
 
-
-PSL_STATIC void psl__WhichMasters(int detChan, XiaDefaults *defs,
-                                  boolean_t *isGate, boolean_t *isSync,
-                                  boolean_t *isLbus)
+/*
+ * Returns the curremt master (LEMO select) in enum master
+ */
+PSL_STATIC int psl__CurrentMaster(int detChan)
 {
     int status;
 
     boolean_t bit0 = FALSE_;
     boolean_t bit1 = FALSE_;
-
-
-    UNUSED(defs);
-
 
     status = psl__CheckRegisterBit(detChan, "MCR", 0, &bit0);
     ASSERT(status == XIA_SUCCESS);
@@ -8887,172 +8882,75 @@ PSL_STATIC void psl__WhichMasters(int detChan, XiaDefaults *defs,
     status = psl__CheckRegisterBit(detChan, "MCR", 1, &bit1);
     ASSERT(status == XIA_SUCCESS);
 
-    *isLbus = FALSE_;
-    *isGate = FALSE_;
-    *isSync = FALSE_;
-
     if (bit0 && bit1) {
-        *isLbus = TRUE_;
-
+        return XMAP_LBUS_MASTER;
     } else if (bit0) {
-        *isGate = TRUE_;
-
+        return XMAP_GATE_MASTER;
     } else if (bit1) {
-        *isSync = TRUE_;
+        return XMAP_SYNC_MASTER;
     }
-}
 
+    return XMAP_NO_MASTER;
+}
 
 /*
  * Set the specified set of defaults (defs) to be a master of type.
  */
 PSL_STATIC int psl__SetMaster(int detChan, enum master type, XiaDefaults *defs)
 {
-    int status;
-
-    boolean_t isGate;
-    boolean_t isSync;
-    boolean_t isLbus;
-
+    int status = XIA_SUCCESS;
+    int i;
     double cleared = 0.0;
-
 
     ASSERT(type < XMAP_NO_MASTER);
     ASSERT(defs);
 
-
-    psl__WhichMasters(detChan, defs, &isGate, &isSync, &isLbus);
+    if (psl__CurrentMaster(detChan) == type)
+        return XIA_SUCCESS;
 
     switch (type) {
     case XMAP_GATE_MASTER:
-        if (!isGate) {
-            status = pslSetDefault("sync_master", &cleared, defs);
-
-            if (status != XIA_SUCCESS) {
-                sprintf(info_string, "Error clearing SYNC master setting for "
-                        "detChan %d.", detChan);
-                pslLogError("psl__SetMaster", info_string, status);
-                return status;
-            }
-
-            status = pslSetDefault("lbus_master", &cleared, defs);
-
-            if (status != XIA_SUCCESS) {
-                sprintf(info_string, "Error clearing LBUS master setting for "
-                        "detChan %d.", detChan);
-                pslLogError("psl__SetMaster", info_string, status);
-                return status;
-            }
-
-            status = psl__SetRegisterBit(detChan, "MCR", 3, FALSE_);
-
-            if (status != XIA_SUCCESS) {
-                sprintf(info_string, "Error setting Master bit in the Mapping "
-                        "Control Register for detChan %d.", detChan);
-                pslLogError("psl__SetMaster", info_string, status);
-                return status;
-            }
-
-            status = psl__SetInputGATE(detChan);
-
-            if (status != XIA_SUCCESS) {
-                sprintf(info_string, "Error setting the LEMO Select bits to "
-                        "GATE in the Mapping Control Register for detChan %d.",
-                        detChan);
-                pslLogError("psl__SetMaster", info_string, status);
-                return status;
-            }
-        }
-
+        status = psl__SetInputGATE(detChan);
         break;
-
     case XMAP_SYNC_MASTER:
-        if (!isSync) {
-            status = pslSetDefault("gate_master", &cleared, defs);
-
-            if (status != XIA_SUCCESS) {
-                sprintf(info_string, "Error clearing GATE master setting for "
-                        "detChan %d.", detChan);
-                pslLogError("psl__SetMaster", info_string, status);
-                return status;
-            }
-
-            status = pslSetDefault("lbus_master", &cleared, defs);
-
-            if (status != XIA_SUCCESS) {
-                sprintf(info_string, "Error clearing LBUS master setting for "
-                        "detChan %d.", detChan);
-                pslLogError("psl__SetMaster", info_string, status);
-                return status;
-            }
-
-            status = psl__SetRegisterBit(detChan, "MCR", 3, FALSE_);
-
-            if (status != XIA_SUCCESS) {
-                sprintf(info_string, "Error setting Master bit in the Mapping "
-                        "Control Register for detChan %d.", detChan);
-                pslLogError("psl__SetMaster", info_string, status);
-                return status;
-            }
-
-            status = psl__SetInputSYNC(detChan);
-
-            if (status != XIA_SUCCESS) {
-                sprintf(info_string, "Error setting the LEMO Select bits to "
-                        "SYNC in the Mapping Control Register for detChan %d.",
-                        detChan);
-                pslLogError("psl__SetMaster", info_string, status);
-                return status;
-            }
-        }
-
+        status = psl__SetInputSYNC(detChan);
         break;
-
     case XMAP_LBUS_MASTER:
-        if (!isLbus) {
-            status = pslSetDefault("gate_master", &cleared, defs);
-
-            if (status != XIA_SUCCESS) {
-                sprintf(info_string, "Error clearing GATE master setting for "
-                        "detChan %d.", detChan);
-                pslLogError("psl__SetMaster", info_string, status);
-                return status;
-            }
-
-            status = pslSetDefault("sync_master", &cleared, defs);
-
-            if (status != XIA_SUCCESS) {
-                sprintf(info_string, "Error clearing SYNC master setting for "
-                        "detChan %d.", detChan);
-                pslLogError("psl__SetMaster", info_string, status);
-                return status;
-            }
-
-            status = psl__SetRegisterBit(detChan, "MCR", 3, FALSE_);
-
-            if (status != XIA_SUCCESS) {
-                sprintf(info_string, "Error setting Master bit in the Mapping "
-                        "Control Register for detChan %d.", detChan);
-                pslLogError("psl__SetMaster", info_string, status);
-                return status;
-            }
-
-            status = psl__SetInputLBUS(detChan);
-
-            if (status != XIA_SUCCESS) {
-                sprintf(info_string, "Error setting the LEMO Select bits to "
-                        "LBUS in the Mapping Control Register for detChan %d.",
-                        detChan);
-                pslLogError("psl__SetMaster", info_string, status);
-                return status;
-            }
-        }
-
+        status = psl__SetInputLBUS(detChan);
         break;
-
     default:
         FAIL();
         break;
+    }
+
+    if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error setting the LEMO Select bits to "
+                "%s in the Mapping Control Register for detChan %d.",
+                mastertype[type], detChan);
+        pslLogError("psl__SetMaster", info_string, status);
+        return status;
+    }
+
+    for (i = 0; i < (int)XMAP_NO_MASTER; i++) {
+        if (type == i) continue;
+
+        status = pslSetDefault(mastertype[i], &cleared, defs);
+
+        if (status != XIA_SUCCESS) {
+            sprintf(info_string, "Error clearing %s setting for "
+                    "detChan %d.", mastertype[i], detChan);
+            pslLogError("psl__SetMaster", info_string, status);
+            return status;
+        }
+    }
+
+    status = psl__SetRegisterBit(detChan, "MCR", 3, FALSE_);
+
+    if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error setting Master bit in the Mapping "
+                "Control Register for detChan %d.", detChan);
+        pslLogError("psl__SetMaster", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -9063,120 +8961,39 @@ PSL_STATIC int psl__ClearMaster(int detChan, enum master type,
                                 XiaDefaults *defs)
 {
     int status;
-
-    boolean_t isGate;
-    boolean_t isSync;
-    boolean_t isLbus;
-
     double cleared = 0.0;
-
 
     ASSERT(type < XMAP_NO_MASTER);
     ASSERT(defs);
 
+    if (psl__CurrentMaster(detChan) != type)
+        return XIA_SUCCESS;
 
-    psl__WhichMasters(detChan, defs, &isGate, &isSync, &isLbus);
+    status = pslSetDefault(mastertype[type], &cleared, defs);
 
-    switch (type) {
-    case XMAP_GATE_MASTER:
-        if (isGate) {
-            status = pslSetDefault("gate_master", &cleared, defs);
+    if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error clearing %s setting for "
+                "detChan %d.", mastertype[type], detChan);
+        pslLogError("psl__ClearMaster", info_string, status);
+        return status;
+    }
 
-            if (status != XIA_SUCCESS) {
-                sprintf(info_string, "Error clearing GATE master setting for "
-                        "detChan %d.", detChan);
-                pslLogError("psl__ClearMaster", info_string, status);
-                return status;
-            }
+    status = psl__SetInputNC(detChan);
 
-            status = psl__SetInputNC(detChan);
+    if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error setting the input LEMO to No "
+                "Connection for detChan %d.", detChan);
+        pslLogError("psl__ClearMaster", info_string, status);
+        return status;
+    }
 
-            if (status != XIA_SUCCESS) {
-                sprintf(info_string, "Error setting the input LEMO to No "
-                        "Connection for detChan %d.", detChan);
-                pslLogError("psl__ClearMaster", info_string, status);
-                return status;
-            }
+    status = psl__ClearRegisterBit(detChan, "MCR", 3);
 
-            status = psl__ClearRegisterBit(detChan, "MCR", 3);
-
-            if (status != XIA_SUCCESS) {
-                sprintf(info_string, "Error setting detChan %d as a mapping "
-                        "slave module.", detChan);
-                pslLogError("psl__ClearMaster", info_string, status);
-                return status;
-            }
-        }
-
-        break;
-
-    case XMAP_SYNC_MASTER:
-        if (isSync) {
-            status = pslSetDefault("sync_master", &cleared, defs);
-
-            if (status != XIA_SUCCESS) {
-                sprintf(info_string, "Error clearing SYNC master setting for "
-                        "detChan %d.", detChan);
-                pslLogError("psl__ClearMaster", info_string, status);
-                return status;
-            }
-
-            status = psl__SetInputNC(detChan);
-
-            if (status != XIA_SUCCESS) {
-                sprintf(info_string, "Error setting the input LEMO to No "
-                        "Connection for detChan %d.", detChan);
-                pslLogError("psl__ClearMaster", info_string, status);
-                return status;
-            }
-
-            status = psl__ClearRegisterBit(detChan, "MCR", 3);
-
-            if (status != XIA_SUCCESS) {
-                sprintf(info_string, "Error setting detChan %d as a mapping "
-                        "slave module.", detChan);
-                pslLogError("psl__ClearMaster", info_string, status);
-                return status;
-            }
-        }
-
-        break;
-
-    case XMAP_LBUS_MASTER:
-        if (isLbus) {
-            status = pslSetDefault("lbus_master", &cleared, defs);
-
-            if (status != XIA_SUCCESS) {
-                sprintf(info_string, "Error clearing LBUS master setting for "
-                        "detChan %d.", detChan);
-                pslLogError("psl__ClearMaster", info_string, status);
-                return status;
-            }
-
-            status = psl__SetInputNC(detChan);
-
-            if (status != XIA_SUCCESS) {
-                sprintf(info_string, "Error setting the input LEMO to No "
-                        "Connection for detChan %d.", detChan);
-                pslLogError("psl__ClearMaster", info_string, status);
-                return status;
-            }
-
-            status = psl__ClearRegisterBit(detChan, "MCR", 3);
-
-            if (status != XIA_SUCCESS) {
-                sprintf(info_string, "Error setting detChan %d as a mapping "
-                        "slave module.", detChan);
-                pslLogError("psl__ClearMaster", info_string, status);
-                return status;
-            }
-        }
-
-        break;
-
-    default:
-        FAIL();
-        break;
+    if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error setting detChan %d as a mapping "
+                "slave module.", detChan);
+        pslLogError("psl__ClearMaster", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -9190,7 +9007,6 @@ PSL_STATIC int psl__GetListBufferLenA(int detChan, void *value,
 
     UNUSED(defs);
     UNUSED(m);
-
 
     ASSERT(value);
 

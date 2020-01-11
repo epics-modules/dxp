@@ -5611,11 +5611,11 @@ PSL_STATIC int PSL_API _pslDoNSca(int detChan, char *name, void *value,
     if ((unsigned short)nSCA < m->ch[modChan].n_sca) {
 
         for (i = (unsigned short)nSCA; i < m->ch[modChan].n_sca; i++) {
-            sprintf(info_string, "Removing sca%u_* limits for detChan %d",
+            sprintf(info_string, "Removing sca%hu_* limits for detChan %d",
                     i, detChan);
             pslLogDebug("_pslDoNSca", info_string);
 
-            sprintf(limit, "sca%u_lo", i);
+            sprintf(limit, "sca%hu_lo", i);
 
             status = pslRemoveDefault(limit, defaults, &e);
 
@@ -5631,7 +5631,7 @@ PSL_STATIC int PSL_API _pslDoNSca(int detChan, char *name, void *value,
                 saturn_psl_md_free(e);
             }
 
-            sprintf(limit, "sca%u_hi", i);
+            sprintf(limit, "sca%hu_hi", i);
 
             status = pslRemoveDefault(limit, defaults, &e);
 

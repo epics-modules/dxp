@@ -130,6 +130,8 @@ enum master {
     XMAP_NO_MASTER,
 };
 
+char* mastertype[] = { "gate_master", "sync_master",
+                            "lbus_master", "none_master" };
 /*
  * Macros
  */

@@ -247,6 +247,9 @@ static const double VARIABLE_GAIN_SPACING = 1.7;
 /* Scale ratio between pulser period to microseconds */
 #define PULSER_PERIOD_SCALE 40.0
 
+/* Hardware status indicates command is unsupported */
+#define HW_STATUS_UNSUPPORTED 0xF3
+
 /*
  * Macros
  */

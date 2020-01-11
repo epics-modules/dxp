@@ -196,11 +196,6 @@ XIA_MD_EXPORT int XIA_MD_API dxp_md_init_util(Xia_Util_Functions* funcs, char* t
     funcs->dxp_md_clear_tmp      = dxp_md_clear_tmp;
     funcs->dxp_md_path_separator = dxp_md_path_separator;
 
-    if (out_stream == NULL)
-    {
-        out_stream = stdout;
-    }
-
     md_md_alloc = dxp_md_alloc;
     md_md_free  = dxp_md_free;
 
@@ -434,7 +429,7 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_epp_io(int* camChan, unsigned int* function,
 
     unsigned short *us_data = (unsigned short *)data;
 
-    int ullength = (int) *length/2;    
+    int ullength = (int) *length/2;
     unsigned long *temp=NULL;
 
 
@@ -477,8 +472,8 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_epp_io(int* camChan, unsigned int* function,
                         sizeof(unsigned long) * ullength);
                 dxp_md_log_error("dxp_md_epp_io", ERROR_STRING, DXP_MDNOMEM);
                 return DXP_MDNOMEM;
-            }          
-            
+            }
+
             if (*function == MD_IO_READ) {
                 rstat = DxpReadBlocklong(next_addr, temp, ullength);
                 /* reverse the byte order for the EPPLIB library */
@@ -612,7 +607,7 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_usb_open(char* ioname, int* camChan)
         md_md_free(usbName[numUSB]);
     }
     usbName[numUSB] = (char *) md_md_alloc((strlen(tempName)+1)*sizeof(char));
-    
+
     strcpy(usbName[numUSB],tempName);
 
     *camChan = numUSB++;
@@ -1686,8 +1681,11 @@ XIA_MD_STATIC int  dxp_md_usb2_open(char *ioname, int *camChan)
     status = xia_usb2_open(dev, &usb2Handles[*camChan]);
 
     if (status != XIA_USB2_SUCCESS) {
-        sprintf(ERROR_STRING, "Error opening USB device '%d', where the driver "
-                "reports a status of %d", dev, status);
+        sprintf(ERROR_STRING, "Error opening USB device '%d'", dev);
+        dxp_md_log_error("dxp_md_usb2_open", ERROR_STRING, DXP_MDOPEN);
+        /* Error format %.100s is based on ERROR_STRING length at 132 */
+        sprintf(ERROR_STRING, "USB2 driver status=%d error: %.100s",
+                status, xia_usb2_get_last_error());
         dxp_md_log_error("dxp_md_usb2_open", ERROR_STRING, DXP_MDOPEN);
         return DXP_MDOPEN;
     }
@@ -1783,15 +1781,22 @@ XIA_MD_STATIC int  dxp_md_usb2_io(int *camChan, unsigned int *function,
                 return DXP_MDNOMEM;
             }
 
+            /* Initialize buffer to a fixed pattern to identify source of read
+             * errors in case the buffer is not filled completely
+             */
+            memset(byte_buf, 0xAB, n_bytes);
+
             status = xia_usb2_read(usb2Handles[*camChan], cache_addr, n_bytes,
                                    byte_buf);
 
             if (status != XIA_USB2_SUCCESS) {
                 md_md_free(byte_buf);
                 sprintf(ERROR_STRING, "Error reading %lu bytes from %#lx for "
-                        "camChan %d, (USB2 driver reports status = %d)",
-                        n_bytes, cache_addr, *camChan, status);
+                    "camChan %d", n_bytes, cache_addr, *camChan);
                 dxp_md_log_error("dxp_md_usb2_io", ERROR_STRING, DXP_MDIO);
+                sprintf(ERROR_STRING, "USB2 driver status=%d error: %.100s",
+                    status, xia_usb2_get_last_error());
+                dxp_md_log_error("dxp_md_usb2_open", ERROR_STRING, DXP_MDIO);
                 return DXP_MDIO;
             }
 
@@ -1829,9 +1834,11 @@ XIA_MD_STATIC int  dxp_md_usb2_io(int *camChan, unsigned int *function,
 
             if (status != XIA_USB2_SUCCESS) {
                 sprintf(ERROR_STRING, "Error writing %lu bytes to %#lx for "
-                        "camChan %d (USB2 driver reports status = %d)", n_bytes,
-                        cache_addr, *camChan, status);
+                        "camChan %d.", n_bytes, cache_addr, *camChan);
                 dxp_md_log_error("dxp_md_usb2_io", ERROR_STRING, DXP_MDIO);
+                sprintf(ERROR_STRING, "USB2 driver status=%d error: %.100s",
+                    status, xia_usb2_get_last_error());
+                dxp_md_log_error("dxp_md_usb2_open", ERROR_STRING, DXP_MDIO);
                 return DXP_MDIO;
             }
 
@@ -1885,9 +1892,11 @@ XIA_MD_STATIC int  dxp_md_usb2_close(int *camChan)
     status = xia_usb2_close(h);
 
     if (status != XIA_USB2_SUCCESS) {
-        sprintf(ERROR_STRING, "Error closing camChan = %d, "
-                "(USB2 driver reports status = %d)", *camChan, status);
+        sprintf(ERROR_STRING, "Error closing camChan = %d", *camChan);
         dxp_md_log_error("dxp_md_usb2_close", ERROR_STRING, DXP_MDCLOSE);
+        sprintf(ERROR_STRING, "USB2 driver status=%d error: %.100s",
+                status, xia_usb2_get_last_error());
+        dxp_md_log_error("dxp_md_usb2_open", ERROR_STRING, DXP_MDCLOSE);
         return DXP_MDCLOSE;
     }
 
