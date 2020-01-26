@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<display version="2.0.0">
+  <name>mercuryOutputs</name>
+  <x>157</x>
+  <y>143</y>
+  <width>625</width>
+  <height>200</height>
+  <background_color>
+    <color red="187" green="187" blue="187">
+    </color>
+  </background_color>
+  <grid_visible>false</grid_visible>
+  <grid_step_x>5</grid_step_x>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #6</name>
+    <x>108</x>
+    <y>5</y>
+    <width>375</width>
+    <height>25</height>
+    <line_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #9</name>
+    <text>Mercury Outputs</text>
+    <x>205</x>
+    <y>6</y>
+    <width>180</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #12</name>
+    <x>40</x>
+    <y>39</y>
+    <width>580</width>
+    <height>150</height>
+    <line_width>1</line_width>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #15</name>
+    <text>Trigger Output (pin 7)</text>
+    <x>109</x>
+    <y>49</y>
+    <width>154</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #18</name>
+    <text>Livetime Output (pin 8)</text>
+    <x>392</x>
+    <y>50</y>
+    <width>161</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #21</name>
+    <x>5</x>
+    <y>49</y>
+    <width>30</width>
+    <height>129</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="label" version="2.0.0">
+      <name>text #24</name>
+      <text>Det.</text>
+      <width>30</width>
+      <height>14</height>
+      <horizontal_alignment>1</horizontal_alignment>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>text #27</name>
+      <text>2</text>
+      <x>11</x>
+      <y>55</y>
+      <width>7</width>
+      <height>14</height>
+      <horizontal_alignment>1</horizontal_alignment>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>text #30</name>
+      <text>1</text>
+      <x>11</x>
+      <y>25</y>
+      <width>7</width>
+      <height>14</height>
+      <horizontal_alignment>1</horizontal_alignment>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>text #33</name>
+      <text>3</text>
+      <x>11</x>
+      <y>85</y>
+      <width>7</width>
+      <height>14</height>
+      <horizontal_alignment>1</horizontal_alignment>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>text #36</name>
+      <text>4</text>
+      <x>11</x>
+      <y>115</y>
+      <width>7</width>
+      <height>14</height>
+      <horizontal_alignment>1</horizontal_alignment>
+    </widget>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #39</name>
+    <pv_name>$(P)$(D)2:TriggerOutput_RBV</pv_name>
+    <x>204</x>
+    <y>104</y>
+    <width>120</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>6</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #43</name>
+    <pv_name>$(P)$(D)1:TriggerOutput_RBV</pv_name>
+    <x>204</x>
+    <y>74</y>
+    <width>120</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>6</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #47</name>
+    <pv_name>$(P)$(D)3:TriggerOutput_RBV</pv_name>
+    <x>204</x>
+    <y>134</y>
+    <width>120</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>6</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #51</name>
+    <pv_name>$(P)$(D)4:TriggerOutput_RBV</pv_name>
+    <x>204</x>
+    <y>164</y>
+    <width>120</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>6</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #55</name>
+    <pv_name>$(P)$(D)2:TriggerOutput</pv_name>
+    <x>49</x>
+    <y>102</y>
+    <width>150</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #58</name>
+    <pv_name>$(P)$(D)1:TriggerOutput</pv_name>
+    <x>49</x>
+    <y>72</y>
+    <width>150</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #61</name>
+    <pv_name>$(P)$(D)3:TriggerOutput</pv_name>
+    <x>49</x>
+    <y>132</y>
+    <width>150</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #64</name>
+    <pv_name>$(P)$(D)4:TriggerOutput</pv_name>
+    <x>49</x>
+    <y>162</y>
+    <width>150</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #67</name>
+    <pv_name>$(P)$(D)2:LiveTimeOutput_RBV</pv_name>
+    <x>490</x>
+    <y>105</y>
+    <width>120</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>6</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #71</name>
+    <pv_name>$(P)$(D)1:LiveTimeOutput_RBV</pv_name>
+    <x>490</x>
+    <y>75</y>
+    <width>120</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>6</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #75</name>
+    <pv_name>$(P)$(D)3:LiveTimeOutput_RBV</pv_name>
+    <x>490</x>
+    <y>135</y>
+    <width>120</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>6</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #79</name>
+    <pv_name>$(P)$(D)4:LiveTimeOutput_RBV</pv_name>
+    <x>490</x>
+    <y>165</y>
+    <width>120</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>6</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #83</name>
+    <pv_name>$(P)$(D)2:LiveTimeOutput</pv_name>
+    <x>335</x>
+    <y>103</y>
+    <width>150</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #86</name>
+    <pv_name>$(P)$(D)1:LiveTimeOutput</pv_name>
+    <x>335</x>
+    <y>73</y>
+    <width>150</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #89</name>
+    <pv_name>$(P)$(D)3:LiveTimeOutput</pv_name>
+    <x>335</x>
+    <y>133</y>
+    <width>150</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #92</name>
+    <pv_name>$(P)$(D)4:LiveTimeOutput</pv_name>
+    <x>335</x>
+    <y>163</y>
+    <width>150</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+</display>

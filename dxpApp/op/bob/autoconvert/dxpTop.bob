@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<display version="2.0.0">
+  <name>dxpTop</name>
+  <x>82</x>
+  <y>41</y>
+  <width>250</width>
+  <height>150</height>
+  <background_color>
+    <color red="187" green="187" blue="187">
+    </color>
+  </background_color>
+  <grid_visible>false</grid_visible>
+  <grid_step_x>5</grid_step_x>
+  <widget type="label" version="2.0.0">
+    <name>text #6</name>
+    <text>Saturn</text>
+    <x>130</x>
+    <y>37</y>
+    <width>60</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #9</name>
+    <actions>
+      <action type="open_display">
+        <file>dxpSaturn.opi</file>
+        <macros>
+          <D>dxp1:</D>
+          <M>mca1</M>
+          <P>dxpSaturn:</P>
+        </macros>
+        <target>tab</target>
+        <description>Saturn</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>59</x>
+    <y>37</y>
+    <width>66</width>
+    <height>20</height>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #12</name>
+    <actions>
+      <action type="open_display">
+        <file>4element_dxp.opi</file>
+        <macros>
+          <D>dxp</D>
+          <M>mca</M>
+          <P>dxpXMAP:</P>
+        </macros>
+        <target>tab</target>
+        <description>xMAP 4-element MED</description>
+      </action>
+      <action type="open_display">
+        <file>16element_dxp.opi</file>
+        <macros>
+          <D>dxp</D>
+          <M>mca</M>
+          <P>dxpXMAP:</P>
+        </macros>
+        <target>tab</target>
+        <description>xMAP 16-element MED</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>59</x>
+    <y>62</y>
+    <width>66</width>
+    <height>20</height>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #16</name>
+    <actions>
+      <action type="open_display">
+        <file>4element_dxp.opi</file>
+        <macros>
+          <D>dxp</D>
+          <M>mca</M>
+          <P>dxpMercury:</P>
+        </macros>
+        <target>tab</target>
+        <description>Mercury 4-element</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>59</x>
+    <y>87</y>
+    <width>66</width>
+    <height>20</height>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #19</name>
+    <actions>
+      <action type="open_display">
+        <file>microDXP.opi</file>
+        <macros>
+          <D>dxp1:</D>
+          <M>mca1</M>
+          <P>microDXP:</P>
+        </macros>
+        <target>tab</target>
+        <description>MicroDXP</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>59</x>
+    <y>112</y>
+    <width>66</width>
+    <height>20</height>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #22</name>
+    <text>xMAP</text>
+    <x>130</x>
+    <y>62</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #25</name>
+    <text>Mercury</text>
+    <x>130</x>
+    <y>87</y>
+    <width>70</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #28</name>
+    <text>MicroDXP</text>
+    <x>130</x>
+    <y>112</y>
+    <width>80</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #31</name>
+    <text>DXP Top Level Control</text>
+    <x>18</x>
+    <y>9</y>
+    <width>210</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+</display>

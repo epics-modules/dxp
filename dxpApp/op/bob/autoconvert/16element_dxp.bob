@@ -1,0 +1,1497 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<display version="2.0.0">
+  <name>16element_dxp</name>
+  <x>124</x>
+  <y>101</y>
+  <width>580</width>
+  <height>555</height>
+  <background_color>
+    <color red="187" green="187" blue="187">
+    </color>
+  </background_color>
+  <grid_visible>false</grid_visible>
+  <grid_step_x>5</grid_step_x>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #6</name>
+    <x>120</x>
+    <y>2</y>
+    <width>333</width>
+    <height>25</height>
+    <line_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #9</name>
+    <text>16 Element Detector Control</text>
+    <x>127</x>
+    <y>3</y>
+    <width>324</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #12</name>
+    <x>4</x>
+    <y>37</y>
+    <width>310</width>
+    <height>515</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #15</name>
+    <x>319</x>
+    <y>37</y>
+    <width>250</width>
+    <height>515</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #18</name>
+    <text>Acquire</text>
+    <x>221</x>
+    <y>65</y>
+    <width>70</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #21</name>
+    <x>13</x>
+    <y>44</y>
+    <width>200</width>
+    <height>60</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #24</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)EraseAll</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)EraseAll</pv_name>
+    <text>Erase</text>
+    <x>115</x>
+    <y>76</y>
+    <width>90</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #27</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)EraseStart</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)EraseStart</pv_name>
+    <text>Erase/Start</text>
+    <x>19</x>
+    <y>76</y>
+    <width>90</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #30</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)StartAll</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)StartAll</pv_name>
+    <text>Start</text>
+    <x>19</x>
+    <y>51</y>
+    <width>90</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #33</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)StopAll</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)StopAll</pv_name>
+    <text>Stop</text>
+    <x>115</x>
+    <y>51</y>
+    <width>90</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #36</name>
+    <actions>
+      <action type="open_display">
+        <file>16elementFilters.opi</file>
+        <target>tab</target>
+        <description>Filter parameters</description>
+      </action>
+      <action type="open_display">
+        <file>16element_PreAmp_MCA.opi</file>
+        <target>tab</target>
+        <description>Pre-amp &amp; MCA parameters</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>328</x>
+    <y>44</y>
+    <width>70</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #40</name>
+    <text>DXP parameters</text>
+    <x>403</x>
+    <y>44</y>
+    <width>140</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #43</name>
+    <text>Scan</text>
+    <x>403</x>
+    <y>244</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #46</name>
+    <actions>
+      <action type="open_display">
+        <file>scan_more.opi</file>
+        <macros>
+          <DW>Dwait1</DW>
+          <N>1</N>
+          <PW>Pwait1</PW>
+          <S>scan1</S>
+        </macros>
+        <target>tab</target>
+        <description>Scan 1</description>
+      </action>
+      <action type="open_display">
+        <file>scan_more.opi</file>
+        <macros>
+          <DW>Dwait2</DW>
+          <N>2</N>
+          <PW>Pwait2</PW>
+          <S>scan2</S>
+        </macros>
+        <target>tab</target>
+        <description>Scan 2</description>
+      </action>
+      <action type="open_display">
+        <file>scan_more.opi</file>
+        <macros>
+          <DW>Dwait3</DW>
+          <N>3</N>
+          <PW>Pwait3</PW>
+          <S>scan3</S>
+        </macros>
+        <target>tab</target>
+        <description>Scan 3</description>
+      </action>
+      <action type="open_display">
+        <file>scan_more.opi</file>
+        <macros>
+          <DW>Dwait4</DW>
+          <N>4</N>
+          <PW>Pwait4</PW>
+          <S>scan4</S>
+        </macros>
+        <target>tab</target>
+        <description>Scan 4</description>
+      </action>
+      <action type="open_display">
+        <file>scan_more.opi</file>
+        <macros>
+          <DW>DwaitH</DW>
+          <N>1</N>
+          <PW>PwaitH</PW>
+          <S>scanH</S>
+        </macros>
+        <target>tab</target>
+        <description>Scan H</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>328</x>
+    <y>244</y>
+    <width>70</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #53</name>
+    <actions>
+      <action type="open_display">
+        <file>save_restoreStatus_more.opi</file>
+        <target>tab</target>
+        <description>Save/restore</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>328</x>
+    <y>269</y>
+    <width>70</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #56</name>
+    <text>Save/restore</text>
+    <x>403</x>
+    <y>269</y>
+    <width>120</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #59</name>
+    <text>Mapping control</text>
+    <x>402</x>
+    <y>69</y>
+    <width>150</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #62</name>
+    <actions>
+      <action type="open_display">
+        <file>mappingControl.opi</file>
+        <target>tab</target>
+        <description>Mapping control</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>327</x>
+    <y>69</y>
+    <width>70</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #65</name>
+    <actions>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>0</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 0</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>1</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 1</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>2</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 2</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>3</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 3</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>4</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 4</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>5</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 5</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>6</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 6</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>7</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 7</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>8</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 8</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>9</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 9</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>10</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 10</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>11</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 11</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>12</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 12</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>13</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 13</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>14</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 14</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>15</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 15</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>328</x>
+    <y>94</y>
+    <width>70</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #83</name>
+    <text>ROI/SCA 0-15</text>
+    <x>403</x>
+    <y>94</y>
+    <width>120</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #86</name>
+    <actions>
+      <action type="open_display">
+        <file>16element_cal.opi</file>
+        <target>tab</target>
+        <description>Calibration</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>328</x>
+    <y>144</y>
+    <width>70</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #89</name>
+    <text>Calibration</text>
+    <x>403</x>
+    <y>144</y>
+    <width>110</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #92</name>
+    <actions>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>16</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 16</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>17</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 17</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>18</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 18</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>19</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 19</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>20</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 20</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>21</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 21</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>22</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 22</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>23</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 23</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>24</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 24</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>25</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 25</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>26</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 26</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>27</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 27</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>28</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 28</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>29</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 29</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>30</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 30</description>
+      </action>
+      <action type="open_display">
+        <file>16element_ROI_SCA.opi</file>
+        <macros>
+          <R>31</R>
+        </macros>
+        <target>tab</target>
+        <description>ROI/SCA 31</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>328</x>
+    <y>119</y>
+    <width>70</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #110</name>
+    <text>ROI/SCA 16-31</text>
+    <x>403</x>
+    <y>119</y>
+    <width>130</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #113</name>
+    <text>Combined Plots</text>
+    <x>403</x>
+    <y>219</y>
+    <width>140</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #116</name>
+    <actions>
+      <action type="open_display">
+        <file>16element_plots.opi</file>
+        <macros>
+          <P>$(P)mca</P>
+        </macros>
+        <target>tab</target>
+        <description>MCA Spectra</description>
+      </action>
+      <action type="open_display">
+        <file>16element_baseline.opi</file>
+        <target>tab</target>
+        <description>Baseline Histogram</description>
+      </action>
+      <action type="open_display">
+        <file>16element_trace.opi</file>
+        <target>tab</target>
+        <description>ADC Trace</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>328</x>
+    <y>219</y>
+    <width>70</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #121</name>
+    <actions>
+      <action type="open_display">
+        <file>16element_dxp_presets.opi</file>
+        <target>tab</target>
+        <description>Statistics</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>328</x>
+    <y>169</y>
+    <width>70</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #124</name>
+    <text>Presets</text>
+    <x>403</x>
+    <y>169</y>
+    <width>70</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #127</name>
+    <actions>
+      <action type="open_display">
+        <file>16element_dxp_statistics.opi</file>
+        <target>tab</target>
+        <description>Statistics</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>328</x>
+    <y>194</y>
+    <width>70</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #130</name>
+    <text>Statistics</text>
+    <x>403</x>
+    <y>194</y>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #133</name>
+    <actions>
+      <action type="open_display">
+        <file>asynRecord.opi</file>
+        <macros>
+          <R>Asyn</R>
+        </macros>
+        <target>tab</target>
+        <description>asyn record</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>328</x>
+    <y>294</y>
+    <width>70</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #136</name>
+    <text>Asyn record</text>
+    <x>403</x>
+    <y>294</y>
+    <width>110</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #139</name>
+    <text>Presets</text>
+    <x>195</x>
+    <y>162</y>
+    <width>70</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #142</name>
+    <pv_name>$(P)EnableClientWait</pv_name>
+    <x>65</x>
+    <y>471</y>
+    <width>80</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #145</name>
+    <text>Wait for client</text>
+    <x>150</x>
+    <y>472</y>
+    <width>150</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #148</name>
+    <pv_name>$(P)ClientWait</pv_name>
+    <x>65</x>
+    <y>497</y>
+    <width>80</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #151</name>
+    <text>Client Wait</text>
+    <x>150</x>
+    <y>498</y>
+    <width>110</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #154</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)StatusAllOnce.PROC</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)StatusAllOnce.PROC</pv_name>
+    <text>Read</text>
+    <x>10</x>
+    <y>393</y>
+    <width>50</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #157</name>
+    <pv_name>$(P)StatusAll.SCAN</pv_name>
+    <x>65</x>
+    <y>393</y>
+    <width>80</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #160</name>
+    <text>MCA Status rate</text>
+    <x>150</x>
+    <y>394</y>
+    <width>150</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #163</name>
+    <pv_name>$(P)ReadAll.SCAN</pv_name>
+    <x>65</x>
+    <y>419</y>
+    <width>80</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #166</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)ReadAllOnce.PROC</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)ReadAllOnce.PROC</pv_name>
+    <text>Read</text>
+    <x>10</x>
+    <y>419</y>
+    <width>50</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #169</name>
+    <text>MCA Read rate</text>
+    <x>150</x>
+    <y>420</y>
+    <width>130</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #172</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)ReadLLParams.PROC</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)ReadLLParams.PROC</pv_name>
+    <text>Read</text>
+    <x>10</x>
+    <y>445</y>
+    <width>50</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #175</name>
+    <pv_name>$(P)ReadLLParams.SCAN</pv_name>
+    <x>65</x>
+    <y>445</y>
+    <width>80</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #178</name>
+    <text>Low-level params</text>
+    <x>150</x>
+    <y>446</y>
+    <width>160</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #181</name>
+    <pv_name>$(P)PresetMode</pv_name>
+    <x>95</x>
+    <y>183</y>
+    <width>95</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #184</name>
+    <text>Mode</text>
+    <x>195</x>
+    <y>183</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #187</name>
+    <text>Elapsed</text>
+    <x>15</x>
+    <y>162</y>
+    <width>70</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #190</name>
+    <pv_name>$(P)ElapsedReal</pv_name>
+    <x>15</x>
+    <y>209</y>
+    <width>70</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>2</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #194</name>
+    <pv_name>$(P)PresetReal</pv_name>
+    <x>95</x>
+    <y>208</y>
+    <width>95</width>
+    <height>22</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #198</name>
+    <text>Real time</text>
+    <x>195</x>
+    <y>209</y>
+    <width>90</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #201</name>
+    <pv_name>$(P)ElapsedLive</pv_name>
+    <x>15</x>
+    <y>236</y>
+    <width>70</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>2</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #205</name>
+    <pv_name>$(P)PresetLive</pv_name>
+    <x>95</x>
+    <y>235</y>
+    <width>95</width>
+    <height>22</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #209</name>
+    <text>Live time</text>
+    <x>195</x>
+    <y>236</y>
+    <width>90</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #212</name>
+    <pv_name>$(P)PresetEvents</pv_name>
+    <x>95</x>
+    <y>262</y>
+    <width>95</width>
+    <height>22</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #216</name>
+    <text>Events</text>
+    <x>195</x>
+    <y>263</y>
+    <width>60</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #219</name>
+    <pv_name>$(P)PresetTriggers</pv_name>
+    <x>95</x>
+    <y>289</y>
+    <width>95</width>
+    <height>22</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #223</name>
+    <text>Triggers</text>
+    <x>195</x>
+    <y>290</y>
+    <width>80</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #226</name>
+    <pv_name>$(P)IDeadTime</pv_name>
+    <x>15</x>
+    <y>316</y>
+    <width>70</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #230</name>
+    <text>Instant dead time (%)</text>
+    <x>95</x>
+    <y>316</y>
+    <width>210</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #233</name>
+    <pv_name>$(P)DeadTime</pv_name>
+    <x>15</x>
+    <y>341</y>
+    <width>70</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="0" green="216" blue="0">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>2</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #237</name>
+    <text>Average dead time (%)</text>
+    <x>94</x>
+    <y>341</y>
+    <width>210</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #240</name>
+    <pv_name>$(P)PollTime_RBV</pv_name>
+    <x>15</x>
+    <y>367</y>
+    <width>70</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>2</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #244</name>
+    <pv_name>$(P)PollTime</pv_name>
+    <x>95</x>
+    <y>366</y>
+    <width>95</width>
+    <height>22</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #248</name>
+    <text>Poll time</text>
+    <x>200</x>
+    <y>367</y>
+    <width>90</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #251</name>
+    <pv_name>$(P)SNL_Connected</pv_name>
+    <x>15</x>
+    <y>523</y>
+    <width>130</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </background_color>
+    <format>6</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #255</name>
+    <text>SNL Status</text>
+    <x>150</x>
+    <y>523</y>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #258</name>
+    <pv_name>$(P)CollectMode</pv_name>
+    <x>15</x>
+    <y>133</y>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #261</name>
+    <text>Collection mode</text>
+    <x>120</x>
+    <y>133</y>
+    <width>150</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #264</name>
+    <text>Status</text>
+    <x>116</x>
+    <y>108</y>
+    <width>60</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #267</name>
+    <text>Done</text>
+    <x>70</x>
+    <y>108</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="222" green="19" blue="9">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>2</horizontal_alignment>
+    <rules>
+      <rule name="vis_if_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0==0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)Acquiring</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #271</name>
+    <text>Acquiring</text>
+    <x>20</x>
+    <y>108</y>
+    <width>90</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="45" green="127" blue="0">
+      </color>
+    </foreground_color>
+    <auto_size>true</auto_size>
+    <rules>
+      <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)Acquiring</pv_name>
+      </rule>
+    </rules>
+  </widget>
+</display>

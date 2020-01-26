@@ -1,0 +1,5468 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<display version="2.0.0">
+  <name>16element_PreAmp_MCA</name>
+  <x>156</x>
+  <y>101</y>
+  <width>890</width>
+  <height>610</height>
+  <background_color>
+    <color red="187" green="187" blue="187">
+    </color>
+  </background_color>
+  <grid_visible>false</grid_visible>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #6</name>
+    <x>245</x>
+    <y>9</y>
+    <width>400</width>
+    <height>25</height>
+    <line_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #9</name>
+    <text>16 Element DXP PreAmps and MCAs</text>
+    <x>259</x>
+    <y>10</y>
+    <width>372</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #12</name>
+    <actions>
+      <action type="open_display">
+        <file>dxpLowLevel.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>14:</R>
+        </macros>
+        <target>tab</target>
+        <description>Low-level DXP parameters</description>
+      </action>
+      <action type="open_display">
+        <file>simple_mca.opi</file>
+        <macros>
+          <M>14</M>
+          <P>$(P)$(M)</P>
+        </macros>
+        <target>tab</target>
+        <description>MCA plot</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_baseline.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>14:</R>
+        </macros>
+        <target>tab</target>
+        <description>Baseline histogram</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_trace.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>14:</R>
+        </macros>
+        <target>tab</target>
+        <description>ADC Trace</description>
+      </action>
+      <action type="open_display">
+        <file>dxpROI_SCA32.opi</file>
+        <macros>
+          <R>14</R>
+        </macros>
+        <target>tab</target>
+        <description>ROIs/SCAs</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>816</x>
+    <y>3177</y>
+    <width>50</width>
+    <height>20</height>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #19</name>
+    <text>More</text>
+    <x>842</x>
+    <y>79</y>
+    <width>28</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #22</name>
+    <actions>
+      <action type="open_display">
+        <file>dxpLowLevel.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>2:</R>
+        </macros>
+        <target>tab</target>
+        <description>Low-level DXP parameters</description>
+      </action>
+      <action type="open_display">
+        <file>simple_mca.opi</file>
+        <macros>
+          <M>2</M>
+          <P>$(P)$(M)</P>
+        </macros>
+        <target>tab</target>
+        <description>MCA plot</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_baseline.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>2:</R>
+        </macros>
+        <target>tab</target>
+        <description>Baseline histogram</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_trace.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>2:</R>
+        </macros>
+        <target>tab</target>
+        <description>ADC Trace</description>
+      </action>
+      <action type="open_display">
+        <file>dxpROI_SCA32.opi</file>
+        <macros>
+          <R>2</R>
+        </macros>
+        <target>tab</target>
+        <description>ROIs/SCAs</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>830</x>
+    <y>131</y>
+    <width>50</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #29</name>
+    <actions>
+      <action type="open_display">
+        <file>dxpLowLevel.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>1:</R>
+        </macros>
+        <target>tab</target>
+        <description>Low-level DXP parameters</description>
+      </action>
+      <action type="open_display">
+        <file>simple_mca.opi</file>
+        <macros>
+          <M>1</M>
+          <P>$(P)$(M)</P>
+        </macros>
+        <target>tab</target>
+        <description>MCA plot</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_baseline.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>1:</R>
+        </macros>
+        <target>tab</target>
+        <description>Baseline histogram</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_trace.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>1:</R>
+        </macros>
+        <target>tab</target>
+        <description>ADC Trace</description>
+      </action>
+      <action type="open_display">
+        <file>dxpROI_SCA32.opi</file>
+        <macros>
+          <R>1</R>
+        </macros>
+        <target>tab</target>
+        <description>ROIs/SCAs</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>830</x>
+    <y>101</y>
+    <width>50</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #36</name>
+    <actions>
+      <action type="open_display">
+        <file>dxpLowLevel.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>3:</R>
+        </macros>
+        <target>tab</target>
+        <description>Low-level DXP parameters</description>
+      </action>
+      <action type="open_display">
+        <file>simple_mca.opi</file>
+        <macros>
+          <M>3</M>
+          <P>$(P)$(M)</P>
+        </macros>
+        <target>tab</target>
+        <description>MCA plot</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_baseline.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>3:</R>
+        </macros>
+        <target>tab</target>
+        <description>Baseline histogram</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_trace.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>3:</R>
+        </macros>
+        <target>tab</target>
+        <description>ADC Trace</description>
+      </action>
+      <action type="open_display">
+        <file>dxpROI_SCA32.opi</file>
+        <macros>
+          <R>4</R>
+        </macros>
+        <target>tab</target>
+        <description>ROIs/SCAs</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>830</x>
+    <y>161</y>
+    <width>50</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #43</name>
+    <actions>
+      <action type="open_display">
+        <file>dxpLowLevel.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>4:</R>
+        </macros>
+        <target>tab</target>
+        <description>Low-level DXP parameters</description>
+      </action>
+      <action type="open_display">
+        <file>simple_mca.opi</file>
+        <macros>
+          <M>4</M>
+          <P>$(P)$(M)</P>
+        </macros>
+        <target>tab</target>
+        <description>MCA plot</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_baseline.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>4:</R>
+        </macros>
+        <target>tab</target>
+        <description>Baseline histogram</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_trace.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>4:</R>
+        </macros>
+        <target>tab</target>
+        <description>ADC Trace</description>
+      </action>
+      <action type="open_display">
+        <file>dxpROI_SCA32.opi</file>
+        <macros>
+          <R>4</R>
+        </macros>
+        <target>tab</target>
+        <description>ROIs/SCAs</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>830</x>
+    <y>191</y>
+    <width>50</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #50</name>
+    <actions>
+      <action type="open_display">
+        <file>dxpLowLevel.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>5:</R>
+        </macros>
+        <target>tab</target>
+        <description>Low-level DXP parameters</description>
+      </action>
+      <action type="open_display">
+        <file>simple_mca.opi</file>
+        <macros>
+          <M>5</M>
+          <P>$(P)$(M)</P>
+        </macros>
+        <target>tab</target>
+        <description>MCA plot</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_baseline.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>5:</R>
+        </macros>
+        <target>tab</target>
+        <description>Baseline histogram</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_trace.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>5:</R>
+        </macros>
+        <target>tab</target>
+        <description>ADC Trace</description>
+      </action>
+      <action type="open_display">
+        <file>dxpROI_SCA32.opi</file>
+        <macros>
+          <R>5</R>
+        </macros>
+        <target>tab</target>
+        <description>ROIs/SCAs</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>830</x>
+    <y>221</y>
+    <width>50</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #57</name>
+    <actions>
+      <action type="open_display">
+        <file>dxpLowLevel.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>6:</R>
+        </macros>
+        <target>tab</target>
+        <description>Low-level DXP parameters</description>
+      </action>
+      <action type="open_display">
+        <file>simple_mca.opi</file>
+        <macros>
+          <M>6</M>
+          <P>$(P)$(M)</P>
+        </macros>
+        <target>tab</target>
+        <description>MCA plot</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_baseline.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>6:</R>
+        </macros>
+        <target>tab</target>
+        <description>Baseline histogram</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_trace.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>6:</R>
+        </macros>
+        <target>tab</target>
+        <description>ADC Trace</description>
+      </action>
+      <action type="open_display">
+        <file>dxpROI_SCA32.opi</file>
+        <macros>
+          <R>6</R>
+        </macros>
+        <target>tab</target>
+        <description>ROIs/SCAs</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>830</x>
+    <y>251</y>
+    <width>50</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #64</name>
+    <actions>
+      <action type="open_display">
+        <file>dxpLowLevel.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>7:</R>
+        </macros>
+        <target>tab</target>
+        <description>Low-level DXP parameters</description>
+      </action>
+      <action type="open_display">
+        <file>simple_mca.opi</file>
+        <macros>
+          <M>7</M>
+          <P>$(P)$(M)</P>
+        </macros>
+        <target>tab</target>
+        <description>MCA plot</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_baseline.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>7:</R>
+        </macros>
+        <target>tab</target>
+        <description>Baseline histogram</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_trace.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>7:</R>
+        </macros>
+        <target>tab</target>
+        <description>ADC Trace</description>
+      </action>
+      <action type="open_display">
+        <file>dxpROI_SCA32.opi</file>
+        <macros>
+          <R>7</R>
+        </macros>
+        <target>tab</target>
+        <description>ROIs/SCAs</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>830</x>
+    <y>281</y>
+    <width>50</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #71</name>
+    <actions>
+      <action type="open_display">
+        <file>dxpLowLevel.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>8:</R>
+        </macros>
+        <target>tab</target>
+        <description>Low-level DXP parameters</description>
+      </action>
+      <action type="open_display">
+        <file>simple_mca.opi</file>
+        <macros>
+          <M>8</M>
+          <P>$(P)$(M)</P>
+        </macros>
+        <target>tab</target>
+        <description>MCA plot</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_baseline.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>8:</R>
+        </macros>
+        <target>tab</target>
+        <description>Baseline histogram</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_trace.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>8:</R>
+        </macros>
+        <target>tab</target>
+        <description>ADC Trace</description>
+      </action>
+      <action type="open_display">
+        <file>dxpROI_SCA32.opi</file>
+        <macros>
+          <R>8</R>
+        </macros>
+        <target>tab</target>
+        <description>ROIs/SCAs</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>830</x>
+    <y>311</y>
+    <width>50</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #78</name>
+    <actions>
+      <action type="open_display">
+        <file>dxpLowLevel.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>9:</R>
+        </macros>
+        <target>tab</target>
+        <description>Low-level DXP parameters</description>
+      </action>
+      <action type="open_display">
+        <file>simple_mca.opi</file>
+        <macros>
+          <M>9</M>
+          <P>$(P)$(M)</P>
+        </macros>
+        <target>tab</target>
+        <description>MCA plot</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_baseline.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>9:</R>
+        </macros>
+        <target>tab</target>
+        <description>Baseline histogram</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_trace.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>9:</R>
+        </macros>
+        <target>tab</target>
+        <description>ADC Trace</description>
+      </action>
+      <action type="open_display">
+        <file>dxpROI_SCA32.opi</file>
+        <macros>
+          <R>9</R>
+        </macros>
+        <target>tab</target>
+        <description>ROIs/SCAs</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>830</x>
+    <y>341</y>
+    <width>50</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #85</name>
+    <actions>
+      <action type="open_display">
+        <file>dxpLowLevel.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>10:</R>
+        </macros>
+        <target>tab</target>
+        <description>Low-level DXP parameters</description>
+      </action>
+      <action type="open_display">
+        <file>simple_mca.opi</file>
+        <macros>
+          <M>10</M>
+          <P>$(P)$(M)</P>
+        </macros>
+        <target>tab</target>
+        <description>MCA plot</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_baseline.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>10:</R>
+        </macros>
+        <target>tab</target>
+        <description>Baseline histogram</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_trace.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>10:</R>
+        </macros>
+        <target>tab</target>
+        <description>ADC Trace</description>
+      </action>
+      <action type="open_display">
+        <file>dxpROI_SCA32.opi</file>
+        <macros>
+          <R>10</R>
+        </macros>
+        <target>tab</target>
+        <description>ROIs/SCAs</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>830</x>
+    <y>371</y>
+    <width>50</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #92</name>
+    <actions>
+      <action type="open_display">
+        <file>dxpLowLevel.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>11:</R>
+        </macros>
+        <target>tab</target>
+        <description>Low-level DXP parameters</description>
+      </action>
+      <action type="open_display">
+        <file>simple_mca.opi</file>
+        <macros>
+          <M>11</M>
+          <P>$(P)$(M)</P>
+        </macros>
+        <target>tab</target>
+        <description>MCA plot</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_baseline.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>11:</R>
+        </macros>
+        <target>tab</target>
+        <description>Baseline histogram</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_trace.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>11:</R>
+        </macros>
+        <target>tab</target>
+        <description>ADC Trace</description>
+      </action>
+      <action type="open_display">
+        <file>dxpROI_SCA32.opi</file>
+        <macros>
+          <R>11</R>
+        </macros>
+        <target>tab</target>
+        <description>ROIs/SCAs</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>830</x>
+    <y>401</y>
+    <width>50</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #99</name>
+    <actions>
+      <action type="open_display">
+        <file>dxpLowLevel.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>12:</R>
+        </macros>
+        <target>tab</target>
+        <description>Low-level DXP parameters</description>
+      </action>
+      <action type="open_display">
+        <file>simple_mca.opi</file>
+        <macros>
+          <M>12</M>
+          <P>$(P)$(M)</P>
+        </macros>
+        <target>tab</target>
+        <description>MCA plot</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_baseline.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>12:</R>
+        </macros>
+        <target>tab</target>
+        <description>Baseline histogram</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_trace.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>12:</R>
+        </macros>
+        <target>tab</target>
+        <description>ADC Trace</description>
+      </action>
+      <action type="open_display">
+        <file>dxpROI_SCA32.opi</file>
+        <macros>
+          <R>12</R>
+        </macros>
+        <target>tab</target>
+        <description>ROIs/SCAs</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>830</x>
+    <y>431</y>
+    <width>50</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #106</name>
+    <actions>
+      <action type="open_display">
+        <file>dxpLowLevel.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>13:</R>
+        </macros>
+        <target>tab</target>
+        <description>Low-level DXP parameters</description>
+      </action>
+      <action type="open_display">
+        <file>simple_mca.opi</file>
+        <macros>
+          <M>13</M>
+          <P>$(P)$(M)</P>
+        </macros>
+        <target>tab</target>
+        <description>MCA plot</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_baseline.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>13:</R>
+        </macros>
+        <target>tab</target>
+        <description>Baseline histogram</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_trace.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>13:</R>
+        </macros>
+        <target>tab</target>
+        <description>ADC Trace</description>
+      </action>
+      <action type="open_display">
+        <file>dxpROI_SCA32.opi</file>
+        <macros>
+          <R>13</R>
+        </macros>
+        <target>tab</target>
+        <description>ROIs/SCAs</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>830</x>
+    <y>461</y>
+    <width>50</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #113</name>
+    <actions>
+      <action type="open_display">
+        <file>dxpLowLevel.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>14:</R>
+        </macros>
+        <target>tab</target>
+        <description>Low-level DXP parameters</description>
+      </action>
+      <action type="open_display">
+        <file>simple_mca.opi</file>
+        <macros>
+          <M>14</M>
+          <P>$(P)$(M)</P>
+        </macros>
+        <target>tab</target>
+        <description>MCA plot</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_baseline.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>14:</R>
+        </macros>
+        <target>tab</target>
+        <description>Baseline histogram</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_trace.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>14:</R>
+        </macros>
+        <target>tab</target>
+        <description>ADC Trace</description>
+      </action>
+      <action type="open_display">
+        <file>dxpROI_SCA32.opi</file>
+        <macros>
+          <R>14</R>
+        </macros>
+        <target>tab</target>
+        <description>ROIs/SCAs</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>830</x>
+    <y>491</y>
+    <width>50</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #120</name>
+    <actions>
+      <action type="open_display">
+        <file>dxpLowLevel.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>15:</R>
+        </macros>
+        <target>tab</target>
+        <description>Low-level DXP parameters</description>
+      </action>
+      <action type="open_display">
+        <file>simple_mca.opi</file>
+        <macros>
+          <M>15</M>
+          <P>$(P)$(M)</P>
+        </macros>
+        <target>tab</target>
+        <description>MCA plot</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_baseline.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>15:</R>
+        </macros>
+        <target>tab</target>
+        <description>Baseline histogram</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_trace.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>15:</R>
+        </macros>
+        <target>tab</target>
+        <description>ADC Trace</description>
+      </action>
+      <action type="open_display">
+        <file>dxpROI_SCA32.opi</file>
+        <macros>
+          <R>15</R>
+        </macros>
+        <target>tab</target>
+        <description>ROIs/SCAs</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>830</x>
+    <y>521</y>
+    <width>50</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #127</name>
+    <actions>
+      <action type="open_display">
+        <file>dxpLowLevel.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>16:</R>
+        </macros>
+        <target>tab</target>
+        <description>Low-level DXP parameters</description>
+      </action>
+      <action type="open_display">
+        <file>simple_mca.opi</file>
+        <macros>
+          <M>16</M>
+          <P>$(P)$(M)</P>
+        </macros>
+        <target>tab</target>
+        <description>MCA plot</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_baseline.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>16:</R>
+        </macros>
+        <target>tab</target>
+        <description>Baseline histogram</description>
+      </action>
+      <action type="open_display">
+        <file>dxp_trace.opi</file>
+        <macros>
+          <P>$(P)$(D)</P>
+          <R>16:</R>
+        </macros>
+        <target>tab</target>
+        <description>ADC Trace</description>
+      </action>
+      <action type="open_display">
+        <file>dxpROI_SCA32.opi</file>
+        <macros>
+          <R>16</R>
+        </macros>
+        <target>tab</target>
+        <description>ROIs/SCAs</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>830</x>
+    <y>551</y>
+    <width>48</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #134</name>
+    <text>Det.</text>
+    <x>6</x>
+    <y>79</y>
+    <width>28</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #137</name>
+    <text>2</text>
+    <x>16</x>
+    <y>134</y>
+    <width>7</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #140</name>
+    <text>1</text>
+    <x>16</x>
+    <y>104</y>
+    <width>7</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #143</name>
+    <text>3</text>
+    <x>16</x>
+    <y>164</y>
+    <width>7</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #146</name>
+    <text>4</text>
+    <x>16</x>
+    <y>194</y>
+    <width>7</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #149</name>
+    <text>5</text>
+    <x>16</x>
+    <y>224</y>
+    <width>7</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #152</name>
+    <text>6</text>
+    <x>16</x>
+    <y>254</y>
+    <width>7</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #155</name>
+    <text>7</text>
+    <x>16</x>
+    <y>284</y>
+    <width>7</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #158</name>
+    <text>8</text>
+    <x>16</x>
+    <y>314</y>
+    <width>7</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #161</name>
+    <text>9</text>
+    <x>16</x>
+    <y>344</y>
+    <width>7</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #164</name>
+    <text>10</text>
+    <x>13</x>
+    <y>374</y>
+    <width>14</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #167</name>
+    <text>11</text>
+    <x>13</x>
+    <y>404</y>
+    <width>14</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #170</name>
+    <text>12</text>
+    <x>13</x>
+    <y>434</y>
+    <width>14</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #173</name>
+    <text>13</text>
+    <x>13</x>
+    <y>464</y>
+    <width>14</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #176</name>
+    <text>14</text>
+    <x>13</x>
+    <y>494</y>
+    <width>14</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #179</name>
+    <text>15</text>
+    <x>13</x>
+    <y>524</y>
+    <width>14</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #182</name>
+    <text>16</text>
+    <x>13</x>
+    <y>554</y>
+    <width>14</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #185</name>
+    <x>45</x>
+    <y>37</y>
+    <width>775</width>
+    <height>565</height>
+    <line_width>1</line_width>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #188</name>
+    <text>Pre-amp</text>
+    <x>248</x>
+    <y>40</y>
+    <width>70</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #191</name>
+    <text>Gain</text>
+    <x>78</x>
+    <y>79</y>
+    <width>28</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #194</name>
+    <text>Pre-amp</text>
+    <x>68</x>
+    <y>64</y>
+    <width>49</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #197</name>
+    <pv_name>$(P)$(D)2:PreampGain_RBV</pv_name>
+    <x>94</x>
+    <y>134</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #201</name>
+    <pv_name>$(P)$(D)2:PreampGain</pv_name>
+    <x>50</x>
+    <y>131</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #205</name>
+    <pv_name>$(P)$(D)1:PreampGain_RBV</pv_name>
+    <x>94</x>
+    <y>104</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #209</name>
+    <pv_name>$(P)$(D)1:PreampGain</pv_name>
+    <x>50</x>
+    <y>101</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #213</name>
+    <pv_name>$(P)$(D)3:PreampGain_RBV</pv_name>
+    <x>94</x>
+    <y>164</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #217</name>
+    <pv_name>$(P)$(D)3:PreampGain</pv_name>
+    <x>50</x>
+    <y>161</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #221</name>
+    <pv_name>$(P)$(D)4:PreampGain_RBV</pv_name>
+    <x>94</x>
+    <y>194</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #225</name>
+    <pv_name>$(P)$(D)4:PreampGain</pv_name>
+    <x>50</x>
+    <y>191</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #229</name>
+    <pv_name>$(P)$(D)5:PreampGain_RBV</pv_name>
+    <x>94</x>
+    <y>224</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #233</name>
+    <pv_name>$(P)$(D)5:PreampGain</pv_name>
+    <x>50</x>
+    <y>221</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #237</name>
+    <pv_name>$(P)$(D)6:PreampGain_RBV</pv_name>
+    <x>94</x>
+    <y>254</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #241</name>
+    <pv_name>$(P)$(D)6:PreampGain</pv_name>
+    <x>50</x>
+    <y>251</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #245</name>
+    <pv_name>$(P)$(D)7:PreampGain_RBV</pv_name>
+    <x>94</x>
+    <y>284</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #249</name>
+    <pv_name>$(P)$(D)7:PreampGain</pv_name>
+    <x>50</x>
+    <y>281</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #253</name>
+    <pv_name>$(P)$(D)8:PreampGain_RBV</pv_name>
+    <x>94</x>
+    <y>314</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #257</name>
+    <pv_name>$(P)$(D)8:PreampGain</pv_name>
+    <x>50</x>
+    <y>311</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #261</name>
+    <pv_name>$(P)$(D)9:PreampGain_RBV</pv_name>
+    <x>94</x>
+    <y>344</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #265</name>
+    <pv_name>$(P)$(D)9:PreampGain</pv_name>
+    <x>50</x>
+    <y>341</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #269</name>
+    <pv_name>$(P)$(D)10:PreampGain_RBV</pv_name>
+    <x>94</x>
+    <y>374</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #273</name>
+    <pv_name>$(P)$(D)10:PreampGain</pv_name>
+    <x>50</x>
+    <y>371</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #277</name>
+    <pv_name>$(P)$(D)11:PreampGain_RBV</pv_name>
+    <x>94</x>
+    <y>404</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #281</name>
+    <pv_name>$(P)$(D)11:PreampGain</pv_name>
+    <x>50</x>
+    <y>401</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #285</name>
+    <pv_name>$(P)$(D)12:PreampGain_RBV</pv_name>
+    <x>94</x>
+    <y>434</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #289</name>
+    <pv_name>$(P)$(D)12:PreampGain</pv_name>
+    <x>50</x>
+    <y>431</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #293</name>
+    <pv_name>$(P)$(D)13:PreampGain_RBV</pv_name>
+    <x>94</x>
+    <y>464</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #297</name>
+    <pv_name>$(P)$(D)13:PreampGain</pv_name>
+    <x>50</x>
+    <y>461</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #301</name>
+    <pv_name>$(P)$(D)14:PreampGain_RBV</pv_name>
+    <x>94</x>
+    <y>494</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #305</name>
+    <pv_name>$(P)$(D)14:PreampGain</pv_name>
+    <x>50</x>
+    <y>491</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #309</name>
+    <pv_name>$(P)$(D)15:PreampGain_RBV</pv_name>
+    <x>94</x>
+    <y>524</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #313</name>
+    <pv_name>$(P)$(D)15:PreampGain</pv_name>
+    <x>50</x>
+    <y>521</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #317</name>
+    <pv_name>$(P)$(D)16:PreampGain_RBV</pv_name>
+    <x>94</x>
+    <y>554</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #321</name>
+    <pv_name>$(P)$(D)16:PreampGain</pv_name>
+    <x>50</x>
+    <y>551</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #325</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)CopyPreampGain</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)CopyPreampGain</pv_name>
+    <text>Copy 1-&gt;All</text>
+    <x>51</x>
+    <y>579</y>
+    <width>80</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #328</name>
+    <text>Delay</text>
+    <x>268</x>
+    <y>79</y>
+    <width>35</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #331</name>
+    <text>Reset</text>
+    <x>269</x>
+    <y>64</y>
+    <width>35</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #334</name>
+    <pv_name>$(P)$(D)2:ResetDelay_RBV</pv_name>
+    <x>288</x>
+    <y>134</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #338</name>
+    <pv_name>$(P)$(D)2:ResetDelay</pv_name>
+    <x>244</x>
+    <y>131</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #342</name>
+    <pv_name>$(P)$(D)1:ResetDelay_RBV</pv_name>
+    <x>288</x>
+    <y>104</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #346</name>
+    <pv_name>$(P)$(D)1:ResetDelay</pv_name>
+    <x>244</x>
+    <y>101</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #350</name>
+    <pv_name>$(P)$(D)3:ResetDelay_RBV</pv_name>
+    <x>288</x>
+    <y>164</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #354</name>
+    <pv_name>$(P)$(D)3:ResetDelay</pv_name>
+    <x>244</x>
+    <y>161</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #358</name>
+    <pv_name>$(P)$(D)4:ResetDelay_RBV</pv_name>
+    <x>288</x>
+    <y>194</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #362</name>
+    <pv_name>$(P)$(D)4:ResetDelay</pv_name>
+    <x>244</x>
+    <y>191</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #366</name>
+    <pv_name>$(P)$(D)5:ResetDelay_RBV</pv_name>
+    <x>288</x>
+    <y>224</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #370</name>
+    <pv_name>$(P)$(D)5:ResetDelay</pv_name>
+    <x>244</x>
+    <y>221</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #374</name>
+    <pv_name>$(P)$(D)6:ResetDelay_RBV</pv_name>
+    <x>288</x>
+    <y>254</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #378</name>
+    <pv_name>$(P)$(D)6:ResetDelay</pv_name>
+    <x>244</x>
+    <y>251</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #382</name>
+    <pv_name>$(P)$(D)7:ResetDelay_RBV</pv_name>
+    <x>288</x>
+    <y>284</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #386</name>
+    <pv_name>$(P)$(D)7:ResetDelay</pv_name>
+    <x>244</x>
+    <y>281</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #390</name>
+    <pv_name>$(P)$(D)8:ResetDelay_RBV</pv_name>
+    <x>288</x>
+    <y>314</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #394</name>
+    <pv_name>$(P)$(D)8:ResetDelay</pv_name>
+    <x>244</x>
+    <y>311</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #398</name>
+    <pv_name>$(P)$(D)9:ResetDelay_RBV</pv_name>
+    <x>288</x>
+    <y>344</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #402</name>
+    <pv_name>$(P)$(D)9:ResetDelay</pv_name>
+    <x>244</x>
+    <y>341</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #406</name>
+    <pv_name>$(P)$(D)10:ResetDelay_RBV</pv_name>
+    <x>288</x>
+    <y>374</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #410</name>
+    <pv_name>$(P)$(D)10:ResetDelay</pv_name>
+    <x>244</x>
+    <y>371</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #414</name>
+    <pv_name>$(P)$(D)11:ResetDelay_RBV</pv_name>
+    <x>288</x>
+    <y>404</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #418</name>
+    <pv_name>$(P)$(D)11:ResetDelay</pv_name>
+    <x>244</x>
+    <y>401</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #422</name>
+    <pv_name>$(P)$(D)12:ResetDelay_RBV</pv_name>
+    <x>288</x>
+    <y>434</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #426</name>
+    <pv_name>$(P)$(D)12:ResetDelay</pv_name>
+    <x>244</x>
+    <y>431</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #430</name>
+    <pv_name>$(P)$(D)13:ResetDelay_RBV</pv_name>
+    <x>288</x>
+    <y>464</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #434</name>
+    <pv_name>$(P)$(D)13:ResetDelay</pv_name>
+    <x>244</x>
+    <y>461</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #438</name>
+    <pv_name>$(P)$(D)14:ResetDelay_RBV</pv_name>
+    <x>288</x>
+    <y>494</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #442</name>
+    <pv_name>$(P)$(D)14:ResetDelay</pv_name>
+    <x>244</x>
+    <y>491</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #446</name>
+    <pv_name>$(P)$(D)15:ResetDelay_RBV</pv_name>
+    <x>288</x>
+    <y>524</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #450</name>
+    <pv_name>$(P)$(D)15:ResetDelay</pv_name>
+    <x>244</x>
+    <y>521</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #454</name>
+    <pv_name>$(P)$(D)16:ResetDelay_RBV</pv_name>
+    <x>288</x>
+    <y>554</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #458</name>
+    <pv_name>$(P)$(D)16:ResetDelay</pv_name>
+    <x>244</x>
+    <y>551</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #462</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)CopyResetDelay</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)CopyResetDelay</pv_name>
+    <text>Copy 1-&gt;All</text>
+    <x>245</x>
+    <y>579</y>
+    <width>80</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #465</name>
+    <text>Time</text>
+    <x>366</x>
+    <y>79</y>
+    <width>28</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #468</name>
+    <text>RC Decay</text>
+    <x>353</x>
+    <y>64</y>
+    <width>56</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #471</name>
+    <pv_name>$(P)$(D)2:DecayTime_RBV</pv_name>
+    <x>382</x>
+    <y>134</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #475</name>
+    <pv_name>$(P)$(D)2:DecayTime</pv_name>
+    <x>338</x>
+    <y>131</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #479</name>
+    <pv_name>$(P)$(D)1:DecayTime_RBV</pv_name>
+    <x>382</x>
+    <y>104</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #483</name>
+    <pv_name>$(P)$(D)1:DecayTime</pv_name>
+    <x>338</x>
+    <y>101</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #487</name>
+    <pv_name>$(P)$(D)3:DecayTime_RBV</pv_name>
+    <x>382</x>
+    <y>164</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #491</name>
+    <pv_name>$(P)$(D)3:DecayTime</pv_name>
+    <x>338</x>
+    <y>161</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #495</name>
+    <pv_name>$(P)$(D)4:DecayTime_RBV</pv_name>
+    <x>382</x>
+    <y>194</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #499</name>
+    <pv_name>$(P)$(D)4:DecayTime</pv_name>
+    <x>338</x>
+    <y>191</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #503</name>
+    <pv_name>$(P)$(D)5:DecayTime_RBV</pv_name>
+    <x>382</x>
+    <y>224</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #507</name>
+    <pv_name>$(P)$(D)5:DecayTime</pv_name>
+    <x>338</x>
+    <y>221</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #511</name>
+    <pv_name>$(P)$(D)6:DecayTime_RBV</pv_name>
+    <x>382</x>
+    <y>254</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #515</name>
+    <pv_name>$(P)$(D)6:DecayTime</pv_name>
+    <x>338</x>
+    <y>251</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #519</name>
+    <pv_name>$(P)$(D)7:DecayTime_RBV</pv_name>
+    <x>382</x>
+    <y>284</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #523</name>
+    <pv_name>$(P)$(D)7:DecayTime</pv_name>
+    <x>338</x>
+    <y>281</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #527</name>
+    <pv_name>$(P)$(D)8:DecayTime_RBV</pv_name>
+    <x>382</x>
+    <y>314</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #531</name>
+    <pv_name>$(P)$(D)8:DecayTime</pv_name>
+    <x>338</x>
+    <y>311</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #535</name>
+    <pv_name>$(P)$(D)9:DecayTime_RBV</pv_name>
+    <x>382</x>
+    <y>344</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #539</name>
+    <pv_name>$(P)$(D)9:DecayTime</pv_name>
+    <x>338</x>
+    <y>341</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #543</name>
+    <pv_name>$(P)$(D)10:DecayTime_RBV</pv_name>
+    <x>382</x>
+    <y>374</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #547</name>
+    <pv_name>$(P)$(D)10:DecayTime</pv_name>
+    <x>338</x>
+    <y>371</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #551</name>
+    <pv_name>$(P)$(D)11:DecayTime_RBV</pv_name>
+    <x>382</x>
+    <y>404</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #555</name>
+    <pv_name>$(P)$(D)11:DecayTime</pv_name>
+    <x>338</x>
+    <y>401</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #559</name>
+    <pv_name>$(P)$(D)12:DecayTime_RBV</pv_name>
+    <x>382</x>
+    <y>434</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #563</name>
+    <pv_name>$(P)$(D)12:DecayTime</pv_name>
+    <x>338</x>
+    <y>431</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #567</name>
+    <pv_name>$(P)$(D)13:DecayTime_RBV</pv_name>
+    <x>382</x>
+    <y>464</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #571</name>
+    <pv_name>$(P)$(D)13:DecayTime</pv_name>
+    <x>338</x>
+    <y>461</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #575</name>
+    <pv_name>$(P)$(D)14:DecayTime_RBV</pv_name>
+    <x>382</x>
+    <y>494</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #579</name>
+    <pv_name>$(P)$(D)14:DecayTime</pv_name>
+    <x>338</x>
+    <y>491</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #583</name>
+    <pv_name>$(P)$(D)15:DecayTime_RBV</pv_name>
+    <x>382</x>
+    <y>524</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #587</name>
+    <pv_name>$(P)$(D)15:DecayTime</pv_name>
+    <x>338</x>
+    <y>521</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #591</name>
+    <pv_name>$(P)$(D)16:DecayTime_RBV</pv_name>
+    <x>382</x>
+    <y>554</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #595</name>
+    <pv_name>$(P)$(D)16:DecayTime</pv_name>
+    <x>338</x>
+    <y>551</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #599</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)CopyDecayTime</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)CopyDecayTime</pv_name>
+    <text>Copy 1-&gt;All</text>
+    <x>339</x>
+    <y>579</y>
+    <width>80</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #602</name>
+    <text>Rule</text>
+    <x>696</x>
+    <y>79</y>
+    <width>28</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #605</name>
+    <text>% ADC</text>
+    <x>693</x>
+    <y>65</y>
+    <width>35</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #608</name>
+    <pv_name>$(P)$(D)2:ADCPercentRule</pv_name>
+    <x>671</x>
+    <y>131</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #612</name>
+    <pv_name>$(P)$(D)2:ADCPercentRule_RBV</pv_name>
+    <x>713</x>
+    <y>134</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #616</name>
+    <pv_name>$(P)$(D)1:ADCPercentRule</pv_name>
+    <x>671</x>
+    <y>101</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #620</name>
+    <pv_name>$(P)$(D)1:ADCPercentRule_RBV</pv_name>
+    <x>713</x>
+    <y>104</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #624</name>
+    <pv_name>$(P)$(D)3:ADCPercentRule</pv_name>
+    <x>671</x>
+    <y>161</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #628</name>
+    <pv_name>$(P)$(D)3:ADCPercentRule_RBV</pv_name>
+    <x>713</x>
+    <y>164</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #632</name>
+    <pv_name>$(P)$(D)4:ADCPercentRule</pv_name>
+    <x>671</x>
+    <y>191</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #636</name>
+    <pv_name>$(P)$(D)4:ADCPercentRule_RBV</pv_name>
+    <x>713</x>
+    <y>194</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #640</name>
+    <pv_name>$(P)$(D)5:ADCPercentRule</pv_name>
+    <x>671</x>
+    <y>221</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #644</name>
+    <pv_name>$(P)$(D)5:ADCPercentRule_RBV</pv_name>
+    <x>713</x>
+    <y>224</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #648</name>
+    <pv_name>$(P)$(D)6:ADCPercentRule</pv_name>
+    <x>671</x>
+    <y>251</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #652</name>
+    <pv_name>$(P)$(D)6:ADCPercentRule_RBV</pv_name>
+    <x>713</x>
+    <y>254</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #656</name>
+    <pv_name>$(P)$(D)7:ADCPercentRule</pv_name>
+    <x>671</x>
+    <y>281</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #660</name>
+    <pv_name>$(P)$(D)7:ADCPercentRule_RBV</pv_name>
+    <x>713</x>
+    <y>284</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #664</name>
+    <pv_name>$(P)$(D)8:ADCPercentRule</pv_name>
+    <x>671</x>
+    <y>311</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #668</name>
+    <pv_name>$(P)$(D)8:ADCPercentRule_RBV</pv_name>
+    <x>713</x>
+    <y>314</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #672</name>
+    <pv_name>$(P)$(D)9:ADCPercentRule</pv_name>
+    <x>671</x>
+    <y>341</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #676</name>
+    <pv_name>$(P)$(D)9:ADCPercentRule_RBV</pv_name>
+    <x>713</x>
+    <y>344</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #680</name>
+    <pv_name>$(P)$(D)10:ADCPercentRule</pv_name>
+    <x>671</x>
+    <y>371</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #684</name>
+    <pv_name>$(P)$(D)10:ADCPercentRule_RBV</pv_name>
+    <x>713</x>
+    <y>374</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #688</name>
+    <pv_name>$(P)$(D)11:ADCPercentRule</pv_name>
+    <x>671</x>
+    <y>401</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #692</name>
+    <pv_name>$(P)$(D)11:ADCPercentRule_RBV</pv_name>
+    <x>713</x>
+    <y>404</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #696</name>
+    <pv_name>$(P)$(D)12:ADCPercentRule</pv_name>
+    <x>671</x>
+    <y>431</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #700</name>
+    <pv_name>$(P)$(D)12:ADCPercentRule_RBV</pv_name>
+    <x>713</x>
+    <y>434</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #704</name>
+    <pv_name>$(P)$(D)13:ADCPercentRule</pv_name>
+    <x>671</x>
+    <y>461</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #708</name>
+    <pv_name>$(P)$(D)13:ADCPercentRule_RBV</pv_name>
+    <x>713</x>
+    <y>464</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #712</name>
+    <pv_name>$(P)$(D)14:ADCPercentRule</pv_name>
+    <x>671</x>
+    <y>491</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #716</name>
+    <pv_name>$(P)$(D)14:ADCPercentRule_RBV</pv_name>
+    <x>713</x>
+    <y>494</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #720</name>
+    <pv_name>$(P)$(D)15:ADCPercentRule</pv_name>
+    <x>671</x>
+    <y>521</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #724</name>
+    <pv_name>$(P)$(D)15:ADCPercentRule_RBV</pv_name>
+    <x>713</x>
+    <y>524</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #728</name>
+    <pv_name>$(P)$(D)16:ADCPercentRule</pv_name>
+    <x>671</x>
+    <y>551</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #732</name>
+    <pv_name>$(P)$(D)16:ADCPercentRule_RBV</pv_name>
+    <x>713</x>
+    <y>554</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #736</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)CopyADCPercentRule</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)CopyADCPercentRule</pv_name>
+    <text>Copy 1-&gt;All</text>
+    <x>673</x>
+    <y>579</y>
+    <width>80</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #739</name>
+    <text>Energy</text>
+    <x>455</x>
+    <y>79</y>
+    <width>42</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #742</name>
+    <pv_name>$(P)$(D)2:MaxEnergy_RBV</pv_name>
+    <x>474</x>
+    <y>134</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #746</name>
+    <pv_name>$(P)$(D)2:MaxEnergy</pv_name>
+    <x>432</x>
+    <y>131</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #750</name>
+    <pv_name>$(P)$(D)1:MaxEnergy_RBV</pv_name>
+    <x>474</x>
+    <y>104</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #754</name>
+    <pv_name>$(P)$(D)1:MaxEnergy</pv_name>
+    <x>432</x>
+    <y>101</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #758</name>
+    <pv_name>$(P)$(D)3:MaxEnergy_RBV</pv_name>
+    <x>474</x>
+    <y>164</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #762</name>
+    <pv_name>$(P)$(D)3:MaxEnergy</pv_name>
+    <x>432</x>
+    <y>161</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #766</name>
+    <pv_name>$(P)$(D)4:MaxEnergy_RBV</pv_name>
+    <x>474</x>
+    <y>194</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #770</name>
+    <pv_name>$(P)$(D)4:MaxEnergy</pv_name>
+    <x>432</x>
+    <y>191</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #774</name>
+    <pv_name>$(P)$(D)5:MaxEnergy_RBV</pv_name>
+    <x>474</x>
+    <y>224</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #778</name>
+    <pv_name>$(P)$(D)5:MaxEnergy</pv_name>
+    <x>432</x>
+    <y>221</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #782</name>
+    <pv_name>$(P)$(D)6:MaxEnergy_RBV</pv_name>
+    <x>474</x>
+    <y>254</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #786</name>
+    <pv_name>$(P)$(D)6:MaxEnergy</pv_name>
+    <x>432</x>
+    <y>251</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #790</name>
+    <pv_name>$(P)$(D)7:MaxEnergy_RBV</pv_name>
+    <x>474</x>
+    <y>284</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #794</name>
+    <pv_name>$(P)$(D)7:MaxEnergy</pv_name>
+    <x>432</x>
+    <y>281</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #798</name>
+    <pv_name>$(P)$(D)8:MaxEnergy_RBV</pv_name>
+    <x>474</x>
+    <y>314</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #802</name>
+    <pv_name>$(P)$(D)8:MaxEnergy</pv_name>
+    <x>432</x>
+    <y>311</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #806</name>
+    <pv_name>$(P)$(D)9:MaxEnergy_RBV</pv_name>
+    <x>474</x>
+    <y>344</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #810</name>
+    <pv_name>$(P)$(D)9:MaxEnergy</pv_name>
+    <x>432</x>
+    <y>341</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #814</name>
+    <pv_name>$(P)$(D)10:MaxEnergy_RBV</pv_name>
+    <x>474</x>
+    <y>374</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #818</name>
+    <pv_name>$(P)$(D)10:MaxEnergy</pv_name>
+    <x>432</x>
+    <y>371</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #822</name>
+    <pv_name>$(P)$(D)11:MaxEnergy_RBV</pv_name>
+    <x>474</x>
+    <y>404</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #826</name>
+    <pv_name>$(P)$(D)11:MaxEnergy</pv_name>
+    <x>432</x>
+    <y>401</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #830</name>
+    <pv_name>$(P)$(D)12:MaxEnergy_RBV</pv_name>
+    <x>474</x>
+    <y>434</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #834</name>
+    <pv_name>$(P)$(D)12:MaxEnergy</pv_name>
+    <x>432</x>
+    <y>431</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #838</name>
+    <pv_name>$(P)$(D)13:MaxEnergy_RBV</pv_name>
+    <x>474</x>
+    <y>464</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #842</name>
+    <pv_name>$(P)$(D)13:MaxEnergy</pv_name>
+    <x>432</x>
+    <y>461</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #846</name>
+    <pv_name>$(P)$(D)14:MaxEnergy_RBV</pv_name>
+    <x>474</x>
+    <y>494</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #850</name>
+    <pv_name>$(P)$(D)14:MaxEnergy</pv_name>
+    <x>432</x>
+    <y>491</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #854</name>
+    <pv_name>$(P)$(D)15:MaxEnergy_RBV</pv_name>
+    <x>474</x>
+    <y>524</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #858</name>
+    <pv_name>$(P)$(D)15:MaxEnergy</pv_name>
+    <x>432</x>
+    <y>521</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #862</name>
+    <pv_name>$(P)$(D)16:MaxEnergy_RBV</pv_name>
+    <x>474</x>
+    <y>554</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #866</name>
+    <pv_name>$(P)$(D)16:MaxEnergy</pv_name>
+    <x>432</x>
+    <y>551</y>
+    <width>40</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #870</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)CopyMaxEnergy</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)CopyMaxEnergy</pv_name>
+    <text>Copy 1-&gt;All</text>
+    <x>433</x>
+    <y>579</y>
+    <width>80</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #873</name>
+    <text>Maximum</text>
+    <x>451</x>
+    <y>65</y>
+    <width>49</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #876</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)CopyDetectorPolarity</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)CopyDetectorPolarity</pv_name>
+    <text>Copy 1-&gt;All</text>
+    <x>149</x>
+    <y>579</y>
+    <width>80</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #879</name>
+    <text>Polarity</text>
+    <x>167</x>
+    <y>79</y>
+    <width>56</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #882</name>
+    <text>Pre-amp</text>
+    <x>172</x>
+    <y>64</y>
+    <width>49</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #885</name>
+    <pv_name>$(P)$(D)2:DetectorPolarity</pv_name>
+    <x>144</x>
+    <y>132</y>
+    <width>45</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #888</name>
+    <pv_name>$(P)$(D)1:DetectorPolarity</pv_name>
+    <x>144</x>
+    <y>102</y>
+    <width>45</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #891</name>
+    <pv_name>$(P)$(D)3:DetectorPolarity</pv_name>
+    <x>144</x>
+    <y>162</y>
+    <width>45</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #894</name>
+    <pv_name>$(P)$(D)4:DetectorPolarity</pv_name>
+    <x>144</x>
+    <y>192</y>
+    <width>45</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #897</name>
+    <pv_name>$(P)$(D)5:DetectorPolarity</pv_name>
+    <x>144</x>
+    <y>222</y>
+    <width>45</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #900</name>
+    <pv_name>$(P)$(D)6:DetectorPolarity</pv_name>
+    <x>144</x>
+    <y>252</y>
+    <width>45</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #903</name>
+    <pv_name>$(P)$(D)7:DetectorPolarity</pv_name>
+    <x>144</x>
+    <y>282</y>
+    <width>45</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #906</name>
+    <pv_name>$(P)$(D)8:DetectorPolarity</pv_name>
+    <x>144</x>
+    <y>312</y>
+    <width>45</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #909</name>
+    <pv_name>$(P)$(D)9:DetectorPolarity</pv_name>
+    <x>144</x>
+    <y>342</y>
+    <width>45</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #912</name>
+    <pv_name>$(P)$(D)10:DetectorPolarity</pv_name>
+    <x>144</x>
+    <y>372</y>
+    <width>45</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #915</name>
+    <pv_name>$(P)$(D)11:DetectorPolarity</pv_name>
+    <x>144</x>
+    <y>402</y>
+    <width>45</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #918</name>
+    <pv_name>$(P)$(D)12:DetectorPolarity</pv_name>
+    <x>144</x>
+    <y>432</y>
+    <width>45</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #921</name>
+    <pv_name>$(P)$(D)13:DetectorPolarity</pv_name>
+    <x>144</x>
+    <y>462</y>
+    <width>45</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #924</name>
+    <pv_name>$(P)$(D)14:DetectorPolarity</pv_name>
+    <x>144</x>
+    <y>492</y>
+    <width>45</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #927</name>
+    <pv_name>$(P)$(D)15:DetectorPolarity</pv_name>
+    <x>144</x>
+    <y>522</y>
+    <width>45</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #930</name>
+    <pv_name>$(P)$(D)16:DetectorPolarity</pv_name>
+    <x>144</x>
+    <y>552</y>
+    <width>45</width>
+    <height>18</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #933</name>
+    <pv_name>$(P)$(D)2:DetectorPolarity_RBV</pv_name>
+    <x>194</x>
+    <y>134</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #937</name>
+    <pv_name>$(P)$(D)1:DetectorPolarity_RBV</pv_name>
+    <x>194</x>
+    <y>104</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #941</name>
+    <pv_name>$(P)$(D)3:DetectorPolarity_RBV</pv_name>
+    <x>194</x>
+    <y>164</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #945</name>
+    <pv_name>$(P)$(D)4:DetectorPolarity_RBV</pv_name>
+    <x>194</x>
+    <y>194</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #949</name>
+    <pv_name>$(P)$(D)5:DetectorPolarity_RBV</pv_name>
+    <x>194</x>
+    <y>224</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #953</name>
+    <pv_name>$(P)$(D)6:DetectorPolarity_RBV</pv_name>
+    <x>194</x>
+    <y>254</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #957</name>
+    <pv_name>$(P)$(D)7:DetectorPolarity_RBV</pv_name>
+    <x>194</x>
+    <y>284</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #961</name>
+    <pv_name>$(P)$(D)8:DetectorPolarity_RBV</pv_name>
+    <x>194</x>
+    <y>314</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #965</name>
+    <pv_name>$(P)$(D)9:DetectorPolarity_RBV</pv_name>
+    <x>194</x>
+    <y>344</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #969</name>
+    <pv_name>$(P)$(D)10:DetectorPolarity_RBV</pv_name>
+    <x>194</x>
+    <y>374</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #973</name>
+    <pv_name>$(P)$(D)11:DetectorPolarity_RBV</pv_name>
+    <x>194</x>
+    <y>404</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #977</name>
+    <pv_name>$(P)$(D)12:DetectorPolarity_RBV</pv_name>
+    <x>194</x>
+    <y>434</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #981</name>
+    <pv_name>$(P)$(D)13:DetectorPolarity_RBV</pv_name>
+    <x>194</x>
+    <y>464</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #985</name>
+    <pv_name>$(P)$(D)14:DetectorPolarity_RBV</pv_name>
+    <x>194</x>
+    <y>494</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #989</name>
+    <pv_name>$(P)$(D)15:DetectorPolarity_RBV</pv_name>
+    <x>194</x>
+    <y>524</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #993</name>
+    <pv_name>$(P)$(D)16:DetectorPolarity_RBV</pv_name>
+    <x>194</x>
+    <y>554</y>
+    <width>40</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #997</name>
+    <text>MCA</text>
+    <x>587</x>
+    <y>40</y>
+    <width>30</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #1000</name>
+    <text>Energy</text>
+    <x>542</x>
+    <y>79</y>
+    <width>42</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #1003</name>
+    <text>Calibration</text>
+    <x>525</x>
+    <y>65</y>
+    <width>77</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1006</name>
+    <pv_name>$(P)$(D)2:CalibrationEnergy_RBV</pv_name>
+    <x>533</x>
+    <y>134</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1010</name>
+    <pv_name>$(P)$(D)1:CalibrationEnergy_RBV</pv_name>
+    <x>533</x>
+    <y>104</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1014</name>
+    <pv_name>$(P)$(D)3:CalibrationEnergy_RBV</pv_name>
+    <x>533</x>
+    <y>164</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1018</name>
+    <pv_name>$(P)$(D)4:CalibrationEnergy_RBV</pv_name>
+    <x>533</x>
+    <y>194</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1022</name>
+    <pv_name>$(P)$(D)5:CalibrationEnergy_RBV</pv_name>
+    <x>533</x>
+    <y>224</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1026</name>
+    <pv_name>$(P)$(D)6:CalibrationEnergy_RBV</pv_name>
+    <x>533</x>
+    <y>254</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1030</name>
+    <pv_name>$(P)$(D)7:CalibrationEnergy_RBV</pv_name>
+    <x>533</x>
+    <y>284</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1034</name>
+    <pv_name>$(P)$(D)8:CalibrationEnergy_RBV</pv_name>
+    <x>533</x>
+    <y>314</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1038</name>
+    <pv_name>$(P)$(D)9:CalibrationEnergy_RBV</pv_name>
+    <x>533</x>
+    <y>344</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1042</name>
+    <pv_name>$(P)$(D)10:CalibrationEnergy_RBV</pv_name>
+    <x>533</x>
+    <y>374</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1046</name>
+    <pv_name>$(P)$(D)11:CalibrationEnergy_RBV</pv_name>
+    <x>533</x>
+    <y>404</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1050</name>
+    <pv_name>$(P)$(D)12:CalibrationEnergy_RBV</pv_name>
+    <x>533</x>
+    <y>434</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1054</name>
+    <pv_name>$(P)$(D)13:CalibrationEnergy_RBV</pv_name>
+    <x>533</x>
+    <y>464</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1058</name>
+    <pv_name>$(P)$(D)14:CalibrationEnergy_RBV</pv_name>
+    <x>533</x>
+    <y>494</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1062</name>
+    <pv_name>$(P)$(D)15:CalibrationEnergy_RBV</pv_name>
+    <x>533</x>
+    <y>524</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1066</name>
+    <pv_name>$(P)$(D)16:CalibrationEnergy_RBV</pv_name>
+    <x>533</x>
+    <y>554</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #1070</name>
+    <text>Width</text>
+    <x>618</x>
+    <y>79</y>
+    <width>35</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #1073</name>
+    <text>MCA Bin</text>
+    <x>612</x>
+    <y>65</y>
+    <width>49</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1076</name>
+    <pv_name>$(P)$(D)2:MCABinWidth_RBV</pv_name>
+    <x>606</x>
+    <y>134</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1080</name>
+    <pv_name>$(P)$(D)1:MCABinWidth_RBV</pv_name>
+    <x>606</x>
+    <y>104</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1084</name>
+    <pv_name>$(P)$(D)3:MCABinWidth_RBV</pv_name>
+    <x>606</x>
+    <y>164</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1088</name>
+    <pv_name>$(P)$(D)4:MCABinWidth_RBV</pv_name>
+    <x>606</x>
+    <y>194</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1092</name>
+    <pv_name>$(P)$(D)5:MCABinWidth_RBV</pv_name>
+    <x>606</x>
+    <y>224</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1096</name>
+    <pv_name>$(P)$(D)6:MCABinWidth_RBV</pv_name>
+    <x>606</x>
+    <y>254</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1100</name>
+    <pv_name>$(P)$(D)7:MCABinWidth_RBV</pv_name>
+    <x>606</x>
+    <y>284</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1104</name>
+    <pv_name>$(P)$(D)8:MCABinWidth_RBV</pv_name>
+    <x>606</x>
+    <y>314</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1108</name>
+    <pv_name>$(P)$(D)9:MCABinWidth_RBV</pv_name>
+    <x>606</x>
+    <y>344</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1112</name>
+    <pv_name>$(P)$(D)10:MCABinWidth_RBV</pv_name>
+    <x>606</x>
+    <y>374</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1116</name>
+    <pv_name>$(P)$(D)11:MCABinWidth_RBV</pv_name>
+    <x>606</x>
+    <y>404</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1120</name>
+    <pv_name>$(P)$(D)12:MCABinWidth_RBV</pv_name>
+    <x>606</x>
+    <y>434</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1124</name>
+    <pv_name>$(P)$(D)13:MCABinWidth_RBV</pv_name>
+    <x>606</x>
+    <y>464</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1128</name>
+    <pv_name>$(P)$(D)14:MCABinWidth_RBV</pv_name>
+    <x>606</x>
+    <y>494</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1132</name>
+    <pv_name>$(P)$(D)15:MCABinWidth_RBV</pv_name>
+    <x>606</x>
+    <y>524</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1136</name>
+    <pv_name>$(P)$(D)16:MCABinWidth_RBV</pv_name>
+    <x>606</x>
+    <y>554</y>
+    <width>60</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #1140</name>
+    <text>Range</text>
+    <x>769</x>
+    <y>79</y>
+    <width>35</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #1143</name>
+    <text>Dynamic</text>
+    <x>763</x>
+    <y>65</y>
+    <width>49</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1146</name>
+    <pv_name>$(P)$(D)2:DynamicRange_RBV</pv_name>
+    <x>762</x>
+    <y>134</y>
+    <width>50</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1150</name>
+    <pv_name>$(P)$(D)1:DynamicRange_RBV</pv_name>
+    <x>762</x>
+    <y>104</y>
+    <width>50</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1154</name>
+    <pv_name>$(P)$(D)3:DynamicRange_RBV</pv_name>
+    <x>762</x>
+    <y>164</y>
+    <width>50</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1158</name>
+    <pv_name>$(P)$(D)4:DynamicRange_RBV</pv_name>
+    <x>762</x>
+    <y>194</y>
+    <width>50</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1162</name>
+    <pv_name>$(P)$(D)5:DynamicRange_RBV</pv_name>
+    <x>762</x>
+    <y>224</y>
+    <width>50</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1166</name>
+    <pv_name>$(P)$(D)6:DynamicRange_RBV</pv_name>
+    <x>762</x>
+    <y>254</y>
+    <width>50</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1170</name>
+    <pv_name>$(P)$(D)7:DynamicRange_RBV</pv_name>
+    <x>762</x>
+    <y>284</y>
+    <width>50</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1174</name>
+    <pv_name>$(P)$(D)8:DynamicRange_RBV</pv_name>
+    <x>762</x>
+    <y>314</y>
+    <width>50</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1178</name>
+    <pv_name>$(P)$(D)9:DynamicRange_RBV</pv_name>
+    <x>762</x>
+    <y>344</y>
+    <width>50</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1182</name>
+    <pv_name>$(P)$(D)10:DynamicRange_RBV</pv_name>
+    <x>762</x>
+    <y>374</y>
+    <width>50</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1186</name>
+    <pv_name>$(P)$(D)11:DynamicRange_RBV</pv_name>
+    <x>762</x>
+    <y>404</y>
+    <width>50</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1190</name>
+    <pv_name>$(P)$(D)12:DynamicRange_RBV</pv_name>
+    <x>762</x>
+    <y>434</y>
+    <width>50</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1194</name>
+    <pv_name>$(P)$(D)13:DynamicRange_RBV</pv_name>
+    <x>762</x>
+    <y>464</y>
+    <width>50</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1198</name>
+    <pv_name>$(P)$(D)14:DynamicRange_RBV</pv_name>
+    <x>762</x>
+    <y>494</y>
+    <width>50</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1202</name>
+    <pv_name>$(P)$(D)15:DynamicRange_RBV</pv_name>
+    <x>762</x>
+    <y>524</y>
+    <width>50</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #1206</name>
+    <pv_name>$(P)$(D)16:DynamicRange_RBV</pv_name>
+    <x>762</x>
+    <y>554</y>
+    <width>50</width>
+    <height>14</height>
+    <background_color>
+      <color red="218" green="218" blue="218">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+</display>
