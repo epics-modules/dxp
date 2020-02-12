@@ -66,6 +66,7 @@ handel_SRCS += xia_file.c
 
 handel_LIBS_WIN32     += PlxApi
 handel_SYS_LIBS_WIN32 += setupapi User32
+handel_SYS_LIBS_Linux += usb
 handel_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 ifeq (win32-x86, $(findstring win32-x86, $(T_A)))
