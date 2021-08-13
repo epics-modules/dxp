@@ -431,9 +431,9 @@ private:
     epicsUInt32 *currentBuf;
     int traceLength;
     int baselineLength;
-    epicsInt32 *traceBuffer;
+    unsigned long *traceBuffer;
     epicsFloat64 *traceTimeBuffer;
-    epicsInt32 *baselineBuffer;
+    unsigned long *baselineBuffer;
     epicsFloat64 *baselineEnergyBuffer;
     epicsFloat64 *spectrumXAxisBuffer;
     
@@ -693,7 +693,7 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     if (xiastatus != XIA_SUCCESS) printf("Error calling xiaGetSpecialRunData for adc_trace_length");
 
     /* Allocate a buffer for the trace data */
-    this->traceBuffer = (epicsInt32 *)malloc(this->traceLength * sizeof(epicsInt32));
+    this->traceBuffer = (unsigned long *)malloc(this->traceLength * sizeof(unsigned long);
 
     /* Allocate a buffer for the trace time array */
     this->traceTimeBuffer = (epicsFloat64 *)malloc(this->traceLength * sizeof(epicsFloat64));
@@ -703,7 +703,7 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     if (xiastatus != XIA_SUCCESS) printf("Error calling xiaGetRunData for baseline_length");
 
     /* Allocate a buffer for the baseline histogram data */
-    this->baselineBuffer = (epicsInt32 *)malloc(this->baselineLength * sizeof(epicsInt32));
+    this->baselineBuffer = (unsigned long *)malloc(this->baselineLength * sizeof(unsigned long));
 
     /* Allocate a buffer for the baseline energy array */
     this->baselineEnergyBuffer = (epicsFloat64 *)malloc(this->baselineLength * sizeof(epicsFloat64));
@@ -2572,7 +2572,8 @@ asynStatus NDDxp::getTrace(asynUser* pasynUser, int addr,
         status = this->xia_checkError( pasynUser, xiastatus, "adc_trace" );
         if (status == asynError) return status;
 
-        memcpy(data, this->traceBuffer, *actualLen * sizeof(epicsInt32));
+        // Copy from traceBuffer (unsigned long) to data (epicsInt32)
+        for (j=0; j<*actualLen; j++) data[j] = this->traceBuffer[j];
         
         if (newTraceTime) {
             setIntegerParam(channel, NDDxpNewTraceTime, 0);  /* Clear flag */
@@ -2615,7 +2616,8 @@ asynStatus NDDxp::getBaselineHistogram(asynUser* pasynUser, int addr,
         status = this->xia_checkError(pasynUser, xiastatus, "baseline" );
         if (status == asynError) return status;
 
-        memcpy(data, this->baselineBuffer, *actualLen * sizeof(epicsInt32));
+        // Copy from baselineBuffer (unsigned long) to data (epicsInt32)
+        for (j=0; j<*actualLen; j++) data[j] = this->baselineBuffer[j];
         
         /* Compute the energy increment per bin */
         if ((this->deviceType == NDDxpModelXMAP) ||
