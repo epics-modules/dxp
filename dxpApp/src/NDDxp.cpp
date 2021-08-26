@@ -693,7 +693,7 @@ NDDxp::NDDxp(const char *portName, int nChannels, int maxBuffers, size_t maxMemo
     if (xiastatus != XIA_SUCCESS) printf("Error calling xiaGetSpecialRunData for adc_trace_length");
 
     /* Allocate a buffer for the trace data */
-    this->traceBuffer = (unsigned long *)malloc(this->traceLength * sizeof(unsigned long);
+    this->traceBuffer = (unsigned long *)malloc(this->traceLength * sizeof(unsigned long));
 
     /* Allocate a buffer for the trace time array */
     this->traceTimeBuffer = (epicsFloat64 *)malloc(this->traceLength * sizeof(epicsFloat64));
@@ -2573,7 +2573,7 @@ asynStatus NDDxp::getTrace(asynUser* pasynUser, int addr,
         if (status == asynError) return status;
 
         // Copy from traceBuffer (unsigned long) to data (epicsInt32)
-        for (j=0; j<*actualLen; j++) data[j] = this->traceBuffer[j];
+        for (j=0; j<(int)*actualLen; j++) data[j] = this->traceBuffer[j];
         
         if (newTraceTime) {
             setIntegerParam(channel, NDDxpNewTraceTime, 0);  /* Clear flag */
@@ -2617,7 +2617,7 @@ asynStatus NDDxp::getBaselineHistogram(asynUser* pasynUser, int addr,
         if (status == asynError) return status;
 
         // Copy from baselineBuffer (unsigned long) to data (epicsInt32)
-        for (j=0; j<*actualLen; j++) data[j] = this->baselineBuffer[j];
+        for (j=0; j<(int)*actualLen; j++) data[j] = this->baselineBuffer[j];
         
         /* Compute the energy increment per bin */
         if ((this->deviceType == NDDxpModelXMAP) ||
