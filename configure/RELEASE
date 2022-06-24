@@ -13,12 +13,12 @@ SUPPORT=/corvette/home/epics/devel
 #If using the sequencer, point SNCSEQ at its top directory:
 SNCSEQ=$(SUPPORT)/seq-2-2-5
 
-MCA=$(SUPPORT)/mca-7-8
-DXP=$(SUPPORT)/dxp-5-0
+MCA=$(SUPPORT)/mca-7-9
+DXP=$(SUPPORT)/dxp-6-0
 
 # dxp requires areaDetector, and areaDetector/configure/RELEASE_PRODS.local already defines
 # ASYN, CALC, etc.
-AREA_DETECTOR=$(SUPPORT)/areaDetector-3-8
+AREA_DETECTOR=$(SUPPORT)/areaDetector-3-12-1
 -include $(TOP)/../RELEASE.$(EPICS_HOST_ARCH).local
 -include $(AREA_DETECTOR)/configure/RELEASE_PRODS.local
 
