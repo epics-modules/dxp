@@ -74,9 +74,9 @@ HANDEL_IMPORT int HANDEL_API xiaRemoveDetector(char *alias);
 HANDEL_IMPORT int HANDEL_API xiaDetectorFromDetChan(int detChan, char *alias);
 HANDEL_IMPORT int HANDEL_API xiaNewFirmware(char *alias);
 HANDEL_IMPORT int HANDEL_API xiaAddFirmwareItem(char *alias, char *name, void *value);
-HANDEL_IMPORT int HANDEL_API xiaModifyFirmwareItem(char *alias, unsigned short decimation, 
+HANDEL_IMPORT int HANDEL_API xiaModifyFirmwareItem(char *alias, unsigned short decimation,
 						   char *name, void *value);
-HANDEL_IMPORT int HANDEL_API xiaGetFirmwareItem(char *alias, unsigned short decimation, 
+HANDEL_IMPORT int HANDEL_API xiaGetFirmwareItem(char *alias, unsigned short decimation,
 						char *name, void *value);
 HANDEL_IMPORT int HANDEL_API xiaGetNumFirmwareSets(unsigned int *numFirmware);
 HANDEL_IMPORT int HANDEL_API xiaGetFirmwareSets(char *firmware[]);
@@ -129,16 +129,12 @@ HANDEL_IMPORT int HANDEL_API xiaSetLogLevel(int level);
 HANDEL_IMPORT int HANDEL_API xiaSetLogOutput(char *fileName);
 HANDEL_IMPORT int HANDEL_API xiaCloseLog(void);
 
-  HANDEL_IMPORT int HANDEL_API xiaSetIOPriority(int pri);
+HANDEL_IMPORT int HANDEL_API xiaSetIOPriority(int pri);
 
-  HANDEL_IMPORT void HANDEL_API xiaGetVersionInfo(int *rel, int *min, int *maj,
+HANDEL_IMPORT void HANDEL_API xiaGetVersionInfo(int *rel, int *min, int *maj,
 												  char *pretty);
 
-
-#ifdef _DEBUG
-  HANDEL_IMPORT void HANDEL_API xiaUnitTests(unsigned short tests);
-#endif
-
+HANDEL_IMPORT char* HANDEL_API xiaGetErrorText(int errorcode);
 
 
 
@@ -197,8 +193,8 @@ HANDEL_IMPORT int HANDEL_API xiaGetNumParams();
 HANDEL_IMPORT int HANDEL_API xiaGetParamData();
 HANDEL_IMPORT int HANDEL_API xiaGetParamName();
 HANDEL_IMPORT int HANDEL_API xiaBoardOperation();
-  HANDEL_IMPORT int HANDEL_API xiaMemoryOperation();
-  HANDEL_IMPORT int HANDEL_API xiaCommandOperation();
+HANDEL_IMPORT int HANDEL_API xiaMemoryOperation();
+HANDEL_IMPORT int HANDEL_API xiaCommandOperation();
 HANDEL_IMPORT int HANDEL_API xiaExit();
 
 HANDEL_IMPORT int HANDEL_API xiaEnableLogOutput();
@@ -207,9 +203,10 @@ HANDEL_IMPORT int HANDEL_API xiaSetLogLevel();
 HANDEL_IMPORT int HANDEL_API xiaSetLogOutput();
 HANDEL_IMPORT int HANDEL_API xiaCloseLog();
 
-  HANDEL_IMPORT int HANDEL_API xiaSetIOPriority();
+HANDEL_IMPORT int HANDEL_API xiaSetIOPriority();
 
-  HANDEL_IMPORT void HANDEL_API xiaGetVersionInfo();
+HANDEL_IMPORT void HANDEL_API xiaGetVersionInfo();
+HANDEL_IMPORT char* HANDEL_API xiaGetErrorText();
 
 
 #endif                                  /*   end if _HANDEL_PROTO_ */

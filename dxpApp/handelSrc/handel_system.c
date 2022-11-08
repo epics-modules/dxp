@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2002-2004 X-ray Instrumentation Associates
- * Copyright (c) 2005-2016 XIA LLC
+ * Copyright (c) 2005-2020 XIA LLC
  * All rights reserved
  *
  * Redistribution and use in source and binary forms,
@@ -978,7 +978,6 @@ HANDEL_EXPORT int HANDEL_API xiaBoardOperation(int detChan, char *name, void *va
  */
 HANDEL_EXPORT int HANDEL_API xiaMemoryOperation(int detChan, char *name, void *value)
 {
-    int statusX;
     int status;
 
     char *nameX = NULL;
@@ -1029,19 +1028,19 @@ HANDEL_EXPORT int HANDEL_API xiaMemoryOperation(int detChan, char *name, void *v
     sprintf(nameX, "%s:%lx:%lu", type, addr, len);
 
     if (isRead) {
-        statusX = dxp_read_memory(&detChan, nameX, (unsigned long *)value);
+        status = dxp_read_memory(&detChan, nameX, (unsigned long *)value);
 
     } else {
-        statusX = dxp_write_memory(&detChan, nameX, (unsigned long *)value);
+        status = dxp_write_memory(&detChan, nameX, (unsigned long *)value);
     }
 
     handel_md_free(nameX);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error reading/writing memory ('%s') for detChan '%d'",
                 name, detChan);
-        xiaLogError("xiaMemoryOperation", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        xiaLogError("xiaMemoryOperation", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -1060,7 +1059,7 @@ HANDEL_EXPORT int HANDEL_API xiaCommandOperation(int detChan, byte_t cmd,
                                                  unsigned int lenS, byte_t *send,
                                                  unsigned int lenR, byte_t *recv)
 {
-    int statusX;
+    int status;
 
     if (lenS > 0) {
         ASSERT(send != NULL);
@@ -1070,11 +1069,11 @@ HANDEL_EXPORT int HANDEL_API xiaCommandOperation(int detChan, byte_t cmd,
         ASSERT(recv != NULL);
     }
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, recv);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, recv);
 
-    if (statusX != DXP_SUCCESS) {
-        xiaLogError("xiaCommandOperation", "Error executing command", XIA_XERXES);
-        return XIA_XERXES;
+    if (status != DXP_SUCCESS) {
+        xiaLogError("xiaCommandOperation", "Error executing command", status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -1086,15 +1085,15 @@ HANDEL_EXPORT int HANDEL_API xiaCommandOperation(int detChan, byte_t cmd,
  */
 HANDEL_EXPORT int HANDEL_API xiaSetIOPriority(int pri)
 {
-    int statusX;
+    int status;
 
 
-    statusX = dxp_set_io_priority(&pri);
+    status = dxp_set_io_priority(&pri);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error setting priority '%#x'", pri);
-        xiaLogError("xiaSetIOPriority", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        xiaLogError("xiaSetIOPriority", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;

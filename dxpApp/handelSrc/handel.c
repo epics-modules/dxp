@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2002-2004 X-ray Instrumentation Associates
- * Copyright (c) 2005-2015 XIA LLC
+ * Copyright (c) 2005-2020 XIA LLC
  * All rights reserved
  *
  * Redistribution and use in source and binary forms,
@@ -165,9 +165,9 @@ HANDEL_EXPORT int HANDEL_API xiaInitHandel(void)
             /* Use printf() here since dxp_md_error() won't be properly initialized until
              * I assign the function pointers to the imported utils variable
              */
-            printf("[ERROR] [%d] %s: %s\n", XIA_XERXES, "xiaInitHandel",
+            printf("[ERROR] [%d] %s: %s\n", status, "xiaInitHandel",
                    "Unable to initialize XerXes libraries\n");
-            return XIA_XERXES;
+            return status;
         }
 
         /* Make our function pointers equal to XerXes function pointers using the

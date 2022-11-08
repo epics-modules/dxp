@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2004 X-ray Instrumentation Associates
- *               2005-2012 XIA LLC
+ *               2005-2020 XIA LLC
  * All rights reserved
  *
  * Redistribution and use in source and binary forms,
@@ -38,138 +38,91 @@
 #ifndef XERXES_ERROR_H
 #define XERXES_ERROR_H
 
-#include "xerxesdef.h"
-
 #define DXP_SUCCESS            0
 
-/* I/O level error codes 1-100 */
-#define DXP_MDOPEN             1
-#define DXP_MDIO               2
-#define DXP_MDINITIALIZE       3
-#define DXP_MDLOCK			   4
-#define DXP_MDFILEIO		   5
-#define DXP_MDTIMEOUT          6
-#define DXP_MDSIZE             7
-#define DXP_MDOVERFLOW         8
-#define DXP_MDUNKNOWN          9
-#define DXP_MDCLOSE           10
-#define DXP_MDNOHANDLE        11
-#define DXP_MDINVALIDPRIORITY 12
-#define DXP_MDPRIORITY        13
-#define DXP_MDINVALIDNAME     14
-#define DXP_MDNOMEM           15
-#define DXP_RW_MISMATCH       16
-#define DXP_REWRITE_FAILURE   17 /* Couldn't set parameter even after n iterations. */
-#define DXP_MD_TARGET_ADDR    18
+/* I/O level error codes 4001-4100 */
+#define DXP_MDOPEN             4001 /* Error opening port for communication */
+#define DXP_MDIO               4002 /* Device IO error */
+#define DXP_MDINITIALIZE       4003 /* Error configurting port during initialization */
+#define DXP_MDSIZE             4007 /* Incoming data packet length larger than requested */
+#define DXP_MDUNKNOWN          4009 /* Unknown IO function */
+#define DXP_MDCLOSE            4010 /* Error closing connection */
+#define DXP_MDINVALIDPRIORITY  4012 /* Invalid priority type */
+#define DXP_MDPRIORITY         4013 /* Error setting priority */
+#define DXP_MDINVALIDNAME      4014 /* Error parsing IO name */
+#define DXP_MD_TARGET_ADDR     4018 /* Invalid target address */
+#define DXP_OPEN_EPP           4019 /* Unable to open EPP port */
+#define DXP_BAD_IONAME         4020 /* Invalid io name format */
+#define DXP_UNKONWN_BAUD       4020 /* Unknown baud rate */
 
-/* Primitive level error codes (due to mdio failures) 101-200 */
-#define DXP_WRITE_TSAR       101
-#define DXP_WRITE_CSR        102
-#define DXP_WRITE_WORD       103
-#define DXP_READ_WORD        104
-#define DXP_WRITE_BLOCK      105
-#define DXP_READ_BLOCK       106
-#define DXP_DISABLE_LAM      107
+/* Saturn specific error codes */
+#define DXP_WRITE_TSAR       4101 /* Error writing TSAR register */
+#define DXP_WRITE_CSR        4102 /* Error writing CSR register */
+#define DXP_WRITE_WORD       4103 /* Error writing single word */
+#define DXP_READ_WORD        4104 /* Error reading single word */
+#define DXP_WRITE_BLOCK      4105 /* Error writing block data */
+#define DXP_READ_BLOCK       4106 /* Error reading block data */
+#define DXP_READ_CSR         4110 /* Error reading CSR register */
+#define DXP_WRITE_FIPPI      4111 /* Error writing to FIPPI */
+#define DXP_WRITE_DSP        4112 /* Error writing to DSP */
+#define DXP_DSPSLEEP		 4115 /* Error with DSP Sleep */
+#define DXP_NOFIPPI			 4116 /* No valid FiPPI defined */
+#define DXP_FPGADOWNLOAD     4117 /* Error downloading FPGA */
+#define DXP_DSPLOAD          4118 /* Error downloading DSP */
+#define DXP_DSPACCESS        4119 /* Specified DSP parameter is read-only */
+#define DXP_DSPPARAMBOUNDS   4120 /* DSP parameter value is out of range */
+#define DXP_NOCONTROLTYPE    4122 /* Unknown control task */
+#define DXP_CONTROL_TASK     4123 /* Control task parameter error */
 
-/* Changed from DXP_CLEAR_LAM to DXP_CLR_LAM due to a conflict with an existing
- * function pointer
- */
-#define DXP_CLR_LAM          108
-#define DXP_TEST_LAM         109
-#define DXP_READ_CSR         110
-#define DXP_WRITE_FIPPI      111
-#define DXP_WRITE_DSP        112
-#define DXP_WRITE_DATA       113
-#define DXP_READ_DATA        114
-#define DXP_ENABLE_LAM       115
-#define DXP_READ_GSR         116
-#define DXP_WRITE_GCR        117
-#define DXP_WRITE_WCR        118
-#define DXP_READ_WCR         119
-#define DXP_WRITE_MMU        120
-#define DXP_CHECKSUM         121
-#define DXP_BAD_ADDRESS      122
-#define DXP_BAD_BIT          123 /* Requested bit is out-of-range */
+/* microDXP errors */
+#define DXP_STATUS_ERROR     4140 /* microDXP device status error */
+#define DXP_DSP_ERROR        4141 /* microDXP DSP status error */
+#define DXP_PIC_ERROR        4142 /* microDXP PIC status error */
+#define DXP_UDXP_RESPONSE    4143 /* microDXP response error */
+#define DXP_MISSING_ESC      4144 /* microDXP response is missing ESCAPE char */
 
-/* DSP/FIPPI level error codes 201-300 */
-#define DXP_MEMERROR         201
-#define DXP_DSPRUNERROR      202
-#define DXP_FPGADOWNLOAD     203
-#define DXP_DSPDOWNLOAD      204
-#define DXP_INTERNAL_GAIN    205
-#define DXP_RESET_WARNING    206
-#define DXP_DETECTOR_GAIN    207
-#define DXP_NOSYMBOL         208
-#define DXP_SPECTRUM         209
-#define DXP_DSPLOAD          210
-#define DXP_DSPPARAMS        211
-#define DXP_DSPACCESS        212
-#define DXP_DSPPARAMBOUNDS   213
-#define DXP_ADC_RUNACTIVE    214
-#define DXP_ADC_READ		 215
-#define DXP_ADC_TIMEOUT      216
-#define DXP_ALLOCMEM         217
-#define DXP_NOCONTROLTYPE    218
-#define DXP_NOFIPPI			 219
-#define DXP_DSPSLEEP		 220
-#define DXP_TIMEOUT          221
-#define DXP_DSP_RETRY        222 /* DSP failed to download after multiple attempts */
+/* DSP/FIPPI level error codes 4201-4300 */
+#define DXP_DSPRUNERROR      4201 /* Error decoding run error */
+#define DXP_NOSYMBOL         4202 /* Unknown DSP parameter */
+#define DXP_TIMEOUT          4203 /* Time out waiting for DSP to be ready */
+#define DXP_DSP_RETRY        4204 /* DSP failed to download after multiple attempts */
+#define DXP_CHECKSUM         4205 /* Error verifing checksum */
+#define DXP_BAD_BIT          4206 /* Requested bit is out-of-range */
+#define DXP_RUNACTIVE		 4207 /* Run already active in module */
+#define DXP_INVALID_STRING   4208 /* Invalid memory string format */
+#define DXP_UNIMPLEMENTED    4209 /* Requested function is unimplemented */
+#define DXP_MEMORY_LENGTH    4210 /* Invalid memory length */
+#define DXP_MEMORY_BLK_SIZE  4211 /* Invalid memory block size */
+#define DXP_UNKNOWN_MEM      4212 /* Unknown memory type */
+#define DXP_UNKNOWN_FPGA     4213 /* Unknown FPGA type */
+#define DXP_FPGA_TIMEOUT     4214 /* Time out downloading FPGA */
+#define DXP_APPLY_STATUS     4215 /* Error applying change */
+#define DXP_INVALID_LENGTH   4216 /* Specified length is invalid */
+#define DXP_NO_SCA           4217 /* No SCAs defined for the specified channel */
+#define DXP_FPGA_CRC         4218 /* CRC error after FPGA downloaded */
+#define DXP_UNKNOWN_REG      4219 /* Unknown register */
+#define DXP_OPEN_FILE        4220 /* UNable to open firmware file */
+#define DXP_REWRITE_FAILURE  4221 /* Couldn't set parameter even after n iterations. */
 
+/* Xerxes onfiguration errors 4301-4400 */
+#define DXP_BAD_SYSTEMITEM   4301 /* Invalid system item format */
+#define DXP_MAX_MODULES      4302 /* Too many modules specified */
+#define DXP_NODETCHAN        4303 /* Detector channel is unknown */
+#define DXP_NOIOCHAN         4304 /* IO Channel is unknown */
+#define DXP_NOMODCHAN        4305 /* Modchan is unknown */
+#define DXP_NEGBLOCKSIZE     4306 /* Negative block size unsupported */
+#define DXP_INITIALIZE	     4307 /* Initialization error */
+#define DXP_UNKNOWN_BTYPE    4308 /* Unknown board type */
+#define DXP_BADCHANNEL       4309 /* Invalid channel number */
+#define DXP_NULL             4310 /* Parameter cannot be NULL */
+#define DXP_MALFORMED_FILE   4311 /* Malformed firmware file */
+#define DXP_UNKNOWN_CT       4312 /* Unknown control task */
 
-/* Configuration errors  301-400 */
-#define DXP_BAD_PARAM        301
-#define DXP_NODECIMATION     302
-#define DXP_OPEN_FILE        303
-#define DXP_NORUNTASKS       304
-#define DXP_OUTPUT_UNDEFINED 305
-#define DXP_INPUT_UNDEFINED  306
-#define DXP_ARRAY_TOO_SMALL  307
-#define DXP_NOCHANNELS       308
-#define DXP_NODETCHAN        309
-#define DXP_NOIOCHAN         310
-#define DXP_NOMODCHAN        311
-#define DXP_NEGBLOCKSIZE     312
-#define DXP_FILENOTFOUND     313
-#define DXP_NOFILETABLE		 314
-#define DXP_INITIALIZE	     315
-#define DXP_UNKNOWN_BTYPE    316
-#define DXP_NOMATCH          317
-#define DXP_BADCHANNEL       318
-#define DXP_DSPTIMEOUT       319
-#define DXP_INITORDER        320
-#define DXP_UDXPS            321
-#define DXP_NOSUPPORT        322
-#define DXP_WRONG_FIRMWARE   323
-#define DXP_UDXP             324
-#define DXP_NULL             325
-#define DXP_BUF_LEN          326
-#define DXP_UNKNOWN_MEM      327
-#define DXP_UNKNOWN_ELEM     328
-#define DXP_UNKNOWN_FPGA     329
-#define DXP_FPGA_TIMEOUT     330
-#define DXP_MALFORMED_FILE   331
-#define DXP_UNKNOWN_CT       332 /* Unknown control task */
-#define DXP_APPLY_STATUS     333
-#define DXP_INVALID_LENGTH   334 /* Specified length is invalid */
-#define DXP_NO_SCA           335 /* No SCAs defined for the specified channel */
-#define DXP_FPGA_CRC         336 /* CRC error after FPGA downloaded */
-#define DXP_UNKNOWN_REG      337 /* Unknown register */
-
-/* Host machine error codes 401-500 */
-#define DXP_NOMEM            401
-#define DXP_CLOSE_FILE       403
-#define DXP_INDEXOOB         404
-#define DXP_RUNACTIVE		 405
-#define DXP_MEMINUSE         406
-#define DXP_INVALID_STRING   407
-#define DXP_UNIMPLEMENTED    408
-#define DXP_MISSING_ESC      409
-#define DXP_MEMORY_OOR       410
-#define DXP_MEMORY_LENGTH    411
-#define DXP_MEMORY_BLK_SIZE  412
-#define DXP_WIN32_API        413
+/* Host machine error codes 4401-4500 */
+#define DXP_NOMEM            4401 /* Error allocating memory */
+#define DXP_WIN32_API        4402 /* Windows API error */
 
 /* Misc error codes 501-600 */
-#define DXP_LOG_LEVEL		 501	/* Log level invalid */
+#define DXP_LOG_LEVEL		 4501 /* Log level invalid */
 
 #endif /* XERXES_ERRORS_H */

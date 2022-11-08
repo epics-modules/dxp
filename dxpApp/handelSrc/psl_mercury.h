@@ -113,7 +113,6 @@ static unsigned long MERCURY_STATS_CHAN_OFFSET[] = {
 #define MAPPINGMODE_SCA  2
 #define MAPPINGMODE_LIST 3
 
-
 /* Clock speed */
 #define MERCURY_CLOCK_SPEED 50.0e6
 
@@ -137,9 +136,55 @@ static unsigned long MERCURY_STATS_CHAN_OFFSET[] = {
 /* Address to read out USB version */
 #define USB_VERSION_ADDRESS     0x14000000
 
+/* Mercury OEM  */
+#define MERCURY_MAX_INPUTATTEN  2
+#define MERCURY_MAX_INPUTTERM   1
+#define MERCURY_MAX_TAUCTRL     7
+
+/* Switch Gain SWGAIN to Variable Gain (V/V) steps */
+static const double SWITCHED_DB_LOWEST = 1.7;
+static const double SWITCHED_DB_SPACING = 1.7;
+
+
 /* Memory Management */
 DXP_MD_ALLOC  mercury_psl_md_alloc;
 DXP_MD_FREE   mercury_psl_md_free;
+
+
+/* Struct for matching tracetype names to TRACETYPE parameter */
+typedef struct _MercuryTraceType{
+  char  *name;
+  short TRACETYPE;
+} MercuryTraceType;
+
+
+/* These are the allowed trace types */
+static MercuryTraceType traceTypesMercuryOem[] = {
+    {"adc_trace",                      0x0},
+    {"adc_average",                    0x1},
+    {"fast_filter",                    0x2},
+    {"raw_intermediate_filter",        0x3},
+    {"baseline_samples",               0x4},
+    {"baseline_average",               0x5},
+    {"scaled_intermediate_filter",     0x6},
+    {"raw_slow_filter",                0x7},
+    {"scaled_slow_filter",             0x8},
+    /* NOTE that the last tracetype (DEBUG_TRACE_TYPE) is used for debugging
+     * pslDoTrace does not set the TRACETYPE DSP paramter if this is passed in.
+     */
+    {"debug",                          0xF},
+};
+
+static MercuryTraceType traceTypesMercury[] = {
+    {"adc_trace",                      0x0},
+    {"baseline_history",               0x7},
+    {"trigger_filter",                 0x4},
+    {"baseline_filter",                0x8},
+    {"energy_filter",                  0xA},
+    {"baseline_samples",               0x6},
+    {"energy_samples",                 0xB},
+    {"debug",                          0xF},
+};
 
 
 #endif /* __PSL_MERCURY_H__ */

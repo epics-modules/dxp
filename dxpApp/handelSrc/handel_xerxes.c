@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2002-2004 X-ray Instrumentation Associates
- * Copyright (c) 2005-2017 XIA LLC
+ * Copyright (c) 2005-2020 XIA LLC
  * All rights reserved
  *
  * Redistribution and use in source and binary forms,
@@ -113,7 +113,7 @@ HANDEL_STATIC int xia__SetupSingleChan(Module *module, unsigned int detChan,
  */
 HANDEL_SHARED int HANDEL_API xiaBuildXerxesConfig(void)
 {
-    int statusX;
+
     int status;
 
     boolean_t found;
@@ -122,12 +122,12 @@ HANDEL_SHARED int HANDEL_API xiaBuildXerxesConfig(void)
     Module *current = NULL;
 
 
-    statusX = dxp_init_ds();
+    status = dxp_init_ds();
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         xiaLogError("xiaBuildXerxesConfig", "Error initializing Xerxes internal "
-                    "data structures", XIA_XERXES);
-        return XIA_XERXES;
+                    "data structures", status);
+        return status;
     }
 
 
@@ -257,7 +257,7 @@ HANDEL_SHARED int HANDEL_API xiaBuildXerxesConfig(void)
  */
 HANDEL_SHARED int HANDEL_API xiaUserSetup(void)
 {
-    int statusX;
+
     int status;
 
     unsigned int i;
@@ -271,12 +271,12 @@ HANDEL_SHARED int HANDEL_API xiaUserSetup(void)
 
     XiaDefaults *defaults = NULL;
 
-    statusX = dxp_user_setup();
+    status = dxp_user_setup();
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         xiaLogError("xiaUserSetup", "Error downloading firmware via Xerxes.",
-                    XIA_XERXES);
-        return XIA_XERXES;
+                    status);
+        return status;
     }
 
     module = xiaGetModuleHead();
@@ -737,7 +737,7 @@ HANDEL_STATIC int xia__GetMMUName(Module *m, int channel, char *mmuName,
 HANDEL_STATIC int xia__AddSystemFPGA(Module *module, char *sysFPGAName,
                                      char *rawFilename)
 {
-    int statusX;
+    int status;
 
     char *sysFPGAStr[1];
 
@@ -759,14 +759,14 @@ HANDEL_STATIC int xia__AddSystemFPGA(Module *module, char *sysFPGAName,
 
     strncpy(sysFPGAStr[0], sysFPGAName, strlen(sysFPGAName) + 1);
 
-    statusX = dxp_add_board_item("system_fpga", (char **)sysFPGAStr);
+    status = dxp_add_board_item("system_fpga", (char **)sysFPGAStr);
 
     handel_md_free(sysFPGAStr[0]);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         xiaLogError("xia__AddSystemFPGA", "Error adding 'system_fpga' board item",
-                    XIA_XERXES);
-        return XIA_XERXES;
+                    status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -928,7 +928,7 @@ HANDEL_STATIC int xia__GetSystemDSPName(Module *module, char *detType,
 HANDEL_STATIC int xia__AddSystemDSP(Module *module, char *sysDSPName,
                                     char *rawFilename)
 {
-    int statusX;
+    int status;
 
     char *sysDSPStr[1];
 
@@ -950,14 +950,14 @@ HANDEL_STATIC int xia__AddSystemDSP(Module *module, char *sysDSPName,
 
     strncpy(sysDSPStr[0], sysDSPName, strlen(sysDSPName) + 1);
 
-    statusX = dxp_add_board_item("system_dsp", (char **)sysDSPStr);
+    status = dxp_add_board_item("system_dsp", (char **)sysDSPStr);
 
     handel_md_free(sysDSPStr[0]);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         xiaLogError("xiaAddSystemDSP", "Error adding 'system_dsp' board item",
-                    XIA_XERXES);
-        return XIA_XERXES;
+                    status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -1041,7 +1041,7 @@ HANDEL_STATIC int xia__GetFiPPIAName(Module *module, char *detType,
 HANDEL_STATIC int xia__AddFiPPIA(Module *module, char *sysFippiAName,
                                  char *rawFilename)
 {
-    int statusX;
+    int status;
 
     char *sysFippiAStr[1];
 
@@ -1062,14 +1062,14 @@ HANDEL_STATIC int xia__AddFiPPIA(Module *module, char *sysFippiAName,
 
     strncpy(sysFippiAStr[0], sysFippiAName, strlen(sysFippiAName) + 1);
 
-    statusX = dxp_add_board_item("fippi_a", (char **)sysFippiAStr);
+    status = dxp_add_board_item("fippi_a", (char **)sysFippiAStr);
 
     handel_md_free(sysFippiAStr[0]);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         xiaLogError("xiaAddSystemFippiA", "Error adding 'fippi_a' board item",
-                    XIA_XERXES);
-        return XIA_XERXES;
+                    status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -1082,7 +1082,7 @@ HANDEL_STATIC int xia__AddFiPPIA(Module *module, char *sysFippiAName,
 HANDEL_STATIC int xia__AddXerxesSysItems(void)
 {
     int i;
-    int statusX;
+    int status;
 
 
     /* Xerxes requires us to add all of allowed/known board types to the
@@ -1090,13 +1090,13 @@ HANDEL_STATIC int xia__AddXerxesSysItems(void)
      * passed in to the build. For more information, see the top-level Makefile.
      */
     for (i = 0; i < N_KNOWN_BOARDS; i++) {
-        statusX = dxp_add_system_item(BOARD_LIST[i], (char **)SYS_NULL);
+        status = dxp_add_system_item(BOARD_LIST[i], (char **)SYS_NULL);
 
-        if (statusX != DXP_SUCCESS) {
+        if (status != DXP_SUCCESS) {
             sprintf(info_string, "Error adding Xerxes system item '%s'",
                     BOARD_LIST[i]);
-            xiaLogError("xia__AddXerxesSysItems", info_string, XIA_XERXES);
-            return XIA_XERXES;
+            xiaLogError("xia__AddXerxesSysItems", info_string, status);
+            return status;
         }
     }
 
@@ -1110,7 +1110,7 @@ HANDEL_STATIC int xia__AddXerxesSysItems(void)
  */
 HANDEL_STATIC int xia__AddXerxesBoardType(Module *m)
 {
-    int statusX;
+    int status;
 
     char **type = NULL;
 
@@ -1139,16 +1139,16 @@ HANDEL_STATIC int xia__AddXerxesBoardType(Module *m)
 
     strcpy(type[0], m->type);
 
-    statusX = dxp_add_board_item("board_type", type);
+    status = dxp_add_board_item("board_type", type);
 
     handel_md_free(type[0]);
     handel_md_free(type);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error adding board_type '%s' to Xerxes for alias '%s'",
                 m->type, m->alias);
-        xiaLogError("xia__AddXerxesBoardType", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        xiaLogError("xia__AddXerxesBoardType", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -1161,7 +1161,7 @@ HANDEL_STATIC int xia__AddXerxesBoardType(Module *m)
 HANDEL_STATIC int xia__AddXerxesInterface(Module *m)
 {
     int status;
-    int statusX;
+
     size_t interfLen = 0;
 
     char *interf[2];
@@ -1209,17 +1209,17 @@ HANDEL_STATIC int xia__AddXerxesInterface(Module *m)
         return status;
     }
 
-    statusX = dxp_add_board_item("interface", (char **)interf);
+    status = dxp_add_board_item("interface", (char **)interf);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error adding interface '%s, %s' to Xerxes for alias "
                 "'%s'", interf[0], interf[1], m->alias);
-        xiaLogError("xia__AddXerxesInterface", info_string, XIA_XERXES);
+        xiaLogError("xia__AddXerxesInterface", info_string, status);
 
         handel_md_free(interf[0]);
         handel_md_free(interf[1]);
 
-        return XIA_XERXES;
+        return status;
     }
 
     handel_md_free(interf[0]);
@@ -1235,7 +1235,7 @@ HANDEL_STATIC int xia__AddXerxesInterface(Module *m)
 HANDEL_STATIC int xia__AddXerxesModule(Module *m)
 {
     int status;
-    int statusX;
+
 
     unsigned int i;
     unsigned int j;
@@ -1307,7 +1307,7 @@ HANDEL_STATIC int xia__AddXerxesModule(Module *m)
         sprintf(modStr[i + 2], "%d", m->channels[i]);
     }
 
-    statusX = dxp_add_board_item("module", modStr);
+    status = dxp_add_board_item("module", modStr);
 
     for (i = 0; i < m->number_of_channels; i++) {
         handel_md_free(modStr[i + 2]);
@@ -1315,11 +1315,11 @@ HANDEL_STATIC int xia__AddXerxesModule(Module *m)
 
     handel_md_free(modStr);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error adding module to Xerxes for alias '%s'",
                 m->alias);
-        xiaLogError("xia__AddXerxesModule", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        xiaLogError("xia__AddXerxesModule", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -1351,7 +1351,7 @@ HANDEL_STATIC int xia__CopyChanString(Module *m, char *chan)
 HANDEL_STATIC int xia__DoMMUConfig(Module *m)
 {
     int status;
-    int statusX;
+
 
     char name[MAXFILENAME_LEN];
     char rawName[MAXFILENAME_LEN];
@@ -1397,16 +1397,16 @@ HANDEL_STATIC int xia__DoMMUConfig(Module *m)
 
         strcpy(mmu[0], name);
 
-        statusX = dxp_add_board_item("mmu", mmu);
+        status = dxp_add_board_item("mmu", mmu);
 
         handel_md_free(mmu[0]);
         handel_md_free(mmu);
 
-        if (statusX != DXP_SUCCESS) {
+        if (status != DXP_SUCCESS) {
             sprintf(info_string, "Error adding MMU to Xerxes for alias '%s'",
                     m->alias);
-            xiaLogError("xia__DoMMUConfig", info_string, XIA_XERXES);
-            return XIA_XERXES;
+            xiaLogError("xia__DoMMUConfig", info_string, status);
+            return status;
         }
     }
 
@@ -1594,7 +1594,7 @@ HANDEL_STATIC int xia__DoSystemDSP(Module *m, boolean_t *found)
 HANDEL_STATIC int xia__DoDSP(Module *m)
 {
     int status;
-    int statusX;
+
     int detChan;
 
     unsigned int i;
@@ -1647,12 +1647,12 @@ HANDEL_STATIC int xia__DoDSP(Module *m)
 
         sprintf(dspStr[0], "%u", i);
 
-        statusX = dxp_add_board_item("dsp", (char **)dspStr);
+        status = dxp_add_board_item("dsp", (char **)dspStr);
 
-        if (statusX != DXP_SUCCESS) {
+        if (status != DXP_SUCCESS) {
             sprintf(info_string, "Error adding 'dsp' for alias '%s'", m->alias);
-            xiaLogError("xia__DoDSP", info_string, XIA_XERXES);
-            return XIA_XERXES;
+            xiaLogError("xia__DoDSP", info_string, status);
+            return status;
         }
     }
 
@@ -1731,7 +1731,7 @@ HANDEL_STATIC int xia__DoFiPPIA(Module *m, boolean_t *found)
 HANDEL_STATIC int xia__DoFiPPI(Module *m, boolean_t *found)
 {
     int status;
-    int statusX;
+
     int detChan;
 
     unsigned int i;
@@ -1785,12 +1785,12 @@ HANDEL_STATIC int xia__DoFiPPI(Module *m, boolean_t *found)
         sprintf(fippiStr[0], "%u", i);
 
         if (*found) {
-            statusX = dxp_add_board_item("fippi", (char **)fippiStr);
+            status = dxp_add_board_item("fippi", (char **)fippiStr);
 
-            if (statusX != DXP_SUCCESS) {
+            if (status != DXP_SUCCESS) {
                 sprintf(info_string, "Error adding 'fippi' for alias '%s'", m->alias);
-                xiaLogError("xia__DoFiPPI", info_string, XIA_XERXES);
-                return XIA_XERXES;
+                xiaLogError("xia__DoFiPPI", info_string, status);
+                return status;
             }
         }
     }
@@ -1941,7 +1941,7 @@ HANDEL_STATIC int xia__GetSystemFiPPIName(Module *m, char *detType,
 HANDEL_STATIC int xia__AddSystemFiPPI(Module *m, char *sysFipName,
                                       char *rawFilename)
 {
-    int statusX;
+    int status;
 
     /* Xerxes requires items as lists of strings. */
     char *sysFipStr[1];
@@ -1964,16 +1964,16 @@ HANDEL_STATIC int xia__AddSystemFiPPI(Module *m, char *sysFipName,
 
     strcpy(sysFipStr[0], sysFipName);
 
-    statusX = dxp_add_board_item("system_fippi", (char **)sysFipStr);
+    status = dxp_add_board_item("system_fippi", (char **)sysFipStr);
 
     handel_md_free(sysFipStr[0]);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error adding 'system_fippi', '%s', board item to "
                 "Xerxes configuration",
                 sysFipName);
-        xiaLogError("xia__AddSystemFiPPI", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        xiaLogError("xia__AddSystemFiPPI", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;

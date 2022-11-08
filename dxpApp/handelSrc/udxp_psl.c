@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2002-2004 X-ray Instrumentation Associates
- * Copyright (c) 2005-2017 XIA LLC
+ * Copyright (c) 2005-2020 XIA LLC
  * All rights reserved
  *
  * Redistribution and use in source and binary forms,
@@ -121,9 +121,12 @@ PSL_STATIC int pslReadoutPeakingTimes(int detChan, XiaDefaults *defs,
                                       boolean_t allFippis, double *pts);
 PSL_STATIC int pslReadDirectUsbMemory(int detChan, unsigned long address,
                                     unsigned long num_bytes, byte_t *receive);
-PSL_STATIC int pslGetMcaDirect(int detChan, int bytesPerBin,
-                                    int numMCAChans, unsigned long startAddr,
-                                    unsigned long *data);
+PSL_STATIC int pslGetMcaDirect(int detChan, unsigned long startAddr,
+                                    unsigned long *data, XiaDefaults *defs);
+PSL_STATIC int pslGetMcaCmd(int detChan, byte_t cmd,
+                                    unsigned long *value, XiaDefaults *defs);
+PSL_STATIC void pslConvertStatistics(int detChan, byte_t *receive, double *stats);
+
 #ifdef XIA_ALPHA
 PSL_STATIC unsigned long long pslUllFromBytesOffset(byte_t *bytes, int size, int offset);
 PSL_STATIC int pslAlphaPulserComputeDAC(unsigned short amplitude,
@@ -159,6 +162,14 @@ PSL_STATIC int pslGetSCALength(int detChan, void *value, XiaDefaults *defs);
 PSL_STATIC int pslGetMaxSCALength(int detChan, void *value, XiaDefaults *defs);
 PSL_STATIC int pslGetSCAData(int detChan, void *value, XiaDefaults *defs);
 PSL_STATIC int pslGetModuleStatistics(int detChan, void *value, XiaDefaults *defs);
+PSL_STATIC int pslGetGatedStatistics(int detChan, void *value, XiaDefaults *defs);
+PSL_STATIC int pslGetGatedLivetime(int detChan, void *value, XiaDefaults *defs);
+PSL_STATIC int pslGetGatedRuntime(int detChan, void *value, XiaDefaults *defs);
+PSL_STATIC int pslGetGatedICR(int detChan, void *value, XiaDefaults *defs);
+PSL_STATIC int pslGetGatedOCR(int detChan, void *value, XiaDefaults *defs);
+PSL_STATIC int pslGetGatedEvents(int detChan, void *value, XiaDefaults *defs);
+PSL_STATIC int pslGetGatedTriggers(int detChan, void *value, XiaDefaults *defs);
+PSL_STATIC int pslGetGatedMCAData(int detChan, void *value, XiaDefaults *defs);
 
 #ifdef XIA_ALPHA
 PSL_STATIC int pslGetAlphaBufferNumEvents(int detChan, void *value,
@@ -238,6 +249,7 @@ PSL_STATIC int pslSetScaTimeOff(int detChan, char *name, XiaDefaults *defs, void
 PSL_STATIC int pslSetAutoAdjust(int detChan, char *name, XiaDefaults *defs, void *value);
 PSL_STATIC int pslSetPresetType(int detChan, char *name, XiaDefaults *defs, void *value);
 PSL_STATIC int pslSetPresetValue(int detChan, char *name, XiaDefaults *defs, void *value);
+PSL_STATIC int pslSetHighVoltage(int detChan, char *name, XiaDefaults *defs, void *value);
 
 #ifdef XIA_ALPHA
 PSL_STATIC int pslSetAlphaEventLen(int detChan, char *name, XiaDefaults *defs,
@@ -293,6 +305,7 @@ PSL_STATIC int pslGetScaTimeOff(int detChan, char *name, XiaDefaults *defs, void
 PSL_STATIC int pslGetAutoAdjust(int detChan, char *name, XiaDefaults *defs, void *value);
 PSL_STATIC int pslGetPresetType(int detChan, char *name, XiaDefaults *defs, void *value);
 PSL_STATIC int pslGetPresetValue(int detChan, char *name, XiaDefaults *defs, void *value);
+PSL_STATIC int pslGetHighVoltage(int detChan, char *name, XiaDefaults *defs, void *value);
 
 #ifdef XIA_ALPHA
 PSL_STATIC int pslGetAlphaEventLen(int detChan, char *name, XiaDefaults *defs,
@@ -482,6 +495,7 @@ static Udxp_AcquisitionValue acqVals[] = {
     {"auto_adjust_offset",  AV_MEM_R_PAR, 0.0, pslSetAutoAdjust,  pslGetAutoAdjust},
     {"preset_type",         AV_MEM_R_PAR, 0.0, pslSetPresetType,  pslGetPresetType},
     {"preset_value",        AV_MEM_R_PAR, 0.0, pslSetPresetValue, pslGetPresetValue},
+    {"high_voltage",        AV_MEM_R_PAR, 0.0, pslSetHighVoltage, pslGetHighVoltage},
 
 #ifdef XIA_ALPHA
     {
@@ -507,27 +521,35 @@ static Udxp_AcquisitionValue acqVals[] = {
 
 
 static Udxp_RunData runData[] = {
-    {"mca_length",          pslGetMCALength},
-    {"mca",                 pslGetMCAData},
-    {"livetime",            pslGetLivetime},
-    {"runtime",             pslGetRuntime},
-    {"input_count_rate",    pslGetICR},
-    {"output_count_rate",   pslGetOCR},
-    {"events_in_run",       pslGetEvents},
-    {"total_output_events", pslGetEvents}, /* TODO: update and document pending case 15688 */
-    {"triggers",            pslGetTriggers},
-    {"baseline_length",     pslGetBaseHistogramLen},
-    {"baseline",            pslGetBaseline},
-    {"run_active",          pslGetRunActive},
-    {"all_statistics",      pslGetAllStatistics},
-    {"sca_length",          pslGetSCALength},
-    {"max_sca_length",      pslGetMaxSCALength},
-    {"sca",                 pslGetSCAData},
-    {"realtime",            pslGetRuntime},
-    {"mca_events",          pslGetEvents},
-    {"trigger_livetime",    pslGetLivetime},
-    {"energy_livetime",     pslGetELivetime},
-    {"module_statistics_2", pslGetModuleStatistics},
+    {"mca_length",              pslGetMCALength},
+    {"mca",                     pslGetMCAData},
+    {"livetime",                pslGetLivetime},
+    {"runtime",                 pslGetRuntime},
+    {"input_count_rate",        pslGetICR},
+    {"output_count_rate",       pslGetOCR},
+    {"events_in_run",           pslGetEvents},
+    {"total_output_events",     pslGetEvents}, /* TODO: update and document pending case 15688 */
+    {"triggers",                pslGetTriggers},
+    {"baseline_length",         pslGetBaseHistogramLen},
+    {"baseline",                pslGetBaseline},
+    {"run_active",              pslGetRunActive},
+    {"all_statistics",          pslGetAllStatistics},
+    {"sca_length",              pslGetSCALength},
+    {"max_sca_length",          pslGetMaxSCALength},
+    {"sca",                     pslGetSCAData},
+    {"realtime",                pslGetRuntime},
+    {"mca_events",              pslGetEvents},
+    {"trigger_livetime",        pslGetLivetime},
+    {"energy_livetime",         pslGetELivetime},
+    {"module_statistics_2",     pslGetModuleStatistics},
+    {"mca_gated",               pslGetGatedMCAData},
+    {"module_statistics_gated", pslGetGatedStatistics},
+    {"livetime_gated",          pslGetGatedLivetime},
+    {"realtime_gated",          pslGetGatedRuntime},
+    {"triggers_gated",          pslGetGatedTriggers},
+    {"events_in_run_gated",     pslGetGatedEvents},
+    {"output_count_rate_gated", pslGetGatedOCR},
+    {"input_count_rate_gated",  pslGetGatedICR},
 #ifdef XIA_ALPHA
     {"alpha_buffer_num_events", pslGetAlphaBufferNumEvents},
     {"alpha_events",            pslGetAlphaEvents},
@@ -783,7 +805,6 @@ PSL_STATIC int pslDownloadFirmware(int detChan, char *type, char *file,
                                    XiaDefaults *defs)
 {
     int status;
-    int statusX;
 
     unsigned int fippiNum = 0;
 
@@ -816,7 +837,7 @@ PSL_STATIC int pslDownloadFirmware(int detChan, char *type, char *file,
     sscanf(type, "fippi%u", &fippiNum);
 
     sprintf(info_string, "User requested fippi = %u", fippiNum);
-    pslLogDebug("pslDownloadFirmware", info_string);
+    pslLogInfo("pslDownloadFirmware", info_string);
 
     /* Not sure how to use the CurrentFirmware info. in
      * this context. For now, we can just spend the
@@ -826,17 +847,16 @@ PSL_STATIC int pslDownloadFirmware(int detChan, char *type, char *file,
     send[0] = (byte_t)0x00;
     send[1] = (byte_t)(fippiNum & 0xFF);
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
-        status = XIA_XERXES;
+    if (status != DXP_SUCCESS) {
         pslLogError("pslDownloadFirmware", "Error executing command", status);
         return status;
     }
 
     sprintf(info_string, "Current FiPPI = %u",
             (unsigned int)receive[5]);
-    pslLogDebug("pslDownloadFirmware", info_string);
+    pslLogInfo("pslDownloadFirmware", info_string);
 
     return XIA_SUCCESS;
 }
@@ -1089,7 +1109,7 @@ PSL_STATIC int pslGainCalibrate(int detChan, Detector *detector,
 PSL_STATIC int pslStartRun(int detChan, unsigned short resume, XiaDefaults *defs,
                            Module *m)
 {
-    int statusX;
+    int status;
     unsigned int modChan;
 
     DEFINE_CMD(CMD_START_RUN, 1, 3);
@@ -1113,13 +1133,13 @@ PSL_STATIC int pslStartRun(int detChan, unsigned short resume, XiaDefaults *defs
 
         ASSERT(!m->state || m->state->runActive[modChan] == FALSE_);
 
-        statusX = dxp_cmd(&c, &cmd, &lenS, send, &lenR, receive);
+        status = dxp_cmd(&c, &cmd, &lenS, send, &lenR, receive);
 
-        if (statusX != DXP_SUCCESS) {
+        if (status != DXP_SUCCESS) {
             sprintf(info_string, "Error starting run on detChan %d", c);
-            pslLogError("pslStartRun", info_string, XIA_XERXES);
+            pslLogError("pslStartRun", info_string, status);
             pslStopRun(detChan, m);
-            return XIA_XERXES;
+            return status;
         }
 
         sprintf(info_string, "Started a run w/ id = %u [%d]",
@@ -1140,7 +1160,6 @@ PSL_STATIC int pslStartRun(int detChan, unsigned short resume, XiaDefaults *defs
 PSL_STATIC int pslStopRun(int detChan, Module *m)
 {
     int status = XIA_SUCCESS;
-    int statusX = XIA_SUCCESS;
     unsigned int modChan;
 
     unsigned int lenS = 0;
@@ -1156,14 +1175,14 @@ PSL_STATIC int pslStopRun(int detChan, Module *m)
     for (modChan = 0; modChan < m->number_of_channels; modChan++) {
         int c = m->channels[modChan]; /* The detChan of the looped channel. */
 
-        statusX = dxp_cmd(&c, &cmd, &lenS, NULL, &lenR, receive);
+        status = dxp_cmd(&c, &cmd, &lenS, NULL, &lenR, receive);
 
-        if (statusX != DXP_SUCCESS) {
+        if (status != DXP_SUCCESS) {
             /* Latch the first error and continue to stop all channels. */
             if (status == XIA_SUCCESS)
-                status = statusX;
+                status = status;
             sprintf(info_string, "Error stopping run on detChan %d", c);
-            pslLogError("pslStopRun", info_string, statusX);
+            pslLogError("pslStopRun", info_string, status);
         }
     }
 
@@ -1301,8 +1320,8 @@ PSL_STATIC int psl__AdjustOffsets(int detChan, void *value, XiaDefaults *defs)
     if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error setting adc offset to %du "
                 "for detChan %d", SETOFFADC, detChan);
-        pslLogError("psl__AdjustOffsets", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("psl__AdjustOffsets", info_string, status);
+        return status;
     }
 
     *((double *)value) = (double)BYTE_TO_WORD(receive[5], receive[6]);
@@ -1342,8 +1361,8 @@ PSL_STATIC int psl__Snapshot(int detChan, void *value, XiaDefaults *defs)
 
     if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error taking snapshot for detChan %d", detChan);
-        pslLogError("psl__Snapshot", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("psl__Snapshot", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -1375,14 +1394,14 @@ PSL_STATIC int pslCheckTraceWaitRange(int detChan, double *tracewait, XiaDefault
     if (*tracewait > MAX_TRACEWAIT_US) {
         sprintf(info_string, "Tracewait %0.3fus for detChan = %d is out of range, "
                 "reset to %0.3fus", *tracewait, detChan, MAX_TRACEWAIT_US);
-        pslLogDebug("pslCheckTraceWaitRange", info_string);
+        pslLogInfo("pslCheckTraceWaitRange", info_string);
         *tracewait = MAX_TRACEWAIT_US;
     }
 
     if (*tracewait < pslMinTraceWait(spd)) {
         sprintf(info_string, "Tracewait %0.3fus for detChan = %d is out of range, "
                 "reset to %0.3fus", *tracewait,  detChan, pslMinTraceWait(spd));
-        pslLogDebug("pslCheckTraceWaitRange", info_string);
+        pslLogInfo("pslCheckTraceWaitRange", info_string);
         *tracewait = pslMinTraceWait(spd);
     }
 
@@ -1392,7 +1411,7 @@ PSL_STATIC int pslCheckTraceWaitRange(int detChan, double *tracewait, XiaDefault
     *tracewait = ((double)tracetick + 1.0) / spd;
 
     sprintf(info_string, "tracewait = %.3f, tracetick = %u", *tracewait, tracetick);
-    pslLogDebug("pslCheckTraceWaitRange", info_string);
+    pslLogInfo("pslCheckTraceWaitRange", info_string);
 
     return XIA_SUCCESS;
 }
@@ -1495,7 +1514,6 @@ PSL_STATIC int pslDoTrace(int detChan, short type, double *info, XiaDefaults *de
         status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
         if (status != DXP_SUCCESS) {
-            status = XIA_XERXES;
             sprintf(info_string, "Error triggering ADC trace for detChan %d", detChan);
             pslLogError("pslDoTrace", info_string, status);
             return status;
@@ -1580,17 +1598,17 @@ PSL_STATIC int pslGetDefaultAlias(char *alias, char **names,
  */
 PSL_STATIC int pslGetParameter(int detChan, const char *name, unsigned short *value)
 {
-    int statusX;
+    int status;
 
     ASSERT(name != NULL);
     ASSERT(value != NULL);
 
-    statusX = dxp_get_one_dspsymbol(&detChan, (char *)name, value);
+    status = dxp_get_one_dspsymbol(&detChan, (char *)name, value);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error reading '%s' for detChan %d", name, detChan);
-        pslLogError("pslGetParameter", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetParameter", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -1602,17 +1620,17 @@ PSL_STATIC int pslGetParameter(int detChan, const char *name, unsigned short *va
  */
 PSL_STATIC int pslSetParameter(int detChan, const char *name, unsigned short value)
 {
-    int statusX;
+    int status;
 
     ASSERT(name != NULL);
 
-    statusX = dxp_set_one_dspsymbol(&detChan, (char *)name, &value);
+    status = dxp_set_one_dspsymbol(&detChan, (char *)name, &value);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error setting '%s' to %#hx for detChan %d",
                 name, value, detChan);
-        pslLogError("pslSetParameter", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetParameter", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -1736,18 +1754,18 @@ PSL_STATIC unsigned int pslGetNumDefaults(void)
  */
 PSL_STATIC int pslGetNumParams(int detChan, unsigned short *numParams)
 {
-    int statusX;
+    int status;
 
 
     ASSERT(numParams != NULL);
 
-    statusX = dxp_max_symbols(&detChan, numParams);
+    status = dxp_max_symbols(&detChan, numParams);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting the number of DSP parameters for "
                 "detChan %d", detChan);
-        pslLogError("pslGetNumParams", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetNumParams", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -1793,18 +1811,18 @@ PSL_STATIC int pslGetParamData(int detChan, char *name, void *value)
  */
 PSL_STATIC int pslGetParamValues(int detChan, void *value)
 {
-    int statusX;
+    int status;
 
     ASSERT(value != NULL);
 
-    statusX = dxp_readout_detector_run(&detChan, (unsigned short *)value, NULL,
+    status = dxp_readout_detector_run(&detChan, (unsigned short *)value, NULL,
                                        NULL);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting DSP parameter values for detChan %d",
                 detChan);
-        pslLogError("pslGetParamValues", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetParamValues", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -1817,17 +1835,17 @@ PSL_STATIC int pslGetParamValues(int detChan, void *value)
  */
 PSL_STATIC int pslGetParamName(int detChan, unsigned short index, char *name)
 {
-    int statusX;
+    int status;
 
     ASSERT(name != NULL);
 
-    statusX = dxp_symbolname_by_index(&detChan, &index, name);
+    status = dxp_symbolname_by_index(&detChan, &index, name);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting parameter located at index %hu for "
                 "detChan %d", index, detChan);
-        pslLogError("pslGetParamName", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetParamName", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -1905,100 +1923,21 @@ PSL_STATIC int pslGetMCALength(int detChan, void *value, XiaDefaults *defs)
 }
 
 
-/*
- * This routine returns the MCA spectrum read
- * from the board.
+/* run data mca
+ *
  */
 PSL_STATIC int pslGetMCAData(int detChan, void *value, XiaDefaults *defs)
 {
     int status;
-    int statusX;
-
-    unsigned int i;
-    unsigned int dataLen;
-    unsigned int lenS = 5;
-    unsigned int lenR = 0;
-
-    unsigned long *data = (unsigned long *)value;
-
-    double bytesPerBin = 0.0;
-    double numMCAChans = 0.0;
-    double mcaLowLim = 0.0;
-
-    byte_t cmd         = CMD_READ_MCA;
-
-    byte_t send[5];
-
-    byte_t *receive = NULL;
-
-
-    status = pslGetAcquisitionValues(detChan, "bytes_per_bin", (void *)&bytesPerBin, defs);
-
-    if (status != XIA_SUCCESS) {
-        sprintf(info_string, "Error getting bytes per bin for detChan %d", detChan);
-        pslLogError("pslGetMCAData", info_string, status);
-        return status;
-    }
-
-    status = pslGetAcquisitionValues(detChan, "number_mca_channels", (void *)&numMCAChans,
-                                     defs);
-
-    if (status != XIA_SUCCESS) {
-        sprintf(info_string, "Error getting number of MCA channels for detChan %d", detChan);
-        pslLogError("pslGetMCAData", info_string, status);
-        return status;
-    }
-
-    mcaLowLim = 0.0;
-
-    sprintf(info_string, "bytesPerBin = %.3f, numMCAChans = %.3f, mcaLowLim = %.3f",
-            bytesPerBin, numMCAChans, mcaLowLim);
-    pslLogDebug("pslGetMCAData", info_string);
 
     if (IS_USB && dxp_has_direct_mca_readout(detChan)) {
-        status = pslGetMcaDirect(detChan, (int)bytesPerBin,
-                                (int)numMCAChans, 0x2000, data);
-        return status;
+        status = pslGetMcaDirect(detChan, 0x2000, value, defs);
+    } else {
+        status = pslGetMcaCmd(detChan, CMD_READ_MCA, value, defs);
     }
 
-    send[0] = LO_BYTE((unsigned short)mcaLowLim);
-    send[1] = HI_BYTE((unsigned short)mcaLowLim);
-    send[2] = LO_BYTE((unsigned short)numMCAChans);
-    send[3] = HI_BYTE((unsigned short)numMCAChans);
-    send[4] = (byte_t)bytesPerBin;
-
-    dataLen = (unsigned int)(bytesPerBin * numMCAChans);
-    lenR = (unsigned int)(dataLen + 1 + RECV_BASE);
-
-    receive = (byte_t *)utils->funcs->dxp_md_alloc(lenR * sizeof(byte_t));
-
-    if (receive == NULL) {
-        pslLogError("pslGetMCAData", "Out-of-memory trying to create receive array",
-                    XIA_NOMEM);
-        return XIA_NOMEM;
-    }
-
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
-
-    if (statusX != DXP_SUCCESS) {
-        utils->funcs->dxp_md_free((void *)receive);
-
-        sprintf(info_string, "Error getting MCA data from detChan %d", detChan);
-        pslLogError("pslGetMCAData", info_string, XIA_XERXES);
-        return XIA_XERXES;
-    }
-
-    /* Transfer the spectra to the user's array. */
-    for (i = 0; i < numMCAChans; i++) {
-        data[i] = pslUlFromBytesOffset(receive, (int)bytesPerBin,
-                            RECV_BASE + i * (int)bytesPerBin);
-    }
-
-    utils->funcs->dxp_md_free((void *)receive);
-
-    return XIA_SUCCESS;
+    return status;
 }
-
 
 /*
  * This routine calculates and returns
@@ -2006,18 +1945,18 @@ PSL_STATIC int pslGetMCAData(int detChan, void *value, XiaDefaults *defs)
  */
 PSL_STATIC int pslGetLivetime(int detChan, void *value, XiaDefaults *defs)
 {
-    int statusX;
+    int status;
 
     double stats[9];
 
     ASSERT(value != NULL);
 
-    statusX = pslGetModuleStatistics(detChan, (void *)stats, defs);
+    status = pslGetModuleStatistics(detChan, (void *)stats, defs);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error reading statistics for detChan %d", detChan);
-        pslLogError("pslGetLivetime", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetLivetime", info_string, status);
+        return status;
     }
 
     *((double *)value) = stats[1];
@@ -2030,18 +1969,18 @@ PSL_STATIC int pslGetLivetime(int detChan, void *value, XiaDefaults *defs)
  */
 PSL_STATIC int pslGetELivetime(int detChan, void *value, XiaDefaults *defs)
 {
-    int statusX;
+    int status;
 
     double stats[9];
 
     ASSERT(value != NULL);
 
-    statusX = pslGetModuleStatistics(detChan, (void *)stats, defs);
+    status = pslGetModuleStatistics(detChan, (void *)stats, defs);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error reading statistics for detChan %d", detChan);
-        pslLogError("pslGetELivetime", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetELivetime", info_string, status);
+        return status;
     }
 
     *((double *)value) = stats[2];
@@ -2055,18 +1994,18 @@ PSL_STATIC int pslGetELivetime(int detChan, void *value, XiaDefaults *defs)
  */
 PSL_STATIC int pslGetRuntime(int detChan, void *value, XiaDefaults *defs)
 {
-    int statusX;
+    int status;
 
     double stats[9];
 
     ASSERT(value != NULL);
 
-    statusX = pslGetModuleStatistics(detChan, (void *)stats, defs);
+    status = pslGetModuleStatistics(detChan, (void *)stats, defs);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error reading statistics for detChan %d", detChan);
-        pslLogError("pslGetRuntime", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetRuntime", info_string, status);
+        return status;
     }
 
     *((double *)value) = stats[0];
@@ -2082,18 +2021,18 @@ PSL_STATIC int pslGetRuntime(int detChan, void *value, XiaDefaults *defs)
  */
 PSL_STATIC int pslGetICR(int detChan, void *value, XiaDefaults *defs)
 {
-    int statusX;
+    int status;
 
     double stats[9];
 
     ASSERT(value != NULL);
 
-    statusX = pslGetModuleStatistics(detChan, (void *)stats, defs);
+    status = pslGetModuleStatistics(detChan, (void *)stats, defs);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error reading statistics for detChan %d", detChan);
-        pslLogError("pslGetICR", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetICR", info_string, status);
+        return status;
     }
 
     *((double *)value) = stats[5];
@@ -2109,18 +2048,18 @@ PSL_STATIC int pslGetICR(int detChan, void *value, XiaDefaults *defs)
  */
 PSL_STATIC int pslGetOCR(int detChan, void *value, XiaDefaults *defs)
 {
-    int statusX;
+    int status;
 
     double stats[9];
 
     ASSERT(value != NULL);
 
-    statusX = pslGetModuleStatistics(detChan, (void *)stats, defs);
+    status = pslGetModuleStatistics(detChan, (void *)stats, defs);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error reading statistics for detChan %d", detChan);
-        pslLogError("pslGetOCR", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetOCR", info_string, status);
+        return status;
     }
 
     *((double *)value) = stats[6];
@@ -2136,18 +2075,18 @@ PSL_STATIC int pslGetOCR(int detChan, void *value, XiaDefaults *defs)
  */
 PSL_STATIC int pslGetEvents(int detChan, void *value, XiaDefaults *defs)
 {
-    int statusX;
+    int status;
 
     double stats[9];
 
     ASSERT(value != NULL);
 
-    statusX = pslGetModuleStatistics(detChan, (void *)stats, defs);
+    status = pslGetModuleStatistics(detChan, (void *)stats, defs);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error reading statistics for detChan %d", detChan);
-        pslLogError("pslGetEvents", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetEvents", info_string, status);
+        return status;
     }
 
     *((unsigned long *)value) = (unsigned long)stats[4];
@@ -2162,18 +2101,18 @@ PSL_STATIC int pslGetEvents(int detChan, void *value, XiaDefaults *defs)
  */
 PSL_STATIC int pslGetTriggers(int detChan, void *value, XiaDefaults *defs)
 {
-    int statusX;
+    int status;
 
     double stats[9];
 
     ASSERT(value != NULL);
 
-    statusX = pslGetModuleStatistics(detChan, (void *)stats, defs);
+    status = pslGetModuleStatistics(detChan, (void *)stats, defs);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error reading statistics for detChan %d", detChan);
-        pslLogError("pslGetTriggers", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetTriggers", info_string, status);
+        return status;
     }
 
     *((unsigned long *)value) = (unsigned long)stats[3];
@@ -2205,7 +2144,6 @@ PSL_STATIC int pslGetBaseHistogramLen(int detChan, void *value,
  */
 PSL_STATIC int pslGetBaseline(int detChan, void *value, XiaDefaults *defs)
 {
-    int statusX;
     int status;
 
     unsigned int i;
@@ -2220,11 +2158,10 @@ PSL_STATIC int pslGetBaseline(int detChan, void *value, XiaDefaults *defs)
 
     UNUSED(defs);
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, NULL,
+    status = dxp_cmd(&detChan, &cmd, &lenS, NULL,
                       &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
-        status = XIA_XERXES;
+    if (status != DXP_SUCCESS) {
         sprintf(info_string,
                 "Error reading out baseline for detChan %d",
                 detChan);
@@ -2252,7 +2189,6 @@ PSL_STATIC int pslGetBaseline(int detChan, void *value, XiaDefaults *defs)
 PSL_STATIC int pslSetGainbase(int detChan, char *name, XiaDefaults *defs, void *value)
 {
     int status;
-    int statusX;
 
     double g        = *((double *)value);
     double gDB      = 0.0;
@@ -2313,7 +2249,7 @@ PSL_STATIC int pslSetGainbase(int detChan, char *name, XiaDefaults *defs, void *
         send[1] = (byte_t)LO_BYTE(GAINBASE);
         send[2] = (byte_t)HI_BYTE(GAINBASE);
 
-        statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+        status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
         /* If the VGA isn't installed then we want
          * to provide a slightly different error
@@ -2325,10 +2261,10 @@ PSL_STATIC int pslSetGainbase(int detChan, char *name, XiaDefaults *defs, void *
             return XIA_NO_VGA;
         }
 
-        if (statusX != DXP_SUCCESS) {
+        if (status != DXP_SUCCESS) {
             sprintf(info_string, "Error setting base gain DAC for detChan %d", detChan);
-            pslLogError("pslSetGainbase", info_string, XIA_XERXES);
-            return XIA_XERXES;
+            pslLogError("pslSetGainbase", info_string, status);
+            return status;
         }
 
         gDB = (double)GAINBASE / DB_PER_LSB;
@@ -2369,12 +2305,12 @@ PSL_STATIC int pslSetGainbase(int detChan, char *name, XiaDefaults *defs, void *
         send[0] = (byte_t)0x00;
         send[1] = (byte_t)SWGAIN;
 
-        statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+        status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-        if (statusX != DXP_SUCCESS) {
+        if (status != DXP_SUCCESS) {
             sprintf(info_string, "Error setting switched gain for detChan %d", detChan);
-            pslLogError("pslSetGainbase", info_string, XIA_XERXES);
-            return XIA_XERXES;
+            pslLogError("pslSetGainbase", info_string, status);
+            return status;
         }
 
         cmd = CMD_SET_DIGITALGAIN;
@@ -2386,12 +2322,12 @@ PSL_STATIC int pslSetGainbase(int detChan, char *name, XiaDefaults *defs, void *
         send[2] = (byte_t)HI_BYTE(DGAINBASE);
         send[3] = (byte_t)DGAINBASEEXP;
 
-        statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+        status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-        if (statusX != DXP_SUCCESS) {
+        if (status != DXP_SUCCESS) {
             sprintf(info_string, "Error setting digital gain for detChan %d", detChan);
-            pslLogError("pslSetGainbase", info_string, XIA_XERXES);
-            return XIA_XERXES;
+            pslLogError("pslSetGainbase", info_string, status);
+            return status;
         }
 
         break;
@@ -2431,7 +2367,7 @@ PSL_STATIC double pslCalculateBaseGain(unsigned int gainMode,
             "DGAINBASE = %hu, digitalGain = %0.3f, hybridGain = %0.3f, base gain = %0.3f",
             gainMode, SWGAIN, DGAINBASEEXP, DGAINBASE, digitalGain, hybridGain,
             baseGain);
-    pslLogDebug("pslCalculateBaseGain", info_string);
+    pslLogInfo("pslCalculateBaseGain", info_string);
 
     return baseGain;
 }
@@ -2531,7 +2467,6 @@ PSL_STATIC int pslGetGainbase(int detChan, char *name, XiaDefaults *defs, void *
  */
 PSL_STATIC int pslSetParset(int detChan, char *name, XiaDefaults *defs, void *value)
 {
-    int statusX;
     int status;
 
     unsigned short maxParset;
@@ -2547,10 +2482,10 @@ PSL_STATIC int pslSetParset(int detChan, char *name, XiaDefaults *defs, void *va
 
 
     sprintf(info_string, "parset = %0.1f", parset);
-    pslLogDebug("pslSetParset", info_string);
+    pslLogInfo("pslSetParset", info_string);
 
-    statusX = pslGetNumPtPerFiPPI(detChan, NULL, defs, (void *)&maxParset);
-    ASSERT(statusX == XIA_SUCCESS);
+    status = pslGetNumPtPerFiPPI(detChan, NULL, defs, (void *)&maxParset);
+    ASSERT(status == XIA_SUCCESS);
 
     /* Verify limits on the PARSETs
      */
@@ -2563,11 +2498,10 @@ PSL_STATIC int pslSetParset(int detChan, char *name, XiaDefaults *defs, void *va
     send[0] = (byte_t)0;
     send[1] = (byte_t)parset;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send,
+    status = dxp_cmd(&detChan, &cmd, &lenS, send,
                       &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
-        status = XIA_XERXES;
+    if (status != DXP_SUCCESS) {
         sprintf(info_string,
                 "Error setting PARSET for detChan %d",
                 detChan);
@@ -2599,7 +2533,6 @@ PSL_STATIC int pslSetParset(int detChan, char *name, XiaDefaults *defs, void *va
 PSL_STATIC int pslSetGenset(int detChan, char *name, XiaDefaults *defs, void *value)
 {
     int status;
-    int statusX;
 
     double *genset = (double *)value;
 
@@ -2614,19 +2547,19 @@ PSL_STATIC int pslSetGenset(int detChan, char *name, XiaDefaults *defs, void *va
 
 
     sprintf(info_string, "genset = %0.1f", *genset);
-    pslLogDebug("pslSetGenset", info_string);
+    pslLogInfo("pslSetGenset", info_string);
 
     send[0] = (byte_t)0;
     send[1] = (byte_t)(*genset);
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send,
+    status = dxp_cmd(&detChan, &cmd, &lenS, send,
                       &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error setting GENSET to '%0.1f' for detChan %d",
                 *genset, detChan);
-        pslLogError("pslSetGenset", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetGenset", info_string, status);
+        return status;
     }
 
     /* Invalidate GENSET acquisition values here */
@@ -2690,7 +2623,6 @@ PSL_STATIC double pslMinTraceWait(double clock)
  */
 PSL_STATIC int pslGetADCTrace(int detChan, void *value, XiaDefaults *defs)
 {
-    int statusX;
     int status;
 
     unsigned int lenS = 2;
@@ -2742,13 +2674,13 @@ PSL_STATIC int pslGetADCTrace(int detChan, void *value, XiaDefaults *defs)
         addr = DSP_DATA_MEMORY_OFFSET + HSTSTART;
         sprintf(mem, "direct:%#lx:%lu", addr, (unsigned long)HSTLEN);
 
-        statusX = dxp_read_memory(&detChan, mem, data);
+        status = dxp_read_memory(&detChan, mem, data);
 
-        if (statusX != DXP_SUCCESS) {
+        if (status != DXP_SUCCESS) {
             sprintf(info_string, "Error reading ADC trace directly from the "
                     "USB (%s) for detChan %d.", mem, detChan);
-            pslLogError("pslGetADCTrace", info_string, XIA_XERXES);
-            return XIA_XERXES;
+            pslLogError("pslGetADCTrace", info_string, status);
+            return status;
         }
 
         return XIA_SUCCESS;
@@ -2776,7 +2708,7 @@ PSL_STATIC int pslGetADCTrace(int detChan, void *value, XiaDefaults *defs)
     tracetick = (unsigned int)ROUND(tracewait * spd) - 1;
 
     sprintf(info_string, "tracewait = %.3f, tracetick = %u", tracewait, tracetick);
-    pslLogDebug("pslGetADCTrace", info_string);
+    pslLogInfo("pslGetADCTrace", info_string);
 
     lenR = (unsigned int)((HSTLEN * 2) + 1 + RECV_BASE);
     recv = (byte_t *)utils->funcs->dxp_md_alloc(lenR * sizeof(byte_t));
@@ -2791,12 +2723,11 @@ PSL_STATIC int pslGetADCTrace(int detChan, void *value, XiaDefaults *defs)
     send[0] = (byte_t)LO_BYTE((unsigned int)tracetick);
     send[1] = (byte_t)HI_BYTE((unsigned int)tracetick);
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, recv);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, recv);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         utils->funcs->dxp_md_free((void *)recv);
         recv = NULL;
-        status = XIA_XERXES;
         sprintf(info_string,
                 "Error reading out ADC trace for detChan %d",
                 detChan);
@@ -2850,7 +2781,7 @@ PSL_STATIC int pslSetBytePerBin(int detChan, char *name, XiaDefaults *defs, void
  */
 PSL_STATIC int pslSetBinWidth(int detChan, char *name, XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     DEFINE_CMD(CMD_SET_BIN_WIDTH, 3, 3);
 
@@ -2874,12 +2805,12 @@ PSL_STATIC int pslSetBinWidth(int detChan, char *name, XiaDefaults *defs, void *
     send[1] = (byte_t)4;
     send[2] = (byte_t)*width;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error setting MCA bin width for detChan %d", detChan);
-        pslLogError("pslSetBinWidth", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetBinWidth", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -2891,7 +2822,7 @@ PSL_STATIC int pslSetBinWidth(int detChan, char *name, XiaDefaults *defs, void *
  */
 PSL_STATIC int pslGetBinWidth(int detChan, char *name, XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     DEFINE_CMD(CMD_GET_BIN_WIDTH, 3, 3);
 
@@ -2905,12 +2836,12 @@ PSL_STATIC int pslGetBinWidth(int detChan, char *name, XiaDefaults *defs, void *
     send[1] = (byte_t)0;
     send[2] = (byte_t)0;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting MCA bin width for detChan %d", detChan);
-        pslLogError("pslGetBinWidth", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetBinWidth", info_string, status);
+        return status;
     }
 
     *width = (double)receive[RECV_DATA_OFFSET_STATUS + 1];
@@ -2924,7 +2855,7 @@ PSL_STATIC int pslGetBinWidth(int detChan, char *name, XiaDefaults *defs, void *
  */
 PSL_STATIC int pslGetNumMCA(int detChan, char *name, XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     double *nChans = (double *)value;
 
@@ -2944,13 +2875,13 @@ PSL_STATIC int pslGetNumMCA(int detChan, char *name, XiaDefaults *defs, void *va
     send[3] = (byte_t)0;
     send[4] = (byte_t)0;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string,
                 "Error getting the number of MCA channels for detChan %d", detChan);
-        pslLogError("pslGetNumMCAChannels", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetNumMCAChannels", info_string, status);
+        return status;
     }
 
     *nChans = (double)BYTE_TO_WORD(receive[RECV_DATA_OFFSET_STATUS],
@@ -2965,8 +2896,8 @@ PSL_STATIC int pslGetNumMCA(int detChan, char *name, XiaDefaults *defs, void *va
  */
 PSL_STATIC int pslSetNumMCA(int detChan, char *name, XiaDefaults *defs, void *value)
 {
-    int statusX;
-
+    int status;
+    int max_bins = dxp_is_vega(detChan) ? VEGA_MAX_NUM_BINS : MAX_NUM_BINS;
     unsigned int nChans = (unsigned int)(*((double *)value));
 
     DEFINE_CMD(CMD_SET_NUM_BINS, 5, 5);
@@ -2975,14 +2906,12 @@ PSL_STATIC int pslSetNumMCA(int detChan, char *name, XiaDefaults *defs, void *va
     UNUSED(defs);
     UNUSED(name);
 
-
     ASSERT(value != NULL);
 
-
-    if (nChans > MAX_NUM_BINS) {
+    if (nChans > (unsigned int)max_bins) {
         sprintf(info_string,
                 "Specified number of bins '%u' is greater then the maximum allowed "
-                "number '%d' for detChan %d", nChans, MAX_NUM_BINS, detChan);
+                "number '%d' for detChan %d", nChans, max_bins, detChan);
         pslLogError("pslSetNumMCA", info_string, XIA_NUM_MCA_OOR);
         return XIA_NUM_MCA_OOR;
     }
@@ -2996,13 +2925,13 @@ PSL_STATIC int pslSetNumMCA(int detChan, char *name, XiaDefaults *defs, void *va
     send[4] = (byte_t)0;
 
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string,
                 "Error setting the number of MCA channels for detChan %d", detChan);
-        pslLogError("pslSetNumMCA", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetNumMCA", info_string, status);
+        return status;
     }
 
     *((double*)value) = nChans;
@@ -3016,7 +2945,7 @@ PSL_STATIC int pslSetNumMCA(int detChan, char *name, XiaDefaults *defs, void *va
  */
 PSL_STATIC int pslGetTThresh(int detChan, char *name, XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     double *thresh = (double *)value;
 
@@ -3040,13 +2969,13 @@ PSL_STATIC int pslGetTThresh(int detChan, char *name, XiaDefaults *defs, void *v
         send[3] = (byte_t)0;
     }
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting trigger threshold for detChan %d",
                 detChan);
-        pslLogError("pslGetTThresh", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetTThresh", info_string, status);
+        return status;
     }
 
     if (isSuper) {
@@ -3064,7 +2993,7 @@ PSL_STATIC int pslGetTThresh(int detChan, char *name, XiaDefaults *defs, void *v
  */
 PSL_STATIC int pslSetTThresh(int detChan, char *name, XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     double *thresh = (double *)value;
     double MAX_THRESHOLD;
@@ -3111,13 +3040,13 @@ PSL_STATIC int pslSetTThresh(int detChan, char *name, XiaDefaults *defs, void *v
         send[3] = (byte_t)((int)*thresh >> 8);
     }
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error setting trigger threshold for detChan %d",
                 detChan);
-        pslLogError("pslSetTThresh", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetTThresh", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -3129,7 +3058,7 @@ PSL_STATIC int pslSetTThresh(int detChan, char *name, XiaDefaults *defs, void *v
  */
 PSL_STATIC int pslGetBThresh(int detChan, char *name, XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     double *thresh = (double *)value;
 
@@ -3154,13 +3083,13 @@ PSL_STATIC int pslGetBThresh(int detChan, char *name, XiaDefaults *defs, void *v
         send[3] = (byte_t)0;
     }
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting baseline threshold for detChan %d",
                 detChan);
-        pslLogError("pslGetBThresh", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetBThresh", info_string, status);
+        return status;
     }
 
     if (isSuper) {
@@ -3178,7 +3107,7 @@ PSL_STATIC int pslGetBThresh(int detChan, char *name, XiaDefaults *defs, void *v
  */
 PSL_STATIC int pslSetBThresh(int detChan, char *name, XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     double *thresh = (double *)value;
     double MAX_THRESHOLD;
@@ -3224,13 +3153,13 @@ PSL_STATIC int pslSetBThresh(int detChan, char *name, XiaDefaults *defs, void *v
         send[3] = (byte_t)((int)*thresh >> 8);
     }
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error setting baseline threshold for detChan %d",
                 detChan);
-        pslLogError("pslSetBThresh", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetBThresh", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -3242,7 +3171,7 @@ PSL_STATIC int pslSetBThresh(int detChan, char *name, XiaDefaults *defs, void *v
  */
 PSL_STATIC int pslGetEThresh(int detChan, char *name, XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     double *thresh = (double *)value;
 
@@ -3266,13 +3195,13 @@ PSL_STATIC int pslGetEThresh(int detChan, char *name, XiaDefaults *defs, void *v
         send[3] = (byte_t)0;
     }
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting energy threshold for detChan %d",
                 detChan);
-        pslLogError("pslGetEThresh", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetEThresh", info_string, status);
+        return status;
     }
 
     if (isSuper) {
@@ -3290,7 +3219,7 @@ PSL_STATIC int pslGetEThresh(int detChan, char *name, XiaDefaults *defs, void *v
  */
 PSL_STATIC int pslSetEThresh(int detChan, char *name, XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     double *thresh = (double *)value;
     double MAX_THRESHOLD;
@@ -3336,13 +3265,13 @@ PSL_STATIC int pslSetEThresh(int detChan, char *name, XiaDefaults *defs, void *v
         send[3] = (byte_t)((int)*thresh >> 8);
     }
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error setting energy threshold for detChan %d",
                 detChan);
-        pslLogError("pslSetEThresh", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetEThresh", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -3355,7 +3284,6 @@ PSL_STATIC int pslSetEThresh(int detChan, char *name, XiaDefaults *defs, void *v
 PSL_STATIC int pslGetParset(int detChan, char *name, XiaDefaults *defs, void *value)
 {
     int status;
-    int statusX;
 
     DEFINE_CMD(CMD_GET_PARSET, 2, 2);
 
@@ -3371,11 +3299,10 @@ PSL_STATIC int pslGetParset(int detChan, char *name, XiaDefaults *defs, void *va
     send[0] = (byte_t)1;
     send[1] = (byte_t)0;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send,
+    status = dxp_cmd(&detChan, &cmd, &lenS, send,
                       &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
-        status = XIA_XERXES;
+    if (status != DXP_SUCCESS) {
         sprintf(info_string,
                 "Error getting parset information for detChan %d",
                 detChan);
@@ -3386,7 +3313,7 @@ PSL_STATIC int pslGetParset(int detChan, char *name, XiaDefaults *defs, void *va
     *parset = (double)receive[RECV_DATA_OFFSET_STATUS];
 
     sprintf(info_string, "parset = %.3f", *parset);
-    pslLogDebug("pslGetParset", info_string);
+    pslLogInfo("pslGetParset", info_string);
 
     return XIA_SUCCESS;
 }
@@ -3556,15 +3483,7 @@ PSL_STATIC int pslGetSnapshotStats(int detChan, void *value, XiaDefaults *defs)
         return status;
     }
 
-    stats[TriggerLivetime] =  pslDoubleFromBytesOffset(receive, 6, RECV_BASE) * LIVETIME_CLOCK_TICK;
-    stats[Realtime] =  pslDoubleFromBytesOffset(receive, 6, 11) * REALTIME_CLOCK_TICK;
-    stats[EnergyLivetime] = 0.0;
-    stats[Triggers] =  pslDoubleFromBytesOffset(receive, 4, 17);
-    stats[Events] =  pslDoubleFromBytesOffset(receive, 4, 21);
-    stats[Underflows] = pslDoubleFromBytesOffset(receive, 4, 25);
-    stats[Overflows] = pslDoubleFromBytesOffset(receive, 4, 29);
-    stats[Ocr] = (stats[Realtime] == 0.0) ? 0.0 : (stats[Events] + stats[Underflows] + stats[Overflows]) / stats[Realtime];
-    stats[Icr] = (stats[TriggerLivetime] == 0.0) ? 0.0 : stats[Triggers] / stats[TriggerLivetime];
+    pslConvertStatistics(detChan, receive, stats);
 
     return XIA_SUCCESS;
 }
@@ -3600,28 +3519,9 @@ PSL_STATIC int pslGetSnapshotMcaLen(int detChan, void *value, XiaDefaults *defs)
 PSL_STATIC int pslGetSnapshotMca(int detChan, void *value, XiaDefaults *defs)
 {
     int status;
-    int statusX;
 
     unsigned long features;
-
-    unsigned int i;
-    unsigned int dataLen;
-    unsigned int lenS = 5;
-    unsigned int lenR = 0;
-
-    unsigned long *data = (unsigned long *)value;
-
-    double bytesPerBin = 0.0;
-    double numMCAChans = 0.0;
-    double mcaLowLim = 0.0;
-
     parameter_t SNAPSHOTSTART = 0x0000;
-
-    byte_t cmd = CMD_READ_SNAPSHOT_MCA;
-
-    byte_t send[5];
-
-    byte_t *receive = NULL;
 
     status = pslGetBoardFeatures(detChan, NULL, defs, (void *)&features);
 
@@ -3631,26 +3531,6 @@ PSL_STATIC int pslGetSnapshotMca(int detChan, void *value, XiaDefaults *defs)
         return XIA_NOSUPPORT_VALUE;
     }
 
-    status = pslGetAcquisitionValues(detChan, "bytes_per_bin", (void *)&bytesPerBin, defs);
-
-    if (status != XIA_SUCCESS) {
-        sprintf(info_string, "Error getting bytes per bin for detChan %d", detChan);
-        pslLogError("pslGetSnapshotMca", info_string, status);
-        return status;
-    }
-
-    status = pslGetAcquisitionValues(detChan, "number_mca_channels", (void *)&numMCAChans, defs);
-
-    if (status != XIA_SUCCESS) {
-        sprintf(info_string, "Error getting number of MCA channels for detChan %d", detChan);
-        pslLogError("pslGetSnapshotMca", info_string, status);
-        return status;
-    }
-
-    sprintf(info_string, "bytesPerBin = %.3f, numMCAChans = %.3f, mcaLowLim = %.3f",
-            bytesPerBin, numMCAChans, mcaLowLim);
-    pslLogDebug("pslGetSnapshotMca", info_string);
-
     if (IS_USB) {
         status = pslGetParameter(detChan, "SNAPSHOTSTART", &SNAPSHOTSTART);
 
@@ -3659,10 +3539,59 @@ PSL_STATIC int pslGetSnapshotMca(int detChan, void *value, XiaDefaults *defs)
             return status;
         }
 
-        status = pslGetMcaDirect(detChan, (int)bytesPerBin,
-                          (int)numMCAChans, (unsigned long)SNAPSHOTSTART, data);
+        status = pslGetMcaDirect(detChan, (unsigned long)SNAPSHOTSTART, value,defs);
+    } else {
+        status = pslGetMcaCmd(detChan, CMD_READ_SNAPSHOT_MCA, value, defs);
+    }
+
+
+    if (status != XIA_SUCCESS) {
+        pslLogError("pslGetSnapshotMca", "Error getting snapshot mca",
+                    status);
+    }
+
+    return status;
+}
+
+PSL_STATIC int pslGetMcaCmd(int detChan, byte_t cmd,
+                                    unsigned long *value, XiaDefaults *defs)
+{
+    int status;
+    unsigned int i;
+    unsigned int dataLen;
+    unsigned int lenS = 5;
+    unsigned int lenR = 0;
+
+    byte_t send[5];
+
+    byte_t *receive = NULL;
+
+    unsigned long *data = (unsigned long *)value;
+
+    double bytesPerBin = 0.0;
+    double numMCAChans = 0.0;
+    double mcaLowLim = 0.0;
+
+    status = pslGetDefault("bytes_per_bin", (void *)&bytesPerBin, defs);
+
+    if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error getting bytes per bin for detChan %d", detChan);
+        pslLogError("pslGetMcaCmd", info_string, status);
         return status;
     }
+    status = pslGetDefault("number_mca_channels", (void *)&numMCAChans, defs);
+
+    if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error getting number of MCA channels for detChan %d", detChan);
+        pslLogError("pslGetMcaCmd", info_string, status);
+        return status;
+    }
+
+    mcaLowLim = 0.0;
+
+    sprintf(info_string, "bytesPerBin = %.3f, numMCAChans = %.3f, mcaLowLim = %.3f",
+            bytesPerBin, numMCAChans, mcaLowLim);
+    pslLogDebug("pslGetMcaCmd", info_string);
 
     dataLen = (unsigned int)(bytesPerBin * numMCAChans);
     lenR = (unsigned int)(dataLen + 1 + RECV_BASE);
@@ -3676,18 +3605,18 @@ PSL_STATIC int pslGetSnapshotMca(int detChan, void *value, XiaDefaults *defs)
     receive = (byte_t *)utils->funcs->dxp_md_alloc(lenR * sizeof(byte_t));
 
     if (receive == NULL) {
-        pslLogError("pslGetSnapshotMca", "Out-of-memory trying to create "
+        pslLogError("pslGetMcaCmd", "Out-of-memory trying to create "
                     "receive array", XIA_NOMEM);
         return XIA_NOMEM;
     }
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         utils->funcs->dxp_md_free((void *)receive);
         sprintf(info_string, "Error getting MCA data from detChan %d", detChan);
-        pslLogError("pslGetSnapshotMca", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetMcaCmd", info_string, status);
+        return status;
     }
 
     /* Transfer the spectra to the user's array. */
@@ -3701,9 +3630,8 @@ PSL_STATIC int pslGetSnapshotMca(int detChan, void *value, XiaDefaults *defs)
 }
 
 
-PSL_STATIC int pslGetMcaDirect(int detChan, int bytesPerBin,
-                                    int numMCAChans, unsigned long startAddr,
-                                    unsigned long *data)
+PSL_STATIC int pslGetMcaDirect(int detChan, unsigned long startAddr,
+                                    unsigned long *data, XiaDefaults *defs)
 {
     int status;
     int i;
@@ -3711,13 +3639,37 @@ PSL_STATIC int pslGetMcaDirect(int detChan, int bytesPerBin,
     unsigned int dataLen;
     byte_t *receive;
 
+    double bytesPerBin = 0.0;
+    double numMCAChans = 0.0;
+    double mcaLowLim = 0.0;
+
     ASSERT(IS_USB);
 
+    status = pslGetDefault("bytes_per_bin", (void *)&bytesPerBin, defs);
+
+    if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error getting bytes per bin for detChan %d", detChan);
+        pslLogError("pslGetMcaDirect", info_string, status);
+        return status;
+    }
+    status = pslGetDefault("number_mca_channels", (void *)&numMCAChans, defs);
+
+    if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error getting number of MCA channels for detChan %d", detChan);
+        pslLogError("pslGetMcaDirect", info_string, status);
+        return status;
+    }
+
+    mcaLowLim = 0.0;
+
+    sprintf(info_string, "bytesPerBin = %.3f, numMCAChans = %.3f, mcaLowLim = %.3f",
+            bytesPerBin, numMCAChans, mcaLowLim);
+    pslLogDebug("pslGetMcaDirect", info_string);
 
     /* Note that the data in spectrum memory will always contain 4 bytes
      * Despite of the bytePerBin setting
      */
-    dataLen = numMCAChans * RAW_BYTES_PER_BIN;
+    dataLen = (unsigned int)numMCAChans * RAW_BYTES_PER_BIN;
     receive = (byte_t *)utils->funcs->dxp_md_alloc(dataLen * sizeof(byte_t));
 
     if (receive == NULL) {
@@ -3736,7 +3688,7 @@ PSL_STATIC int pslGetMcaDirect(int detChan, int bytesPerBin,
 
     /* Now it's time to discard the extra byte */
     for (i = 0; i < numMCAChans; i++) {
-        data[i] = pslUlFromBytesOffset(receive, bytesPerBin, i * RAW_BYTES_PER_BIN);
+        data[i] = pslUlFromBytesOffset(receive, (int)bytesPerBin, i * RAW_BYTES_PER_BIN);
     }
 
     utils->funcs->dxp_md_free((void *)receive);
@@ -3746,7 +3698,7 @@ PSL_STATIC int pslGetMcaDirect(int detChan, int bytesPerBin,
 PSL_STATIC int pslReadDirectUsbMemory(int detChan, unsigned long address,
                                     unsigned long num_bytes, byte_t *receive)
 {
-    int statusX;
+    int status;
 
     unsigned int i;
     char mem[MAXITEM_LEN];
@@ -3766,14 +3718,14 @@ PSL_STATIC int pslReadDirectUsbMemory(int detChan, unsigned long address,
     }
 
     sprintf(mem, "direct:%#lx:%lu", address, size);
-    statusX = dxp_read_memory(&detChan, mem, data);
+    status = dxp_read_memory(&detChan, mem, data);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         utils->funcs->dxp_md_free((void *)data);
         sprintf(info_string, "Error reading data directly from the "
                 "USB (%s) for detChan %d.", mem, detChan);
-        pslLogError("pslReadDirectUsbMemory", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslReadDirectUsbMemory", info_string, status);
+        return status;
     }
 
     sprintf(info_string, "readout mem (%s) for detChan %d.",  mem, detChan);
@@ -3816,7 +3768,6 @@ PSL_STATIC int pslGetBaseHistLen(int detChan, void *value, XiaDefaults *defs)
 
 PSL_STATIC int pslGetBaseHist(int detChan, void *value, XiaDefaults *defs)
 {
-    int statusX;
     int status;
 
     unsigned int lenS = 0;
@@ -3853,12 +3804,11 @@ PSL_STATIC int pslGetBaseHist(int detChan, void *value, XiaDefaults *defs)
         return status;
     }
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, NULL, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, NULL, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         utils->funcs->dxp_md_free((void *)receive);
         receive = NULL;
-        status = XIA_XERXES;
         sprintf(info_string,
                 "Error reading out baseline history for detChan %d",
                 detChan);
@@ -3883,7 +3833,7 @@ PSL_STATIC int pslGetBaseHist(int detChan, void *value, XiaDefaults *defs)
  */
 PSL_STATIC int pslGetRunActive(int detChan, void *value, XiaDefaults *defs)
 {
-    int statusX;
+    int status;
 
     byte_t cmd       = CMD_STATUS;
 
@@ -3899,13 +3849,13 @@ PSL_STATIC int pslGetRunActive(int detChan, void *value, XiaDefaults *defs)
     ASSERT(value != NULL);
 
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, NULL, &lenR, recv);
+    status = dxp_cmd(&detChan, &cmd, &lenS, NULL, &lenR, recv);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error reading board status for detChan %d",
                 detChan);
-        pslLogError("pslGetRunActive", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetRunActive", info_string, status);
+        return status;
     }
 
     *((unsigned long *)value) = (unsigned long)recv[7];
@@ -3972,7 +3922,6 @@ PSL_STATIC int pslGetPeakingTimes(int detChan, char *name,
 PSL_STATIC int pslReadoutPeakingTimes(int detChan, XiaDefaults *defs,
                                       boolean_t allFippis, double *pts)
 {
-    int statusX;
     int status;
     int i;
     int bytePerPt = pslNumBytesPerPt(detChan);
@@ -4007,13 +3956,13 @@ PSL_STATIC int pslReadoutPeakingTimes(int detChan, XiaDefaults *defs,
 
     lenR = (ptPerFippi * bytePerPt + 1 ) * nFiPPIs + 3 + RECV_BASE;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, NULL, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, NULL, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string,
                     "Error reading SLOWLEN values for detChan %d", detChan);
-        pslLogError("pslReadoutPeakingTimes", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslReadoutPeakingTimes", info_string, status);
+        return status;
     }
 
     if (allFippis) {
@@ -4078,7 +4027,7 @@ PSL_STATIC void pslCalculatePeakingTimes(int detChan, int fippi,
 
     sprintf(info_string, "DEC = %u, CLK = %#x, tick = %0.3f",
             DECIMATION, CLKSET, ptTick);
-    pslLogDebug("pslCalculatePeakingTimes", info_string);
+    pslLogInfo("pslCalculatePeakingTimes", info_string);
 
     for (i = 0; i < ptPerFippi; i++) {
         pts[i] = ptTick * pslDoubleFromBytes(
@@ -4096,7 +4045,6 @@ PSL_STATIC int pslGetSerialNumber(int detChan, char *name, XiaDefaults *defs,
                                   void *value)
 {
     int status;
-    int statusX;
 
     unsigned int i;
     unsigned int lenS = 0;
@@ -4115,11 +4063,10 @@ PSL_STATIC int pslGetSerialNumber(int detChan, char *name, XiaDefaults *defs,
 
     ASSERT(value != NULL);
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, NULL,
+    status = dxp_cmd(&detChan, &cmd, &lenS, NULL,
                       &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
-        status = XIA_XERXES;
+    if (status != DXP_SUCCESS) {
         pslLogError("pslGetSerialNumber",
                     "Error reading serial number from board",
                     status);
@@ -4175,7 +4122,7 @@ PSL_STATIC int pslBoardOperation(int detChan, char *name, void *value,
 PSL_STATIC int pslSaveGenset(int detChan, char *name, XiaDefaults *defs,
                              void *value)
 {
-    int statusX;
+    int status;
 
     DEFINE_CMD(CMD_SAVE_GENSET, 3, 2);
 
@@ -4189,18 +4136,18 @@ PSL_STATIC int pslSaveGenset(int detChan, char *name, XiaDefaults *defs,
 
 
     sprintf(info_string, "Saving genset = %u", genset);
-    pslLogDebug("pslSaveGenset", info_string);
+    pslLogInfo("pslSaveGenset", info_string);
 
     send[0] = (byte_t)genset;
     send[1] = (byte_t)0x55;
     send[2] = (byte_t)0xAA;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error saving GENSET to detChan %d", detChan);
-        pslLogError("pslSaveGenset", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSaveGenset", info_string, status);
+        return status;
     }
 
     /*   if (receive[5] != genset) { */
@@ -4220,7 +4167,7 @@ PSL_STATIC int pslSaveGenset(int detChan, char *name, XiaDefaults *defs,
 PSL_STATIC int pslSaveParset(int detChan, char *name, XiaDefaults *defs,
                              void *value)
 {
-    int statusX;
+    int status;
     unsigned short maxParset;
 
     DEFINE_CMD(CMD_SAVE_PARSET, 3, 2);
@@ -4235,10 +4182,10 @@ PSL_STATIC int pslSaveParset(int detChan, char *name, XiaDefaults *defs,
     ASSERT(value != NULL);
 
     sprintf(info_string, "parset = %u", parset);
-    pslLogDebug("pslSaveParset", info_string);
+    pslLogInfo("pslSaveParset", info_string);
 
-    statusX = pslGetNumPtPerFiPPI(detChan, NULL, defs, (void *)&maxParset);
-    ASSERT(statusX == XIA_SUCCESS);
+    status = pslGetNumPtPerFiPPI(detChan, NULL, defs, (void *)&maxParset);
+    ASSERT(status == XIA_SUCCESS);
 
     /* Verify limits on the PARSETs
      */
@@ -4252,12 +4199,12 @@ PSL_STATIC int pslSaveParset(int detChan, char *name, XiaDefaults *defs,
     send[1] = (byte_t)0x55;
     send[2] = (byte_t)0xAA;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error saving PARSET to detChan %d", detChan);
-        pslLogError("pslSaveParset", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSaveParset", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -4271,7 +4218,6 @@ PSL_STATIC int pslSaveParset(int detChan, char *name, XiaDefaults *defs,
 PSL_STATIC int pslGetFiPPI(int detChan, char *name, XiaDefaults *defs, void *value)
 {
     int status;
-    int statusX;
 
     double *fippi = (double *)value;
 
@@ -4286,11 +4232,10 @@ PSL_STATIC int pslGetFiPPI(int detChan, char *name, XiaDefaults *defs, void *val
 
     send[0] = (byte_t)1;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send,
+    status = dxp_cmd(&detChan, &cmd, &lenS, send,
                       &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
-        status = XIA_XERXES;
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting fippi value from detChan %d",
                 detChan);
         pslLogError("pslGetFiPPI", info_string, status);
@@ -4309,7 +4254,6 @@ PSL_STATIC int pslGetFiPPI(int detChan, char *name, XiaDefaults *defs, void *val
 PSL_STATIC int pslSetFiPPI(int detChan, char *name, XiaDefaults *defs, void *value)
 {
     int status;
-    int statusX;
 
     double fippi = *((double *)value);
     unsigned short numberFippis = 0;
@@ -4338,11 +4282,10 @@ PSL_STATIC int pslSetFiPPI(int detChan, char *name, XiaDefaults *defs, void *val
     send[0] = (byte_t)0;
     send[1] = (byte_t)fippi;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR,
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR,
                       receive);
 
-    if (statusX != DXP_SUCCESS) {
-        status = XIA_XERXES;
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error setting FiPPI on detChan %d", detChan);
         pslLogError("pslSetFiPPI", info_string, status);
         return status;
@@ -4400,7 +4343,6 @@ PSL_STATIC int pslGetGainMode(int detChan, char *name, XiaDefaults *defs,
 PSL_STATIC int pslGetNumFiPPIs(int detChan, char *name, XiaDefaults *defs,
                                void *value)
 {
-    int statusX;
     int status;
 
     unsigned short *nFiPPIs = (unsigned short *)value;
@@ -4420,11 +4362,10 @@ PSL_STATIC int pslGetNumFiPPIs(int detChan, char *name, XiaDefaults *defs,
     ASSERT(value != NULL);
 
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, NULL,
+    status = dxp_cmd(&detChan, &cmd, &lenS, NULL,
                       &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
-        status = XIA_XERXES;
+    if (status != DXP_SUCCESS) {
         sprintf(info_string,
                 "Error getting board information from detChan %d",
                 detChan);
@@ -4445,7 +4386,6 @@ PSL_STATIC int pslGetNumFiPPIs(int detChan, char *name, XiaDefaults *defs,
 PSL_STATIC int pslGetPTRanges(int detChan, char *name, XiaDefaults *defs,
                               void *value)
 {
-    int statusX;
     int status;
     int bytePerPt = pslNumBytesPerPt(detChan);
 
@@ -4492,9 +4432,9 @@ PSL_STATIC int pslGetPTRanges(int detChan, char *name, XiaDefaults *defs,
      */
     lenR = (ptPerFippi * bytePerPt + 1) * nFiPPIs + 3 + RECV_BASE;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, NULL, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, NULL, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string,
                 "Error reading SLOWLEN values from detChan %d", detChan);
         pslLogError("pslGetPTRanges", info_string, status);
@@ -4566,12 +4506,12 @@ PSL_STATIC int pslCalculateRanges(byte_t nFiPPIs, int ptPerFippi, int bytePerPt,
         }
 
         sprintf(info_string, "dec = %u, min = %0f, max = %0f", dec, min, max);
-        pslLogDebug("pslCalculateRanges", info_string);
+        pslLogInfo("pslCalculateRanges", info_string);
 
         ptBase = (1.0 / BASE_CLOCK) * pow(2.0, (double)CLKSET + (double)dec);
 
         sprintf(info_string, "ptBase = %.3f", ptBase);
-        pslLogDebug("pslCalculateRanges", info_string);
+        pslLogInfo("pslCalculateRanges", info_string);
 
         ranges[i * 2]       = min * ptBase;
         ranges[(i * 2) + 1] = max * ptBase;
@@ -4589,16 +4529,14 @@ PSL_STATIC int pslCalculateRanges(byte_t nFiPPIs, int ptPerFippi, int bytePerPt,
  */
 PSL_STATIC int pslUnHook(int detChan)
 {
-    int statusX;
     int status;
 
     sprintf(info_string, "Unhooking detChan %d", detChan);
-    pslLogDebug("pslUnHook", info_string);
+    pslLogInfo("pslUnHook", info_string);
 
-    statusX = dxp_exit(&detChan);
+    status = dxp_exit(&detChan);
 
-    if (statusX != DXP_SUCCESS) {
-        status = XIA_XERXES;
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error shutting down detChan %d", detChan);
         pslLogError("pslUnHook", info_string, status);
         return status;
@@ -4618,7 +4556,6 @@ PSL_STATIC int pslGetHistorySector(int detChan, char *name, XiaDefaults *defs,
                                    void *value)
 {
     int status;
-    int statusX;
 
     unsigned int i;
     unsigned int addr = 0x0000;
@@ -4642,11 +4579,10 @@ PSL_STATIC int pslGetHistorySector(int detChan, char *name, XiaDefaults *defs,
         send[1] = (byte_t)HI_BYTE(addr);
         send[2] = (byte_t)MAX_FLASH_READ;
 
-        statusX = dxp_cmd(&detChan, &cmd, &lenS, send,
+        status = dxp_cmd(&detChan, &cmd, &lenS, send,
                           &lenR, receive);
 
-        if (statusX != DXP_SUCCESS) {
-            status = XIA_XERXES;
+        if (status != DXP_SUCCESS) {
             pslLogError("pslGetHistorySector",
                         "Error reading XUP history from board",
                         status);
@@ -4665,7 +4601,7 @@ PSL_STATIC int pslGetHistorySector(int detChan, char *name, XiaDefaults *defs,
  */
 PSL_STATIC int pslGetBoardInfo(int detChan, char *name, XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     byte_t *data = (byte_t *)value;
 
@@ -4678,14 +4614,14 @@ PSL_STATIC int pslGetBoardInfo(int detChan, char *name, XiaDefaults *defs, void 
     ASSERT(value != NULL);
 
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, NULL, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, NULL, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string,
                 "Error getting board information for detChan %d",
                 detChan);
-        pslLogError("pslGetBoardInfo", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetBoardInfo", info_string, status);
+        return status;
     }
 
     /* XXX Fix these magic numbers! */
@@ -4781,7 +4717,7 @@ PSL_STATIC double pslComputeFraction(byte_t word, int nBits)
 PSL_STATIC int pslGetTemperature(int detChan, char *name, XiaDefaults *defs,
                                  void *value)
 {
-    int statusX;
+    int status;
     int nBits;
 
     double *temperature = (double *)value;
@@ -4795,13 +4731,13 @@ PSL_STATIC int pslGetTemperature(int detChan, char *name, XiaDefaults *defs,
     ASSERT(value != NULL);
 
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, NULL, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, NULL, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting temperature for detChan %d",
                 detChan);
-        pslLogError("pslGetTemperature", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetTemperature", info_string, status);
+        return status;
     }
 
     /* Start with the signed integer part. */
@@ -4827,7 +4763,6 @@ PSL_STATIC int pslGetTemperature(int detChan, char *name, XiaDefaults *defs,
 PSL_STATIC int pslGetRCTau(int detChan, XiaDefaults *defs, double *val)
 {
     int status;
-    int statusX;
 
     unsigned short taurc = 0x0000;
 
@@ -4842,12 +4777,12 @@ PSL_STATIC int pslGetRCTau(int detChan, XiaDefaults *defs, double *val)
     send[1] = (byte_t)0;
     send[2] = (byte_t)0;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting RC tau value for detChan %d", detChan);
-        pslLogError("pslGetRCTau", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetRCTau", info_string, status);
+        return status;
     }
 
     if (isSuper) {
@@ -4873,7 +4808,7 @@ PSL_STATIC int pslGetRCTau(int detChan, XiaDefaults *defs, double *val)
  */
 PSL_STATIC int pslGetResetInterval(int detChan, double *value)
 {
-    int statusX;
+    int status;
 
     DEFINE_CMD(CMD_GET_RESET, 2, 2);
 
@@ -4884,12 +4819,12 @@ PSL_STATIC int pslGetResetInterval(int detChan, double *value)
     send[0] = (byte_t)1;
     send[1] = (byte_t)0;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting reset interval for detChan %d", detChan);
-        pslLogError("pslGetResetInterval", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetResetInterval", info_string, status);
+        return status;
     }
 
     *value = (double)receive[RECV_DATA_OFFSET_STATUS];
@@ -4921,8 +4856,8 @@ PSL_STATIC int pslSetPreampVal(int detChan, char *name, XiaDefaults *defs, void 
 
     if (status != XIA_SUCCESS) {
         sprintf(info_string, "Error getting preamp type for detChan %d", detChan);
-        pslLogError("pslSetPreampVal", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetPreampVal", info_string, status);
+        return status;
     }
 
     switch(type) {
@@ -4973,8 +4908,8 @@ PSL_STATIC int pslGetPreampVal(int detChan, char *name, XiaDefaults *defs, void 
 
     if (status != XIA_SUCCESS) {
         sprintf(info_string, "Error getting preamp type for detChan %d", detChan);
-        pslLogError("pslGetPreampVal", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetPreampVal", info_string, status);
+        return status;
     }
 
     switch(type) {
@@ -5008,7 +4943,7 @@ PSL_STATIC int pslGetPreampVal(int detChan, char *name, XiaDefaults *defs, void 
  */
 PSL_STATIC int pslSetResetInterval(int detChan, double *value)
 {
-    int statusX;
+    int status;
 
     byte_t rt = 0;
 
@@ -5031,12 +4966,12 @@ PSL_STATIC int pslSetResetInterval(int detChan, double *value)
     send[0] = (byte_t)0;
     send[1] = rt;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error setting reset interval for detChan %d", detChan);
-        pslLogError("pslSetResetInterval", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetResetInterval", info_string, status);
+        return status;
     }
 
     *resetinterval = (double)receive[RECV_DATA_OFFSET_STATUS];
@@ -5050,7 +4985,6 @@ PSL_STATIC int pslSetResetInterval(int detChan, double *value)
 PSL_STATIC int pslSetRCTau(int detChan, XiaDefaults *defs, double *value)
 {
     int status;
-    int statusX;
 
     DEFINE_CMD(CMD_SET_RCFEED, 3, 3);
 
@@ -5092,13 +5026,13 @@ PSL_STATIC int pslSetRCTau(int detChan, XiaDefaults *defs, double *value)
     send[1] = (byte_t)LO_BYTE(taurc);
     send[2] = (byte_t)HI_BYTE(taurc);
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error setting RC time constant for detChan %d",
                 detChan);
-        pslLogError("pslSetRCTau", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetRCTau", info_string, status);
+        return status;
     }
 
     /* Pass the value returned from CMD_SET_RCFEED */
@@ -5113,7 +5047,7 @@ PSL_STATIC int pslSetRCTau(int detChan, XiaDefaults *defs, double *value)
  */
 PSL_STATIC int pslGetPreampPol(int detChan, char *name, XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     double *pol = (double *)value;
 
@@ -5129,12 +5063,12 @@ PSL_STATIC int pslGetPreampPol(int detChan, char *name, XiaDefaults *defs, void 
     send[0] = (byte_t)1;
     send[1] = (byte_t)0;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting polarity for detChan %d", detChan);
-        pslLogError("pslGetPreampPol", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetPreampPol", info_string, status);
+        return status;
     }
 
     *pol = (double)receive[RECV_DATA_OFFSET_STATUS];
@@ -5148,7 +5082,7 @@ PSL_STATIC int pslGetPreampPol(int detChan, char *name, XiaDefaults *defs, void 
  */
 PSL_STATIC int pslSetPreampPol(int detChan, char *name, XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     double pol = *((double *)value);
 
@@ -5171,12 +5105,12 @@ PSL_STATIC int pslSetPreampPol(int detChan, char *name, XiaDefaults *defs, void 
     send[0] = (byte_t)0;
     send[1] = (byte_t)pol;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error setting polarity for detChan %d", detChan);
-        pslLogError("pslSetPreampPol", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetPreampPol", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -5203,7 +5137,7 @@ PSL_STATIC int pslApply(int detChan, char *name, XiaDefaults *defs, void *value)
  */
 PSL_STATIC int pslGetGenset(int detChan, char *name, XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     double *genset = (double *)value;
 
@@ -5219,20 +5153,20 @@ PSL_STATIC int pslGetGenset(int detChan, char *name, XiaDefaults *defs, void *va
     send[0] = (byte_t)1;
     send[1] = (byte_t)0;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send,
+    status = dxp_cmd(&detChan, &cmd, &lenS, send,
                       &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting genset for detChan %d",
                 detChan);
-        pslLogError("pslGetGenset", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetGenset", info_string, status);
+        return status;
     }
 
     *genset = (double)receive[5];
 
     sprintf(info_string, "genset = %.3f", *genset);
-    pslLogDebug("pslGetGenset", info_string);
+    pslLogInfo("pslGetGenset", info_string);
 
     return XIA_SUCCESS;
 }
@@ -5324,8 +5258,8 @@ PSL_STATIC int pslSetFilterParam(int detChan, byte_t n, parameter_t value)
 
     if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error setting a filter parameter for detChan %d", detChan);
-        pslLogError("pslSetFilterParam", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetFilterParam", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -5358,8 +5292,8 @@ PSL_STATIC int pslGetFilterParam(int detChan, byte_t n, parameter_t *value)
 
     if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting filter parameter %uh for detChan %d", n, detChan);
-        pslLogError("pslGetFilterParam", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetFilterParam", info_string, status);
+        return status;
     }
 
     if (isSuper) {
@@ -5501,7 +5435,6 @@ PSL_STATIC int pslSetEGapTime(int detChan, char *name, XiaDefaults *defs, void *
 PSL_STATIC int pslSetClockSpd(int detChan, char *name, XiaDefaults *defs, void *value)
 {
     int status;
-    int statusX;
 
     byte_t clkIdx = 0xFF;
 
@@ -5544,13 +5477,13 @@ PSL_STATIC int pslSetClockSpd(int detChan, char *name, XiaDefaults *defs, void *
     send[0] = (byte_t)0;
     send[1] = clkIdx;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error setting the clock speed for detChan %d",
                 detChan);
-        pslLogError("pslSetClockSpd", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetClockSpd", info_string, status);
+        return status;
     }
 
     INVALIDATE("pslSetClockSpd", "energy_gap_time");
@@ -5653,7 +5586,6 @@ PSL_STATIC int pslGetClockTick(int detChan, XiaDefaults *defs, double *value)
  */
 PSL_STATIC int pslGetClockSpd(int detChan, char *name, XiaDefaults *defs, void *value)
 {
-    int statusX;
     int status;
 
     double clkIdx;
@@ -5672,12 +5604,12 @@ PSL_STATIC int pslGetClockSpd(int detChan, char *name, XiaDefaults *defs, void *
     send[0] = (byte_t)1;
     send[1] = (byte_t)0;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting clock speed for detChan %d", detChan);
-        pslLogError("pslGetClockSpd", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetClockSpd", info_string, status);
+        return status;
     }
 
     clkIdx = (double)receive[RECV_DATA_OFFSET_STATUS];
@@ -5727,8 +5659,8 @@ PSL_STATIC int pslGetTPeakTime(int detChan, char *name, XiaDefaults *defs, void 
 
     if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting FASTLEN for detChan %d", detChan);
-        pslLogError("pslGetTPEakTime", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetTPEakTime", info_string, status);
+        return status;
     }
 
     *pt = (double)((double)FASTLEN / clkSpd);
@@ -5778,7 +5710,7 @@ PSL_STATIC int pslSetTPeakTime(int detChan, char *name, XiaDefaults *defs, void 
     FASTLEN = (parameter_t)ROUND(*pt * clkSpd);
 
     sprintf(info_string, "FASTLEN = %u", FASTLEN);
-    pslLogDebug("pslSetTPeakTime", info_string);
+    pslLogInfo("pslSetTPeakTime", info_string);
 
     if (FASTLEN < 2) {
         sprintf(info_string, "Calculated FASTLEN is too small. Setting to min value 2.");
@@ -5805,8 +5737,8 @@ PSL_STATIC int pslSetTPeakTime(int detChan, char *name, XiaDefaults *defs, void 
 
     if (status != XIA_SUCCESS) {
         sprintf(info_string, "Error setting FASTLEN for detChan %d", detChan);
-        pslLogError("pslSetTPeakTime", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetTPeakTime", info_string, status);
+        return status;
     }
 
     if (FASTLEN + FASTGAP > MAX_FASTLEN) {
@@ -5820,8 +5752,8 @@ PSL_STATIC int pslSetTPeakTime(int detChan, char *name, XiaDefaults *defs, void 
 
         if (status != XIA_SUCCESS) {
             sprintf(info_string, "Error setting FASTGAP for detChan %d", detChan);
-            pslLogError("pslSetTPeakTime", info_string, XIA_XERXES);
-            return XIA_XERXES;
+            pslLogError("pslSetTPeakTime", info_string, status);
+            return status;
         }
 
         INVALIDATE("pslSetTPeakTime", "trigger_gap_time");
@@ -5842,7 +5774,6 @@ PSL_STATIC int pslSetTPeakTime(int detChan, char *name, XiaDefaults *defs, void 
 PSL_STATIC int pslSetTGapTime(int detChan, char *name, XiaDefaults *defs, void *value)
 {
     int status;
-    int statusX;
 
     parameter_t FASTGAP = 0;
     parameter_t MAX_FASTGAP = 0;
@@ -5878,7 +5809,7 @@ PSL_STATIC int pslSetTGapTime(int detChan, char *name, XiaDefaults *defs, void *
     FASTGAP = (parameter_t)ROUND(*gap * clkSpd);
 
     sprintf(info_string, "FASTGAP = %u", FASTGAP);
-    pslLogDebug("pslSetTGapTime", info_string);
+    pslLogInfo("pslSetTGapTime", info_string);
 
     /* 2 <= FASTLEN
      * 0 <= FASTGAP
@@ -5895,12 +5826,12 @@ PSL_STATIC int pslSetTGapTime(int detChan, char *name, XiaDefaults *defs, void *
         FASTGAP = MAX_FASTGAP;
     }
 
-    statusX = pslSetFilterParam(detChan, FILTER_FASTGAP, FASTGAP);
+    status = pslSetFilterParam(detChan, FILTER_FASTGAP, FASTGAP);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error setting FASTGAP for detChan %d", detChan);
-        pslLogError("pslSetTGapTime", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetTGapTime", info_string, status);
+        return status;
     }
 
     *gap = (double)((double)FASTGAP / clkSpd);
@@ -5940,8 +5871,8 @@ PSL_STATIC int pslGetTGapTime(int detChan, char *name, XiaDefaults *defs, void *
 
     if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting FASTGAP for detChan %d", detChan);
-        pslLogError("pslGetTGapTime", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetTGapTime", info_string, status);
+        return status;
     }
 
     *gap = (double)((double)FASTGAP / clkSpd);
@@ -5955,7 +5886,7 @@ PSL_STATIC int pslGetTGapTime(int detChan, char *name, XiaDefaults *defs, void *
  */
 PSL_STATIC int pslSetBaseLen(int detChan, char *name, XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     parameter_t BLFILTER = 0;
 
@@ -5972,7 +5903,7 @@ PSL_STATIC int pslSetBaseLen(int detChan, char *name, XiaDefaults *defs, void *v
     BLFILTER = (parameter_t)ROUND(32768.0 / *baseLen);
 
     sprintf(info_string, "New BLFILTER = %u (bl = %.3f)", BLFILTER, *baseLen);
-    pslLogDebug("pslSetBaseLen", info_string);
+    pslLogInfo("pslSetBaseLen", info_string);
 
     if (BLFILTER == 0) {
         sprintf(info_string, "Baseline length is 0 for detChan %d", detChan);
@@ -5984,13 +5915,13 @@ PSL_STATIC int pslSetBaseLen(int detChan, char *name, XiaDefaults *defs, void *v
     send[1] = (byte_t)LO_BYTE(BLFILTER);
     send[2] = (byte_t)HI_BYTE(BLFILTER);
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error setting BLFILTER to %#x on detChan %d",
                 BLFILTER, detChan);
-        pslLogError("pslSetBaseLen", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetBaseLen", info_string, status);
+        return status;
     }
 
     /* Due to rounding, the calculated value can be different than the specified
@@ -6007,7 +5938,7 @@ PSL_STATIC int pslSetBaseLen(int detChan, char *name, XiaDefaults *defs, void *v
  */
 PSL_STATIC int pslGetBaseLen(int detChan, char *name, XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     parameter_t BLFILTER = 0;
 
@@ -6023,19 +5954,19 @@ PSL_STATIC int pslGetBaseLen(int detChan, char *name, XiaDefaults *defs, void *v
 
     send[0] = (byte_t)1;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting BLFILTER for detChan %d", detChan);
-        pslLogError("pslGetBaseLen", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetBaseLen", info_string, status);
+        return status;
     }
 
     BLFILTER = (unsigned short)(((unsigned short)receive[RECV_DATA_BASE + 1] << 8)
                                 | receive[RECV_DATA_BASE]);
 
     sprintf(info_string, "BLFILTER = %u", BLFILTER);
-    pslLogDebug("pslGetBaseLen", info_string);
+    pslLogInfo("pslGetBaseLen", info_string);
 
     *baseLen = (double)(32768.0 / BLFILTER);
 
@@ -6146,7 +6077,7 @@ PSL_STATIC int pslGetADCWait(int detChan, char *name, XiaDefaults *defs, void *v
     *minTracewait = pslMinTraceWait(spd);
 
     sprintf(info_string, "tracewait = %.3f", *minTracewait);
-    pslLogDebug("pslGetADCWait", info_string);
+    pslLogInfo("pslGetADCWait", info_string);
 
     return XIA_SUCCESS;
 }
@@ -6200,7 +6131,7 @@ PSL_STATIC int pslSetADCWait(int detChan, char *name, XiaDefaults *defs, void *v
  */
 PSL_STATIC int pslGetAllStatistics(int detChan, void *value, XiaDefaults *defs)
 {
-    int statusX;
+    int status;
 
     double lt  = 0.0;
     double rt  = 0.0;
@@ -6220,12 +6151,12 @@ PSL_STATIC int pslGetAllStatistics(int detChan, void *value, XiaDefaults *defs)
     pslLogWarning("pslGetAllStatistics", "The run data all_statistics is "
                   "deprecated, please use module_statistics_2 instead.");
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, NULL, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, NULL, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error reading statistics for detChan %d", detChan);
-        pslLogError("pslGetAllStatistics", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetAllStatistics", info_string, status);
+        return status;
     }
 
     lt =  pslDoubleFromBytesOffset(receive, 6, 5) * LIVETIME_CLOCK_TICK;
@@ -6246,7 +6177,7 @@ PSL_STATIC int pslGetAllStatistics(int detChan, void *value, XiaDefaults *defs)
     return XIA_SUCCESS;
 }
 
-/*
+/* rundata module_statistics_2
  * Returns all of the statistics in a single array for run
  * data module_statistics_2 value is expected to be a double array capable
  * of holding 9 values returned in the following format:
@@ -6257,17 +6188,7 @@ PSL_STATIC int pslGetAllStatistics(int detChan, void *value, XiaDefaults *defs)
 PSL_STATIC int pslGetModuleStatistics(int detChan, void *value, XiaDefaults *defs)
 {
 
-    int statusX;
-
-    double lt  = 0.0;
-    double rt  = 0.0;
-    double in  = 0.0;
-    double out = 0.0;
-    double icr = 0.0;
-    double ocr = 0.0;
-    double unders = 0.0;
-    double overs = 0.0;
-
+    int status;
     double *stats = (double *)value;
 
     DEFINE_CMD(CMD_READ_STATISTICS, 1, 29);
@@ -6278,7 +6199,6 @@ PSL_STATIC int pslGetModuleStatistics(int detChan, void *value, XiaDefaults *def
     }
 
     UNUSED(defs);
-
     ASSERT(value != NULL);
 
     /* long read mode to retrieve under and over flows */
@@ -6286,56 +6206,52 @@ PSL_STATIC int pslGetModuleStatistics(int detChan, void *value, XiaDefaults *def
         send[0] = (byte_t)1;
     }
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error reading statistics for detChan %d", detChan);
-        pslLogError("pslGetModuleStatistics", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetModuleStatistics", info_string, status);
+        return status;
     }
 
-    lt =  pslDoubleFromBytesOffset(receive, 6, 5) * LIVETIME_CLOCK_TICK;
-    rt =  pslDoubleFromBytesOffset(receive, 6, 11) * REALTIME_CLOCK_TICK;
-    in =  pslDoubleFromBytesOffset(receive, 4, 17);
-    out =  pslDoubleFromBytesOffset(receive, 4, 21);
+    pslConvertStatistics(detChan, receive, stats);
+    return XIA_SUCCESS;
+}
 
-    if (isSuper) {
-        unders =  pslDoubleFromBytesOffset(receive, 4, 25);
-        overs =  pslDoubleFromBytesOffset(receive, 4, 29);
-    }
 
-    if (rt > 0.0) {
-        ocr = (out + unders + overs) / rt;
-    } else {
-        ocr = 0.0;
-    }
+/*
+ * Convert a statistics return array from receive buffer in the following format:
+ *
+ * [runtime, trigger_livetime, energy_livetime, triggers, events, icr,
+ * ocr, underflows, overflows]
+ */
+PSL_STATIC void pslConvertStatistics(int detChan, byte_t *receive, double *stats)
+{
+    boolean_t isSuper = dxp_is_supermicro(detChan);
 
-    if (lt > 0.0) {
-        icr = in / lt;
-    } else {
-        icr = 0.0;
-    }
+    ASSERT(receive != NULL);
+    ASSERT(stats != NULL);
 
-    stats[0] = rt;
-    stats[1] = lt;
-    stats[2] = 0.0;
-    stats[3] = in;
-    stats[4] = out;
-    stats[5] = icr;
-    stats[6] = ocr;
-    stats[7] = unders;
-    stats[8] = overs;
+    stats[TriggerLivetime]  = pslDoubleFromBytesOffset(receive, 6, 5) * LIVETIME_CLOCK_TICK;
+    stats[Realtime]         = pslDoubleFromBytesOffset(receive, 6, 11) * REALTIME_CLOCK_TICK;
+    stats[EnergyLivetime]   = 0.0;
+    stats[Triggers]         = pslDoubleFromBytesOffset(receive, 4, 17);
+    stats[Events]           = pslDoubleFromBytesOffset(receive, 4, 21);
+    stats[Underflows]       = isSuper ? pslDoubleFromBytesOffset(receive, 4, 25) : 0.0;
+    stats[Overflows]        = isSuper ? pslDoubleFromBytesOffset(receive, 4, 29) : 0.0;
+    stats[Ocr]              = (stats[Realtime] == 0.0) ? 0.0 : (stats[Events] + stats[Underflows] + stats[Overflows]) / stats[Realtime];
+    stats[Icr]              = (stats[TriggerLivetime] == 0.0) ? 0.0 : stats[Triggers] / stats[TriggerLivetime];
 
     /* microDXP doesn't support energy_livetime directly
      * it's calculated from the following formula
      * energy filter live time = realtime * ocr / icr
      * (excluding unrealistic OCR values caused by noisy energy peak)
      */
-    if ((icr != 0) && (icr >= ocr))
-        stats[2] = (rt * ocr) / icr;
+    if ((stats[Icr] != 0) && (stats[Icr] >= stats[Ocr]))
+        stats[EnergyLivetime] = (stats[Realtime] * stats[Ocr]) / stats[Icr];
 
-    return XIA_SUCCESS;
 }
+
 
 /*
  * Determines the preamplifier type based on the firmware loaded on
@@ -6403,7 +6319,7 @@ PSL_STATIC int pslQueryPreampType(int detChan, unsigned short *type)
  */
 PSL_STATIC int pslGetFipControl(int detChan, char *name, XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     double *fipcontrol = (double *)value;
 
@@ -6417,12 +6333,12 @@ PSL_STATIC int pslGetFipControl(int detChan, char *name, XiaDefaults *defs, void
 
     send[0] = (byte_t)1;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error reading FIPCONTROL for detChan %d", detChan);
-        pslLogError("pslGetFipControl", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetFipControl", info_string, status);
+        return status;
     }
 
     *fipcontrol = (double)(((unsigned short)receive[RECV_DATA_BASE + 1] << 8) |
@@ -6430,7 +6346,7 @@ PSL_STATIC int pslGetFipControl(int detChan, char *name, XiaDefaults *defs, void
 
     sprintf(info_string, "lo = %#x, hi = %#x, fipcontrol = %.3f",
             receive[RECV_DATA_BASE], receive[RECV_DATA_BASE + 1], *fipcontrol);
-    pslLogDebug("pslGetFipControl", info_string);
+    pslLogInfo("pslGetFipControl", info_string);
 
     return XIA_SUCCESS;
 }
@@ -6441,7 +6357,7 @@ PSL_STATIC int pslGetFipControl(int detChan, char *name, XiaDefaults *defs, void
  */
 PSL_STATIC int pslSetFipControl(int detChan, char *name, XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     unsigned short fipcontrol = (unsigned short)(*((double *)value));
 
@@ -6458,15 +6374,15 @@ PSL_STATIC int pslSetFipControl(int detChan, char *name, XiaDefaults *defs, void
     send[2] = (byte_t)HI_BYTE(fipcontrol);
 
     sprintf(info_string, "Setting FIPCONTROL to %#x", fipcontrol);
-    pslLogDebug("pslSetFipControl", info_string);
+    pslLogInfo("pslSetFipControl", info_string);
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error setting FIPCONTROL to %#x on detChan %d",
                 fipcontrol, detChan);
-        pslLogError("pslSetFipControl", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetFipControl", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -6478,7 +6394,7 @@ PSL_STATIC int pslSetFipControl(int detChan, char *name, XiaDefaults *defs, void
  */
 PSL_STATIC int pslGetRuntasks(int detChan, char *name, XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     double *runtasks = (double *)value;
 
@@ -6492,12 +6408,12 @@ PSL_STATIC int pslGetRuntasks(int detChan, char *name, XiaDefaults *defs, void *
 
     send[0] = (byte_t)1;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error reading RUNTASKS for detChan %d", detChan);
-        pslLogError("pslGetRuntasks", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetRuntasks", info_string, status);
+        return status;
     }
 
     *runtasks = (double)(((unsigned short)receive[RECV_DATA_BASE + 1] << 8) |
@@ -6512,7 +6428,7 @@ PSL_STATIC int pslGetRuntasks(int detChan, char *name, XiaDefaults *defs, void *
  */
 PSL_STATIC int pslSetRuntasks(int detChan, char *name, XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     unsigned short runtasks = (unsigned short)(*((double *)value));
 
@@ -6528,13 +6444,13 @@ PSL_STATIC int pslSetRuntasks(int detChan, char *name, XiaDefaults *defs, void *
     send[1] = (byte_t)LO_BYTE(runtasks);
     send[2] = (byte_t)HI_BYTE(runtasks);
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error setting RUNTASKS to %#x on detChan %d",
                 runtasks, detChan);
-        pslLogError("pslSetRuntasks", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetRuntasks", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -6552,7 +6468,6 @@ PSL_STATIC int pslSetRuntasks(int detChan, char *name, XiaDefaults *defs, void *
 PSL_STATIC int pslSetGainTrim(int detChan, char *name, XiaDefaults *defs, void *value)
 {
     int status;
-    int statusX;
 
     double gDB      = 0.0;
     double gainbase = 0.0;
@@ -6611,7 +6526,7 @@ PSL_STATIC int pslSetGainTrim(int detChan, char *name, XiaDefaults *defs, void *
     gain = (*gaintrim) * gainbase;
 
     sprintf(info_string, "gain = %.3f, gainbase = %.3f", gain, gainbase);
-    pslLogDebug("pslSetGainTrim", info_string);
+    pslLogInfo("pslSetGainTrim", info_string);
 
     if (gain > GAIN_LINEAR_MAX) {
         sprintf(info_string,
@@ -6654,19 +6569,19 @@ PSL_STATIC int pslSetGainTrim(int detChan, char *name, XiaDefaults *defs, void *
 
     sprintf(info_string, "gaintrim = %.3f, gDB = %.3f, GAINTWEAK = %#x", *gaintrim,
             gDB, GAINTWEAK);
-    pslLogDebug("pslSetGainTrim", info_string);
+    pslLogInfo("pslSetGainTrim", info_string);
 
     send[0] = (byte_t)0;
     send[1] = (byte_t)LO_BYTE(GAINTWEAK);
     send[2] = (byte_t)HI_BYTE(GAINTWEAK);
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error setting GAINTWEAK to '%#x' on detChan %d",
                 GAINTWEAK, detChan);
-        pslLogError("pslSetGainTrim", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetGainTrim", info_string, status);
+        return status;
     }
 
     /* Due to rounding, the calculated value can be different than the specified
@@ -6747,7 +6662,7 @@ PSL_STATIC int pslGetGainTrim(int detChan, char *name, XiaDefaults *defs, void *
 
     sprintf(info_string, "%s = %#x, gDB = %.3f, gaintrim = %.3f",
             gaintweakname, GAINTWEAK, gDB, *gaintrim);
-    pslLogDebug("pslGetGainTrim", info_string);
+    pslLogInfo("pslGetGainTrim", info_string);
 
     return XIA_SUCCESS;
 }
@@ -6823,7 +6738,7 @@ PSL_STATIC int pslUpdateFilterParams(int detChan, double *pioffset,
     PEAKINT = SLOWLEN + SLOWGAP + (parameter_t)ROUND(*pioffset / clkTick);
 
     sprintf(info_string, "PEAKINT = %u", PEAKINT);
-    pslLogDebug("pslUpdateFilterParams", info_string);
+    pslLogInfo("pslUpdateFilterParams", info_string);
 
     /* The only limit we enforce is a software limit where the value would exceed
      * the max parameter size.
@@ -6868,7 +6783,7 @@ PSL_STATIC int pslUpdateFilterParams(int detChan, double *pioffset,
         PEAKSAM = (parameter_t)ROUND(peaksam / clkTick);
 
         sprintf(info_string, "Calculated PEAKSAM = %u", PEAKSAM);
-        pslLogDebug("pslUpdateFilterParams", info_string);
+        pslLogInfo("pslUpdateFilterParams", info_string);
 
         if (PEAKSAM > PEAKINT) {
             sprintf(info_string, "PEAKSAM %hu is out of range for PEAKINT = %hu. "
@@ -7124,8 +7039,8 @@ PSL_STATIC int pslSetPeakInt(int detChan, char *name, XiaDefaults *defs, void *v
 
     if (status != XIA_SUCCESS) {
         sprintf(info_string, "Error setting PEAKINT for detChan %d", detChan);
-        pslLogError("pslSetPeakInt", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetPeakInt", info_string, status);
+        return status;
     }
 
     /* Due to rounding, the calculated value can be different than the specified
@@ -7163,8 +7078,8 @@ PSL_STATIC int pslGetPeakInt(int detChan, char *name, XiaDefaults *defs, void *v
 
     if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting PEAKINT for detChan %d", detChan);
-        pslLogError("pslGetPeakInt", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetPeakInt", info_string, status);
+        return status;
     }
 
     status = pslGetClockTick(detChan, defs, &clkTick);
@@ -7228,8 +7143,8 @@ PSL_STATIC int pslSetPeakSam(int detChan, char *name, XiaDefaults *defs, void *v
 
     if (status != XIA_SUCCESS) {
         sprintf(info_string, "Error setting PEAKSAM for detChan %d", detChan);
-        pslLogError("pslSetPeakSam", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetPeakSam", info_string, status);
+        return status;
     }
 
     /* Due to rounding, the calculated value can be different than the specified
@@ -7267,8 +7182,8 @@ PSL_STATIC int pslGetPeakSam(int detChan, char *name, XiaDefaults *defs, void *v
 
     if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting PEAKSAM for detChan %d", detChan);
-        pslLogError("pslGetPeakSam", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetPeakSam", info_string, status);
+        return status;
     }
 
     status = pslGetClockTick(detChan, defs, &clkTick);
@@ -7321,7 +7236,7 @@ PSL_STATIC int pslSetMaxWidth(int detChan, char *name, XiaDefaults *defs, void *
     MAXWIDTH = (parameter_t)ROUND((*mw) * clkSpd);
 
     sprintf(info_string, "MAXWIDTH = %u", MAXWIDTH);
-    pslLogDebug("pslSetMaxWidth", info_string);
+    pslLogInfo("pslSetMaxWidth", info_string);
 
     if (MAXWIDTH > MAX_MAXWIDTH) {
         sprintf(info_string, "Requested max width time (%.3lf microseconds) is "
@@ -7336,8 +7251,8 @@ PSL_STATIC int pslSetMaxWidth(int detChan, char *name, XiaDefaults *defs, void *
 
     if (status != XIA_SUCCESS) {
         sprintf(info_string, "Error setting MAXWIDTH for detChan %d", detChan);
-        pslLogError("pslSetMaxWidth", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetMaxWidth", info_string, status);
+        return status;
     }
 
     /* Due to rounding, the calculated value can be different than the specified
@@ -7371,8 +7286,8 @@ PSL_STATIC int pslGetMaxWidth(int detChan, char *name, XiaDefaults *defs, void *
 
     if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting MAXWIDTH for detChan %d", detChan);
-        pslLogError("pslGetMaxWidth", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetMaxWidth", info_string, status);
+        return status;
     }
 
     status = pslGetAcquisitionValues(detChan, "clock_speed", (void *)&clkSpd,
@@ -7396,7 +7311,7 @@ PSL_STATIC int pslGetMaxWidth(int detChan, char *name, XiaDefaults *defs, void *
  */
 PSL_STATIC int pslSetPeakMode(int detChan, char *name, XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     parameter_t PEAKMODE = (parameter_t)*((double *)value);
 
@@ -7422,12 +7337,12 @@ PSL_STATIC int pslSetPeakMode(int detChan, char *name, XiaDefaults *defs, void *
 
     ASSERT(value != NULL);
 
-    statusX = pslSetFilterParam(detChan, FILTER_PEAKMODE, PEAKMODE);
+    status = pslSetFilterParam(detChan, FILTER_PEAKMODE, PEAKMODE);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error setting PEAKMODE for detChan %d", detChan);
-        pslLogError("pslSetPeakMode", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetPeakMode", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -7439,7 +7354,7 @@ PSL_STATIC int pslSetPeakMode(int detChan, char *name, XiaDefaults *defs, void *
  */
 PSL_STATIC int pslGetPeakMode(int detChan, char *name, XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     parameter_t PEAKMODE = 0;
 
@@ -7459,12 +7374,12 @@ PSL_STATIC int pslGetPeakMode(int detChan, char *name, XiaDefaults *defs, void *
 
     ASSERT(value != NULL);
 
-    statusX = pslGetFilterParam(detChan, FILTER_PEAKMODE, &PEAKMODE);
+    status = pslGetFilterParam(detChan, FILTER_PEAKMODE, &PEAKMODE);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting PEAKMODE for detChan %d", detChan);
-        pslLogError("pslGetPeakMode", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetPeakMode", info_string, status);
+        return status;
     }
 
     *pm = (double)PEAKMODE;
@@ -7503,7 +7418,7 @@ PSL_STATIC int pslSetBFactor(int detChan, char *name, XiaDefaults *defs, void *v
  */
 PSL_STATIC int pslGetBFactor(int detChan, char *name, XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     parameter_t BFACTOR = 0;
 
@@ -7523,12 +7438,12 @@ PSL_STATIC int pslGetBFactor(int detChan, char *name, XiaDefaults *defs, void *v
 
     ASSERT(value != NULL);
 
-    statusX = pslGetFilterParam(detChan, FILTER_BFACTOR, &BFACTOR);
+    status = pslGetFilterParam(detChan, FILTER_BFACTOR, &BFACTOR);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting BFACTOR for detChan %d", detChan);
-        pslLogError("pslGetBFactor", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetBFactor", info_string, status);
+        return status;
     }
 
     *bf = (double)BFACTOR;
@@ -7631,8 +7546,17 @@ PSL_STATIC int pslSetTriggerPosition(int detChan, char *name, XiaDefaults *defs,
     parameter_t TRACEPRETRIG;
     double trigPosition = *((double *)value);
 
+    boolean_t isSuper = dxp_is_supermicro(detChan);
+
     UNUSED(defs);
     UNUSED(name);
+
+    if (!isSuper) {
+        sprintf(info_string, "Trace trigger position is not supported by "
+                "non-supermicro variant");
+        pslLogError("pslSetTriggerPosition", info_string, XIA_NOSUPPORT_VALUE);
+        return XIA_NOSUPPORT_VALUE;
+    }
 
     if (trigPosition < 0 || trigPosition > 255.0) {
         sprintf(info_string, "Trace trigger position %0f is out-of-range",
@@ -7710,6 +7634,7 @@ PSL_STATIC int pslGetBoardFeatures(int detChan, char *name, XiaDefaults *defs,
                                    void *value)
 {
     boolean_t isSuper = dxp_is_supermicro(detChan);
+    boolean_t isVega = dxp_is_vega(detChan);
 
     unsigned long *features = (unsigned long *)value;
     unsigned long coderev = dxp_dsp_coderev(detChan);
@@ -7727,6 +7652,7 @@ PSL_STATIC int pslGetBoardFeatures(int detChan, char *name, XiaDefaults *defs,
     *features |= ((unsigned long) (coderev >= MIN_SNAPSHOT_SUPPORT_CODEREV)) << BOARD_SUPPORTS_SNAPSHOT;
     *features |= ((unsigned long) (coderev >= MIN_PASSTHROUGH_SUPPORT_CODEREV)) << BOARD_SUPPORTS_PASSTHROUGH;
     *features |= ((unsigned long) (coderev >= MIN_SNAPSHOTSCA_SUPPORT_CODEREV)) << BOARD_SUPPORTS_SNAPSHOTSCA;
+    *features |= ((unsigned long) isVega) << BOARD_SUPPORTS_VEGA_FEATURES;
 
     return XIA_SUCCESS;
 }
@@ -7756,8 +7682,9 @@ PSL_STATIC int pslPassthrough(int detChan, char *name, XiaDefaults *defs,
     byte_t *receive_byte = value_byte_array[2];
     int receive_len = *(value_int_array[3]);
 
-    /* The return size for the command is fixed at 32 + 1 (status) */
-    DEFINE_CMD(CMD_PASSTHROUGH, MAX_PASSTHROUGH_SIZE, MAX_PASSTHROUGH_SIZE + 1);
+    /* The return size for the command is fixed at
+       RECV_BASE + 1 (passthrough status) + 32 (data) + 1 (checksum) */
+    DEFINE_CMD(CMD_PASSTHROUGH, MAX_PASSTHROUGH_SIZE, MAX_PASSTHROUGH_SIZE + 2);
 
     UNUSED(name);
 
@@ -7765,8 +7692,8 @@ PSL_STATIC int pslPassthrough(int detChan, char *name, XiaDefaults *defs,
 
     if ((status != XIA_SUCCESS) || !(features & 1 << BOARD_SUPPORTS_PASSTHROUGH)) {
         pslLogError("pslPassthrough", "Connected device does not support "
-                    "'passthrough' board operation", XIA_NOSUPPORT_VALUE);
-        return XIA_NOSUPPORT_VALUE;
+                    "'passthrough' board operation", XIA_PASSTHROUGH);
+        return XIA_PASSTHROUGH;
     }
 
     sprintf(info_string, "Sending %d bytes to UART passthrough, receive buffer "
@@ -7796,10 +7723,11 @@ PSL_STATIC int pslPassthrough(int detChan, char *name, XiaDefaults *defs,
     if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error executing UART passthrough command for "
                 "detChan %d", detChan);
-        pslLogError("pslPassthrough", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslPassthrough", info_string, status);
+        return status;
     }
 
+    /* Start copying after RECV_BASE + 1 (passthrough status) */
     memcpy(receive_byte, receive + RECV_BASE + 1, receive_len);
     return XIA_SUCCESS;
 }
@@ -8152,8 +8080,8 @@ PSL_STATIC int pslGetSca(int detChan, char *name, XiaDefaults *defs, void *value
         utils->funcs->dxp_md_free((void *)receive);
         sprintf(info_string, "Error getting SCA limit %s for detChan %d", name,
                 detChan);
-        pslLogError("pslGetSca", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetSca", info_string, status);
+        return status;
     }
 
     idx = 1 + scaNum * 4 + (STREQ(limit, "lo") ? 0 : 1) * 2;
@@ -8250,8 +8178,8 @@ PSL_STATIC int pslSetSca(int detChan, char *name, XiaDefaults *defs, void *value
         utils->funcs->dxp_md_free((void *)receive);
         sprintf(info_string, "Error getting SCA limit %s for detChan %d", name,
                 detChan);
-        pslLogError("pslSetSca", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetSca", info_string, status);
+        return status;
     }
 
     lenS = 2 + 4 * (int)nSCAs;
@@ -8281,8 +8209,8 @@ PSL_STATIC int pslSetSca(int detChan, char *name, XiaDefaults *defs, void *value
         utils->funcs->dxp_md_free((void *)send);
         sprintf(info_string, "Error getting SCA limit %s for detChan %d", name,
                 detChan);
-        pslLogError("pslSetSca", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetSca", info_string, status);
+        return status;
     }
 
     utils->funcs->dxp_md_free((void *)send);
@@ -8376,7 +8304,7 @@ PSL_STATIC int pslGetSCAData(int detChan, void *value, XiaDefaults *defs)
 
 PSL_STATIC int pslGetSCADataCmd(int detChan, int numSca, byte_t cmd, double *sca64)
 {
-    int statusX;
+    int status;
 
     int i;
 
@@ -8394,14 +8322,14 @@ PSL_STATIC int pslGetSCADataCmd(int detChan, int numSca, byte_t cmd, double *sca
         return XIA_NOMEM;
     }
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, NULL, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, NULL, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         utils->funcs->dxp_md_free((void *)receive);
 
         sprintf(info_string, "Error getting SCA data from detChan %d", detChan);
-        pslLogError("pslGetSCAData", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetSCAData", info_string, status);
+        return status;
     }
 
     sprintf(info_string, "Read out %hu SCA data from detChan %d",
@@ -8420,7 +8348,7 @@ PSL_STATIC int pslGetSCADataCmd(int detChan, int numSca, byte_t cmd, double *sca
 PSL_STATIC int pslGetSCADataDirect(int detChan, int numSca, unsigned long addr,
                                     double *sca64)
 {
-    int statusX;
+    int status;
 
     int i;
 
@@ -8443,14 +8371,14 @@ PSL_STATIC int pslGetSCADataDirect(int detChan, int numSca, unsigned long addr,
         return XIA_NOMEM;
     }
 
-    statusX = dxp_read_memory(&detChan, mem, data);
+    status = dxp_read_memory(&detChan, mem, data);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         utils->funcs->dxp_md_free((void *)data);
         sprintf(info_string, "Error reading SCA data directly from the "
                 "USB (%s) for detChan %d.", mem, detChan);
-        pslLogError("pslGetSCADataDirect", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetSCADataDirect", info_string, status);
+        return status;
     }
 
     for (i = 0; i < numSca; i++) {
@@ -8591,7 +8519,6 @@ PSL_STATIC int pslGetPresetType(int detChan, char *name, XiaDefaults *defs, void
 PSL_STATIC int pslGetPresetValue(int detChan, char *name, XiaDefaults *defs, void *value)
 {
     int status;
-    int statusX;
 
     double *data = (double *)value;
 
@@ -8619,12 +8546,12 @@ PSL_STATIC int pslGetPresetValue(int detChan, char *name, XiaDefaults *defs, voi
 
     send[0] = 0x01;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting preset setting for detChan %d", detChan);
-        pslLogError("pslGetPresetValue", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetPresetValue", info_string, status);
+        return status;
     }
 
     type = receive[RECV_BASE];
@@ -8696,7 +8623,7 @@ PSL_STATIC int pslSetPresetType(int detChan, char *name, XiaDefaults *defs, void
  */
 PSL_STATIC int pslSetPresetValue(int detChan, char *name, XiaDefaults *defs, void *value)
 {
-    int status, statusX;
+    int status;
 
     unsigned long features;
     boolean_t support_long_readout = FALSE_;
@@ -8763,7 +8690,7 @@ PSL_STATIC int pslSetPresetValue(int detChan, char *name, XiaDefaults *defs, voi
     if (length > max_value) {
         sprintf(info_string, "Calculated PRESET length 0x%llx is greater than "
             "maximum allowed 0x%llx, resetting to maximum", length, max_value);
-        pslLogDebug("pslSetPresetValue", info_string);
+        pslLogInfo("pslSetPresetValue", info_string);
         length = max_value;
     }
 
@@ -8777,17 +8704,17 @@ PSL_STATIC int pslSetPresetValue(int detChan, char *name, XiaDefaults *defs, voi
         send[7] = (byte_t)((length >> 40) & 0xFF);
     }
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
     sprintf(info_string, "Setting PRESET run: type = %0f, length = %llu, detChan %d",
             preset_type, length, detChan);
     pslLogInfo("pslSetPresetValue", info_string);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error setting PRESET run: type = %0f, length = "
                 "%llu, detChan %d", preset_type, length, detChan);
-        pslLogError("pslSetPresetValue", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetPresetValue", info_string, status);
+        return status;
     }
 
     ASSERT(receive[RECV_BASE] == (byte_t)preset_type);
@@ -8836,7 +8763,7 @@ PSL_STATIC unsigned long long pslUllFromBytesOffset(byte_t *bytes, int size, int
  */
 PSL_STATIC int pslUltraDoTiltIO(int detChan, int rw, byte_t reg, byte_t *data)
 {
-    int statusX;
+    int status;
 
     byte_t cmd = CMD_ACCESS_I2C;
 
@@ -8876,13 +8803,13 @@ PSL_STATIC int pslUltraDoTiltIO(int detChan, int rw, byte_t reg, byte_t *data)
         break;
     }
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, recv);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, recv);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error performing tilt sensor I/O for detChan %d.",
                 detChan);
-        pslLogError("pslUltraDoTiltIO", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslUltraDoTiltIO", info_string, status);
+        return status;
     }
 
     if (rw == ALPHA_I2C_READ) {
@@ -9198,7 +9125,7 @@ PSL_STATIC int pslUltraTiltEnableInterlock(int detChan, char *name,
 PSL_STATIC int pslUltraTiltIsTriggered(int detChan, char *name,
                                        XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     char mem[MAXITEM_LEN];
 
@@ -9212,13 +9139,13 @@ PSL_STATIC int pslUltraTiltIsTriggered(int detChan, char *name,
 
     sprintf(mem, "direct:%#x:%lu", ULTRA_USB_TILT_STATUS, 1);
 
-    statusX = dxp_read_memory(&detChan, mem, &ret);
+    status = dxp_read_memory(&detChan, mem, &ret);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error reading tilt status directly from the "
                 "USB (%#x) for detChan %d.", ULTRA_USB_TILT_STATUS, detChan);
-        pslLogError("pslUltraTiltIsTriggered", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslUltraTiltIsTriggered", info_string, status);
+        return status;
     }
 
     if ((byte_t)(ret & 0xFF) != 0) {
@@ -9611,8 +9538,8 @@ PSL_STATIC int pslSetAlphaParam(int detChan, unsigned int idx,
     if (status != DXP_SUCCESS) {
         sprintf(info_string, "Unable to set alpha param %u to %u for detChan %d",
                 idx, value, detChan);
-        pslLogError("pslSetAlphaParam", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetAlphaParam", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -9678,8 +9605,8 @@ PSL_STATIC int pslGetAlphaParam(int detChan, unsigned int idx,
         utils->funcs->dxp_md_free(receive);
         sprintf(info_string, "Unable to get alpha param %u for detChan %d",
                 idx, detChan);
-        pslLogError("pslGetAlphaParam", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetAlphaParam", info_string, status);
+        return status;
     }
 
     *value = BYTE_TO_WORD(receive[RECV_DATA_BASE + (idx * 2)],
@@ -9696,7 +9623,7 @@ PSL_STATIC int pslGetAlphaParam(int detChan, unsigned int idx,
  */
 PSL_STATIC int pslAlphaFreeEvents(int detChan, unsigned short nEvents)
 {
-    int statusX;
+    int status;
 
     DEFINE_CMD(CMD_ALPHA_FREE_EVENTS, 2, 1);
 
@@ -9707,13 +9634,13 @@ PSL_STATIC int pslAlphaFreeEvents(int detChan, unsigned short nEvents)
     send[0] = LO_BYTE(nEvents);
     send[1] = HI_BYTE(nEvents);
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Unable to free %hu events from the buffer of "
                 "detChan %d", nEvents, detChan);
-        pslLogError("pslAlphaFreeEvents", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslAlphaFreeEvents", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -9752,7 +9679,7 @@ PSL_STATIC int pslAlphaReadFromEventBuffer(int detChan, unsigned short startIdx,
                                            unsigned short nEvt,
                                            unsigned short *buf)
 {
-    int statusX;
+    int status;
 
     unsigned short i;
 
@@ -9792,14 +9719,14 @@ PSL_STATIC int pslAlphaReadFromEventBuffer(int detChan, unsigned short startIdx,
 
     sprintf(memStr, "direct:%#lx:%lu", startAddr, memLen);
 
-    statusX = dxp_read_memory(&detChan, memStr, rawMem);
+    status = dxp_read_memory(&detChan, memStr, rawMem);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         utils->funcs->dxp_md_free(rawMem);
         sprintf(info_string, "Error reading the memory '%s' for detChan %d",
                 memStr, detChan);
-        pslLogError("pslAlphaReadFromEventBuffer", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslAlphaReadFromEventBuffer", info_string, status);
+        return status;
     }
 
     for (i = 0; i < (nEvt * EVENTLEN); i++) {
@@ -9911,7 +9838,7 @@ PSL_STATIC int pslGetAlphaEvents(int detChan, void *value, XiaDefaults *defs)
 PSL_STATIC int pslGetHardwareStatus(int detChan, char *name, XiaDefaults *defs,
                                     void *value)
 {
-    int statusX;
+    int status;
 
     byte_t *statusBytes = (byte_t *)value;
 
@@ -9925,13 +9852,13 @@ PSL_STATIC int pslGetHardwareStatus(int detChan, char *name, XiaDefaults *defs,
     ASSERT(value != NULL);
 
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, NULL, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, NULL, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error reading hardware status for detChan %d",
                 detChan);
-        pslLogError("pslGetHardwareStatus", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetHardwareStatus", info_string, status);
+        return status;
     }
 
     memcpy(statusBytes, receive + RECV_DATA_OFFSET_STATUS, 5);
@@ -9951,7 +9878,7 @@ PSL_STATIC int pslGetHardwareStatus(int detChan, char *name, XiaDefaults *defs,
 PSL_STATIC int pslSetAlphaExtTrigger(int detChan, char *name, XiaDefaults *defs,
                                      void *value)
 {
-    int statusX;
+    int status;
 
     boolean_t extTrigger;
 
@@ -9976,14 +9903,14 @@ PSL_STATIC int pslSetAlphaExtTrigger(int detChan, char *name, XiaDefaults *defs,
 
     send[0] = (byte_t)extTrigger;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string,
                 "Error setting Alpha external trigger to %u for detChan %d",
                 extTrigger, detChan);
-        pslLogError("pslSetAlphaExtTrigger", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetAlphaExtTrigger", info_string, status);
+        return status;
     }
 
     *((boolean_t *)value) = (boolean_t)receive[RECV_DATA_BASE];
@@ -10030,8 +9957,8 @@ PSL_STATIC int pslGetAlphaHV(int detChan, char *name, XiaDefaults *defs,
     if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting Alpha high voltage for "
                 "detChan %d", detChan);
-        pslLogError("pslGetAlphaHV", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetAlphaHV", info_string, status);
+        return status;
     }
 
     /* Average the four scaled values to get the current scaled reading.
@@ -10064,7 +9991,7 @@ PSL_STATIC int pslGetAlphaHV(int detChan, char *name, XiaDefaults *defs,
 PSL_STATIC int pslSetAlphaHV(int detChan, char *name, XiaDefaults *defs,
                              void *value)
 {
-    int statusX;
+    int status;
 
     unsigned short volts;
     unsigned short scaledVolts;
@@ -10099,13 +10026,13 @@ PSL_STATIC int pslSetAlphaHV(int detChan, char *name, XiaDefaults *defs,
     send[4] = voltHigh;  /* Note the reversed byte order here */
     send[5] = voltLow;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error setting Alpha high voltage to %hu "
                 "for detChan %d", volts, detChan);
-        pslLogError("pslSetAlphaHV", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslSetAlphaHV", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -10168,7 +10095,7 @@ PSL_STATIC int pslGetCPLDVersion(int detChan, char *name, XiaDefaults *defs,
 PSL_STATIC int pslAlphaPulserDisable(int detChan, char *name, XiaDefaults *defs,
                                      void *value)
 {
-    int statusX;
+    int status;
 
     DEFINE_CMD(CMD_ALPHA_PULSER_ENABLE_DISABLE, 1, 1);
 
@@ -10178,12 +10105,12 @@ PSL_STATIC int pslAlphaPulserDisable(int detChan, char *name, XiaDefaults *defs,
 
     send[0] = (byte_t)0;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error disabling pulser for detChan %d", detChan);
-        pslLogError("pslAlphaPulserDisable", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslAlphaPulserDisable", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -10196,7 +10123,7 @@ PSL_STATIC int pslAlphaPulserDisable(int detChan, char *name, XiaDefaults *defs,
 PSL_STATIC int pslAlphaPulserEnable(int detChan, char *name, XiaDefaults *defs,
                                     void *value)
 {
-    int statusX;
+    int status;
 
     DEFINE_CMD(CMD_ALPHA_PULSER_ENABLE_DISABLE, 1, 1);
 
@@ -10206,12 +10133,12 @@ PSL_STATIC int pslAlphaPulserEnable(int detChan, char *name, XiaDefaults *defs,
 
     send[0] = (byte_t)1;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error enabling pulser for detChan %d", detChan);
-        pslLogError("pslAlphaPulserEnable", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslAlphaPulserEnable", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -10225,7 +10152,6 @@ PSL_STATIC int pslAlphaPulserEnable(int detChan, char *name, XiaDefaults *defs,
 PSL_STATIC int pslAlphaPulserConfig1(int detChan, char *name, XiaDefaults *defs,
                                      void *value)
 {
-    int statusX;
     int status;
 
     unsigned short dac = 0;
@@ -10257,14 +10183,14 @@ PSL_STATIC int pslAlphaPulserConfig1(int detChan, char *name, XiaDefaults *defs,
     send[4] = (byte_t)(dac & 0xFF);
     send[5] = (byte_t)((dac >> 8) & 0xFF);
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error configuring pulser 1: period = %#x, "
                 "risetime = %#x, current = %#x for detChan = %d", config[0],
                 config[1], dac, detChan);
-        pslLogError("pslAlphaPulserConfig1", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslAlphaPulserConfig1", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -10278,7 +10204,6 @@ PSL_STATIC int pslAlphaPulserConfig1(int detChan, char *name, XiaDefaults *defs,
 PSL_STATIC int pslAlphaPulserConfig2(int detChan, char *name, XiaDefaults *defs,
                                      void *value)
 {
-    int statusX;
     int status;
 
     unsigned short dac = 0;
@@ -10313,14 +10238,14 @@ PSL_STATIC int pslAlphaPulserConfig2(int detChan, char *name, XiaDefaults *defs,
     send[6] = (byte_t)(config[3] & 0xFF);
     send[7] = (byte_t)((config[3] >> 8) & 0xFF);
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error configuring pulser 2: period = %#x, "
                 "risetime = %#x, current = %#x, delay = %#x for detChan = %d",
                 config[0], config[1], dac, config[3], detChan);
-        pslLogError("pslAlphaPulserConfig2", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslAlphaPulserConfig2", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -10334,7 +10259,7 @@ PSL_STATIC int pslAlphaPulserConfig2(int detChan, char *name, XiaDefaults *defs,
 PSL_STATIC int pslAlphaPulserSetMode(int detChan, char *name, XiaDefaults *defs,
                                      void *value)
 {
-    int statusX;
+    int status;
 
     unsigned int i;
 
@@ -10357,13 +10282,13 @@ PSL_STATIC int pslAlphaPulserSetMode(int detChan, char *name, XiaDefaults *defs,
         }
     }
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error setting pulser mode to %#lx for "
                 "detChan = %d", modes, detChan);
-        pslLogError("pslAlphaPulserSetMode", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslAlphaPulserSetMode", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -10377,7 +10302,7 @@ PSL_STATIC int pslAlphaPulserSetMode(int detChan, char *name, XiaDefaults *defs,
 PSL_STATIC int pslAlphaPulserConfigVeto(int detChan, char *name,
                                         XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     byte_t *config;
 
@@ -10399,13 +10324,13 @@ PSL_STATIC int pslAlphaPulserConfigVeto(int detChan, char *name,
         return XIA_VETO_PULSE_STEP;
     }
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, config, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, config, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error setting veto pulse configuration for "
                 "detChan = %d", detChan);
-        pslLogError("pslAlphaPulserConfigVeto", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslAlphaPulserConfigVeto", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -10417,7 +10342,7 @@ PSL_STATIC int pslAlphaPulserConfigVeto(int detChan, char *name,
 PSL_STATIC int pslAlphaPulserEnableVeto(int detChan, char *name,
                                         XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     DEFINE_CMD(CMD_ALPHA_PULSER_ENABLE_DISABLE_VETO, 1, 1);
 
@@ -10427,13 +10352,13 @@ PSL_STATIC int pslAlphaPulserEnableVeto(int detChan, char *name,
 
     send[0] = (byte_t)1;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error enabling veto pulse for detChan %d",
                 detChan);
-        pslLogError("pslAlphaPulserEnableVeto", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslAlphaPulserEnableVeto", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -10446,7 +10371,7 @@ PSL_STATIC int pslAlphaPulserEnableVeto(int detChan, char *name,
 PSL_STATIC int pslAlphaPulserDisableVeto(int detChan, char *name,
                                          XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     DEFINE_CMD(CMD_ALPHA_PULSER_ENABLE_DISABLE_VETO, 1, 1);
 
@@ -10456,13 +10381,13 @@ PSL_STATIC int pslAlphaPulserDisableVeto(int detChan, char *name,
 
     send[0] = (byte_t)0;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error disabling veto pulse for detChan %d",
                 detChan);
-        pslLogError("pslAlphaPulserDisableVeto", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslAlphaPulserDisableVeto", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -10475,7 +10400,7 @@ PSL_STATIC int pslAlphaPulserDisableVeto(int detChan, char *name,
 PSL_STATIC int pslAlphaPulserStart(int detChan, char *name, XiaDefaults *defs,
                                    void *value)
 {
-    int statusX;
+    int status;
 
     DEFINE_CMD(CMD_ALPHA_PULSER_CONTROL, 1, 1);
 
@@ -10485,13 +10410,13 @@ PSL_STATIC int pslAlphaPulserStart(int detChan, char *name, XiaDefaults *defs,
 
     send[0] = (byte_t)1;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error starting pulser for detChan %d",
                 detChan);
-        pslLogError("pslAlphaPulserStart", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslAlphaPulserStart", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -10501,7 +10426,7 @@ PSL_STATIC int pslAlphaPulserStart(int detChan, char *name, XiaDefaults *defs,
 PSL_STATIC int pslAlphaPulserStop(int detChan, char *name, XiaDefaults *defs,
                                   void *value)
 {
-    int statusX;
+    int status;
 
     DEFINE_CMD(CMD_ALPHA_PULSER_CONTROL, 1, 1);
 
@@ -10511,13 +10436,13 @@ PSL_STATIC int pslAlphaPulserStop(int detChan, char *name, XiaDefaults *defs,
 
     send[0] = (byte_t)0;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error stopping pulser for detChan %d",
                 detChan);
-        pslLogError("pslAlphaPulserStop", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslAlphaPulserStop", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -10588,7 +10513,7 @@ PSL_STATIC int pslGetAlphaBufferNumEvents(int detChan, void *value,
 PSL_STATIC int pslGetAlphaStatistics(int detChan, void *value,
                                      XiaDefaults *defs)
 {
-    int statusX;
+    int status;
 
     double *stats = NULL;
 
@@ -10597,13 +10522,13 @@ PSL_STATIC int pslGetAlphaStatistics(int detChan, void *value,
     UNUSED(defs);
     ASSERT(value);
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, NULL, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, NULL, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting a statistics snapshot for "
                 "detChan %d", detChan);
-        pslLogError("pslGetAlphaStatistics", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetAlphaStatistics", info_string, status);
+        return status;
     }
 
     stats = (double *)value;
@@ -10629,7 +10554,7 @@ PSL_STATIC int pslGetAlphaStatistics(int detChan, void *value,
 PSL_STATIC int pslUltraSetAsClockMaster(int detChan, char *name,
                                         XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     DEFINE_CMD(CMD_ULTRA_SLAVE_MASTER, 1, 2);
 
@@ -10645,13 +10570,13 @@ PSL_STATIC int pslUltraSetAsClockMaster(int detChan, char *name,
 
     send[0] = (byte_t)ULTRA_CLOCK_MASTER;
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Unable to set detChan %d as a clock master.",
                 detChan);
-        pslLogError("pslUltraSetAsClockMaster", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslUltraSetAsClockMaster", info_string, status);
+        return status;
     }
 
     ASSERT(receive[5] == (byte_t)ULTRA_CLOCK_MASTER);
@@ -10676,7 +10601,7 @@ PSL_STATIC int pslUltraSetAsClockMaster(int detChan, char *name,
 PSL_STATIC int pslUltraRenumerateDevice(int detChan, char *name,
                                         XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     char mem[MAXITEM_LEN];
 
@@ -10689,13 +10614,13 @@ PSL_STATIC int pslUltraRenumerateDevice(int detChan, char *name,
 
     sprintf(mem, "direct:%#x:%lu", ULTRA_USB_RENUMERATE, 1);
 
-    statusX = dxp_write_memory(&detChan, mem, &bang[0]);
+    status = dxp_write_memory(&detChan, mem, &bang[0]);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error renumerating UltraLo hardware at "
                 "detChan %d.", detChan);
-        pslLogError("pslUltraRenumerateDevice", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslUltraRenumerateDevice", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -10705,7 +10630,7 @@ PSL_STATIC int pslUltraRenumerateDevice(int detChan, char *name,
 PSL_STATIC int pslUltraSetElectrodeSize(int detChan, char *name,
                                         XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     enum ElectrodeSize es;
 
@@ -10736,13 +10661,13 @@ PSL_STATIC int pslUltraSetElectrodeSize(int detChan, char *name,
             "for detChan %d.", size[0], mem, detChan);
     pslLogDebug("pslUltraSetElectrodeSize", info_string);
 
-    statusX = dxp_write_memory(&detChan, mem, &size[0]);
+    status = dxp_write_memory(&detChan, mem, &size[0]);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error setting electrode to %lu via memory write: "
                 "%s for detChan %d.", size[0], mem, detChan);
-        pslLogError("pslUltraSetElectrodeSize", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslUltraSetElectrodeSize", info_string, status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -10752,7 +10677,7 @@ PSL_STATIC int pslUltraSetElectrodeSize(int detChan, char *name,
 PSL_STATIC int pslUltraGetElectrodeSize(int detChan, char *name,
                                         XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
 
     unsigned long size[1];
 
@@ -10765,13 +10690,13 @@ PSL_STATIC int pslUltraGetElectrodeSize(int detChan, char *name,
 
     sprintf(mem, "direct:%#x:%lu", 0x05000000, 1);
 
-    statusX = dxp_read_memory(&detChan, mem, &size[0]);
+    status = dxp_read_memory(&detChan, mem, &size[0]);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting electrode via memory read: "
                 "%s for detChan %d.", mem, detChan);
-        pslLogError("pslUltraGetElectrodeSize", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslUltraGetElectrodeSize", info_string, status);
+        return status;
     }
 
     *((enum ElectrodeSize *)value) = (enum ElectrodeSize)(size[0] & 0xFF);
@@ -10787,7 +10712,7 @@ PSL_STATIC int pslUltraGetElectrodeSize(int detChan, char *name,
 PSL_STATIC int pslUltraMoistureRead(int detChan, char *name,
                                     XiaDefaults *defs, void *value)
 {
-    int statusX;
+    int status;
     int i;
 
     char mem[MAXITEM_LEN];
@@ -10819,24 +10744,24 @@ PSL_STATIC int pslUltraMoistureRead(int detChan, char *name,
 
     sprintf(mem, "direct:%#x:%u", ULTRA_MM_REQUEST, ULTRA_MM_REQUEST_LEN);
 
-    statusX = dxp_write_memory(&detChan, mem, &request[0]);
+    status = dxp_write_memory(&detChan, mem, &request[0]);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error writing moisture meter query request "
                 "'%s' for detChan %d.", mem, detChan);
-        pslLogError("pslUltraMoistureRead", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslUltraMoistureRead", info_string, status);
+        return status;
     }
 
     sprintf(mem, "direct:%#x:%u", ULTRA_MM_READ, ULTRA_MM_READ_LEN);
 
-    statusX = dxp_read_memory(&detChan, mem, &result[0]);
+    status = dxp_read_memory(&detChan, mem, &result[0]);
 
-    if (statusX != DXP_SUCCESS) {
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error reading moisture meter value '%s' for "
                 "detChan %d.", mem, detChan);
-        pslLogError("pslUltraMoistureRead", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslUltraMoistureRead", info_string, status);
+        return status;
     }
 
     for (i = 0; i < ULTRA_MM_READ_LEN; i++) {
@@ -10989,8 +10914,8 @@ PSL_STATIC int pslUltraGetMBV41ID(int detChan, unsigned long long *id)
     if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting MICROMB EEPROM registration number "
                 "for detChan %d", detChan);
-        pslLogError("pslUltraGetMBV41ID", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslUltraGetMBV41ID", info_string, status);
+        return status;
     }
 
     calcCRC = pslDOWCRC(&receive[RECV_BASE], 7);
@@ -11093,8 +11018,8 @@ PSL_STATIC int pslUltraGetMBV42ID(int detChan, unsigned long *id)
     if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting MICROMB EEPROM registration number "
                 "for detChan %d", detChan);
-        pslLogError("pslUltraGetMBV42ID", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslUltraGetMBV42ID", info_string, status);
+        return status;
     }
 
     mfg_code = receive[RECV_BASE];
@@ -11133,8 +11058,8 @@ PSL_STATIC int pslUltraGetDSR(int detChan, char *name,
     if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting MICROMB DSR "
                 "for detChan %d", detChan);
-        pslLogError("pslUltraGetDSR", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslUltraGetDSR", info_string, status);
+        return status;
     }
 
     *((byte_t*)value) = dsr;
@@ -11166,8 +11091,8 @@ PSL_STATIC int psl__UltraGetDSR(int detChan, byte_t *dsr)
     if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting MICROMB DSR "
                 "for detChan %d", detChan);
-        pslLogError("psl__UltraGetDSR", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("psl__UltraGetDSR", info_string, status);
+        return status;
     }
 
     *dsr = receive[RECV_BASE];
@@ -11201,9 +11126,9 @@ PSL_STATIC int pslGetUdxpCPLDVersion(int detChan, char *name, XiaDefaults *defs,
     UNUSED(name);
 
     if (!IS_USB) {
-        pslLogError("pslGetUdxpCPLDVersion",
-                    "Reading of UDXP CPLD firmware version not supported", XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetUdxpCPLDVersion", "Reading of UDXP CPLD firmware "
+                    "version not supported", XIA_UNSUPPORTED);
+        return XIA_UNSUPPORTED;
     }
 
     ASSERT(value != NULL);
@@ -11258,8 +11183,8 @@ PSL_STATIC int pslGetUdxpCPLDVariant(int detChan, char *name, XiaDefaults *defs,
 
     if (!IS_USB) {
         pslLogError("pslGetUdxpCPLDVariant",
-                    "Reading of UDXP CPLD firmware variant not supported", XIA_XERXES);
-        return XIA_XERXES;
+                    "Reading of UDXP CPLD firmware variant not supported", XIA_UNSUPPORTED);
+        return XIA_UNSUPPORTED;
     }
 
     ASSERT(value != NULL);
@@ -11303,8 +11228,8 @@ PSL_STATIC int pslGetUSBVersion(int detChan, char *name, XiaDefaults *defs,
 
     if (!IS_USB) {
         pslLogError("pslGetUSBVersion",
-                    "Reading of USB firmware version not supported", XIA_XERXES);
-        return XIA_XERXES;
+                    "Reading of USB firmware version not supported", XIA_UNSUPPORTED);
+        return XIA_UNSUPPORTED;
     }
 
     ASSERT(value != NULL);
@@ -11314,8 +11239,8 @@ PSL_STATIC int pslGetUSBVersion(int detChan, char *name, XiaDefaults *defs,
 #else
     if (!dxp_is_supermicro(detChan)) {
         pslLogError("pslGetUSBVersion",
-                    "Reading of USB firmware version not supported", XIA_XERXES);
-        return XIA_XERXES;
+                    "Reading of USB firmware version not supported", XIA_UNSUPPORTED);
+        return XIA_UNSUPPORTED;
     }
     sprintf(mem, "direct:%#x:%u", USB_VERSION_ADDRESS, 2u);
 #endif
@@ -11329,7 +11254,7 @@ PSL_STATIC int pslGetUSBVersion(int detChan, char *name, XiaDefaults *defs,
     }
 
     sprintf(info_string, "Raw version = %#lx %#lx", version[0], version[1]);
-    pslLogDebug("pslGetUSBVersion", info_string);
+    pslLogInfo("pslGetUSBVersion", info_string);
 
     /* Version bytes: [3]Revision [2] Minor [1]Major [0]status.
      * Reverse the bytes to [3]Major [2]Minor [1-0]Revision as in the
@@ -11343,10 +11268,9 @@ PSL_STATIC int pslGetUSBVersion(int detChan, char *name, XiaDefaults *defs,
     status = version[0] & 0xFF;
 
     if (status != DXP_SUCCESS) {
-        sprintf(info_string, "Reading USB firmware version returns "
-                "error status %d.", status);
-        pslLogError("pslGetUSBVersion", info_string, XIA_XERXES);
-        return XIA_XERXES;
+        pslLogError("pslGetUSBVersion", "Error reading USB firmware version",
+                    status);
+        return status;
     }
 
     return XIA_SUCCESS;
@@ -11360,7 +11284,6 @@ PSL_STATIC int pslGetUSBVersion(int detChan, char *name, XiaDefaults *defs,
 PSL_STATIC int pslQueryStatus(int detChan)
 {
     int status;
-    int statusX;
 
     byte_t cmd       = CMD_STATUS;
 
@@ -11370,11 +11293,10 @@ PSL_STATIC int pslQueryStatus(int detChan)
     byte_t receive[6 + RECV_BASE];
 
 
-    statusX = dxp_cmd(&detChan, &cmd, &lenS, NULL,
+    status = dxp_cmd(&detChan, &cmd, &lenS, NULL,
                       &lenR, receive);
 
-    if (statusX != DXP_SUCCESS) {
-        status = XIA_XERXES;
+    if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error getting status for detChan %d", detChan);
         pslLogError("pslQueryStatus", info_string, status);
         return status;
@@ -11602,3 +11524,318 @@ PSL_STATIC int pslCreateBackup(int detChan, char *name, XiaDefaults *defs,
 }
 
 #endif /* EXCLUDE_XUP */
+
+/* run data module_statistics_gated
+ * Vega variant only: GATE = 1 --> snapshot spectrum and statistics
+ */
+PSL_STATIC int pslGetGatedStatistics(int detChan, void *value, XiaDefaults *defs)
+{
+    int status;
+
+    boolean_t isVega = dxp_is_vega(detChan);
+    ASSERT(value != NULL);
+
+    if (!isVega) {
+        pslLogError("pslGetGatedStatistics", "Connected device does not support "
+                "'module_statistics_gated' run data", XIA_NOSUPPORT_VALUE);
+        return XIA_NOSUPPORT_VALUE;
+    }
+
+    status = pslGetSnapshotStats(detChan, value, defs);
+
+    if (status != DXP_SUCCESS) {
+        sprintf(info_string, "Error reading gated statisitics (through snapshot"
+                    " data memory) for detChan %d", detChan);
+        pslLogError("pslGetGatedStatistics", info_string, status);
+        return status;
+    }
+
+    return XIA_SUCCESS;
+}
+
+/*
+ * This routine calculates and returns
+ * the current gated livetime value.
+ */
+PSL_STATIC int pslGetGatedLivetime(int detChan, void *value, XiaDefaults *defs)
+{
+    int status;
+
+    double stats[9];
+
+    ASSERT(value != NULL);
+
+    status = pslGetGatedStatistics(detChan, (void *)stats, defs);
+
+    if (status != DXP_SUCCESS) {
+        sprintf(info_string, "Error reading gated statistics for detChan %d", detChan);
+        pslLogError("pslGetGatedLivetime", info_string, status);
+        return status;
+    }
+
+    *((double *)value) = stats[1];
+
+    return XIA_SUCCESS;
+}
+
+/*
+ * This routine calculates and returns the
+ * current runtime value.
+ */
+PSL_STATIC int pslGetGatedRuntime(int detChan, void *value, XiaDefaults *defs)
+{
+    int status;
+
+    double stats[9];
+
+    ASSERT(value != NULL);
+
+    status = pslGetGatedStatistics(detChan, (void *)stats, defs);
+
+    if (status != DXP_SUCCESS) {
+        sprintf(info_string, "Error reading gated statistics for detChan %d", detChan);
+        pslLogError("pslGetGatedRuntime", info_string, status);
+        return status;
+    }
+
+    *((double *)value) = stats[0];
+
+    return XIA_SUCCESS;
+}
+
+/*
+ * This routine retrieves the gated Input Count Rate,
+ * which can also be defined as the number of
+ * fast peak events divided by the livetime.
+ */
+PSL_STATIC int pslGetGatedICR(int detChan, void *value, XiaDefaults *defs)
+{
+    int status;
+
+    double stats[9];
+
+    ASSERT(value != NULL);
+
+    status = pslGetGatedStatistics(detChan, (void *)stats, defs);
+
+    if (status != DXP_SUCCESS) {
+        sprintf(info_string, "Error reading gated statistics for detChan %d", detChan);
+        pslLogError("pslGetGatedICR", info_string, status);
+        return status;
+    }
+
+    *((double *)value) = stats[5];
+
+    return XIA_SUCCESS;
+}
+
+/*
+ * This routine retrieves the gated Output Count Rate,
+ * which can also be defined as the number of
+ * events divided by the realtime.
+ */
+PSL_STATIC int pslGetGatedOCR(int detChan, void *value, XiaDefaults *defs)
+{
+    int status;
+
+    double stats[9];
+
+    ASSERT(value != NULL);
+
+    status = pslGetGatedStatistics(detChan, (void *)stats, defs);
+
+    if (status != DXP_SUCCESS) {
+        sprintf(info_string, "Error reading gate statistics for detChan %d", detChan);
+        pslLogError("pslGetGatedOCR", info_string, status);
+        return status;
+    }
+
+    *((double *)value) = stats[6];
+
+    return XIA_SUCCESS;
+}
+
+/*
+ * This routine retrieves the number
+ * of Gated events that were binned in the MCA
+ * spectrum.
+ */
+PSL_STATIC int pslGetGatedEvents(int detChan, void *value, XiaDefaults *defs)
+{
+    int status;
+
+    double stats[9];
+
+    ASSERT(value != NULL);
+
+    status = pslGetGatedStatistics(detChan, (void *)stats, defs);
+
+    if (status != DXP_SUCCESS) {
+        sprintf(info_string, "Error reading gate statistics for detChan %d", detChan);
+        pslLogError("pslGetGatedEvents", info_string, status);
+        return status;
+    }
+
+    *((unsigned long *)value) = (unsigned long)stats[4];
+
+    return XIA_SUCCESS;
+}
+
+/*
+ * This routine retrieves the number of
+ * gate triggers that occurred in the run.
+ */
+PSL_STATIC int pslGetGatedTriggers(int detChan, void *value, XiaDefaults *defs)
+{
+    int status;
+
+    double stats[9];
+
+    ASSERT(value != NULL);
+
+    status = pslGetGatedStatistics(detChan, (void *)stats, defs);
+
+    if (status != DXP_SUCCESS) {
+        sprintf(info_string, "Error reading gated statistics for detChan %d", detChan);
+        pslLogError("pslGetGatedTriggers", info_string, status);
+        return status;
+    }
+
+    *((unsigned long *)value) = (unsigned long)stats[3];
+
+    return XIA_SUCCESS;
+}
+
+/* rundata mca_gated
+ * Vega variant GATE = 1 --> snapshot spectrum and statistics
+ */
+PSL_STATIC int pslGetGatedMCAData(int detChan, void *value, XiaDefaults *defs)
+{
+    int status;
+
+    ASSERT(value != NULL);
+
+    if (!dxp_is_vega(detChan)) {
+        pslLogError("pslGetGatedMCAData", "Connected device does not support "
+                "'mca_gated' run data", XIA_NOSUPPORT_VALUE);
+        return XIA_NOSUPPORT_VALUE;
+    }
+
+    status = pslGetSnapshotMca(detChan, value, defs);
+
+    if (status != DXP_SUCCESS) {
+        sprintf(info_string, "Error reading gated MCA for detChan %d", detChan);
+        pslLogError("pslGetGatedMCAData", info_string, status);
+        return status;
+    }
+
+    return XIA_SUCCESS;
+}
+
+/* acquisition value high_voltage
+ * Reads the high voltage value if supported (vega variant)
+ */
+PSL_STATIC int pslGetHighVoltage(int detChan, char *name, XiaDefaults *defs,
+                             void *value)
+{
+    int status;
+    unsigned short scaledVolts;
+
+    DEFINE_CMD(CMD_ACCESS_I2C, 10, 3);
+
+    UNUSED(name);
+    UNUSED(defs);
+
+    if (!dxp_is_vega(detChan)) {
+        pslLogWarning("pslGetHighVoltage", "Connected device does not support "
+                "'high_voltage' function, skipped.");
+        return XIA_SUCCESS;
+    }
+
+    ASSERT(value != NULL);
+
+    /* I2C command to get HV */
+    send[0] = UDXP_I2C_READ;
+    send[1] = 0x98;         /* I2C Address */
+    send[2] = 0x01;         /* Number of CTRL Byte */
+    send[3] = 0x02;         /* Number of data byte */
+    send[4] = 0x10;         /* CTRL byte */
+
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+
+    if (status != DXP_SUCCESS) {
+        sprintf(info_string, "Error getting high voltage for "
+                "detChan %d", detChan);
+        pslLogError("pslGetAlphaHV", info_string, status);
+        return status;
+    }
+
+    scaledVolts = (unsigned short)BYTE_TO_WORD(receive[RECV_DATA_OFFSET_STATUS + 1],
+                            receive[RECV_DATA_OFFSET_STATUS]);
+
+    *((double *)value) = (double)scaledVolts / UDXP_HV_SCALE;
+
+    sprintf(info_string, "Read out high_voltage %hu (%.3fV) for channel "
+            " %d", scaledVolts, *((double *)value), detChan);
+    pslLogInfo("pslGetHighVoltage", info_string);
+
+    return XIA_SUCCESS;
+}
+
+
+/*
+/* acquisition value high_voltage
+ * Set the high voltage value if supported (vega variant)
+ */
+PSL_STATIC int pslSetHighVoltage(int detChan, char *name, XiaDefaults *defs,
+                             void *value)
+{
+    int status;
+
+    double volts = *((double *)value);
+    unsigned short scaledVolts;
+
+    DEFINE_CMD(CMD_ACCESS_I2C, 12, 1);
+
+    UNUSED(name);
+    UNUSED(defs);
+
+    if (!dxp_is_vega(detChan)) {
+        pslLogError("pslSetHighVoltage", "Connected device does not support "
+                "'high_voltage' function", XIA_NOSUPPORT_VALUE);
+        return XIA_NOSUPPORT_VALUE;
+    }
+
+    if ((volts < UDXP_HV_MIN) || (volts > UDXP_HV_MAX)) {
+        sprintf(info_string, "Specified high voltage value '%hu' is outside "
+                "the valid range of %d-%d for detChan %d.", volts,
+                UDXP_HV_MIN, UDXP_HV_MAX, detChan);
+        pslLogError("pslSetHighVoltage", info_string, XIA_HV_OOR);
+        return XIA_HV_OOR;
+    }
+
+    scaledVolts = (unsigned short)(volts * UDXP_HV_SCALE);
+
+    sprintf(info_string, "Setting high_voltage %hu (%.3fV) for channel "
+            " %d", scaledVolts, volts, detChan);
+    pslLogInfo("pslSetHighVoltage", info_string);
+
+    send[0] = UDXP_I2C_WRITE;
+    send[1] = 0x98;         /* I2C Address */
+    send[2] = 0x01;         /* Number of CTRL Byte */
+    send[3] = 0x02;         /* Number of data byte */
+    send[4] = 0x10;         /* CTRL byte */
+    send[5] = HI_BYTE(scaledVolts);
+    send[6] = LO_BYTE(scaledVolts);
+
+    status = dxp_cmd(&detChan, &cmd, &lenS, send, &lenR, receive);
+
+    if (status != DXP_SUCCESS) {
+        sprintf(info_string, "Error setting high voltage to %hu "
+                "for detChan %d", volts, detChan);
+        pslLogError("pslSetHighVoltage", info_string, status);
+        return status;
+    }
+
+    return XIA_SUCCESS;
+}

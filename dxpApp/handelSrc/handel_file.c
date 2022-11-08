@@ -1020,6 +1020,7 @@ HANDEL_STATIC int xiaLoadModule(FILE *fp, fpos_t *start, fpos_t *end)
     {
         sprintf(info_string, "Error adding module type to module %s", alias);
         xiaLogError("xiaLoadModule", info_string, status);
+        return status;
     }
 
     status = xiaFileRA(fp, start, end, "number_of_channels", value);

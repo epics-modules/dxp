@@ -97,15 +97,17 @@
 
 /* Supported board features returned by get_board_features board operations */
 #define BOARD_SUPPORTS_NO_EXTRA_FEATURES 0x0;
-#define BOARD_SUPPORTS_SCA	0x01			/* microDxp SCA regions set */
-#define BOARD_SUPPORTS_UPDATED_SCA 0x02 	/* microDxp SCA data readout  */
-#define BOARD_SUPPORTS_TRACETRIGGERS 0x03 	/* Support for trace triggers */
-#define BOARD_SUPPORTS_MULTITRACETYPES 0x04 /* Support for multiple trace types */
-#define BOARD_USE_UPDATED_BOARDINFO 0x05 	/* Updated get_board_info response structure */
-#define BOARD_SUPPORTS_UPDATED_PRESET 0x06 	/* Extra word for preset values */
-#define BOARD_SUPPORTS_SNAPSHOT 0x07 		/* Support for snapshot readout */
-#define BOARD_SUPPORTS_PASSTHROUGH 0x08 	/* Support for uart passthrough */
-#define BOARD_SUPPORTS_SNAPSHOTSCA 0x09     /* Support for sca snapshot readout */
+#define BOARD_SUPPORTS_SCA	            0x01	/* microDxp SCA regions set */
+#define BOARD_SUPPORTS_UPDATED_SCA      0x02 	/* microDxp SCA data readout  */
+#define BOARD_SUPPORTS_TRACETRIGGERS    0x03 	/* Support for trace triggers */
+#define BOARD_SUPPORTS_MULTITRACETYPES  0x04    /* Support for multiple trace types */
+#define BOARD_USE_UPDATED_BOARDINFO     0x05 	/* Updated get_board_info response structure */
+#define BOARD_SUPPORTS_UPDATED_PRESET   0x06 	/* Extra word for preset values */
+#define BOARD_SUPPORTS_SNAPSHOT         0x07 	/* Support for snapshot readout */
+#define BOARD_SUPPORTS_PASSTHROUGH      0x08 	/* Support for uart passthrough */
+#define BOARD_SUPPORTS_SNAPSHOTSCA      0x09    /* Support for sca snapshot readout */
+#define BOARD_SUPPORTS_VEGA_FEATURES    0x10    /* Support for vega features */
+#define BOARD_SUPPORTS_MERCURYOEM_FEATURES    0x11    /* Support for Mercury features */
 
 /* FalconX features 0x11 - 0x18 */
 

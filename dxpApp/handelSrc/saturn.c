@@ -331,9 +331,8 @@ static int dxp_read_data(int* ioChan, unsigned short* data, unsigned int len)
 
     f=DXP_DATA_F_READ;
     a=DXP_DATA_A_READ;
-    status=saturn_md_io(ioChan,&f,&a,(void *)data,&len);     /* write TSAR */
+    status = saturn_md_io(ioChan,&f,&a,(void *)data,&len);     /* write TSAR */
     if (status!=DXP_SUCCESS) {
-        status = DXP_READ_DATA;
         dxp_log_error("dxp_read_data","Error reading data",status);
     }
     return status;
@@ -360,7 +359,6 @@ static int dxp_write_data(int* ioChan, unsigned short* data, unsigned int len)
     a=DXP_DATA_A_WRITE;
     status=saturn_md_io(ioChan,&f,&a,(void *)data,&len);     /* write TSAR */
     if (status!=DXP_SUCCESS) {
-        status = DXP_WRITE_DATA;
         dxp_log_error("dxp_write_data","Error writing data",status);
     }
 
@@ -429,7 +427,7 @@ static int dxp_read_word(int* ioChan, int* modChan, unsigned short* addr,
 
     if ((*modChan!=0)&&(*modChan!=ALLCHAN)) {
         sprintf(info_string,"SATURN routine called with channel number %d",*modChan);
-        status = DXP_BAD_PARAM;
+        status = DXP_BADCHANNEL;
         dxp_log_error("dxp_read_word",info_string,status);
     }
 
@@ -473,7 +471,7 @@ static int dxp_write_word(int* ioChan, int* modChan, unsigned short* addr,
 
     if ((*modChan!=0)&&(*modChan!=ALLCHAN)) {
         sprintf(info_string,"SATURN routine called with channel number %d",*modChan);
-        status = DXP_BAD_PARAM;
+        status = DXP_BADCHANNEL;
         dxp_log_error("dxp_write_word",info_string,status);
     }
 
@@ -522,7 +520,7 @@ static int dxp_read_block(int* ioChan, int* modChan, unsigned short* addr,
 
     if ((*modChan!=0)&&(*modChan!=ALLCHAN)) {
         sprintf(info_string,"SATURN routine called with channel number %d",*modChan);
-        status = DXP_BAD_PARAM;
+        status = DXP_BADCHANNEL;
         dxp_log_error("dxp_read_block",info_string,status);
     }
 
@@ -587,7 +585,7 @@ static int dxp_write_block(int* ioChan, int* modChan, unsigned short* addr,
 
     if ((*modChan!=0)&&(*modChan!=ALLCHAN)) {
         sprintf(info_string,"SATURN routine called with channel number %d",*modChan);
-        status = DXP_BAD_PARAM;
+        status = DXP_BADCHANNEL;
         dxp_log_error("dxp_write_block",info_string,status);
     }
 
@@ -674,14 +672,14 @@ static int dxp_download_fpgaconfig(int* ioChan, int* modChan, char *name, Board*
 
     if (!((STREQ(name, "all")) || (STREQ(name, "fippi")))) {
         sprintf(info_string, "The DXPSATURN does not have an FPGA called %s for channel number %d", name, *modChan);
-        status = DXP_BAD_PARAM;
+        status = DXP_UNKNOWN_FPGA;
         dxp_log_error("dxp_download_fpgaconfig",info_string,status);
         return status;
     }
 
     if ((*modChan!=0)&&(*modChan!=ALLCHAN)) {
         sprintf(info_string,"SATURN routine called with channel number %d",*modChan);
-        status = DXP_BAD_PARAM;
+        status = DXP_BADCHANNEL;
         dxp_log_error("dxp_download_fpgaconfig",info_string,status);
         return status;
     }
@@ -731,7 +729,7 @@ static int dxp_download_fpgaconfig(int* ioChan, int* modChan, char *name, Board*
         if ((status=dxp_download_dsp_done(ioChan, modChan, &mod, board,
                                           &value, &timeout))!=DXP_SUCCESS) {
             sprintf(info_string,"Error waiting for BUSY=7 state for module %i",mod);
-            status = DXP_DSPTIMEOUT;
+            status = DXP_TIMEOUT;
             dxp_log_error("dxp_download_fpgaconfig",info_string,status);
             return status;
         }
@@ -859,7 +857,7 @@ static int dxp_download_fpgaconfig(int* ioChan, int* modChan, char *name, Board*
         if ((status=dxp_download_dsp_done(ioChan, modChan, &mod, board,
                                           &value, &timeout))!=DXP_SUCCESS) {
             sprintf(info_string,"Error waiting for BUSY=0 state for module %i",mod);
-            status = DXP_DSPTIMEOUT;
+            status = DXP_TIMEOUT;
             dxp_log_error("dxp_download_fpgaconfig",info_string,status);
             return status;
         }
@@ -964,14 +962,14 @@ static int dxp_download_fpga_done(int* modChan, char *name, Board *board)
     int ioChan;
 
     UNUSED(modChan);
-    
+
     /* Few assignements to make life easier */
     ioChan = board->ioChan;
     used = board->used;
 
     if (!((STREQ(name, "all")) || (STREQ(name, "fippi")))) {
         sprintf(info_string, "The DXPSATURN does not have an FPGA called %s for channel number %d", name, board->mod);
-        status = DXP_BAD_PARAM;
+        status = DXP_UNKNOWN_FPGA;
         dxp_log_error("dxp_download_fpga_done",info_string,status);
         return status;
     }
@@ -1032,7 +1030,7 @@ static int dxp_download_dspconfig(int* ioChan, int* modChan, Board *board)
 
     if ((*modChan!=0)&&(*modChan!=ALLCHAN)) {
         sprintf(info_string,"SATURN called with channel number %d",*modChan);
-        status = DXP_BAD_PARAM;
+        status = DXP_BADCHANNEL;
         dxp_log_error("dxp_download_dspconfig",info_string,status);
     }
 
@@ -1167,7 +1165,7 @@ static int dxp_download_dsp_done(int* ioChan, int* modChan, int* mod,
     }
 
     /* If here, then timeout period reached.  Report error. */
-    status = DXP_DSPTIMEOUT;
+    status = DXP_TIMEOUT;
     sprintf(info_string,"Timeout waiting for DSP BUSY=%hu from module %d "
             "channel %d", *value, *mod, *modChan);
     dxp_log_error("dxp_download_dsp_done",info_string,status);
@@ -1368,7 +1366,7 @@ static int dxp_load_dspsymbol_table(FILE* fp, Dsp_Info* dsp)
                 return status;
             }
             if (saturn_md_fgets(line, XIA_LINE_LEN, fp)==NULL) {
-                status = DXP_BAD_PARAM;
+                status = DXP_MALFORMED_FILE;
                 dxp_log_error("dxp_load_dspsymbol_table",
                               "Error in SYMBOL format of DSP file",status);
                 return status;
@@ -1386,7 +1384,7 @@ static int dxp_load_dspsymbol_table(FILE* fp, Dsp_Info* dsp)
                 dsp->params->parameters[i].ubound = 0;
             }
             if (retval==3) {
-                status = DXP_BAD_PARAM;
+                status = DXP_MALFORMED_FILE;
                 sprintf(info_string, "Error in SYMBOL(%s) format of DSP file: 3 parameters found",
                         dsp->params->parameters[i].pname);
                 dxp_log_error("dxp_load_dspsymbol_table", info_string, status);
@@ -2015,8 +2013,8 @@ static int dxp_read_baseline(int* ioChan, int* modChan, Board* board,
         sprintf(info_string, "Error allocating %zu bytes for 'us_baseline'",
                 len * sizeof(unsigned short));
         saturn_md_free(us_baseline);
-        dxp_log_error("dxp_read_baseline", info_string, DXP_ALLOCMEM);
-        return DXP_ALLOCMEM;
+        dxp_log_error("dxp_read_baseline", info_string, DXP_NOMEM);
+        return DXP_NOMEM;
     }
 
     /* Read out the basline histogram. */
@@ -2252,7 +2250,7 @@ static int dxp_begin_control_task(int* ioChan, int* modChan, short *type,
 
     /* Check that the length of allocated memory is greater than 0 */
     if (*length==0) {
-        status = DXP_ALLOCMEM;
+        status = DXP_CONTROL_TASK;
         sprintf(info_string,
                 "Must pass an array of at least length 1 containing LOOPCOUNT for module %d chan %d",
                 board->mod,*modChan);
@@ -2321,7 +2319,7 @@ static int dxp_begin_control_task(int* ioChan, int* modChan, short *type,
                 return status;
             }
         } else {
-            status = DXP_ALLOCMEM;
+            status = DXP_CONTROL_TASK;
             sprintf(info_string,
                     "This control task requires at least 2 parameters for mod %d chan %d",board->mod,*modChan);
             dxp_log_error("dxp_begin_control_task",info_string,status);
@@ -2393,7 +2391,7 @@ static int dxp_begin_control_task(int* ioChan, int* modChan, short *type,
                 }
             }
         } else {
-            status = DXP_ALLOCMEM;
+            status = DXP_CONTROL_TASK;
             sprintf(info_string,
                     "This control task requires at least 4 parameters for mod %d chan %d",
                     board->mod, *modChan);
@@ -2496,7 +2494,7 @@ static int dxp_end_control_task(int* ioChan, int* modChan, Board *board)
         if ((status=dxp_download_dsp_done(ioChan, modChan, &mod, board,
                                           &value, &timeout))!=DXP_SUCCESS) {
             sprintf(info_string,"Error waiting for BUSY=0 state for module %i",mod);
-            status = DXP_DSPTIMEOUT;
+            status = DXP_TIMEOUT;
             dxp_log_error("dxp_end_control_task",info_string,status);
             return status;
         }

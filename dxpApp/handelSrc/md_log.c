@@ -73,7 +73,6 @@ static int logLevel = MD_ERROR;
 XIA_MD_SHARED int dxp_md_enable_log(void)
 {
     isSuppressed = FALSE_;
-
     return DXP_SUCCESS;
 }
 
@@ -84,7 +83,6 @@ XIA_MD_SHARED int dxp_md_enable_log(void)
 XIA_MD_SHARED int dxp_md_suppress_log(void)
 {
     isSuppressed = TRUE_;
-
     return DXP_SUCCESS;
 }
 
@@ -96,7 +94,7 @@ XIA_MD_SHARED int dxp_md_suppress_log(void)
 XIA_MD_SHARED int dxp_md_set_log_level(int level)
 {
 
-/* Validate level */
+    /* Validate level */
     if ((level > MD_DEBUG) || (level < MD_ERROR)) {
         /* Leave level at previous setting and return an error code */
         return DXP_LOG_LEVEL;
@@ -189,7 +187,7 @@ static void dxp_md_log_header(const char* type, const char* routine,
     fprintf(out_stream, "%*c ", 90 - out, ':');
 
     if (error_code)
-        fprintf(out_stream, "[%3d] ", *error_code);
+        fprintf(out_stream, "[%4d] ", *error_code);
 }
 
 /**

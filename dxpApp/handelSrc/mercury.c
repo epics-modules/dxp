@@ -102,23 +102,16 @@ static double dxp__unsigned64_to_double(unsigned long *u64);
 static double dxp__get_clock_tick(void);
 static int dxp__put_dsp_to_sleep(int ioChan, int modChan, Board *b);
 static int dxp__wake_dsp_up(int ioChan, int modChan, Board *b);
-
+static int dxp__do_specialrun(int ioChan, int modChan, parameter_t specialrun,
+                        Board *board, boolean_t waitBusy);
 
 /* Control task operations */
 static int dxp__do_apply(int ioChan, int modChan, Board *board);
 static int dxp__get_adc_trace(int ioChan, int modChan, unsigned long *data,
                               Board *board);
-static int dxp__begin_adc_trace(int ioChan, int modChan, Board *board);
-static int dxp__process_trace_wait(int ioChan, int modChan, unsigned int len,
-                                   int *info, Board *b);
-static int dxp__do_trace(int ioChan, int modChan, parameter_t type, Board *board);
-static int dxp__begin_base_hist(int ioChan, int modChan, Board *board);
-static int dxp__begin_fast_base_sub_trace(int ioChan, int modChan, Board *board);
-static int dxp__begin_base_inst_trace(int ioChan, int modChan, Board *board);
-static int dxp__begin_base_sub_trace(int ioChan, int modChan, Board *board);
-static int dxp__begin_slow_base_sub_trace(int ioChan, int modChan, Board *board);
-static int dxp__begin_events_trace(int ioChan, int modChan, Board *board);
-
+static int dxp__do_trace(int ioChan, int modChan, Board *board);
+static int dxp__calibrate_rc_time(int ioChan, int modChan, Board *board);
+static int dxp__set_adc_offset(int ioChan, int modChan, Board *board);
 
 static fpga_downloader_t FPGA_DOWNLOADERS[] = {
     { "system_fpga", dxp__download_system_fpga },
@@ -128,19 +121,15 @@ static fpga_downloader_t FPGA_DOWNLOADERS[] = {
 };
 
 static control_task_t CONTROL_TASKS[] = {
-    { MERCURY_CT_ADC,  dxp__process_trace_wait,   dxp__begin_adc_trace },
-    { MERCURY_CT_APPLY,         NULL,             dxp__do_apply},
-    { MERCURY_CT_WAKE_DSP,      NULL,             dxp__wake_dsp_up},
-    { MERCURY_CT_BASE_HIST,     dxp__process_trace_wait, dxp__begin_base_hist },
-    { MERCURY_CT_FAST_BASE_SUB, dxp__process_trace_wait, dxp__begin_fast_base_sub_trace},
-    { MERCURY_CT_BASE_INST,     dxp__process_trace_wait, dxp__begin_base_inst_trace},
-    { MERCURY_CT_BASE_SUB,      dxp__process_trace_wait, dxp__begin_base_sub_trace},
-    { MERCURY_CT_SLOW_BASE_SUB, dxp__process_trace_wait, dxp__begin_slow_base_sub_trace},
-    { MERCURY_CT_EVENTS,        dxp__process_trace_wait, dxp__begin_events_trace},
+    { MERCURY_CT_TRACE,         NULL,   dxp__do_trace },
+    { MERCURY_CT_APPLY,         NULL,   dxp__do_apply},
+    { MERCURY_CT_WAKE_DSP,      NULL,   dxp__wake_dsp_up},
+    { MERCURY_CT_CALIBRATE_RC,  NULL,   dxp__calibrate_rc_time},
+    { MERCURY_CT_SET_OFFADC,    NULL,   dxp__set_adc_offset},
 };
 
 static control_task_data_t CONTROL_TASK_DATA[] = {
-    { MERCURY_CT_ADC,         dxp__get_adc_trace },
+    { MERCURY_CT_TRACE,         dxp__get_adc_trace },
 };
 
 /* These are registers that are publicly exported for use in Handel and other
@@ -1259,14 +1248,6 @@ static int dxp_begin_run(int* ioChan, int* modChan, unsigned short* gate,
         return status;
     }
 
-    /*   status = dxp_wait_for_busy(*ioChan, *modChan, 6, 10.0, board); */
-
-    /*   if (status != DXP_SUCCESS) { */
-    /*     sprintf(info_string, "Error waiting for run to start on ioChan = %d", *ioChan); */
-    /*     dxp_log_error("dxp_begin_run", info_string, status); */
-    /*     return status; */
-    /*   } */
-
     *id = gid++;
 
     return DXP_SUCCESS;
@@ -1358,10 +1339,6 @@ XERXES_STATIC int dxp_begin_control_task(int* ioChan, int* modChan,
 
     int status;
     int i;
-
-    UNUSED(length);
-    UNUSED(info);
-
 
     for (i = 0; i < N_ELEMS(CONTROL_TASKS); i++) {
         if (CONTROL_TASKS[i].type == (int)*type) {
@@ -2293,7 +2270,7 @@ static int dxp__download_fpga(int ioChan, unsigned long target,
         }
     }
 
-    sprintf(info_string, "FPGA proglen = %u", fpga->proglen);
+    sprintf(info_string, "FPGA filename %s proglen = %u", fpga->filename, fpga->proglen);
     dxp_log_debug("dxp__download_fpga", info_string);
 
 
@@ -2998,48 +2975,17 @@ static int dxp__read_block(int *ioChan, unsigned long addr, unsigned long n,
     return DXP_SUCCESS;
 }
 
-
 /*
- * Start the ADC trace special run.
- */
-static int dxp__begin_adc_trace(int ioChan, int modChan, Board *board)
-{
-    int status;
-
-
-    ASSERT(board != NULL);
-
-
-    status = dxp__do_trace(ioChan, modChan, MERCURY_TRACETYPE_ADC, board);
-
-    if (status != DXP_SUCCESS) {
-        sprintf(info_string, "Error starting ADC trace for ioChan = %d", ioChan);
-        dxp_log_error("dxp_begin_adc_trace", info_string, status);
-        return status;
-    }
-
-
-    return DXP_SUCCESS;
-}
-
-/*
- * Do a trace special run.
+ * Do a generic trace special run.
+ * Caller should set TRACETYPE and TRACEWAIT before calling this function
  *
- * Other, higher-level routines are meant to wrap this: dxp_begin_adc_trace(), etc.
  */
-static int dxp__do_trace(int ioChan, int modChan, parameter_t type, Board *board)
+static int dxp__do_trace(int ioChan, int modChan, Board *board)
 {
     int status;
-    int id = 0;
 
     parameter_t TRACECHAN  = (parameter_t)modChan;
-    parameter_t RUNTYPE    = MERCURY_RUNTYPE_SPECIAL;
-    parameter_t TRACETYPE  = type;
     parameter_t SPECIALRUN = MERCURY_SPECIALRUN_TRACE;
-
-    unsigned short ignored_gate   = 0;
-    unsigned short ignored_resume = 0;
-
 
     ASSERT(board != NULL);
 
@@ -3053,98 +2999,11 @@ static int dxp__do_trace(int ioChan, int modChan, parameter_t type, Board *board
         return status;
     }
 
-    status = dxp_modify_dspsymbol(&ioChan, &modChan, "RUNTYPE", &RUNTYPE, board);
+    status = dxp__do_specialrun(ioChan, modChan, SPECIALRUN, board, TRUE_);
 
     if (status != DXP_SUCCESS) {
-        sprintf(info_string, "Error setting RUNTYPE to %hu for ioChan = %d",
-                RUNTYPE, ioChan);
+        sprintf(info_string, "Error doing special run for ioChan = %d", ioChan);
         dxp_log_error("dxp__do_trace", info_string, status);
-        return status;
-    }
-
-    status = dxp_modify_dspsymbol(&ioChan, &modChan, "TRACETYPE", &TRACETYPE,
-                                  board);
-
-    if (status != DXP_SUCCESS) {
-        sprintf(info_string, "Error setting TRACETYPE to %hu for ioChan = %d",
-                TRACETYPE, ioChan);
-        dxp_log_error("dxp__do_trace", info_string, status);
-        return status;
-    }
-
-    status = dxp_modify_dspsymbol(&ioChan, &modChan, "SPECIALRUN", &SPECIALRUN,
-                                  board);
-
-    if (status != DXP_SUCCESS) {
-        sprintf(info_string, "Error setting SPECIALRUN to %hu for ioChan = %d",
-                SPECIALRUN, ioChan);
-        dxp_log_error("dxp__do_trace", info_string, status);
-        return status;
-    }
-
-    status = dxp_begin_run(&ioChan, &modChan, &ignored_gate, &ignored_resume,
-                           board, &id);
-
-    if (status != DXP_SUCCESS) {
-        sprintf(info_string, "Error starting ADC trace special run for ioChan = %d",
-                ioChan);
-        dxp_log_error("dxp__do_trace", info_string, status);
-        return status;
-    }
-
-    sprintf(info_string, "Started run id = %d on ioChan = %d", id, ioChan);
-    dxp_log_debug("dxp__do_trace", info_string);
-
-    /* XXX Calculate timeout based on TRACEWAIT here */
-
-
-    status = dxp__wait_for_busy(ioChan, modChan, 0, 10.0, board);
-
-    if (status != DXP_SUCCESS) {
-        /* End the run so that RUNTYPE is reset properly. */
-        status = dxp_end_control_task(&ioChan, &modChan, board);
-
-        sprintf(info_string, "Timeout waiting for BUSY to go to 0 on ioChan = %d",
-                ioChan);
-        dxp_log_error("dxp__do_trace", info_string, status);
-        return status;
-    }
-
-    return DXP_SUCCESS;
-}
-
-
-/*
- * Sets the trace interval based on the value in info.
- *
- * Interprets info[1] as TRACEWAIT.
- */
-static int dxp__process_trace_wait(int ioChan, int modChan, unsigned int len,
-                                   int *info, Board *b)
-{
-    int status;
-
-    parameter_t TRACEWAIT = 0;
-
-
-    ASSERT(info != NULL);
-    ASSERT(b != NULL);
-
-
-    if (len < 2) {
-        sprintf(info_string, "Specified length '%u' for 'info' array is invalid for "
-                "ioChan = %d", len, ioChan);
-        dxp_log_error("dxp__process_trace_wait", info_string, DXP_INVALID_LENGTH);
-        return DXP_INVALID_LENGTH;
-    }
-
-    TRACEWAIT = (parameter_t)info[1];
-
-    status = dxp_modify_dspsymbol(&ioChan, &modChan, "TRACEWAIT", &TRACEWAIT, b);
-
-    if (status != DXP_SUCCESS) {
-        sprintf(info_string, "Error setting TRACEWAIT for ioChan = %d", ioChan);
-        dxp_log_error("dxp__process_trace_wait", info_string, status);
         return status;
     }
 
@@ -3393,19 +3252,13 @@ static double dxp__get_clock_tick(void)
 static int dxp__put_dsp_to_sleep(int ioChan, int modChan, Board *b)
 {
     int status;
-    int id = 0;
 
     parameter_t SPECIALRUN = MERCURY_SPECIALRUN_DSP_SLEEP;
-    parameter_t RUNTYPE    = MERCURY_RUNTYPE_SPECIAL;
-
-    unsigned short ignored_gate   = 0;
-    unsigned short ignored_resume = 0;
 
     unsigned long csr = 0;
 
 
     ASSERT(b != NULL);
-
 
     status = dxp__read_global_register(ioChan, DXP_SYS_REG_CSR, &csr);
 
@@ -3426,30 +3279,10 @@ static int dxp__put_dsp_to_sleep(int ioChan, int modChan, Board *b)
     sprintf(info_string, "Preparing to put DSP to sleep for ioChan = %d", ioChan);
     dxp_log_debug("dxp__put_dsp_to_sleep", info_string);
 
-    status = dxp_modify_dspsymbol(&ioChan, &modChan, "SPECIALRUN", &SPECIALRUN, b);
+    status = dxp__do_specialrun(ioChan, modChan, SPECIALRUN, b, FALSE_);
 
     if (status != DXP_SUCCESS) {
-        sprintf(info_string, "Error setting SPECIALRUN to put DSP to sleep for "
-                "ioChan = %d", ioChan);
-        dxp_log_error("dxp__put_dsp_to_sleep", info_string, status);
-        return status;
-    }
-
-    status = dxp_modify_dspsymbol(&ioChan, &modChan, "RUNTYPE", &RUNTYPE, b);
-
-    if (status != DXP_SUCCESS) {
-        sprintf(info_string, "Error setting RUNTYPE to put DSP to sleep for "
-                "ioChan = %d", ioChan);
-        dxp_log_error("dxp__put_dsp_to_sleep", info_string, status);
-        return status;
-    }
-
-    status = dxp_begin_run(&ioChan, &modChan, &ignored_gate, &ignored_resume,
-                           b, &id);
-
-    if (status != DXP_SUCCESS) {
-        sprintf(info_string, "Error starting run to put DSP to sleep for ioChan = %d",
-                ioChan);
+        sprintf(info_string, "Error doing special run for ioChan = %d", ioChan);
         dxp_log_error("dxp__put_dsp_to_sleep", info_string, status);
         return status;
     }
@@ -3528,142 +3361,105 @@ static int dxp__wake_dsp_up(int ioChan, int modChan, Board *b)
 
 
 /*
- * Start the baseline history trace.
+ * Do a calibrate RC special run
  */
-static int dxp__begin_base_hist(int ioChan, int modChan, Board *board)
+static int dxp__calibrate_rc_time(int ioChan, int modChan, Board *board)
 {
     int status;
-
+    parameter_t SPECIALRUN = MERCURY_SPECIALRUN_CALIBRATE_RC;
 
     ASSERT(board != NULL);
 
-
-    status = dxp__do_trace(ioChan, modChan, MERCURY_TRACETYPE_BASE_HIST, board);
+    status = dxp__do_specialrun(ioChan, modChan, SPECIALRUN, board, TRUE_);
 
     if (status != DXP_SUCCESS) {
-        sprintf(info_string, "Error starting baseline history trace for ioChan = %d",
-                ioChan);
-        dxp_log_error("dxp__begin_base_hist", info_string, status);
+        sprintf(info_string, "Error doing special run for ioChan = %d", ioChan);
+        dxp_log_error("dxp__calibrate_rc_time", info_string, status);
         return status;
     }
 
     return DXP_SUCCESS;
 }
 
-
 /*
- * Starts a trace for the fast baseline-subtracted output
+ * Do a set ADC offset special run
  */
-static int dxp__begin_fast_base_sub_trace(int ioChan, int modChan, Board *board)
+static int dxp__set_adc_offset(int ioChan, int modChan, Board *board)
 {
     int status;
-
+    parameter_t SPECIALRUN = MERCURY_SPECIALRUN_SET_OFFADC;
 
     ASSERT(board != NULL);
 
-
-    status = dxp__do_trace(ioChan, modChan, MERCURY_TRACETYPE_FAST_BASE_SUB, board);
+    status = dxp__do_specialrun(ioChan, modChan, SPECIALRUN, board, TRUE_);
 
     if (status != DXP_SUCCESS) {
-        sprintf(info_string, "Error starting trigger filter trace for ioChan = %d",
-                ioChan);
-        dxp_log_error("dxp__begin_fast_base_sub_trace", info_string, status);
+        sprintf(info_string, "Error doing special run for ioChan = %d", ioChan);
+        dxp_log_error("dxp__set_adc_offset", info_string, status);
         return status;
     }
 
     return DXP_SUCCESS;
 }
 
-
 /*
- * Starts a trace for the baseline instantaneous samples
+ * Do a simple special run with no additional parameters
  */
-static int dxp__begin_base_inst_trace(int ioChan, int modChan, Board *board)
+static int dxp__do_specialrun(int ioChan, int modChan, parameter_t specialrun,
+                        Board *board, boolean_t waitBusy)
 {
     int status;
+    int id = 0;
 
+    unsigned short ignored = 0;
+
+    parameter_t RUNTYPE    = MERCURY_RUNTYPE_SPECIAL;
+    parameter_t SPECIALRUN = specialrun;
 
     ASSERT(board != NULL);
 
-
-    status = dxp__do_trace(ioChan, modChan, MERCURY_TRACETYPE_BASE_INST, board);
+    status = dxp_modify_dspsymbol(&ioChan, &modChan, "RUNTYPE", &RUNTYPE, board);
 
     if (status != DXP_SUCCESS) {
-        sprintf(info_string, "Error starting baseline samples trace for ioChan = %d",
-                ioChan);
-        dxp_log_error("dxp__begin_base_inst_trace", info_string, status);
+        sprintf(info_string, "Error setting RUNTYPE for ioChan = %d", ioChan);
+        dxp_log_error("dxp__do_specialrun", info_string, status);
         return status;
     }
 
-    return DXP_SUCCESS;
-}
-
-
-/*
- * Starts a trace for the baseline-subtracted output
- */
-static int dxp__begin_base_sub_trace(int ioChan, int modChan, Board *board)
-{
-    int status;
-
-
-    ASSERT(board != NULL);
-
-
-    status = dxp__do_trace(ioChan, modChan, MERCURY_TRACETYPE_BASE_SUB, board);
+    status = dxp_modify_dspsymbol(&ioChan, &modChan, "SPECIALRUN", &SPECIALRUN,
+                                  board);
 
     if (status != DXP_SUCCESS) {
-        sprintf(info_string, "Error starting baseline filter trace for ioChan = %d",
-                ioChan);
-        dxp_log_error("dxp__begin_base_sub_trace", info_string, status);
+        sprintf(info_string, "Error setting SPECIALRUN for ioChan = %d", ioChan);
+        dxp_log_error("dxp__do_specialrun", info_string, status);
         return status;
     }
 
-    return DXP_SUCCESS;
-}
-
-
-/*
- * Starts a trace for the slow filter baseline-subtracted output
- */
-static int dxp__begin_slow_base_sub_trace(int ioChan, int modChan, Board *board)
-{
-    int status;
-
-
-    ASSERT(board != NULL);
-
-
-    status = dxp__do_trace(ioChan, modChan, MERCURY_TRACETYPE_SLOW_BASE_SUB, board);
+    status = dxp_begin_run(&ioChan, &modChan, &ignored, &ignored, board, &id);
 
     if (status != DXP_SUCCESS) {
-        sprintf(info_string, "Error starting energy filter trace for ioChan = %d",
-                ioChan);
-        dxp_log_error("dxp__begin_slow_base_sub_trace", info_string, status);
+        sprintf(info_string, "Error starting special run for ioChan = %d", ioChan);
+        dxp_log_error("dxp__do_specialrun", info_string, status);
         return status;
     }
 
-    return DXP_SUCCESS;
-}
+    sprintf(info_string, "Started speical run id = %d SPECIALRUN = %hu on "
+            "ioChan = %d", id, SPECIALRUN, ioChan);
+    dxp_log_debug("dxp__do_specialrun", info_string);
 
+    if (!waitBusy) return DXP_SUCCESS;
 
-/*
- * Starts a trace for the event samples
- */
-static int dxp__begin_events_trace(int ioChan, int modChan, Board *board)
-{
-    int status;
+    sprintf(info_string, "Wating for DSP BUSY to go to 0 on ioChan = %d", ioChan);
+    dxp_log_debug("dxp__do_specialrun", info_string);
 
+    status = dxp__wait_for_busy(ioChan, modChan, 0, 10.0, board);
 
-    ASSERT(board != NULL);
-
-
-    status = dxp__do_trace(ioChan, modChan, MERCURY_TRACETYPE_EVENTS, board);
-
+     /* End the run so that RUNTYPE is reset properly. */
     if (status != DXP_SUCCESS) {
-        sprintf(info_string, "Error starting energy samples trace for ioChan = %d",
+        status = dxp_end_control_task(&ioChan, &modChan, board);
+        sprintf(info_string, "Timeout waiting for BUSY to go to 0 on detChan = %d",
                 ioChan);
-        dxp_log_error("dxp__begin_events_trace", info_string, status);
+        dxp_log_error("dxp__do_specialrun", info_string, status);
         return status;
     }
 

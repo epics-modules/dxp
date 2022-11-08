@@ -188,7 +188,8 @@ static const double VARIABLE_GAIN_SPACING = 1.7;
 #define GAIN_MODE_SWITCHED  3
 #define GAIN_MODE_HIGHLOW   4
 
-#define MAX_NUM_BINS     8192
+#define MAX_NUM_BINS        8192
+#define VEGA_MAX_NUM_BINS   4096
 
 #define MAX_THRESHOLD_STD   255.0
 #define MAX_THRESHOLD_SUPER 4095.0
@@ -236,7 +237,8 @@ static const double VARIABLE_GAIN_SPACING = 1.7;
 #define MIN_PASSTHROUGH_SUPPORT_CODEREV 0x0576
 #define MIN_SNAPSHOTSCA_SUPPORT_CODEREV 0x0584
 
-#define MAX_PASSTHROUGH_SIZE 32
+#define MAX_PASSTHROUGH_SIZE        32
+#define PASSTHROUGH_STATUS_BYTES    1
 
 #define MIN_PULSER_PERIOD 1
 #define MAX_PULSER_PERIOD 255
@@ -250,6 +252,13 @@ static const double VARIABLE_GAIN_SPACING = 1.7;
 /* Hardware status indicates command is unsupported */
 #define HW_STATUS_UNSUPPORTED 0xF3
 
+#define UDXP_I2C_READ   0
+#define UDXP_I2C_WRITE  1
+#define UDXP_HV_MIN     0
+#define UDXP_HV_MAX     2.5
+#define UDXP_HV_SCALE   (65536 / UDXP_HV_MAX)
+
+#define CMD_ACCESS_I2C  0x40
 /*
  * Macros
  */

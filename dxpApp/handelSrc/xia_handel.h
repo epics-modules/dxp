@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2004 X-ray Instrumentation Associates
- *               2005-2015 XIA LLC
+ *               2005-2020 XIA LLC
  * All rights reserved
  *
  * Redistribution and use in source and binary forms,
@@ -137,6 +137,7 @@ HANDEL_EXPORT int HANDEL_API xiaSetIOPriority(int pri);
 
 HANDEL_EXPORT void HANDEL_API xiaGetVersionInfo(int *rel, int *min, int *maj,
 												  char *pretty);
+HANDEL_EXPORT const char* HANDEL_API xiaGetErrorText(int errorcode);
 
 #ifdef _DEBUG
 
@@ -217,6 +218,7 @@ HANDEL_EXPORT int HANDEL_API xiaExit();
 HANDEL_EXPORT int HANDEL_API xiaSetIOPriority();
 
 HANDEL_EXPORT void HANDEL_API xiaGetVersionInfo();
+HANDEL_EXPORT const char* HANDEL_API xiaGetErrorText();
 
 #ifdef _DEBUG
 

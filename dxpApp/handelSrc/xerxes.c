@@ -428,7 +428,7 @@ int XERXES_API dxp_add_system_item(char *ltoken, char **values)
             return DXP_SUCCESS;
         }
     } else {
-        status = DXP_INPUT_UNDEFINED;
+        status = DXP_BAD_SYSTEMITEM;
         sprintf(info_string,"Unable to add token: %s", strTmp);
         dxp_log_error("dxp_add_system_item",info_string,status);
         xerxes_md_free((void *)strTmp);
@@ -535,8 +535,8 @@ int dxp_add_board_item(char *ltoken, char **values)
         if(numDxpMod == MAXDXP) {
             sprintf(info_string, "Too many modules specified: only %d are allowed",
                     MAXDXP);
-            dxp_log_error("dxp_add_board_item", info_string, DXP_ARRAY_TOO_SMALL);
-            return DXP_ARRAY_TOO_SMALL;
+            dxp_log_error("dxp_add_board_item", info_string, DXP_MAX_MODULES);
+            return DXP_MAX_MODULES;
         }
 
         if (working_btype== NULL) {
@@ -832,8 +832,8 @@ int dxp_add_board_item(char *ltoken, char **values)
     } else {
         sprintf(info_string, "Unknown board item '%s' to add",
                 PRINT_NON_NULL(ltoken));
-        dxp_log_error("dxp_add_board_item", info_string, DXP_NOMATCH);
-        return DXP_NOMATCH;
+        dxp_log_error("dxp_add_board_item", info_string, DXP_UNKNOWN_BTYPE);
+        return DXP_UNKNOWN_BTYPE;
     }
 
     return DXP_SUCCESS;

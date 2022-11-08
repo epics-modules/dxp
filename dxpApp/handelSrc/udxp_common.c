@@ -56,11 +56,13 @@
 
 #define ESCAPE   0x1B
 #define INFO_LEN 400
+#define LINUX_WAIT_BEFORE_READ 0.01
 
 #define udxpc_log_error(x, y, z)    funcs.dxp_md_log(MD_ERROR, (x), (y), (z), __FILE__, __LINE__)
 #define udxpc_log_debug(x, y)       funcs.dxp_md_log(MD_DEBUG, (x), (y),   0, __FILE__, __LINE__)
 #define udxpc_md_alloc(x)           funcs.dxp_md_alloc((x))
 #define udxpc_md_free(x)            funcs.dxp_md_free((x))
+#define udxpc_md_wait(x)            funcs.dxp_md_wait((x))
 
 /* Import the necessary MD routine here */
 XIA_MD_IMPORT int XIA_MD_API dxp_md_init_util(Xia_Util_Functions *funcs, char *type);
@@ -80,7 +82,7 @@ int dxp_usb2_reset_bus(int modChan, Board *board);
 int dxp_usb2_reticulate_address(int modChan, byte_t *cmd, unsigned long *addr);
 
 static int dxp__update_version_cache(int modChan, Board *board, Xia_Util_Functions funcs);
-static int dxp__query_status(Board *board, Xia_Util_Functions funcs);
+static int dxp__check_status(Board *board, Xia_Util_Functions funcs);
 
 static boolean_t dxp_is_usb(Board *board);
 
@@ -164,17 +166,6 @@ XERXES_SHARED int dxp_build_cmdstr(byte_t cmd, unsigned short len, byte_t *data,
      */
     checksum = dxp_compute_chksum(len + 3, cmdstr + 1);
     cmdstr[chksmIdx] = checksum;
-
-    /*
-      sprintf(INFO_STRING, "cmd = %u", cmdstr[1]);
-      udxpc_log_debug("dxp_build_cmdstr", INFO_STRING);
-      sprintf(INFO_STRING, "len (low) = %u", cmdstr[2]);
-      udxpc_log_debug("dxp_build_cmdstr", INFO_STRING);
-      sprintf(INFO_STRING, "len {high) = %u", cmdstr[3]);
-      udxpc_log_debug("dxp_build_cmdstr", INFO_STRING);
-      sprintf(INFO_STRING, "chksm = %u", cmdstr[chksmIdx]);
-      udxpc_log_debug("dxp_build_cmdstr", INFO_STRING);
-    */
 
     return DXP_SUCCESS;
 }
@@ -298,7 +289,6 @@ XERXES_SHARED int dxp_usb_read_block(int modChan, Board *board,
     }
 
     status = dxp_md_io(board, serial_read, a, (void *)data, dataWords);
-    status += dxp_usb2_reset_bus(modChan, board);
 
     if (status != DXP_SUCCESS) {
         sprintf(INFO_STRING, "Error reading %lu words from ioChan %d", n, board->ioChan);
@@ -306,7 +296,9 @@ XERXES_SHARED int dxp_usb_read_block(int modChan, Board *board,
         return status;
     }
 
-    return DXP_SUCCESS;
+    status = dxp_usb2_reset_bus(modChan, board);
+
+    return status;
 }
 
 
@@ -590,6 +582,7 @@ int dxp_read_response(Board *board, unsigned long address,
     unsigned long a;
 
     unsigned short *shortRet = NULL;
+    float linux_read_wait = (float) LINUX_WAIT_BEFORE_READ;
 
     Xia_Util_Functions funcs;
 
@@ -630,6 +623,16 @@ int dxp_read_response(Board *board, unsigned long address,
             udxpc_log_error("dxp_read_response", INFO_STRING, status);
             return status;
         }
+
+#ifdef _WIN32
+        UNUSED(linux_read_wait);
+#else
+        /* HACK Linux operation is much faster than Windows, sending out the read
+           setup packet almost immediately after dxp_send_command, this had caused
+           timeing issues in the USB firmware and intermittent errors. As a fix we
+           inserted a 10ms delay before reading out response. */
+        udxpc_md_wait(&linux_read_wait);
+#endif
     }
 
     /* Receive the response */
@@ -696,8 +699,8 @@ int dxp_verify_response(byte_t cmd, unsigned int lenS, byte_t *send,
     if (status == DXP_SUCCESS && receive[1] != cmd) {
         sprintf(INFO_STRING, "Received command char 0x%02X doesn't match "
                 "sent 0x%02X",receive[1], cmd);
-        udxpc_log_error("dxp_verify_response", INFO_STRING, DXP_UDXP);
-        status = DXP_UDXP;
+        udxpc_log_error("dxp_verify_response", INFO_STRING, DXP_UDXP_RESPONSE);
+        status = DXP_UDXP_RESPONSE;
     }
 
     /* Receive retlen is greater than specified */
@@ -707,9 +710,9 @@ int dxp_verify_response(byte_t cmd, unsigned int lenS, byte_t *send,
 
         if (retLen > lenR) {
             sprintf(INFO_STRING, "Received length of data %u is greater than "
-                "expected %u", retLen, lenS);
-            udxpc_log_error("dxp_verify_response", INFO_STRING, DXP_UDXP);
-            status = DXP_UDXP;
+                "expected %u", retLen, lenR);
+            udxpc_log_error("dxp_verify_response", INFO_STRING, DXP_UDXP_RESPONSE);
+            status = DXP_UDXP_RESPONSE;
         }
     }
 
@@ -728,15 +731,18 @@ int dxp_verify_response(byte_t cmd, unsigned int lenS, byte_t *send,
 
     /* Hardware reported an error here */
     if (status == DXP_SUCCESS && receive[4] != 0) {
+        status = receive[4] == 77 ? DXP_DSP_ERROR : DXP_STATUS_ERROR;
         sprintf(INFO_STRING, "Hardware reported status = %u", receive[4]);
-        udxpc_log_error("dxp_verify_response", INFO_STRING, DXP_UDXP);
-        status = DXP_UDXP;
+        udxpc_log_error("dxp_verify_response", INFO_STRING, status);
     }
 
     /* A few things usually indicates a communcation issue
      * and the entire buffer should be logged in these cases
      */
     if (status != DXP_SUCCESS) {
+        sprintf(INFO_STRING, "cmd = 0x%02X", cmd);
+        udxpc_log_debug("dxp_verify_response", INFO_STRING);
+
         for (j = 0; j < lenS; j++) {
             sprintf(INFO_STRING, "send[%u] = 0x%02X", j, send[j]);
             udxpc_log_debug("dxp_verify_response", INFO_STRING);
@@ -851,6 +857,15 @@ static int dxp__update_version_cache(int modChan, Board *board, Xia_Util_Functio
         }
     }
 
+    /* Another initialization routine to check status of board */
+    status = dxp__check_status(board, funcs);
+
+    if (status != DXP_SUCCESS) {
+        sprintf(INFO_STRING, "Error checking board status for ioChan %d", board->ioChan);
+        udxpc_log_error("dxp__update_version_cache", INFO_STRING, status);
+        return status;
+    }
+
     status = dxp_send_command(board, addr, cmd, lenS, NULL);
 
     if (status != DXP_SUCCESS) {
@@ -898,10 +913,9 @@ static int dxp__update_version_cache(int modChan, Board *board, Xia_Util_Functio
 
 
 /*
- * Read the board status and print in log for debugging, this is expected
- * to be called from an error handler, error responses are ignored.
+ * Read the board status and print in log for debugging.
  */
-static int dxp__query_status(Board *board, Xia_Util_Functions funcs)
+static int dxp__check_status(Board *board, Xia_Util_Functions funcs)
 {
     int status;
     unsigned long addr = 0;
@@ -911,7 +925,7 @@ static int dxp__query_status(Board *board, Xia_Util_Functions funcs)
     if (dxp_is_usb(board)) {
         status = dxp_usb2_reticulate_address(board->ioChan, &cmd, &addr);
         if (status != DXP_SUCCESS) {
-            udxpc_log_error("dxp__query_status",
+            udxpc_log_error("dxp__check_status",
                     "Error updating the address for a USB transfer", status);
             return status;
         }
@@ -920,7 +934,7 @@ static int dxp__query_status(Board *board, Xia_Util_Functions funcs)
     status = dxp_send_command(board, addr, cmd, lenS, NULL);
 
     if (status != DXP_SUCCESS) {
-        udxpc_log_error("dxp__query_status",
+        udxpc_log_error("dxp__check_status",
             "Error sending get status command", status);
         return status;
     }
@@ -928,7 +942,7 @@ static int dxp__query_status(Board *board, Xia_Util_Functions funcs)
     status = dxp_read_response(board, addr, lenR, receive);
 
     if (status != DXP_SUCCESS) {
-        udxpc_log_error("dxp__query_status",
+        udxpc_log_error("dxp__check_status",
                 "Error reading get status command response", status);
         return status;
     }
@@ -939,7 +953,18 @@ static int dxp__query_status(Board *board, Xia_Util_Functions funcs)
         board->ioChan, receive[4], receive[5], receive[6],
         receive[7], receive[8], receive[9]);
 
-    udxpc_log_debug("dxp__query_status", INFO_STRING);
+    udxpc_log_debug("dxp__check_status", INFO_STRING);
+
+    if (receive[5] != 0) {
+        udxpc_log_error("dxp__check_status", "PIC status error.", DXP_PIC_ERROR);
+        return DXP_PIC_ERROR;
+    }
+
+    if (receive[6] != 0) {
+        udxpc_log_error("dxp__check_status", "DSP boot status error.",
+            DXP_DSP_ERROR);
+        return DXP_DSP_ERROR;
+    }
 
     return DXP_SUCCESS;
 }
@@ -965,6 +990,19 @@ XERXES_SHARED boolean_t dxp_is_supermicro(int ioChan)
     return VERSION_CACHE[ioChan][PIC_MAJOR] > 2;
 #endif
 }
+
+XERXES_SHARED boolean_t dxp_is_vega(int ioChan)
+{
+#ifdef XIA_ALPHA
+    UNUSED(ioChan);
+    return FALSE_;
+#else
+    ASSERT(VERSION_CACHE[ioChan][PIC_VARIANT] != UDXP_VERSION_NOT_READ);
+    /* Check for vega variant */
+    return VERSION_CACHE[ioChan][PIC_VARIANT] == 36;
+#endif
+}
+
 
 XERXES_SHARED boolean_t dxp_has_direct_trace_readout(int ioChan)
 {

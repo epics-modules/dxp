@@ -39,22 +39,15 @@
 
 /* Control Tasks */
 enum {
-  MERCURY_CT_ADC = 0,
   MERCURY_CT_APPLY,
+  /* Generic trace run */
+  MERCURY_CT_TRACE,
   /* Wake the DSP up */
   MERCURY_CT_WAKE_DSP,
-  /* Baseline history */
-  MERCURY_CT_BASE_HIST,
-  /* Fast filter baseline-subtracted output scaled by 2^(-FSCALE) */
-  MERCURY_CT_FAST_BASE_SUB,
-  /* Baseline filter baseline-subtracted ouput scaled by 2^(-ESCALE) */
-  MERCURY_CT_BASE_SUB,
-  /* Slow filter baseline-subtracted ouput scaled by 2^(-ESCALE) */
-  MERCURY_CT_SLOW_BASE_SUB,
-  /* Baseline instantaneous scamples scaled by 2^(-ESCALE) */
-  MERCURY_CT_BASE_INST,
-  /* Event samples scaled by 2^(-ESCALE) */
-  MERCURY_CT_EVENTS
+  /* Calibrate RC time */
+  MERCURY_CT_CALIBRATE_RC,
+  /* Set ADC Offset */
+  MERCURY_CT_SET_OFFADC
 };
 
 #endif /* __MERCURY_H__ */

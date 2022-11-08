@@ -138,7 +138,7 @@ XERXES_EXPORT int dxp_init_udxp(Functions* funcs)
     funcs->dxp_get_num_params = dxp_get_num_params;
 
     funcs->dxp_do_cmd = dxp_do_cmd;
-    
+
     dxp_init_pic_version_cache();
 
     return DXP_SUCCESS;
@@ -148,11 +148,11 @@ XERXES_EXPORT int dxp_init_udxp(Functions* funcs)
  */
 static int dxp_init_driver(Interface* iface)
 /* Interface *iface;    Input: Pointer to the IO Interface  */
-{    
+{
     /* Assign all the static vars here to point at the proper library routines */
     udxp_md_set_maxblk = iface->funcs->dxp_md_set_maxblk;
     udxp_md_get_maxblk = iface->funcs->dxp_md_get_maxblk;
-    
+
     return DXP_SUCCESS;
 }
 /*
@@ -208,7 +208,7 @@ static int dxp_download_fpgaconfig(int* ioChan, int* modChan, char *name, Board*
     sscanf(name, "fippi%hu", &fippiNum);
 
     if (fippiNum > 2) {
-        status = DXP_UDXP;
+        status = DXP_UNKNOWN_FPGA;
         dxp_log_error("dxp_download_fpgaconfig",
                       "Specified FiPPI configuration is out-of-range",
                       status);
@@ -222,7 +222,6 @@ static int dxp_download_fpgaconfig(int* ioChan, int* modChan, char *name, Board*
                          send, lenR, receive);
 
     if (status != DXP_SUCCESS) {
-        status = DXP_UDXP;
         dxp_log_error("dxp_download_fpgaconfig",
                       "Error executing command",
                       status);
@@ -230,7 +229,7 @@ static int dxp_download_fpgaconfig(int* ioChan, int* modChan, char *name, Board*
     }
 
     if (receive[4] != 0) {
-        status = DXP_UDXP;
+        status = DXP_STATUS_ERROR;
         dxp_log_error("dxp_download_fpgaconfig",
                       "Board reported an error condition",
                       status);
@@ -581,7 +580,7 @@ static int dxp_read_dspsymbol(int* ioChan, int* modChan, char* name,
     }
 
     if (receive[4] != 0) {
-        status = DXP_UDXP;
+        status = DXP_STATUS_ERROR;
         dxp_log_error("dxp_read_dspsymbol", "Board reported an error condition",
                       status);
         return status;
@@ -644,7 +643,7 @@ static int dxp_read_dspparams(int* ioChan, int* modChan, Board *board,
         send[3] = HI_BYTE(addr);
 
         status = dxp_command(*modChan, board, cmd, lenS, send, maxLenR, maxR);
-        
+
         if (status != DXP_SUCCESS) {
             dxp_log_error("dxp_read_dspparams", "Error reading DSP data memory", status);
             return status;
@@ -820,9 +819,9 @@ static int dxp_begin_run(int* ioChan, int* modChan, unsigned short* gate,
     send[0] = (byte_t)(0x01 ^ *resume);
 
 
-    status = dxp_command(*modChan, board, CMD_START_RUN, lenS, send, 
+    status = dxp_command(*modChan, board, CMD_START_RUN, lenS, send,
                         lenR, receive);
-   
+
     if (status != DXP_SUCCESS) {
         dxp_log_error("dxp_begin_run",
                       "Error executing command",
@@ -863,7 +862,7 @@ static int dxp_end_run(int* ioChan, int* modChan, Board *board)
 
     UNUSED(ioChan);
 
-    status = dxp_command(*modChan, board, CMD_STOP_RUN, lenS, NULL, 
+    status = dxp_command(*modChan, board, CMD_STOP_RUN, lenS, NULL,
                         lenR, receive);
 
     if (status != DXP_SUCCESS) {
@@ -1125,7 +1124,7 @@ XERXES_STATIC int dxp_write_mem(int *ioChan, int *modChan, Board *board,
     us_data = udxp_md_alloc((*offset) * sizeof(unsigned short));
 
     if (!us_data) {
-        sprintf(info_string, "Unable to allocate %zu bytes for 'us_data' for "
+        sprintf(info_string, "Unable to allocate %lu bytes for 'us_data' for "
                 "ioChan = %d, modChan = %d.",
                 (*offset) * sizeof(unsigned short), *ioChan, *modChan);
         dxp_log_error("dxp_write_mem", info_string, DXP_NOMEM);
@@ -1190,7 +1189,7 @@ XERXES_STATIC int XERXES_API dxp_do_cmd(int modChan, Board *board, byte_t cmd, u
 {
     int status;
     status = dxp_command(modChan, board, cmd, lenS, send, lenR, receive);
-    
+
     if (status != DXP_SUCCESS) {
         dxp_log_error("dxp_do_cmd", "Command error", status);
         return status;

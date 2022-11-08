@@ -60,6 +60,7 @@ XERXES_SHARED boolean_t dxp_is_supermicro(int ioChan);
 XERXES_SHARED boolean_t dxp_has_direct_mca_readout(int ioChan);
 XERXES_SHARED boolean_t dxp_has_direct_trace_readout(int ioChan);
 XERXES_SHARED unsigned long dxp_dsp_coderev(int ioChan);
+XERXES_SHARED boolean_t dxp_is_vega(int ioChan);
 
 
 /* Communication constants used for USB comm*/

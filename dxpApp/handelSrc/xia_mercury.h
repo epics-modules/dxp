@@ -255,21 +255,12 @@ static unsigned long MERCURY_CFG_STATUS[MERCURY_NUM_TARGETS][2] = {
 #define MERCURY_RUNTYPE_NORMAL  0
 #define MERCURY_RUNTYPE_SPECIAL 1
 
-/* TRACETYPE constants */
-#define MERCURY_TRACETYPE_ADC           0x0
-#define MERCURY_TRACETYPE_FAST_BASE_SUB 0x4
-#define MERCURY_TRACETYPE_BASE_INST     0x6
-#define MERCURY_TRACETYPE_BASE_HIST     0x7
-#define MERCURY_TRACETYPE_BASE_SUB      0x8
-#define MERCURY_TRACETYPE_SLOW_BASE_SUB 0xA
-#define MERCURY_TRACETYPE_EVENTS        0xB
-
 /* SPECIALRUN constants */
-#define MERCURY_SPECIALRUN_APPLY     0
-#define MERCURY_SPECIALRUN_TRACE     1
-#define MERCURY_SPECIALRUN_TEST_1    2 /* Writes test pattern #1 to external memory */
-#define MERCURY_SPECIALRUN_TEST_2    3 /* Writes test pattern #2 to external memory */
-#define MERCURY_SPECIALRUN_DSP_SLEEP 7
+#define MERCURY_SPECIALRUN_APPLY            0
+#define MERCURY_SPECIALRUN_TRACE            1
+#define MERCURY_SPECIALRUN_SET_OFFADC       2 /* Mercury OEM Adjust ADC offset */
+#define MERCURY_SPECIALRUN_CALIBRATE_RC     3 /* Mercury OEM calibrate RC time */
+#define MERCURY_SPECIALRUN_DSP_SLEEP        7
 
 /* Memory constants */
 #define MERCURY_MEMORY_BLOCK_SIZE  256

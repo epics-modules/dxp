@@ -58,17 +58,14 @@ HANDEL_EXPORT int HANDEL_API xiaEnableLogOutput(void)
 
     if (handel_md_enable_log == NULL)
     {
-        xiaInitHandel();
+        status = xiaInitHandel();
+
+        if (status != XIA_SUCCESS)
+            return status;
     }
 
     status = handel_md_enable_log();
-
-    if (status != XIA_SUCCESS)
-    {
-        return XIA_MD;
-    }
-
-    return XIA_SUCCESS;
+    return status;
 }
 
 /**
@@ -80,17 +77,14 @@ HANDEL_EXPORT int HANDEL_API xiaSuppressLogOutput(void)
 
     if (handel_md_suppress_log == NULL)
     {
-        xiaInitHandel();
+        status = xiaInitHandel();
+
+        if (status != XIA_SUCCESS)
+            return status;
     }
 
     status = handel_md_suppress_log();
-
-    if (status != XIA_SUCCESS)
-    {
-        return XIA_MD;
-    }
-
-    return XIA_SUCCESS;
+    return status;
 }
 
 /**
@@ -104,17 +98,14 @@ HANDEL_EXPORT int HANDEL_API xiaSetLogLevel(int level)
 
     if (handel_md_set_log_level == NULL)
     {
-        xiaInitHandel();
+        status = xiaInitHandel();
+
+        if (status != XIA_SUCCESS)
+            return status;
     }
 
     status = handel_md_set_log_level(level);
-
-    if (status != XIA_SUCCESS)
-    {
-        return XIA_MD;
-    }
-
-    return XIA_SUCCESS;
+    return status;
 }
 
 /**
@@ -124,13 +115,16 @@ HANDEL_EXPORT int HANDEL_API xiaSetLogLevel(int level)
 HANDEL_EXPORT int HANDEL_API xiaSetLogOutput(char *filename)
 /* char *filename;                    Input: name of file to redirect reporting */
 {
+    int status;
     if (handel_md_output == NULL)
     {
-        xiaInitHandel();
+        status = xiaInitHandel();
+
+        if (status != XIA_SUCCESS)
+            return status;
     }
 
     handel_md_output(filename);
-
     return XIA_SUCCESS;
 }
 
@@ -164,13 +158,16 @@ HANDEL_SHARED void HANDEL_API xiaLog(int level, const char* file, int line,
  */
 HANDEL_EXPORT int HANDEL_API xiaCloseLog(void)
 {
+    int status;
     if (handel_md_output == NULL)
     {
-        xiaInitHandel();
+        status = xiaInitHandel();
+
+        if (status != XIA_SUCCESS)
+            return status;
     }
 
     handel_md_output(NULL);
-
     return XIA_SUCCESS;
 }
 

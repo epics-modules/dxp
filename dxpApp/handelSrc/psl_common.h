@@ -181,7 +181,7 @@ typedef struct _AcquisitionValue {
 #  define ONCE while( 0 )
 #endif
 
-#define GET_PARAM_IDX(detChan, name, idx, fname) do { int statusX; statusX = dxp_get_symbol_index(&detChan, name, &idx); if (statusX != DXP_SUCCESS) { sprintf(info_string, "Unable to get the index of '%s' for detChan %d. Xerxes reports status = %d.", name, detChan, statusX); pslLogError("psl__Extract" # fname, info_string, XIA_XERXES); return XIA_XERXES; } } ONCE
+#define GET_PARAM_IDX(detChan, name, idx, fname) do { int statusX; statusX = dxp_get_symbol_index(&detChan, name, &idx); if (statusX != DXP_SUCCESS) { sprintf(info_string, "Unable to get the index of '%s' for detChan %d. Xerxes reports status = %d.", name, detChan, statusX); pslLogError("psl__Extract" # fname, info_string, XIA_MISSING_PARAM); return XIA_MISSING_PARAM; } } ONCE
 
 
 /* Shared routines */

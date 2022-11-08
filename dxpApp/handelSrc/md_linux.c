@@ -338,7 +338,7 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_epp_initialize(unsigned int* maxMod, char* d
     /* Initialize the EPP port */
     rstat = sscanf(dllname,"%hx",&port);			/* PLCF 4pi change, %x to %hx	*/
     if (rstat!=1) {
-        status = DXP_NOMATCH;
+        status = DXP_BAD_IONAME;
         dxp_md_log_error("dxp_md_epp_initialize",
                          "Unable to read the EPP port address",status);
         return status;
@@ -359,7 +359,7 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_epp_initialize(unsigned int* maxMod, char* d
     /*  if (rstat==0) {
     status = DXP_SUCCESS;
     } else {
-    status = DXP_INITIALIZE;
+    status = DXP_OPEN_EPP;
     sprintf(ERROR_STRING,
     "Unable to initialize the EPP port: rstat=%d",rstat);
     dxp_md_log_error("dxp_md_epp_initialize", ERROR_STRING,status);
@@ -425,7 +425,7 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_epp_open(char* ioname, int* camChan)
         rstat = DxpInitPortAddress((int) port);
         if (rstat != 0)
         {
-            status = DXP_INITIALIZE;
+            status = DXP_OPEN_EPP;
             sprintf(ERROR_STRING,
                     "Unable to initialize the EPP port address: port=%d", port);
             dxp_md_log_error("dxp_md_epp_open", ERROR_STRING, status);
@@ -437,7 +437,7 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_epp_open(char* ioname, int* camChan)
         /* No return value
            if (rstat != 0)
            {
-           status = DXP_INITIALIZE;
+           status = DXP_OPEN_EPP;
            sprintf(ERROR_STRING,
            "Unable to set the EPP Port ID: ID=%d", id[numEPP]);
            dxp_md_log_error("dxp_md_epp_open", ERROR_STRING, status);
@@ -455,7 +455,7 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_epp_open(char* ioname, int* camChan)
     {
         status = DXP_SUCCESS;
     } else {
-        status = DXP_INITIALIZE;
+        status = DXP_OPEN_EPP;
         sprintf(ERROR_STRING,
                 "Unable to initialize the EPP port: rstat=%d",rstat);
         dxp_md_log_error("dxp_md_epp_open", ERROR_STRING,status);
@@ -530,8 +530,8 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_epp_io(int* camChan, unsigned int* function,
             if (!temp) {
                 sprintf(ERROR_STRING, "Unable to allocate %zu bytes for temp",
                         sizeof(unsigned long) * ullength);
-                dxp_md_log_error("dxp_md_epp_io", ERROR_STRING, DXP_MDNOMEM);
-                return DXP_MDNOMEM;
+                dxp_md_log_error("dxp_md_epp_io", ERROR_STRING, DXP_NOMEM);
+                return DXP_NOMEM;
             }
 
             if (*function == MD_IO_READ) {
@@ -838,9 +838,10 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_serial_open(char* ioname, int* camChan)
     /* Parse in the device file and baud rate. */
     int loc = strcspn(ioname, ":");
     if (loc == 0) {
-        sprintf(ERROR_STRING, "Unable to find : in ioname %s", ioname);
-        dxp_md_log_error("dxp_md_serial_open", ERROR_STRING, DXP_BAD_PARAM);
-        return DXP_BAD_PARAM;
+        sprintf(ERROR_STRING, "Unable to find : in ioname %s, "
+                    "expectect format [port]:[baudrate]", ioname);
+        dxp_md_log_error("dxp_md_serial_open", ERROR_STRING, DXP_BAD_IONAME);
+        return DXP_BAD_IONAME;
     }
 
     strncpy(device_file, ioname, loc);
@@ -882,8 +883,8 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_serial_open(char* ioname, int* camChan)
     default:
         close(fd);
         sprintf(ERROR_STRING, "device %s unknown baud %lu", device_file, baud);
-        dxp_md_log_error("dxp_md_serial_open", ERROR_STRING, DXP_BAD_PARAM);
-        return DXP_BAD_PARAM;
+        dxp_md_log_error("dxp_md_serial_open", ERROR_STRING, DXP_UNKONWN_BAUD);
+        return DXP_UNKONWN_BAUD;
     }
 
     status = dxp_md_serial_set_interface_attribs(fd, baudConst);
@@ -906,8 +907,8 @@ XIA_MD_STATIC int XIA_MD_API dxp_md_serial_open(char* ioname, int* camChan)
     if (serialName[*camChan] == NULL) {
         sprintf(ERROR_STRING, "Unable to allocate %d bytes for serialName[%d]",
                 len_ioname, *camChan);
-        dxp_md_log_error("dxp_md_serial_open", ERROR_STRING, DXP_MDNOMEM);
-        return DXP_MDNOMEM;
+        dxp_md_log_error("dxp_md_serial_open", ERROR_STRING, DXP_NOMEM);
+        return DXP_NOMEM;
     }
 
     strcpy(serialName[*camChan], ioname);
@@ -1244,8 +1245,8 @@ XIA_MD_STATIC int  dxp_md_usb2_open(char *ioname, int *camChan)
     if (usb2Names[*camChan] == NULL) {
         sprintf(ERROR_STRING, "Unable to allocate %d bytes for usb2Names[%d]",
                 len, *camChan);
-        dxp_md_log_error("dxp_md_usb2_open", ERROR_STRING, DXP_MDNOMEM);
-        return DXP_MDNOMEM;
+        dxp_md_log_error("dxp_md_usb2_open", ERROR_STRING, DXP_NOMEM);
+        return DXP_NOMEM;
     }
 
     strcpy(usb2Names[*camChan], ioname);
@@ -1322,8 +1323,8 @@ XIA_MD_STATIC int  dxp_md_usb2_io(int *camChan, unsigned int *function,
             if (byte_buf == NULL) {
                 sprintf(ERROR_STRING, "Error allocating %lu bytes for 'byte_buf' for "
                         "camChan %d", n_bytes, *camChan);
-                dxp_md_log_error("dxp_md_usb2_io", ERROR_STRING, DXP_MDNOMEM);
-                return DXP_MDNOMEM;
+                dxp_md_log_error("dxp_md_usb2_io", ERROR_STRING, DXP_NOMEM);
+                return DXP_NOMEM;
             }
 
 
@@ -1371,8 +1372,8 @@ XIA_MD_STATIC int  dxp_md_usb2_io(int *camChan, unsigned int *function,
             if (byte_buf == NULL) {
                 sprintf(ERROR_STRING, "Error allocating %lu bytes for 'byte_buf' for "
                         "camChan %d", n_bytes, *camChan);
-                dxp_md_log_error("dxp_md_usb2_io", ERROR_STRING, DXP_MDNOMEM);
-                return DXP_MDNOMEM;
+                dxp_md_log_error("dxp_md_usb2_io", ERROR_STRING, DXP_NOMEM);
+                return DXP_NOMEM;
             }
 
             for (i = 0; i < *len; i++) {
