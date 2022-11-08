@@ -13,7 +13,7 @@ LIBRARY_IOC_Linux    += handel
 LIBRARY_IOC_WIN32    += handel
 
 USR_CFLAGS       += -DEXCLUDE_XUP -DEXCLUDE_SERIAL -DEXCLUDE_VEGA -DEXCLUDE_UDXPS
-USR_CFLAGS_Linux += -DEXCLUDE_XMAP -DEXCLUDE_PLX -DLINUX
+USR_CFLAGS_Linux += -DEXCLUDE_XMAP -DEXCLUDE_PLX -DLINUX -fcommon
 # For debugging USB problems
 #USR_CFLAGS       += -DXERXES_TRACE_IO
 
@@ -54,6 +54,7 @@ handel_SRCS += handel_dyn_default.c
 handel_SRCS += handel_dyn_detector.c
 handel_SRCS += handel_dyn_firmware.c
 handel_SRCS += handel_dyn_module.c
+handel_SRCS += handel_error.c
 handel_SRCS += handel_file.c
 handel_SRCS += handel_log.c
 handel_SRCS += handel_run_control.c
