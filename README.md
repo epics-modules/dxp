@@ -10,6 +10,6 @@ stands for Digital X-ray Processor, and refers to all models of the XIA hardware
 
 Additional information:
 * [Home page](https://epics-modules.github.io/dxp/dxp.html)
-* [Documentation](https://epics-modules.github.io/dxp/index.html).
-* [Release notes](https://epics-modules.github.io/dxp/dxpReleaseNotes.html).
+* [Documentation](https://epics-modules.github.io/dxp/dxpDoc.html)
+* [Release notes](https://epics-modules.github.io/dxp/dxpReleaseNotes.html)
 
