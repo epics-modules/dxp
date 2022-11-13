@@ -9,7 +9,7 @@ and MCA of a conventional pulse-height analysis system. The term "DXP" in this d
 stands for Digital X-ray Processor, and refers to all models of the XIA hardware.
 
 Additional information:
-* [Home page](https://epics-modules.github.io/dxp/dxp.html)
+* [Home page](https://epics-modules.github.io/dxp/index.html)
 * [Documentation](https://epics-modules.github.io/dxp/dxpDoc.html)
 * [Release notes](https://epics-modules.github.io/dxp/dxpReleaseNotes.html)
 
