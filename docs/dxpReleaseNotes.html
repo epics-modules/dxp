@@ -11,15 +11,24 @@
       dxp Release Notes</h1>
   </div>
   <h2 style="text-align: center">
-    Release 6-1 (XXX-January-2020)<br />
+    Release 6-1 (7-December-2023)<br />
   </h2>
   <p>
-    Upgraded the XIA Handel library from 1.1.22 to 1.2.24.</p>
+    Upgraded the XIA Handel library from 1.1.22 to 1.2.28.</p>
   <p>
     Install files from dxp/dxpApp/Db to dxp/db which is standard EPICS convention.</p>
   <p>
     Added a new Python function to decode xMAP and Mercury mapping buffers. 
     Includes a test program that does this from TIFF files.</p>
+  <p>
+    Moved documentation to docs directory so it can be found by epics-modules.github.io.</p>
+  <p>
+    Add -fcommon to Makefile, needed for GCC 11</p>
+  <p>
+    Fix traceBuffer and baselineBuffer to be unsigned long, not epicsInt32.</p>
+  <p>
+    Added autoconvert files for other OPIs.</p>
+
   <h2 style="text-align: center">
     Release 6-0 (09-August-2019)<br />
   </h2>
