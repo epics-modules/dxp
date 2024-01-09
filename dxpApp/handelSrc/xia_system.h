@@ -82,8 +82,6 @@ typedef int (*boardOperation_FP)(int, char *, void *, XiaDefaults *);
 
 typedef unsigned int (*getNumDefaults_FP)(void);
 
-typedef boolean_t (*canRemoveName_FP)(char *);
-
 typedef int (*unHook_FP)(int);
 
 /* Structs */
@@ -107,7 +105,6 @@ struct PSLFuncs
   setParameter_FP		  setParameter;
   userSetup_FP			  userSetup;
   moduleSetup_FP		  moduleSetup;
-  canRemoveName_FP        canRemoveName;
   getNumParams_FP         getNumParams;
   getParamData_FP         getParamData;
   getParamName_FP         getParamName;

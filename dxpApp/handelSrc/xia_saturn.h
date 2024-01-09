@@ -110,7 +110,6 @@ XERXES_STATIC int XERXES_API dxp_write_dspparams(int *, int *, Dsp_Info *, unsig
 											Board *board, unsigned int *len);
 XERXES_STATIC int dxp_get_baseline_length(int *modChan, Board *b,
 										  unsigned int *len);
-XERXES_STATIC unsigned int XERXES_API dxp_get_event_length(Dsp_Info *, unsigned short *);
 XERXES_STATIC unsigned int XERXES_API dxp_get_history_length(Dsp_Info *, unsigned short *);
 XERXES_STATIC int XERXES_API dxp_read_spectrum(int *, int *, Board *, unsigned long *);
 XERXES_STATIC int dxp_read_baseline(int *ioChan, int *modChan, Board *board,
@@ -129,10 +128,10 @@ XERXES_STATIC int dxp_read_reg(int *ioChan, int *modChan, char *name,
 							   unsigned long *data);
 
 
-                               
 
-                               
-                               
+
+
+
 XERXES_STATIC int XERXES_API dxp_unhook(Board *board);
 
   XERXES_STATIC int dxp_get_symbol_by_index(int modChan, unsigned short index,
@@ -159,7 +158,6 @@ XERXES_STATIC int XERXES_API dxp_download_dspconfig();
 XERXES_STATIC int XERXES_API dxp_download_dsp_done();
 XERXES_STATIC int XERXES_API dxp_get_spectrum_length();
 XERXES_STATIC int XERXES_API dxp_get_baseline_length();
-XERXES_STATIC int XERXES_API dxp_get_event_length();
 XERXES_STATIC int XERXES_API dxp_get_history_length();
 XERXES_STATIC int XERXES_API dxp_begin_run();
 XERXES_STATIC int XERXES_API dxp_end_run();

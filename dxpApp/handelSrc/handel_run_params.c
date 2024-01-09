@@ -371,8 +371,6 @@ HANDEL_EXPORT int HANDEL_API xiaRemoveAcquisitionValues(int detChan, char *name)
 
     DetChanSetElem *detChanSetElem = NULL;
 
-    boolean_t canRemove = FALSE_;
-
     PSLFuncs localFuncs;
 
     FirmwareSet *fs = NULL;
@@ -410,83 +408,72 @@ HANDEL_EXPORT int HANDEL_API xiaRemoveAcquisitionValues(int detChan, char *name)
             return status;
         }
 
-        canRemove = localFuncs.canRemoveName(name);
 
-        if (canRemove) {
+        defaults = xiaGetDefaultFromDetChan(detChan);
 
-            defaults = xiaGetDefaultFromDetChan(detChan);
+        entry = defaults->entry;
 
-            entry = defaults->entry;
+        while (entry != NULL) {
 
-            while (entry != NULL) {
+            if (STREQ(name, entry->name)) {
 
-                if (STREQ(name, entry->name)) {
+                if (previous == NULL) {
 
-                    if (previous == NULL) {
+                    defaults->entry = entry->next;
 
-                        defaults->entry = entry->next;
+                } else {
 
-                    } else {
-
-                        previous->next = entry->next;
-                    }
-
-                    handel_md_free((void *)entry->name);
-                    handel_md_free((void *)entry);
-
-                    break;
+                    previous->next = entry->next;
                 }
 
-                previous = entry;
-                entry = entry->next;
-            }
+                handel_md_free((void *)entry->name);
+                handel_md_free((void *)entry);
 
-            /* Since we don't know what was removed, we better re-download all of
-             * the acquisition values again.
-             */
-            alias         = xiaGetAliasFromDetChan(detChan);
-            m             = xiaFindModule(alias);
-            modChan       = xiaGetModChan(detChan);
-            firmAlias     = m->firmware[modChan];
-            fs            = xiaFindFirmware(firmAlias);
-            detAlias      = m->detector[modChan];
-            det           = xiaFindDetector(detAlias);
-            /* Reset the defaults. */
-            defaults      = xiaGetDefaultFromDetChan(detChan);
-
-            switch (det->type) {
-
-            case XIA_DET_RESET:
-                strcpy(detType, "RESET");
-                break;
-
-            case XIA_DET_RCFEED:
-                strcpy(detType, "RC");
-                break;
-
-            default:
-            case XIA_DET_UNKNOWN:
-                sprintf(info_string, "No detector type specified for detChan %d", detChan);
-                xiaLogError("xiaSetAcquisitionValues", info_string, XIA_MISSING_TYPE);
-                return XIA_MISSING_TYPE;
                 break;
             }
 
-            status = localFuncs.userSetup(detChan, defaults, fs,
-                                          &(m->currentFirmware[modChan]), detType,
-                                          det, m->detector_chan[modChan], m, modChan);
+            previous = entry;
+            entry = entry->next;
+        }
 
-            if (status != XIA_SUCCESS) {
-                sprintf(info_string, "Error updating acquisition values after '%s' "
-                        "removed from list for detChan %d", name, detChan);
-                xiaLogError("xiaRemoveAcquisitionValues", info_string, status);
-                return status;
-            }
+        /* Since we don't know what was removed, we better re-download all of
+         * the acquisition values again.
+         */
+        alias         = xiaGetAliasFromDetChan(detChan);
+        m             = xiaFindModule(alias);
+        modChan       = xiaGetModChan(detChan);
+        firmAlias     = m->firmware[modChan];
+        fs            = xiaFindFirmware(firmAlias);
+        detAlias      = m->detector[modChan];
+        det           = xiaFindDetector(detAlias);
+        /* Reset the defaults. */
+        defaults      = xiaGetDefaultFromDetChan(detChan);
 
-        } else {
+        switch (det->type) {
 
-            status = XIA_NO_REMOVE;
-            sprintf(info_string, "Specified acquisition value %s is a required value for detChan %d", name, detChan);
+        case XIA_DET_RESET:
+            strcpy(detType, "RESET");
+            break;
+
+        case XIA_DET_RCFEED:
+            strcpy(detType, "RC");
+            break;
+
+        default:
+        case XIA_DET_UNKNOWN:
+            sprintf(info_string, "No detector type specified for detChan %d", detChan);
+            xiaLogError("xiaSetAcquisitionValues", info_string, XIA_MISSING_TYPE);
+            return XIA_MISSING_TYPE;
+            break;
+        }
+
+        status = localFuncs.userSetup(detChan, defaults, fs,
+                                      &(m->currentFirmware[modChan]), detType,
+                                      det, m->detector_chan[modChan], m, modChan);
+
+        if (status != XIA_SUCCESS) {
+            sprintf(info_string, "Error updating acquisition values after '%s' "
+                    "removed from list for detChan %d", name, detChan);
             xiaLogError("xiaRemoveAcquisitionValues", info_string, status);
             return status;
         }

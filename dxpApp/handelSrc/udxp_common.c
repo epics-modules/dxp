@@ -53,6 +53,7 @@
 #ifdef XIA_ALPHA
 #include "psl_udxp_alpha.h"
 #endif
+#include "psl_udxp.h"
 
 #define ESCAPE   0x1B
 #define INFO_LEN 400
@@ -452,6 +453,46 @@ int dxp_usb2_reset_bus(int modChan, Board *board)
     return DXP_SUCCESS;
 }
 
+/*
+ * USB2-UART interface only
+ *
+ * Clear the FIFO buffer by reading from the USB version number address
+ * This is needed to prevent a board lock up after interrupted communication
+ * It should be called as the first thing upon connection
+ */
+int dxp_usb2_reset_fifo(int modChan, Board *board)
+{
+    int status;
+
+    unsigned long usbaddress;
+    unsigned long retlen = 2;
+    unsigned short version[2];
+
+    Xia_Util_Functions funcs;
+    dxp_md_init_util(&funcs, NULL);
+
+
+#ifdef XIA_ALPHA
+    usbaddress = ULTRA_USB_VERSION;
+#else
+    usbaddress = USB_VERSION_ADDRESS;
+#endif
+
+    status = dxp_usb_read_block(modChan, board, usbaddress, retlen, version);
+
+    if (status != DXP_SUCCESS) {
+        sprintf(INFO_STRING, "Error resetting FIFO for ioChan %d, modChan %d",
+                board->ioChan, modChan);
+        udxpc_log_error("dxp_usb2_reset_fifo", INFO_STRING, status);
+        return status;
+    }
+
+    sprintf(INFO_STRING, "USB version 0x%04hX%04hX ioChan %d",
+        version[0], version[1], board->ioChan);
+    udxpc_log_debug("dxp_usb2_reset_fifo", INFO_STRING);
+
+    return DXP_SUCCESS;
+}
 
 /*
  * Send the command to ioChan
@@ -832,15 +873,16 @@ static int dxp__update_version_cache(int modChan, Board *board, Xia_Util_Functio
     DEFINE_CMD_ZERO_SEND(CMD_GET_BOARD_INFO, 27);
 
     if (dxp_is_usb(board)) {
-        /* Since this is called before all other command and response
-         * Reset the IDMA bus here in case the device was left in active
-         * communication.
+
+        /* Reset FIFO buffer in case a previous communication had
+         * broken off unexpectedly and left a non-empty buffer
+         * The IDMA Bus is also reset at the end of this
          */
-        status = dxp_usb2_reset_bus(modChan, board);
-        udxpc_log_debug("dxp__update_version_cache", "Resetting IDMA bus.");
+        status = dxp_usb2_reset_fifo(modChan, board);
+        udxpc_log_debug("dxp__update_version_cache", "Resetting fifo buffer.");
 
         if (status != DXP_SUCCESS) {
-            sprintf(INFO_STRING, "Error releasing IDMA bus "
+            sprintf(INFO_STRING, "Error resetting FIFO "
                     "for ioChan %d", board->ioChan);
             udxpc_log_error("dxp__update_version_cache", INFO_STRING, status);
             return status;

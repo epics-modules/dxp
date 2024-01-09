@@ -228,7 +228,6 @@ typedef int (*DXP_READ_BASELINE)(int *ioChan, int *modChan, Board *board,
 								 unsigned long *baseline);
 typedef int (*DXP_GET_BASELINE_LENGTH)(int *modChan, Board *b,
 									   unsigned int *len);
-typedef unsigned int (*DXP_GET_EVENT_LENGTH)(Dsp_Info *, unsigned short *);
 typedef int (*DXP_WRITE_DSPPARAMS)(int *, int *, Dsp_Info *, unsigned short *);
 typedef int (*DXP_WRITE_DSP_PARAM_ADDR)(int *, int *, unsigned int *, unsigned short *);
 typedef int (*DXP_READ_DSPPARAMS)(int *ioChan, int *modChan, Board *b,
@@ -290,7 +289,6 @@ struct Functions {
   DXP_GET_SPECTRUM_LENGTH dxp_get_spectrum_length;
   DXP_READ_BASELINE dxp_read_baseline;
   DXP_GET_BASELINE_LENGTH dxp_get_baseline_length;
-  DXP_GET_EVENT_LENGTH dxp_get_event_length;
 
   DXP_WRITE_DSPPARAMS dxp_write_dspparams;
   DXP_READ_DSPPARAMS dxp_read_dspparams;

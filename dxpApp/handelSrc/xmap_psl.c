@@ -706,7 +706,6 @@ PSL_EXPORT int PSL_API xmap_PSLInit(PSLFuncs *funcs)
     funcs->setParameter      = pslSetParameter;
     funcs->moduleSetup            = pslModuleSetup;
     funcs->userSetup            = pslUserSetup;
-    funcs->canRemoveName        = pslCanRemoveName;
     funcs->getNumDefaults       = pslGetNumDefaults;
     funcs->getNumParams         = pslGetNumParams;
     funcs->getParamData         = pslGetParamData;
@@ -1511,16 +1510,6 @@ PSL_STATIC int pslUserSetup(int detChan, XiaDefaults *defaults,
     return XIA_SUCCESS;
 }
 
-
-/*
- * Checks if the specified name is a require acquisition value or not.
- */
-PSL_STATIC boolean_t pslCanRemoveName(char *name)
-{
-    UNUSED(name);
-
-    return TRUE_;
-}
 
 
 /*

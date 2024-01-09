@@ -225,7 +225,6 @@ XERXES_EXPORT int dxp_init_xmap(Functions* funcs)
     funcs->dxp_get_spectrum_length = dxp_get_spectrum_length;
     funcs->dxp_read_baseline = dxp_read_baseline;
     funcs->dxp_get_baseline_length = dxp_get_baseline_length;
-    funcs->dxp_get_event_length = dxp_get_event_length;
 
     funcs->dxp_write_dspparams = dxp_write_dspparams;
     funcs->dxp_read_dspparams = dxp_read_dspparams;
@@ -1250,19 +1249,6 @@ static int dxp_get_baseline_length(int *modChan, Board *b, unsigned int *len)
 
     return DXP_SUCCESS;
 }
-
-
-/*
- * Gets the length of the event memory buffer.
- */
-static unsigned int dxp_get_event_length(Dsp_Info* dsp, unsigned short* params)
-{
-    UNUSED(dsp);
-    UNUSED(params);
-
-    return 0;
-}
-
 
 /*
  * Reads the spectrum memory for a single channel.

@@ -427,7 +427,6 @@ PSL_EXPORT int PSL_API saturn_PSLInit(PSLFuncs *funcs)
     funcs->setParameter      = pslSetParameter;
     funcs->moduleSetup            = pslModuleSetup;
     funcs->userSetup            = pslUserSetup;
-    funcs->canRemoveName        = pslCanRemoveName;
     funcs->getNumDefaults       = pslGetNumDefaults;
     funcs->getNumParams         = pslGetNumParams;
     funcs->getParamData         = pslGetParamData;
@@ -4352,29 +4351,6 @@ PSL_STATIC int PSL_API pslDoParam(int detChan, char *name, void *value, XiaDefau
 
     return XIA_SUCCESS;
 }
-
-
-/*
- * Checks to see if the specified name is on the list of
- * required acquisition values for the Saturn.
- */
-PSL_STATIC boolean_t PSL_API pslCanRemoveName(char *name)
-{
-    int numNames;
-    int i;
-
-    numNames = (int)(sizeof(defaultNames) / sizeof(defaultNames[0]));
-
-    for (i = 0; i < numNames; i++) {
-        if (STREQ(defaultNames[i], name)) {
-
-            return FALSE_;
-        }
-    }
-
-    return TRUE_;
-}
-
 
 /*
  * Sets the gap time for the slow filter which,

@@ -669,6 +669,11 @@ static ParamData_t PARAM_DATA[] =
     },
 };
 
+/* Do not allow write access to  */
+static const char* READONLY_DSP_VALUES[] = {
+    "SLOWLEN"
+};
+
 /*
  * This routine takes a PSLFuncs structure and points the function pointers
  * in it at the local udxp "versions" of the functions.
@@ -692,7 +697,6 @@ PSL_EXPORT int PSL_API udxp_PSLInit(PSLFuncs *funcs)
     funcs->setParameter         = pslSetParameter;
     funcs->moduleSetup          = pslModuleSetup;
     funcs->userSetup            = pslUserSetup;
-    funcs->canRemoveName        = pslCanRemoveName;
     funcs->getNumDefaults       = pslGetNumDefaults;
     funcs->getNumParams         = pslGetNumParams;
     funcs->getParamData         = pslGetParamData;
@@ -1714,19 +1718,6 @@ PSL_STATIC int pslUserSetup(int detChan, XiaDefaults *defaults,
 
     return status;
 }
-
-
-/*
- * Checks to see if the specified name is on the list of
- * required acquisition values for the Saturn.
- */
-PSL_STATIC boolean_t pslCanRemoveName(char *name)
-{
-    UNUSED(name);
-
-    return FALSE_;
-}
-
 
 /*
  * Return the number of required defaults in the acquisition values

@@ -710,7 +710,6 @@ PSL_EXPORT int PSL_API stj_PSLInit(PSLFuncs *funcs)
     funcs->setParameter      			= pslSetParameter;
     funcs->moduleSetup            = pslModuleSetup;
     funcs->userSetup            	= pslUserSetup;
-    funcs->canRemoveName        	= pslCanRemoveName;
     funcs->getNumDefaults       	= pslGetNumDefaults;
     funcs->getNumParams         	= pslGetNumParams;
     funcs->getParamData         	= pslGetParamData;
@@ -1560,18 +1559,6 @@ PSL_STATIC int psl__RevertDefault(char *name, double *value)
     pslLogError("psl__RevertDefault", info_string, XIA_UNKNOWN_VALUE);
     return XIA_UNKNOWN_VALUE;
 }
-
-
-/*
- * Checks if the specified name is a require acquisition value or not.
- */
-PSL_STATIC boolean_t pslCanRemoveName(char *name)
-{
-    UNUSED(name);
-
-    return TRUE_;
-}
-
 
 /*
  * Returns the number of "default" defaults.

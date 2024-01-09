@@ -95,7 +95,6 @@ XERXES_STATIC int dxp_get_spectrum_length(int *ioChan, int *modChan,
                                           Board *board, unsigned int *len);
 XERXES_STATIC int dxp_get_baseline_length(int *modChan, Board *b,
                                           unsigned int *len);
-XERXES_STATIC unsigned int XERXES_API dxp_get_event_length(Dsp_Info *, unsigned short *);
 XERXES_STATIC int XERXES_API dxp_read_spectrum(int *, int *, Board *, unsigned long *);
 XERXES_STATIC int dxp_read_baseline(int *ioChan, int *modchan, Board *board,
                                     unsigned long *baseline);

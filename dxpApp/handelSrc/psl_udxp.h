@@ -37,6 +37,8 @@
 #ifndef _PSL_UDXP_H_
 #define _PSL_UDXP_H_
 
+#include "xia_handel_structures.h"
+
 /*
  * Function pointers
  */

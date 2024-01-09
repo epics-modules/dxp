@@ -116,11 +116,12 @@ PSL_STATIC int psl__UpdateParams(int detChan, unsigned short type, int modChan,
                                  char *name, void *value, char *detType,
                                  XiaDefaults *defs, Module *m,
                                  Detector *det, FirmwareSet *fs);
-PSL_STATIC int psl__IsMapping(int detChan, boolean_t *is_mapping);
+PSL_STATIC int psl__IsMapping(int detChan, unsigned short allowed,
+                              boolean_t *isMapping);
 PSL_STATIC int psl__SwitchSystemFPGA(int detChan, int modChan, FirmwareSet *fs,
-                                     char *detType, double pt, int nKeywords,
-                                     char **keywords, char *rawFile, Module *m,
-                                     boolean_t *downloaded);
+                             char *detType, double pt, int nKeywords,
+                             char **keywords, char *rawFile, Module *m,
+                             boolean_t *downloaded);
 PSL_STATIC int psl__SetRegisterBit(int detChan, char *reg, int bit,
                                    boolean_t overwrite);
 PSL_STATIC int psl__ClearRegisterBit(int detChan, char *reg, int bit);
@@ -245,6 +246,11 @@ PSL_STATIC int psl__GetUnderflows(int detChan, void *value, XiaDefaults *defs,
                                   Module *m);
 PSL_STATIC int psl__GetOverflows(int detChan, void *value, XiaDefaults *defs,
                                  Module *m);
+PSL_STATIC int psl__GetListBufferLenA(int detChan, void *value,
+                                      XiaDefaults *defs, Module *m);
+PSL_STATIC int psl__GetListBufferLenB(int detChan, void *value,
+                                      XiaDefaults *defs, Module *m);
+PSL_STATIC int psl__GetListBufferLen(int detChan, char buf, unsigned long *len);
 
 /* Acquisition value getters/setters */
 PSL_STATIC int psl__GetPeakingTime(int detChan, void *value, XiaDefaults *defs);
@@ -393,6 +399,10 @@ PSL_STATIC int psl__SetTempCorrection(int detChan, int modChan, char *name,
                                       void *value, char *detType, XiaDefaults *defs,
                                       Module *m, Detector *det, FirmwareSet *fs);
 PSL_STATIC int psl__SetPeakMode(int detChan, int modChan, char *name,
+                                void *value, char *detType,
+                                XiaDefaults *defs, Module *m,
+                                Detector *det, FirmwareSet *fs);
+PSL_STATIC int psl__SetListModeVariant(int detChan, int modChan, char *name,
                                 void *value, char *detType,
                                 XiaDefaults *defs, Module *m,
                                 Detector *det, FirmwareSet *fs);
@@ -560,6 +570,8 @@ static RunData runData[] =
     { "triggers",            psl__GetTriggers },
     { "underflows",          psl__GetUnderflows },
     { "overflows",           psl__GetOverflows },
+    { "list_buffer_len_a",   psl__GetListBufferLenA },
+    { "list_buffer_len_b",   psl__GetListBufferLenB },
     { "total_output_events", psl__GetTotalEvents },
     { "mca_events",          psl__GetMCAEvents }
 };
@@ -773,6 +785,10 @@ static AcquisitionValue_t ACQ_VALUES[] =
     {   "baseline_factor",          TRUE_, FALSE_, MERCURY_UPDATE_NEVER, 0.0,
         psl__SetBaselineFactor,     NULL, NULL
     },
+
+    {   "list_mode_variant",        TRUE_, FALSE_, MERCURY_UPDATE_MAPPING, 0.0,
+       psl__SetListModeVariant,     NULL, NULL
+    },
 };
 
 
@@ -824,7 +840,6 @@ PSL_EXPORT int PSL_API mercury_PSLInit(PSLFuncs *funcs)
     funcs->setParameter        = pslSetParameter;
     funcs->moduleSetup            = pslModuleSetup;
     funcs->userSetup            = pslUserSetup;
-    funcs->canRemoveName        = pslCanRemoveName;
     funcs->getNumDefaults       = pslGetNumDefaults;
     funcs->getNumParams         = pslGetNumParams;
     funcs->getParamData         = pslGetParamData;
@@ -1311,7 +1326,7 @@ PSL_STATIC int pslStartRun(int detChan, unsigned short resume,
     UNUSED(m);
 
     /* Only clear buffer if mapping mode firmware is running */
-    status = psl__IsMapping(detChan, &isMapping);
+    status = psl__IsMapping(detChan, MAPPING_ANY, &isMapping);
 
     if (status != XIA_SUCCESS) {
         sprintf(info_string, "Error checking firmware type for detChan %d", detChan);
@@ -1725,18 +1740,6 @@ nextEntry:
     }
 
     return XIA_SUCCESS;
-}
-
-
-/*
- * Checks if the specified name is a require acquisition value or not.
- */
-PSL_STATIC boolean_t pslCanRemoveName(char *name)
-{
-    UNUSED(name);
-
-
-    return TRUE_;
 }
 
 
@@ -6347,13 +6350,12 @@ PSL_STATIC int psl__GetSVR(int detChan, char *name, XiaDefaults *defs,
 /*
  * Queries board to see if it is running in mapping mode or not.
  */
-PSL_STATIC int psl__IsMapping(int detChan, boolean_t *is_mapping)
+PSL_STATIC int psl__IsMapping(int detChan,  unsigned short allowed,
+                        boolean_t *isMapping)
 {
     int status;
 
-    boolean_t isMapping = FALSE_;
-
-    status = psl__CheckBit(detChan, "VAR", MERCURY_VAR_DAQ_MODE, &isMapping);
+    status = psl__CheckBit(detChan, "VAR", MERCURY_VAR_DAQ_MODE, isMapping);
 
     if (status != DXP_SUCCESS) {
         sprintf(info_string, "Error reading firmware variant for detChan %d",
@@ -6362,7 +6364,41 @@ PSL_STATIC int psl__IsMapping(int detChan, boolean_t *is_mapping)
         return status;
     }
 
-    *is_mapping = isMapping;
+    if (*isMapping) {
+        parameter_t MAPPINGMODE;
+
+        int status;
+
+        status = pslGetParameter(detChan, "MAPPINGMODE", &MAPPINGMODE);
+
+        if (status != XIA_SUCCESS) {
+            sprintf(info_string, "Error reading MAPPINGMODE for detChan %d",
+                    detChan);
+            pslLogError("psl__IsMapping", info_string, status);
+            return status;
+        }
+
+        switch (MAPPINGMODE) {
+        case MAPPINGMODE_MCA:
+            *isMapping = (boolean_t)((allowed & MAPPING_MCA) > 0);
+            break;
+
+        case MAPPINGMODE_SCA:
+            *isMapping = (boolean_t)((allowed & MAPPING_SCA) > 0);
+            break;
+
+        case MAPPINGMODE_LIST:
+            *isMapping = (boolean_t)((allowed & MAPPING_LIST) > 0);
+            break;
+
+        default:
+            FAIL();
+            break;
+        }
+
+    } else {
+        *isMapping = FALSE_;
+    }
 
     return XIA_SUCCESS;
 }
@@ -6546,6 +6582,7 @@ PSL_STATIC int psl__ClearBuffer(int detChan, char buf, boolean_t waitForEmpty)
     int n_polls = 0;
     int i;
 
+    unsigned long mfr;
     boolean_t cleared   = FALSE_;
 
     switch (buf) {
@@ -6591,8 +6628,9 @@ PSL_STATIC int psl__ClearBuffer(int detChan, char buf, boolean_t waitForEmpty)
         }
     }
 
-    sprintf(info_string, "Timeout waiting for buffer '%c' to be set to empty",
-            buf);
+    status = psl__GetMFR(detChan, NULL, NULL, &mfr);
+    sprintf(info_string, "Timeout waiting for buffer '%c' to be set to empty. "
+            "MFR = %#lx", buf, mfr);
     pslLogError("psl__ClearBuffer", info_string, XIA_CLRBUFFER_TIMEOUT);
 
     return XIA_CLRBUFFER_TIMEOUT;
@@ -6829,46 +6867,52 @@ PSL_STATIC int psl__SetMappingMode(int detChan, int modChan, char *name,
 
     double pt = 0.0;
 
-    parameter_t MAPPINGMODE = 0;
+    parameter_t MAPPINGMODE = (parameter_t) *((double *)value);
 
     UNUSED(det);
     UNUSED(name);
-
 
     ASSERT(fs != NULL);
     ASSERT(value != NULL);
     ASSERT(defs != NULL);
     ASSERT(m != NULL);
 
+    if (MAPPINGMODE > MAPPINGMODE_LIST ||
+        MAPPINGMODE == MAPPINGMODE_SCA) {
+        sprintf(info_string, "Unsupported mapping mode "
+                "%hu for detChan %d", MAPPINGMODE, detChan);
+        pslLogError("psl__SetMappingMode", info_string, XIA_UNKNOWN_MAPPING);
+        return XIA_UNKNOWN_MAPPING;
+    }
 
-    enabled = (boolean_t)(*((double *)value));
+    if (!isMercuryOem && MAPPINGMODE > MAPPINGMODE_MCA) {
+        sprintf(info_string, "Unsupported mapping mode "
+                "%hu for detChan %d, only MCA mapping is supported on this device.",
+                MAPPINGMODE, detChan);
+        pslLogError("psl__SetMappingMode", info_string, XIA_UNKNOWN_MAPPING);
+        return XIA_UNKNOWN_MAPPING;
+    }
+
+    enabled = *((double *)value) > 0 ? TRUE_ : FALSE_;
 
     status = pslGetDefault("peaking_time", (void *)&pt, defs);
     ASSERT(status == XIA_SUCCESS);
 
-    /* We update the mapping mode here sine the DSP will look at it
-     * after the system FPGA has been updated. Do _not_ apply this value
-     * or the DSP will get confused. In the future, we may need to support
-     * more mapping mode types then just 0/1, in which case we can build up
-     * more logic here.
-     */
+    status = pslSetParameter(detChan, "MAPPINGMODE", MAPPINGMODE);
+
+    if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error updating mode in the DSP for detChan %d",
+                detChan);
+        pslLogError("psl__SetMappingMode", info_string, status);
+        return status;
+    }
+
     if (enabled) {
-        MAPPINGMODE = 1;
-
-        status = pslSetParameter(detChan, "MAPPINGMODE", MAPPINGMODE);
-
-        if (status != XIA_SUCCESS) {
-            sprintf(info_string, "Error updating mode in the DSP for detChan %d",
-                    detChan);
-            pslLogError("psl__SetMappingMode", info_string, status);
-            return status;
-        }
-
-        status =
-            status = isMercuryOem ? XIA_SUCCESS :
+        /* Mercury OEM does not require switching of FPGA */
+        status = isMercuryOem ? XIA_SUCCESS :
             psl__SwitchSystemFPGA(detChan, modChan, fs, detType, pt,
-                                       N_ELEMS(mapKeywords), (char **)mapKeywords,
-                                       rawFile, m, &updated);
+                               N_ELEMS(mapKeywords), (char **)mapKeywords,
+                               rawFile, m, &updated);
 
         if (status != XIA_SUCCESS) {
             sprintf(info_string, "Error switching to mapping firmware for detChan %d",
@@ -6932,20 +6976,9 @@ PSL_STATIC int psl__SetMappingMode(int detChan, int modChan, char *name,
         }
 
     } else {
-        MAPPINGMODE = 0;
-
-        status = pslSetParameter(detChan, "MAPPINGMODE", MAPPINGMODE);
-
-        if (status != XIA_SUCCESS) {
-            sprintf(info_string, "Error updating mode in the DSP for detChan %d",
-                    detChan);
-            pslLogError("psl__SetMappingMode", info_string, status);
-            return status;
-        }
 
         status =
-            /***** MercuryOEM not yet supported
-            isMercuryOem ? XIA_SUCCESS : */
+            isMercuryOem ? XIA_SUCCESS :
             psl__SwitchSystemFPGA(detChan, modChan, fs, detType, pt, 0, NULL,
                                            rawFile, m, &updated);
 
@@ -7001,7 +7034,7 @@ PSL_STATIC int psl__SetBufferDone(int detChan, char *name, XiaDefaults *defs,
 
     ASSERT(value != NULL);
 
-    status = psl__IsMapping(detChan, &isMapping);
+    status = psl__IsMapping(detChan, MAPPING_ANY, &isMapping);
 
     if (status != XIA_SUCCESS) {
         sprintf(info_string, "Error checking firmware type for detChan %d", detChan);
@@ -7052,7 +7085,7 @@ PSL_STATIC int psl__MapPixelNext(int detChan, char *name, XiaDefaults *defs,
     UNUSED(defs);
 
 
-    status = psl__IsMapping(detChan, &isMapping);
+    status = psl__IsMapping(detChan, MAPPING_ANY, &isMapping);
 
     if (status != XIA_SUCCESS) {
         sprintf(info_string, "Error checking firmware type for detChan %d", detChan);
@@ -7158,14 +7191,14 @@ PSL_STATIC int psl__GetBufferFull(int detChan, char buf, boolean_t *is_full)
     unsigned long fullMask = 0;
     unsigned long mfr = 0;
 
-    boolean_t is_mapping = FALSE_;
+    boolean_t isMapping = FALSE_;
 
 
     ASSERT(buf == 'a' || buf == 'b');
     ASSERT(is_full != NULL);
 
 
-    status = psl__IsMapping(detChan, &is_mapping);
+    status = psl__IsMapping(detChan, MAPPING_ANY, &isMapping);
 
     if (status != XIA_SUCCESS) {
         sprintf(info_string, "Error determining if mapping mode was enabled for "
@@ -7174,7 +7207,7 @@ PSL_STATIC int psl__GetBufferFull(int detChan, char buf, boolean_t *is_full)
         return status;
     }
 
-    if (!is_mapping) {
+    if (!isMapping) {
         sprintf(info_string, "Mapping mode firmware is currently not running on "
                 "detChan %d", detChan);
         pslLogError("psl__GetBufferFull", info_string, XIA_NO_MAPPING);
@@ -7233,7 +7266,7 @@ PSL_STATIC int psl__GetBufferLen(int detChan, void *value, XiaDefaults *defs,
     ASSERT(value != NULL);
 
 
-    status = psl__IsMapping(detChan, &isMapping);
+    status = psl__IsMapping(detChan, MAPPING_MCA | MAPPING_SCA, &isMapping);
 
     if (status != XIA_SUCCESS) {
         sprintf(info_string, "Error checking firmware type for detChan %d", detChan);
@@ -7378,25 +7411,35 @@ PSL_STATIC int psl__GetBuffer(int detChan, char buf, unsigned long *data,
     unsigned long len  = 0;
     unsigned long base = 0;
 
-    boolean_t isMapping = FALSE_;
+    boolean_t isMCAOrSCA;
+    boolean_t isList;
 
     char memoryStr[36];
 
     ASSERT(data != NULL);
     ASSERT(buf == 'a' || buf == 'b');
 
-    status = psl__IsMapping(detChan, &isMapping);
+    status = psl__IsMapping(detChan, MAPPING_MCA | MAPPING_SCA, &isMCAOrSCA);
 
     if (status != XIA_SUCCESS) {
         sprintf(info_string, "Error checking firmware type for detChan %d", detChan);
-        pslLogError("psl__GetBufferLen", info_string, status);
+        pslLogError("psl__GetBuffer", info_string, status);
         return status;
     }
 
-    if (!isMapping) {
+    status = psl__IsMapping(detChan, MAPPING_LIST, &isList);
+
+    if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error checking firmware type for detChan %d",
+                detChan);
+        pslLogError("psl__GetBuffer", info_string, status);
+        return status;
+    }
+
+    if (!isMCAOrSCA && !isList) {
         sprintf(info_string, "Mapping mode firmware not running on detChan %d",
                 detChan);
-        pslLogError("psl__GetBufferLen", info_string, XIA_NO_MAPPING);
+        pslLogError("psl__GetBuffer", info_string, XIA_NO_MAPPING);
         return XIA_NO_MAPPING;
     }
 
@@ -7415,13 +7458,27 @@ PSL_STATIC int psl__GetBuffer(int detChan, char buf, unsigned long *data,
         break;
     }
 
-    status = psl__GetBufferLen(detChan, (void *)&len, defs, m);
+    if (!isList) {
+        status = psl__GetBufferLen(detChan, (void *)&len, defs, m);
 
-    if (status != XIA_SUCCESS) {
-        sprintf(info_string, "Error getting length of buffer '%c' for detChan %d",
-                buf, detChan);
-        pslLogError("psl__GetBuffer", info_string, status);
-        return status;
+        if (status != XIA_SUCCESS) {
+            sprintf(info_string, "Error getting length of buffer '%c' for detChan %d",
+                    buf, detChan);
+            pslLogError("psl__GetBuffer", info_string, status);
+            return status;
+        }
+    } else {
+        /* The list mode lengths are not a fixed size, unlike the
+         * MCA/SCA mode buffer lengths.
+         */
+        status = psl__GetListBufferLen(detChan, buf, &len);
+
+        if (status != XIA_SUCCESS) {
+            sprintf(info_string, "Error getting the length of list mode "
+                    "buffer '%c' for detChan %d.", buf, detChan);
+            pslLogError("psl__GetBuffer", info_string, status);
+            return status;
+        }
     }
 
     sprintf(memoryStr, "burst_map:%#lx:%lu", base, len);
@@ -7442,7 +7499,7 @@ PSL_STATIC int psl__GetBuffer(int detChan, char buf, unsigned long *data,
 /*
  * Gets the current mapping point.
  *
- * Requires mapping more firmware.
+ * Requires mapping mode firmware.
  */
 PSL_STATIC int psl__GetCurrentPixel(int detChan, void *value, XiaDefaults *defs,
                                     Module *m)
@@ -7461,7 +7518,7 @@ PSL_STATIC int psl__GetCurrentPixel(int detChan, void *value, XiaDefaults *defs,
     ASSERT(value != NULL);
 
 
-    status = psl__IsMapping(detChan, &isMapping);
+    status = psl__IsMapping(detChan, MAPPING_ANY, &isMapping);
 
     if (status != XIA_SUCCESS) {
         sprintf(info_string, "Error checking firmware type for detChan %d", detChan);
@@ -7526,7 +7583,7 @@ PSL_STATIC int psl__GetBufferOverrun(int detChan, void *value,
     UNUSED(defs);
 
 
-    status = psl__IsMapping(detChan, &isMapping);
+    status = psl__IsMapping(detChan, MAPPING_ANY, &isMapping);
 
     if (status != XIA_SUCCESS) {
         sprintf(info_string, "Error determining if mapping mode was enabled for "
@@ -10055,3 +10112,192 @@ PSL_STATIC int psl__SetBaselineFactor(int detChan, int modChan, char *name,
     return XIA_SUCCESS;
 
 }
+
+PSL_STATIC int psl__GetListBufferLenA(int detChan, void *value,
+                                      XiaDefaults *defs, Module *m)
+{
+    int status;
+
+    UNUSED(defs);
+    UNUSED(m);
+
+    ASSERT(value);
+
+
+    status = psl__GetListBufferLen(detChan, 'a', (unsigned long *)value);
+
+    if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error getting the length of list mode buffer "
+                "A for detChan %d.", detChan);
+        pslLogError("psl__GetListBufferLenA", info_string, status);
+        return status;
+    }
+
+    return XIA_SUCCESS;
+}
+
+
+PSL_STATIC int psl__GetListBufferLenB(int detChan, void *value,
+                                      XiaDefaults *defs, Module *m)
+{
+    int status;
+
+    UNUSED(defs);
+    UNUSED(m);
+
+    ASSERT(value);
+
+
+    status = psl__GetListBufferLen(detChan, 'b', (unsigned long *)value);
+
+    if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error getting the length of list mode buffer "
+                "B for detChan %d.", detChan);
+        pslLogError("psl__GetListBufferLenB", info_string, status);
+        return status;
+    }
+
+    return XIA_SUCCESS;
+}
+
+
+PSL_STATIC int psl__GetListBufferLen(int detChan, char buf, unsigned long *len)
+{
+    int status;
+
+    boolean_t isMapping;
+
+    parameter_t lenLow = 0xFFFF;
+    parameter_t lenHigh = 0xFFFF;
+
+
+    status = psl__IsMapping(detChan, MAPPING_LIST, &isMapping);
+
+    if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error checking if list mode is available for "
+                "detChan %d.", detChan);
+        pslLogError("psl__GetListBufferLen", info_string, status);
+        return status;
+    }
+
+    if (!isMapping) {
+        sprintf(info_string, "List mode firmware is not currently loaded for "
+                "detChan %d.", detChan);
+        pslLogError("psl__GetListBufferLen", info_string, XIA_NO_MAPPING);
+        return XIA_NO_MAPPING;
+    }
+
+    switch(buf) {
+    case 'a':
+        status = pslGetParameter(detChan, "LISTBUFALEN", &lenLow);
+
+        if (status != XIA_SUCCESS) {
+            sprintf(info_string, "Error getting low word of list mode "
+                    "buffer length for detChan %d.", detChan);
+            pslLogError("psl__GetListBufferLen", info_string, status);
+            return status;
+        }
+
+        status = pslGetParameter(detChan, "LISTBUFALENA", &lenHigh);
+
+        if (status != XIA_SUCCESS) {
+            sprintf(info_string, "Error getting high word of list mode "
+                    "buffer length for detChan %d.", detChan);
+            pslLogError("psl__GetListBufferLen", info_string, status);
+            return status;
+        }
+
+        break;
+
+    case 'b':
+        status = pslGetParameter(detChan, "LISTBUFBLEN", &lenLow);
+
+        if (status != XIA_SUCCESS) {
+            sprintf(info_string, "Error getting low word of list mode "
+                    "buffer length for detChan %d.", detChan);
+            pslLogError("psl__GetListBufferLen", info_string, status);
+            return status;
+        }
+
+        status = pslGetParameter(detChan, "LISTBUFBLENA", &lenHigh);
+
+        if (status != XIA_SUCCESS) {
+            sprintf(info_string, "Error getting high word of list mode "
+                    "buffer length for detChan %d.", detChan);
+            pslLogError("psl__GetListBufferLen", info_string, status);
+            return status;
+        }
+
+        break;
+
+    default:
+        FAIL();
+        break;
+    }
+
+    /* Only the bottom 4 bits of the high word should be set. The
+     * maximum length of each buffer is 20 bits.
+     */
+    if ((lenHigh & 0xFFF0) != 0) {
+        sprintf(info_string, "The upper word of the list buffer length "
+                "stored in the DSP (%#hx) is malformed for detChan %d.",
+                lenHigh, detChan);
+        pslLogError("psl__GetListBufferLen", info_string, XIA_MALFORMED_LENGTH);
+        return XIA_MALFORMED_LENGTH;
+    }
+
+    *len = WORD_TO_LONG(lenLow, lenHigh);
+
+    return XIA_SUCCESS;
+}
+
+
+PSL_STATIC int psl__SetListModeVariant(int detChan, int modChan, char *name,
+                                 void *value, char *detType,
+                                 XiaDefaults *defs, Module *m, Detector *det,
+                                 FirmwareSet *fs)
+{
+    int status;
+
+    parameter_t LISTMODEVAR = (parameter_t)(*((double *)value));
+
+    boolean_t isMapping;
+
+    UNUSED(fs);
+    UNUSED(det);
+    UNUSED(m);
+    UNUSED(detType);
+    UNUSED(modChan);
+    UNUSED(defs);
+
+    ASSERT(value);
+
+    status = psl__IsMapping(detChan, MAPPING_LIST, &isMapping);
+
+    if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error checking if list mode is available for "
+                "detChan %d", detChan);
+        pslLogError("psl__SetListModeVariant", info_string, status);
+        return status;
+    }
+
+    if (!isMapping) {
+        sprintf(info_string, "Skipping '%s' since list mode mapping is disabled "
+                "for detChan %d.", name, detChan);
+        pslLogInfo("psl__SetListModeVariant", info_string);
+        return XIA_SUCCESS;
+    }
+
+    status = pslSetParameter(detChan, "LISTMODEVAR", LISTMODEVAR);
+
+    if (status != XIA_SUCCESS) {
+        sprintf(info_string, "Error setting list mode variant to %hu "
+                "for detChan %d.", LISTMODEVAR, detChan);
+        pslLogError("psl__SetListModeVariant", info_string, status);
+        return status;
+    }
+
+    return XIA_SUCCESS;
+}
+
+
