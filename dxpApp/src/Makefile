@@ -75,6 +75,13 @@ dxpApp_SYS_LIBS_WIN32    += setupapi
 #PROD_IOC += test_sscanf
 #test_sscanf_SRCS += test_sscanf.c
 
+# Microdxp test program
+PROD_IOC_Linux += hqsg-microdxp
+hqsg-microdxp_SRCS += hqsg-microdxp.c
+hqsg-microdxp_LIBS += handel
+hqsg-microdxp_SYS_LIBS_Linux += usb
+
+
 #===========================
 # Build application that lets other apps run with iopl(3)
 PROD_IOC_Linux += startWithIopl3
