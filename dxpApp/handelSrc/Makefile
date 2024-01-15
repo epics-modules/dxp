@@ -17,11 +17,6 @@ USR_CFLAGS_Linux += -DEXCLUDE_XMAP -DEXCLUDE_PLX -DLINUX -fcommon
 # For debugging USB problems
 #USR_CFLAGS       += -DXERXES_TRACE_IO
 
-# The very old gcc42 compiler does not recognize this flag
-ifneq (gcc42, $(findstring gcc42, $(T_A)))
-  USR_CFLAGS_Linux    += -Wno-unused-but-set-variable
-endif
-
 ifneq ($(LINUX_USB_INSTALLED), YES)
 USR_CFLAGS_Linux    += -DEXCLUDE_USB -DEXCLUDE_USB2 -DEXCLUDE_XMAP -DEXCLUDE_PLX -DEXCLUDE_MERCURY
 endif
