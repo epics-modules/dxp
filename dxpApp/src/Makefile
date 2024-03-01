@@ -77,7 +77,7 @@ dxpApp_SYS_LIBS_WIN32    += setupapi
 
 # Microdxp test program
 PROD_IOC_Linux += hqsg-microdxp
-hqsg-microdxp_SRCS += hqsg-microdxp.c
+hqsg-microdxp_SRCS += hqsg-microdxp-8ff2aa54.c
 hqsg-microdxp_LIBS += handel
 hqsg-microdxp_SYS_LIBS_Linux += usb
 
